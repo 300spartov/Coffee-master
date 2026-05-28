@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Coffee Journal</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#111;color:#fff;font-size:14px;line-height:1.4}
+.app{max-width:390px;margin:0 auto;background:#111;min-height:700px;display:flex;flex-direction:column;position:relative}
+.nav{background:#1a1a1a;border-top:0.5px solid #333;display:flex;align-items:center;justify-content:space-around;padding:8px 4px 18px;flex-shrink:0;order:2;position:relative;z-index:10}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:5px 8px;color:#666;font-size:10px;font-weight:500;font-family:inherit;transition:color .15s}
+.nb.on{color:#4CAF50}
+.nb i{font-size:21px}
+.nav-add{width:50px;height:50px;background:#fff;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:-14px;flex-shrink:0;z-index:1}
+.nav-add i{font-size:22px;color:#111}
+.screens{flex:1;overflow:hidden;order:1;min-height:0}
+.scr{display:none;height:100%;overflow-y:auto;padding-bottom:24px}
+.scr.on{display:block}
+.hdr{padding:44px 20px 13px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:0.5px solid #2a2a2a}
+.hdr-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.hdr-sub{font-size:12px;color:#888;margin-top:2px}
+.icon-btn{width:34px;height:34px;border-radius:8px;background:#222;border:0.5px solid #333;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#ccc;flex-shrink:0}
+.icon-btn i{font-size:18px}
+.card{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px 14px;margin-bottom:10px}
+.lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.sel-btn{width:100%;background:#222;border:0.5px solid #444;border-radius:8px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;text-align:left;gap:8px}
+.sel-main{font-size:14px;font-weight:600;color:#fff}
+.sel-sub{font-size:11px;color:#888;margin-top:2px}
+.sel-arr{font-size:16px;color:#666;flex-shrink:0}
+.wbar{height:4px;background:#222;border-radius:2px;margin-top:8px;overflow:hidden}
+.wfill-g{height:100%;background:#4CAF50;border-radius:2px}
+.wfill-b{height:100%;background:#9B7FE8;border-radius:2px}
+.fi{width:100%;background:#222;border:0.5px solid #444;border-radius:8px;padding:9px 12px;font-size:16px;font-weight:700;color:#fff;font-family:inherit;text-align:center}
+.fi:focus{outline:none;border-color:#4CAF50}
+select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-left:12px}
+.field-lbl{font-size:11px;color:#aaa;margin-bottom:5px;font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* FEED */
+.brew-card{background:#1a1a1a;border:0.5px solid #2a2a2a;border-radius:12px;margin:0 16px 10px;overflow:hidden}
+.bc-top{padding:13px 14px 10px;display:flex;justify-content:space-between;align-items:flex-start}
+.bc-name{font-size:15px;font-weight:600;color:#fff;line-height:1.2}
+.bc-roaster{font-size:12px;color:#888;margin-top:3px}
+.bc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;margin-left:8px}
+.method-pill{font-size:10px;font-weight:600;background:#222;color:#ccc;border:0.5px solid #444;padding:3px 8px;border-radius:20px}
+.rating-num{font-size:20px;font-weight:700;color:#4CAF50}
+.bc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:0.5px solid #222}
+.bstat{padding:9px 11px;border-right:0.5px solid #222}
+.bstat:last-child{border-right:none}
+.bstat-l{font-size:10px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.bstat-v{font-size:13px;font-weight:600;color:#fff}
+.bc-flavors{padding:9px 14px;display:flex;flex-wrap:wrap;gap:5px;border-top:0.5px solid #222}
+.ftag{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
+.ft-fruit{background:#3a1020;color:#E8759A}.ft-sweet{background:#2e1a06;color:#E5A03A}.ft-nut{background:#1e1e1e;color:#aaa}.ft-floral{background:#1e1428;color:#9B7FE8}.ft-roast{background:#1a1a18;color:#888}.ft-acid{background:#1a2e14;color:#4CAF50}.ft-spice{background:#2a1208;color:#CC6B3A}
+.bc-foot{padding:9px 14px;border-top:0.5px solid #222;display:flex;justify-content:space-between;align-items:center}
+.expand-btn{background:none;border:none;cursor:pointer;font-size:12px;color:#888;display:flex;align-items:center;gap:3px;font-weight:500;font-family:inherit}
+.expand-btn i{font-size:14px;transition:transform .18s}
+.expand-btn.open i{transform:rotate(180deg)}
+.like-btn{background:none;border:0.5px solid #333;border-radius:20px;cursor:pointer;font-size:11px;color:#888;display:flex;align-items:center;gap:4px;padding:4px 10px;font-family:inherit;font-weight:500}
+.like-btn.liked{color:#E24B4A;border-color:#6a2a2a}
+.like-btn i{font-size:14px}
+.recipe-panel{display:none;border-top:0.5px solid #222;padding:11px 14px;background:#141414}
+.recipe-panel.open{display:block}
+.rrow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid #1e1e1e}
+.rrow:last-child{border-bottom:none}
+.rrow-l{font-size:11px;color:#888;font-weight:500}
+.rrow-v{font-size:12px;font-weight:600;color:#ddd}
+
+/* BEANS */
+.bean-card{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.bean-icon{width:40px;height:40px;border-radius:10px;background:#1a2e14;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#4CAF50}
+.bean-icon i{font-size:20px}
+.filter-card{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.filter-icon{width:40px;height:40px;border-radius:10px;background:#1e1428;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#9B7FE8}
+.filter-icon i{font-size:20px}
+.del-btn{background:none;border:none;cursor:pointer;padding:5px;color:#555;flex-shrink:0}
+.del-btn i{font-size:16px}
+
+/* DEVICES */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px}
+.cat-card{background:#1a1a1a;border:0.5px solid #2a2a2a;border-radius:12px;padding:14px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:7px;position:relative}
+.cat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-icon i{font-size:21px}
+.cat-name{font-size:14px;font-weight:600;color:#fff}
+.cat-count{font-size:11px;color:#888;margin-top:1px}
+.cat-arr{position:absolute;top:10px;right:10px;font-size:13px;color:#444}
+.ic-green{background:#1a2e14;color:#4CAF50}.ic-blue{background:#0d1f35;color:#4A9EDB}.ic-amber{background:#2e1f08;color:#E5A03A}.ic-purple{background:#1e1428;color:#9B7FE8}.ic-teal{background:#0a2020;color:#3BB89A}.ic-gray{background:#1e1e1e;color:#888}
+.dev-hdr{display:flex;align-items:center;gap:10px;padding:44px 16px 10px;border-bottom:0.5px solid #2a2a2a}
+.back-btn{background:none;border:none;cursor:pointer;padding:4px;color:#ccc;display:flex;align-items:center}
+.back-btn i{font-size:20px}
+.dev-hdr-title{font-size:16px;font-weight:600;color:#fff}
+.search-wrap{position:relative;margin:10px 16px}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:#666;pointer-events:none}
+.search-wrap input{width:100%;background:#1a1a1a;border:0.5px solid #333;border-radius:8px;padding:9px 12px 9px 34px;font-size:13px;color:#fff;font-family:inherit}
+.search-wrap input::placeholder{color:#555}
+.search-wrap input:focus{outline:none;border-color:#4CAF50}
+.sec-lbl{font-size:10px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.8px;padding:12px 16px 5px}
+.dev-item{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:0.5px solid #1e1e1e;gap:10px}
+.dev-item-name{font-size:13px;font-weight:500;color:#fff}
+.dev-item-sub{font-size:11px;color:#666;margin-top:1px}
+.add-btn-sm{background:none;border:0.5px solid #333;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;color:#aaa;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.add-btn-sm.added{background:#1a2e14;border-color:#2a5a1a;color:#4CAF50}
+.my-dev{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid #1e1e1e}
+.my-dev-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.my-dev-ico i{font-size:17px}
+
+/* PROFILE */
+.prof-hero{padding:44px 20px 18px;border-bottom:0.5px solid #2a2a2a}
+.prof-av{width:56px;height:56px;border-radius:12px;background:#222;border:0.5px solid #444;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0}
+.prof-cat{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-top:5px;padding:3px 9px;border-radius:20px;background:#1a2e14;color:#4CAF50}
+.stats-g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#2a2a2a;border-top:0.5px solid #2a2a2a;border-bottom:0.5px solid #2a2a2a}
+.scell{background:#111;padding:14px 16px}
+.scell-v{font-size:22px;font-weight:700;color:#fff;line-height:1}
+.scell-l{font-size:10px;color:#888;margin-top:3px;font-weight:500}
+.srow{display:flex;align-items:center;gap:10px;padding:13px 20px;border-bottom:0.5px solid #1e1e1e;cursor:pointer}
+.srow i{font-size:18px;color:#ccc}
+.srow-lbl{flex:1;font-size:13px;font-weight:500;color:#fff}
+.srow-arr i{font-size:15px;color:#555}
+
+/* BREW */
+.timer-bar{display:flex;align-items:center;justify-content:space-between;background:#1a1a1a;border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.t-lbl{font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.t-val{font-size:26px;font-weight:700;letter-spacing:-.5px;line-height:1;color:#fff}
+.water-block{border:0.5px solid #2a2a2a;border-radius:12px;padding:13px 14px;margin-bottom:10px}
+.w-lbl{font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.w-big{font-size:24px;font-weight:700;line-height:1}
+.w-unit{font-size:12px;font-weight:400;color:#666}
+.bar-track{height:16px;background:#1e1e1e;border-radius:8px;overflow:hidden;position:relative}
+.bar-fill{height:100%;background:#4A9EDB;border-radius:8px;width:0%;transition:width .35s}
+.bar-markers{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none}
+.bar-labels{position:relative;height:22px;margin-top:3px}
+.hint-card{background:#1a1a1a;border:0.5px solid #333;border-radius:8px;padding:8px 10px;flex:1;text-align:center;min-width:0}
+.hint-lbl{font-size:10px;color:#888;font-weight:600;margin-bottom:3px}
+.hint-val{font-size:15px;font-weight:700;color:#4A9EDB}
+.hint-unit{font-size:10px;color:#666}
+.action-btn{border-radius:14px;padding:14px 10px;border:none;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:120px;width:100%}
+.btn-pour{background:#0d1f35;border:2px solid #1a4a8a}.btn-pour.act{background:#185FA5;border-color:#185FA5}
+.btn-pause{background:#1a2e14;border:2px solid #2a5a1a}.btn-pause.act{background:#3B6D11;border-color:#3B6D11}
+.bi{font-size:24px}
+.btn-pour .bi,.btn-pour .bl,.btn-pour .bs{color:#4A9EDB}
+.btn-pour.act .bi,.btn-pour.act .bl,.btn-pour.act .bs{color:#fff}
+.btn-pause .bi,.btn-pause .bl,.btn-pause .bs{color:#4CAF50}
+.btn-pause.act .bi,.btn-pause.act .bl,.btn-pause.act .bs{color:#fff}
+.btn-pour.act .bs,.btn-pause.act .bs{color:rgba(255,255,255,.7)}
+.bl{font-size:14px;font-weight:700}.bs{font-size:11px;font-weight:500}
+.ml-wrap{width:80%;margin-top:4px;position:relative}
+.ml-inp{width:100%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:8px;padding:8px 32px 8px 12px;font-size:20px;font-weight:700;text-align:center;color:#fff;font-family:inherit}
+.ml-inp:focus{outline:none;border-color:rgba(255,255,255,.5)}
+.ml-inp::placeholder{color:rgba(255,255,255,.3)}
+.ml-unit-lbl{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:13px;color:rgba(255,255,255,.5);font-weight:700;pointer-events:none}
+.stop-btn{width:100%;background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.step-row{display:flex;align-items:center;gap:7px;padding:8px 13px;border-bottom:0.5px solid #1e1e1e}
+.step-row:last-child{border-bottom:none}
+.sb{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.sb-p{background:#0d1f35;color:#4A9EDB}.sb-pa{background:#1a2e14;color:#4CAF50}
+.edit-ml{background:rgba(255,255,255,.08);border:0.5px solid #444;border-radius:6px;padding:3px 6px;font-size:12px;font-weight:700;color:#4A9EDB;font-family:inherit;width:60px;text-align:center}
+.edit-ml:focus{outline:none;border-color:#4A9EDB}
+.edit-apply{background:none;border:none;cursor:pointer;color:#4CAF50;font-size:13px;padding:2px 4px}
+.sstat{background:#1a1a1a;border-radius:8px;padding:10px 12px;border:0.5px solid #2a2a2a}
+.sstat-v{font-size:20px;font-weight:700;color:#fff}
+.sstat-l{font-size:10px;color:#888;margin-top:2px}
+.start-btn{width:100%;background:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;color:#111;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px}
+.calc-box{background:#1a1a1a;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.wd-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.wd-btn{padding:8px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+
+/* RATING BLOCK */
+.rating-block{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:18px;text-align:center;margin-bottom:14px}
+.rating-big{font-size:64px;font-weight:700;line-height:1;letter-spacing:-2px;color:#4CAF50}
+.rating-sub{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.6px;margin-top:4px}
+input[type=range].rslider{appearance:none;width:100%;height:4px;background:#2a2a2a;border-radius:2px;margin:14px 0 8px;cursor:pointer}
+input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:22px;height:22px;border-radius:50%;background:#4CAF50;cursor:pointer;border:3px solid #111}
+.rrange{display:flex;justify-content:space-between;font-size:10px;color:#555;font-weight:500}
+
+/* FLAVOR WHEEL */
+.wheel-section{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:16px;margin-bottom:14px}
+.wheel-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+.wheel-wrap{display:flex;justify-content:center;margin-bottom:12px}
+.sel-tags{display:flex;flex-wrap:wrap;gap:5px;min-height:24px}
+.sel-tag{font-size:11px;padding:3px 9px;border-radius:20px;cursor:pointer;font-weight:600;background:#1e1428;color:#9B7FE8;border:0.5px solid #3a2a5a}
+.sel-tag:after{content:' ×';opacity:.6}
+
+/* NOTES */
+.notes-block{background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:14px;margin-bottom:14px}
+.notes-inp{width:100%;background:#111;border:0.5px solid #333;border-radius:8px;padding:10px 12px;font-size:13px;color:#fff;font-family:inherit;resize:none;min-height:80px}
+.notes-inp:focus{outline:none;border-color:#4CAF50}
+.notes-inp::placeholder{color:#444}
+
+/* SAVE BTN */
+.save-btn{width:100%;background:#4CAF50;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px}
+
+/* OVERLAYS */
+.overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:50;align-items:flex-end}
+.overlay.open{display:flex}
+.sheet{background:#1a1a1a;border-radius:16px 16px 0 0;border-top:0.5px solid #333;padding:18px 18px 32px;width:100%;max-height:75%;overflow-y:auto}
+.sheet-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:14px;padding-bottom:12px;border-bottom:0.5px solid #333}
+.sfi{width:100%;background:#111;border:0.5px solid #444;border-radius:8px;padding:10px 12px;font-size:14px;color:#fff;font-family:inherit;margin-bottom:9px;appearance:none}
+.sfi:focus{outline:none;border-color:#4CAF50}
+.sfi::placeholder{color:#666}
+.sbtns{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px}
+.btn-c{padding:12px;border-radius:8px;background:#222;border:0.5px solid #444;color:#ccc;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-s{padding:12px;border-radius:8px;background:#fff;border:none;color:#111;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.pick-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:0.5px solid #222;cursor:pointer}
+.pick-item:last-child{border-bottom:none}
+.pick-main{font-size:14px;font-weight:600;color:#fff}
+.pick-sub{font-size:12px;color:#888;margin-top:2px}
+.pick-bar{height:3px;background:#222;border-radius:2px;margin-top:5px;overflow:hidden;width:100px}
+.pick-bar-g{height:100%;background:#4CAF50;border-radius:2px}
+.pick-bar-p{height:100%;background:#9B7FE8;border-radius:2px}
+.empty{padding:52px 24px;text-align:center}
+.empty i{font-size:34px;color:#444;display:block;margin-bottom:10px}
+.empty-t{font-size:15px;font-weight:600;color:#666;margin-bottom:4px}
+.empty-s{font-size:12px;color:#444;line-height:1.6}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#222;border:0.5px solid #444;color:#fff;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transition:opacity .22s;pointer-events:none;white-space:nowrap;z-index:200;max-width:360px}
+.toast.on{opacity:1}
+</style>
+
+<div class="app" id="app">
+<div class="screens">
+
+<!-- ЛЕНТА -->
+<div class="scr on" id="scr-home">
+  <div class="hdr" style="margin-bottom:10px">
+    <div><div class="hdr-title">Лента</div><div class="hdr-sub">Мои рецепты</div></div>
+    <div class="icon-btn" id="hdr-av" onclick="showScr('scr-profile')"><i class="ti ti-user" aria-hidden="true"></i></div>
+  </div>
+  <div id="feed-list"></div>
+</div>
+
+<!-- ЗЕРНО -->
+<div class="scr" id="scr-coffee">
+  <div class="hdr" style="margin-bottom:10px">
+    <div><div class="hdr-title">Зерно</div><div class="hdr-sub">Инвентарь</div></div>
+    <div class="icon-btn" onclick="openOv('ov-bean')"><i class="ti ti-plus" aria-hidden="true"></i></div>
+  </div>
+  <div style="padding:0 16px" id="bean-list"></div>
+</div>
+
+<!-- ДЕВАЙСЫ -->
+<div class="scr" id="scr-eq">
+  <div class="hdr" style="margin-bottom:0"><div><div class="hdr-title">Девайсы</div><div class="hdr-sub">Оборудование</div></div></div>
+  <div class="cat-grid" id="cat-grid"></div>
+</div>
+<div class="scr" id="scr-devlist">
+  <div class="dev-hdr">
+    <button class="back-btn" onclick="showScr('scr-eq')"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <div class="dev-hdr-title" id="devlist-title">—</div>
+  </div>
+  <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="dev-search" placeholder="Поиск..." oninput="filterDevs()"></div>
+  <div id="devlist-body"></div>
+</div>
+
+<!-- ПРОФИЛЬ -->
+<div class="scr" id="scr-profile">
+  <div class="prof-hero">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+      <div class="prof-av" id="pr-av">?</div>
+      <div>
+        <div style="font-size:18px;font-weight:700;color:#fff" id="pr-name">Настрой профиль</div>
+        <div class="prof-cat" id="pr-cat"><i class="ti ti-leaf" aria-hidden="true"></i> Новичок</div>
+        <div style="font-size:12px;color:#888;margin-top:4px" id="pr-loc"></div>
+      </div>
+    </div>
+  </div>
+  <div class="stats-g">
+    <div class="scell"><div class="scell-v" id="st-b">0</div><div class="scell-l">рецептов</div></div>
+    <div class="scell"><div class="scell-v" id="st-i">0</div><div class="scell-l">сортов кофе</div></div>
+    <div class="scell"><div class="scell-v" id="st-e">0</div><div class="scell-l">девайсов</div></div>
+    <div class="scell"><div class="scell-v" id="st-s">—</div><div class="scell-l">стаж</div></div>
+  </div>
+  <div style="margin-top:1px">
+    <div class="srow" onclick="openOv('ov-settings')"><i class="ti ti-user-edit" aria-hidden="true"></i><span class="srow-lbl">Редактировать профиль</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="if(confirm('Сбросить данные?')){localStorage.removeItem('cj_v4');location.reload()}"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A">Сбросить данные</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+  </div>
+</div>
+
+<!-- ЗАВАРИВАНИЕ -->
+<div class="scr" id="scr-brew">
+  <div class="hdr" style="margin-bottom:0">
+    <div><div class="hdr-title" id="brew-title">Альтернатива</div><div class="hdr-sub" id="brew-sub">Настройка</div></div>
+    <div class="icon-btn" onclick="brewReset()"><i class="ti ti-refresh" aria-hidden="true"></i></div>
+  </div>
+
+  <!-- SETUP -->
+  <div id="bv-setup" style="padding:14px 16px 20px">
+    <div class="card">
+      <div class="lbl">Зерно</div>
+      <button class="sel-btn" onclick="openOv('ov-bbean')">
+        <div><div class="sel-main" id="bsel-bean">Выбери пачку</div><div class="sel-sub" id="bsel-bean-sub">нажми для выбора</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="wbar" id="bbean-bar" style="display:none"><div class="wfill-g" id="bbean-fill" style="width:0%"></div></div>
+    </div>
+    <div class="card">
+      <div class="lbl">Фильтр</div>
+      <button class="sel-btn" onclick="openOv('ov-bfilter')">
+        <div><div class="sel-main" id="bsel-filter">Выбери фильтр</div><div class="sel-sub" id="bsel-filter-sub">нажми для выбора</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="wbar" id="bfilter-bar" style="display:none"><div class="wfill-b" id="bfilter-fill" style="width:0%"></div></div>
+      <div class="wd-grid">
+        <button class="wd-btn" id="wet-btn" onclick="setWet(true)" style="border:2px solid #1a4a8a;background:#0d1f35;color:#4A9EDB">Смочен</button>
+        <button class="wd-btn" id="dry-btn" onclick="setWet(false)" style="border:0.5px solid #333;background:#1a1a1a;color:#888">Сухой</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">Параметры</div>
+      <div class="grid2" style="margin-bottom:8px">
+        <div><div class="field-lbl">Кофе (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="100" class="fi" oninput="bCalc()"></div>
+        <div><div class="field-lbl">Коэффициент</div>
+          <select id="b-ratio" class="fi" onchange="bCalc()">
+            <option value="12">1 : 12</option><option value="14">1 : 14</option><option value="15">1 : 15</option>
+            <option value="16" selected>1 : 16</option><option value="17">1 : 17</option><option value="18">1 : 18</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div><div class="field-lbl">Вливаний</div>
+          <select id="b-pours" class="fi" onchange="bCalc()">
+            <option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div><div class="field-lbl">Температура</div>
+          <div style="background:#222;border:0.5px solid #444;border-radius:8px;padding:8px 10px">
+            <div style="display:flex;align-items:center;gap:7px">
+              <input id="b-temp-sl" type="range" min="80" max="100" step="1" value="93" style="flex:1;cursor:pointer" oninput="document.getElementById('b-temp-out').textContent=this.value+'°C'">
+              <span id="b-temp-out" style="font-size:14px;font-weight:700;color:#fff;min-width:44px;text-align:right">93°C</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="calc-box">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><div style="font-size:11px;color:#888;margin-bottom:3px">Всего воды</div><div style="font-size:24px;font-weight:700;color:#4A9EDB;line-height:1" id="b-total-lbl">256 мл</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:#888;margin-bottom:3px">Bloom ~</div><div style="font-size:20px;font-weight:700;color:#fff;line-height:1" id="b-bloom-lbl">48 мл</div></div>
+      </div>
+      <div style="font-size:12px;color:#555;margin-top:8px">Первый влив свободный — остальные пересчитываются</div>
+    </div>
+    <button class="start-btn" onclick="brewStart()"><i class="ti ti-player-play" aria-hidden="true" style="font-size:17px"></i> Начать заваривание</button>
+  </div>
+
+  <!-- ACTIVE -->
+  <div id="bv-active" style="display:none;padding:14px 16px 20px">
+    <div class="timer-bar">
+      <div><div class="t-lbl">Общее</div><div class="t-val" id="b-main-t">0:00</div></div>
+      <div style="text-align:center"><div class="t-lbl" id="b-phase-lbl" style="color:#555">Фаза</div><div class="t-val" id="b-phase-t" style="color:#555;font-size:22px">—</div></div>
+      <div style="text-align:right"><div class="t-lbl">Влив</div><div style="font-size:18px;font-weight:700;color:#fff;line-height:1"><span id="b-pour-cnt">0</span><span style="font-size:12px;color:#555"> / </span><span id="b-pour-tot" style="font-size:12px;color:#888">3</span></div></div>
+    </div>
+    <div class="water-block">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px">
+        <div><div class="w-lbl">Влито</div><div class="w-big" style="color:#4A9EDB" id="b-poured-lbl">0 <span class="w-unit">мл</span></div></div>
+        <div style="text-align:right"><div class="w-lbl">Осталось</div><div class="w-big" style="font-size:20px;color:#fff" id="b-remain-lbl">256 <span class="w-unit">мл</span></div></div>
+      </div>
+      <div style="position:relative;margin-bottom:20px">
+        <div class="bar-track"><div class="bar-fill" id="b-bar-fill"></div><div class="bar-markers" id="b-bar-markers"></div></div>
+        <div class="bar-labels" id="b-bar-labels"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="font-size:11px;color:#555" id="b-bar-pct">0%</span><span style="font-size:11px;color:#555" id="b-bar-tot">256 мл</span></div>
+      </div>
+      <div id="b-hints" style="display:flex;gap:6px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button class="action-btn btn-pour" id="b-pour-btn" onclick="bHandlePour()">
+        <i class="ti ti-droplet bi" aria-hidden="true"></i>
+        <div class="bl" id="b-pour-lbl">Влив</div>
+        <div class="bs" id="b-pour-sub">нажми для старта</div>
+        <div class="ml-wrap" id="b-ml-wrap" style="display:none">
+          <input type="number" step="0.1" class="ml-inp" id="b-ml-inp" placeholder="0" onclick="event.stopPropagation()" oninput="bOnMl()">
+          <span class="ml-unit-lbl">мл</span>
+        </div>
+      </button>
+      <button class="action-btn btn-pause" id="b-pause-btn" onclick="bHandlePause()">
+        <div style="position:relative;width:50px;height:50px">
+          <svg width="50" height="50" viewBox="0 0 50 50" style="transform:rotate(-90deg)">
+            <circle cx="25" cy="25" r="21" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+            <circle cx="25" cy="25" r="21" fill="none" stroke="#4CAF50" stroke-width="3" stroke-dasharray="131.9" id="b-p-ring" stroke-dashoffset="131.9" style="transition:stroke-dashoffset .12s linear"/>
+          </svg>
+          <i class="ti ti-player-pause bi" id="b-pause-icon" aria-hidden="true" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;font-size:20px;color:#4CAF50"></i>
+        </div>
+        <div class="bl" id="b-pause-lbl">Пауза</div>
+        <div class="bs" id="b-pause-sub">пролив фильтра</div>
+      </button>
+    </div>
+    <button class="stop-btn" onclick="brewStop()"><i class="ti ti-square" aria-hidden="true"></i> Стоп — завершить</button>
+    <div id="b-log-wrap" style="display:none;margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:5px;padding:0">Лог шагов</div>
+      <div style="border:0.5px solid #2a2a2a;border-radius:12px;overflow:hidden" id="b-log-box"></div>
+    </div>
+  </div>
+
+  <!-- ОЦЕНКА И ВКУС (новый экран) -->
+  <div id="bv-rate" style="display:none;padding:14px 16px 20px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#fff" id="rate-bean-name">—</div>
+        <div style="font-size:12px;color:#888;margin-top:2px" id="rate-info">—</div>
+      </div>
+    </div>
+
+    <!-- Статистика заваривания -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sstat"><div class="sstat-v" id="rate-time">—</div><div class="sstat-l">Время</div></div>
+      <div class="sstat"><div class="sstat-v" id="rate-ml">—</div><div class="sstat-l">Влито воды</div></div>
+    </div>
+
+    <!-- Оценка -->
+    <div class="rating-block">
+      <div class="rating-big" id="rate-num">8.0</div>
+      <div class="rating-sub">оценка чашки</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="rate-slider" oninput="document.getElementById('rate-num').textContent=parseFloat(this.value).toFixed(1)">
+      <div class="rrange"><span>Плохо</span><span>Идеально</span></div>
+    </div>
+
+    <!-- Колесо вкусов -->
+    <div class="wheel-section">
+      <div class="wheel-lbl">Колесо вкусов — нажми на сектор</div>
+      <div class="wheel-wrap" id="flavor-wheel"></div>
+      <div class="sel-tags" id="sel-flavors"></div>
+    </div>
+
+    <!-- Аромат отдельно -->
+    <div class="wheel-section">
+      <div class="wheel-lbl">Аромат</div>
+      <div class="sel-tags" id="sel-aroma" style="min-height:32px"></div>
+      <div style="font-size:11px;color:#555;margin-top:8px">Нажми на сектор колеса вкусов выше, чтобы выбрать ароматические ноты</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:10px" id="aroma-buttons"></div>
+    </div>
+
+    <!-- Заметки -->
+    <div class="notes-block">
+      <div class="lbl" style="margin-bottom:8px">Описание и заметки</div>
+      <textarea class="notes-inp" id="brew-notes" placeholder="Запиши впечатления: тело, послевкусие, кислотность..."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveBrew()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> Сохранить рецепт</button>
+  </div>
+
+  <!-- РЕЗУЛЬТАТ (после сохранения) -->
+  <div id="bv-result" style="display:none;padding:14px 16px 20px">
+    <div style="text-align:center;padding:16px 0 12px">
+      <i class="ti ti-check" aria-hidden="true" style="font-size:30px;color:#4CAF50;display:block;margin-bottom:6px"></i>
+      <div style="font-size:18px;font-weight:700;color:#fff">Сохранено!</div>
+      <div style="font-size:12px;color:#888;margin-top:2px" id="b-res-info"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sstat"><div class="sstat-v" id="b-res-t">—</div><div class="sstat-l">Время</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-ml">—</div><div class="sstat-l">Влито воды</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-rating">—</div><div class="sstat-l">Оценка</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-flavors">—</div><div class="sstat-l">Дескрипторов</div></div>
+    </div>
+    <button onclick="showScr('scr-home')" style="width:100%;background:#4CAF50;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:8px">Перейти в Ленту</button>
+    <button onclick="brewGoSetup()" style="width:100%;background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit">Новое заваривание</button>
+  </div>
+</div>
+
+<!-- OVERLAYS -->
+<div class="overlay" id="ov-bean" onclick="if(event.target===this)closeOv('ov-bean')">
+  <div class="sheet">
+    <div class="sheet-title">Добавить пачку</div>
+    <input class="sfi" id="bn-name" placeholder="Название кофе">
+    <input class="sfi" id="bn-roast" placeholder="Обжарщик">
+    <div class="field-lbl" style="margin-bottom:5px">Вес пачки</div>
+    <select class="sfi" id="bn-weight">
+      <option value="50">50 г</option><option value="100">100 г</option><option value="150">150 г</option>
+      <option value="200">200 г</option><option value="250" selected>250 г</option><option value="350">350 г</option>
+      <option value="500">500 г</option><option value="1000">1 кг (1000 г)</option>
+    </select>
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-bean')">Отмена</button><button class="btn-s" onclick="addBean()">Добавить</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-filter-add" onclick="if(event.target===this)closeOv('ov-filter-add')">
+  <div class="sheet">
+    <div class="sheet-title">Добавить фильтры</div>
+    <input class="sfi" id="fl-name" placeholder="Название, напр. Hario V60 белый">
+    <div class="field-lbl" style="margin-bottom:5px">Количество в пачке</div>
+    <select class="sfi" id="fl-count">
+      <option value="25">25 шт</option><option value="40">40 шт</option><option value="50">50 шт</option>
+      <option value="80">80 шт</option><option value="100" selected>100 шт</option><option value="200">200 шт</option><option value="350">350 шт</option>
+    </select>
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-filter-add')">Отмена</button><button class="btn-s" onclick="addFilter()">Добавить</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-custom-dev" onclick="if(event.target===this)closeOv('ov-custom-dev')">
+  <div class="sheet">
+    <div class="sheet-title">Свой девайс</div>
+    <select class="sfi" id="cd-type"><option value="dripper">Воронка / Альтернатива</option><option value="espresso">Эспрессо-машина</option><option value="grinder">Кофемолка</option><option value="kettle">Чайник</option><option value="acc">Аксессуар</option></select>
+    <input class="sfi" id="cd-name" placeholder="Название">
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-custom-dev')">Отмена</button><button class="btn-s" onclick="addCustomDev()">Добавить</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-settings" onclick="if(event.target===this)closeOv('ov-settings')">
+  <div class="sheet">
+    <div class="sheet-title">Профиль</div>
+    <input class="sfi" id="s-name" placeholder="Имя или никнейм">
+    <input class="sfi" id="s-loc" placeholder="Город">
+    <select class="sfi" id="s-cat"><option value="Новичок">Новичок</option><option value="Любитель кофе">Любитель кофе</option><option value="Кофейный сектант">Кофейный сектант</option><option value="Бариста">Бариста</option><option value="Профессионал">Профессионал</option></select>
+    <input class="sfi" id="s-stazh" placeholder="Стаж, напр. 2 года">
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-settings')">Отмена</button><button class="btn-s" onclick="saveProf()">Сохранить</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bbean" onclick="if(event.target===this)closeOv('ov-bbean')">
+  <div class="sheet"><div class="sheet-title">Выбери зерно</div><div id="bbean-pick"></div></div>
+</div>
+<div class="overlay" id="ov-bfilter" onclick="if(event.target===this)closeOv('ov-bfilter')">
+  <div class="sheet"><div class="sheet-title">Выбери фильтр</div><div id="bfilter-pick"></div></div>
+</div>
+
+</div><!-- /screens -->
+
+<nav class="nav">
+  <button class="nb on" id="nb-home" onclick="showScr('scr-home')"><i class="ti ti-layout-list" aria-hidden="true"></i>Лента</button>
+  <button class="nb" id="nb-coffee" onclick="showScr('scr-coffee')"><i class="ti ti-coffee" aria-hidden="true"></i>Зерно</button>
+  <button class="nav-add" onclick="showScr('scr-brew')" aria-label="Варить"><i class="ti ti-droplet" aria-hidden="true"></i></button>
+  <button class="nb" id="nb-eq" onclick="showScr('scr-eq')"><i class="ti ti-tool" aria-hidden="true"></i>Девайсы</button>
+  <button class="nb" id="nb-profile" onclick="showScr('scr-profile')"><i class="ti ti-user" aria-hidden="true"></i>Профиль</button>
+</nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── FLAVORS ── */
+const FLAVORS=[
+  {n:'Фрукты',c:'fruit',col:'#C84A6E',subs:['Цитрус','Яблоко','Дыня','Виноград','Тропики','Косточковые','Ягоды']},
+  {n:'Сладкое',c:'sweet',col:'#BA7517',subs:['Карамель','Ваниль','Мёд','Патока','Сахар']},
+  {n:'Орехи',c:'nut',col:'#7A6A58',subs:['Шоколад','Фундук','Миндаль']},
+  {n:'Специи',c:'spice',col:'#AA4E1E',subs:['Корица','Гвоздика','Перец']},
+  {n:'Жареное',c:'roast',col:'#444',subs:['Дым','Табак','Дерево']},
+  {n:'Цветы',c:'floral',col:'#7B52AB',subs:['Жасмин','Роза','Чай']},
+  {n:'Кислое',c:'acid',col:'#2E7D32',subs:['Уксус','Лимонная к-та']}
+];
+const FT={fruit:'ft-fruit',sweet:'ft-sweet',nut:'ft-nut',spice:'ft-spice',roast:'ft-roast',floral:'ft-floral',acid:'ft-acid'};
+function ftCls(n){for(const f of FLAVORS)if(f.subs.includes(n))return FT[f.c]||'';return '';}
+
+/* ── DEVICES DB (фильтры всегда сохраняем) ── */
+const DB_CATS=[
+  {id:'dripper',name:'Альтернатива',icon:'ti-filter',cls:'ic-green'},
+  {id:'espresso',name:'Эспрессо',icon:'ti-coffee',cls:'ic-blue'},
+  {id:'grinder',name:'Кофемолки',icon:'ti-settings',cls:'ic-amber'},
+  {id:'kettle',name:'Чайники',icon:'ti-droplet',cls:'ic-teal'},
+  {id:'filter',name:'Фильтры',icon:'ti-layers-subtract',cls:'ic-purple'},
+  {id:'acc',name:'Аксессуары',icon:'ti-tool',cls:'ic-gray'},
+];
+const DB={
+  dripper:[{name:'Hario V60 01',sub:'Пластик, 1 чашка'},{name:'Hario V60 02',sub:'Пластик/керамика, 2 чашки'},{name:'Hario V60 02 Metal',sub:'Нержавейка'},{name:'Kalita Wave 155',sub:'Нержавейка, 1–2 чашки'},{name:'Kalita Wave 185',sub:'Нержавейка, 2–4 чашки'},{name:'Chemex 3-cup',sub:'Стекло, 3 чашки'},{name:'Chemex 6-cup',sub:'Стекло, 6 чашек'},{name:'Origami Dripper S',sub:'Керамика, 1–2 чашки'},{name:'Origami Dripper M',sub:'Керамика, 2–4 чашки'},{name:'Cafe Flower Dripper S',sub:'Пластик, 2 чашки'},{name:'Cafe Flower Dripper L',sub:'Пластик, 4 чашки'},{name:'Aeropress',sub:'Давление, 1–3 чашки'},{name:'Aeropress Go',sub:'Компактный'},{name:'Fellow Stagg X',sub:'Плоское дно'},{name:'Clever Dripper',sub:'Иммерсия + фильтр'},{name:'French Press 350ml',sub:'Иммерсия'},{name:'French Press 1L',sub:'Иммерсия, 4–5 чашек'},{name:'Siphon',sub:'Вакуумная варка'}],
+  espresso:[{name:'La Marzocco Linea Classic',sub:'Проф., 2 группы'},{name:'La Marzocco GS3',sub:'1 группа'},{name:'Rocket Appartamento',sub:'Домашняя'},{name:'ECM Synchronika',sub:'Двойной бойлер'},{name:'Lelit Bianca',sub:'E61, PID'},{name:'Breville Barista Express',sub:'Со встроенной кофемолкой'},{name:'Flair 58',sub:'Ручной рычажный, 58мм'},{name:'Flair Pro 2',sub:'Ручной рычажный'},{name:'Cafelat Robot',sub:'Ручной рычажный'},{name:'Sage Bambino Plus',sub:'Термоблок'},{name:'Wacaco Nanopresso',sub:'Портативный'}],
+  grinder:[{name:'Comandante C40 MK4',sub:'Ручная, нитробладе сталь'},{name:'Comandante C40 MK3',sub:'Ручная'},{name:'1Zpresso JX-Pro',sub:'Ручная, 48мм'},{name:'1Zpresso K-Pro',sub:'Ручная, 48мм'},{name:'Niche Zero',sub:'Электро, 63мм конус'},{name:'Fellow Ode Gen 2',sub:'Электро, 64мм'},{name:'Baratza Encore',sub:'Электро, 40мм'},{name:'Eureka Mignon Specialita',sub:'Электро, 55мм'},{name:'Mazzer Mini',sub:'Проф., 58мм'},{name:'Mahlkönig EK43',sub:'Проф., 98мм'},{name:'Timemore C2',sub:'Ручная, 38мм'},{name:'Kinu M47',sub:'Ручная, 47мм'},{name:'Hario Skerton Pro',sub:'Ручная, керамика'}],
+  kettle:[{name:'Fellow Stagg EKG',sub:'Электро, точная температура'},{name:'Fellow Stagg EKG Pro',sub:'Bluetooth'},{name:'Hario Buono V60',sub:'Гусиное горло, 1.2л'},{name:'Brewista Artisan',sub:'Переменная температура'},{name:'Timemore Fish',sub:'Электро'},{name:'Barista Space',sub:'Электро, 0.6л'}],
+  /* Фильтры — только пользовательские (пачки), база пустая */
+  filter:[],
+  acc:[{name:'Acaia Pearl',sub:'Весы, 0.1г'},{name:'Acaia Lunar',sub:'Весы эспрессо'},{name:'Timemore Black Mirror',sub:'Весы с таймером'},{name:'Kruve Sifter',sub:'Сито'},{name:'OCD Distributor',sub:'Дистрибьютор'},{name:'WDT Tool',sub:'Игла распределения'},{name:'Pullman Tamper',sub:'Темпер 58.5мм'},{name:'Hario Server 600ml',sub:'Джаг стекло'},{name:'Fellow Stagg Server',sub:'Джаг с термометром'}]
+};
+
+/* ── STATE ── */
+let S=JSON.parse(localStorage.getItem('cj_v4')||'null')||{
+  profile:{name:'',loc:'',cat:'Новичок',stazh:''},
+  beans:[],filters:[],equipment:[],brews:[],id:0
+};
+function save(){localStorage.setItem('cj_v4',JSON.stringify(S))}
+function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sc=s%60;return m+':'+(sc<10?'0':'')+sc}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
+
+const NB_MAP={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile','scr-brew':null};
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const nb=NB_MAP[id];if(nb)document.getElementById(nb).classList.add('on');
+  ({'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf})[id]?.();
+}
+
+function openOv(id){
+  if(id==='ov-settings'){
+    document.getElementById('s-name').value=S.profile.name||'';
+    document.getElementById('s-loc').value=S.profile.loc||'';
+    document.getElementById('s-cat').value=S.profile.cat||'Новичок';
+    document.getElementById('s-stazh').value=S.profile.stazh||'';
+  }
+  if(id==='ov-bbean'){
+    document.getElementById('bbean-pick').innerHTML=S.beans.length
+      ?S.beans.map(b=>{const pct=Math.round(b.current/b.total*100),sel=BS.bean&&BS.bean.id===b.id;
+        return`<div class="pick-item" onclick="bSelBean(${b.id})">
+          <div style="flex:1;min-width:0;margin-right:10px"><div class="pick-main">${b.name}</div><div class="pick-sub">${b.roaster||'—'} · ${b.current}г / ${b.total}г</div><div class="pick-bar"><div class="pick-bar-g" style="width:${pct}%"></div></div></div>
+          <i class="ti ${sel?'ti-check" style="color:#4CAF50':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
+      :'<div style="padding:20px;text-align:center;color:#666;font-size:13px">Нет зерна — добавь во вкладке Зерно</div>';
+  }
+  if(id==='ov-bfilter'){
+    document.getElementById('bfilter-pick').innerHTML=S.filters.length
+      ?S.filters.map(f=>{const pct=Math.round(f.current/f.total*100),sel=BS.filter&&BS.filter.id===f.id;
+        return`<div class="pick-item" onclick="bSelFilter(${f.id})">
+          <div style="flex:1;min-width:0;margin-right:10px"><div class="pick-main">${f.name}</div><div class="pick-sub">Осталось ${f.current} / ${f.total} шт</div><div class="pick-bar"><div class="pick-bar-p" style="width:${pct}%"></div></div></div>
+          <i class="ti ${sel?'ti-check" style="color:#4CAF50':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
+      :'<div style="padding:20px;text-align:center;color:#666;font-size:13px">Нет фильтров — добавь в Девайсы → Фильтры</div>';
+  }
+  document.getElementById(id).classList.add('open');
+}
+function closeOv(id){document.getElementById(id).classList.remove('open')}
+
+/* ── FEED ── */
+function renderFeed(){
+  const el=document.getElementById('feed-list');
+  if(!S.brews.length){el.innerHTML=`<div class="empty"><i class="ti ti-coffee" aria-hidden="true"></i><div class="empty-t">Нет рецептов</div><div class="empty-s">Нажми <i class="ti ti-droplet"></i> внизу чтобы<br>записать первое заваривание</div></div>`;return}
+  el.innerHTML=S.brews.map(b=>`
+    <div class="brew-card">
+      <div class="bc-top">
+        <div style="min-width:0"><div class="bc-name">${b.beanName||'Без названия'}</div>${b.roaster?`<div class="bc-roaster">${b.roaster}</div>`:''}</div>
+        <div class="bc-right"><span class="method-pill">${b.method||'Альтернатива'}</span><span class="rating-num">${parseFloat(b.rating||0).toFixed(1)}</span></div>
+      </div>
+      <div class="bc-stats">
+        <div class="bstat"><div class="bstat-l">Доза</div><div class="bstat-v">${b.dose||'—'}г</div></div>
+        <div class="bstat"><div class="bstat-l">Коэф.</div><div class="bstat-v">1:${b.ratio||'—'}</div></div>
+        <div class="bstat"><div class="bstat-l">Время</div><div class="bstat-v">${b.totalTime||'—'}</div></div>
+      </div>
+      ${b.flavors&&b.flavors.length?`<div class="bc-flavors">${b.flavors.map(f=>`<span class="ftag ${ftCls(f)}">${f}</span>`).join('')}</div>`:''}
+      <div class="bc-foot">
+        <button class="expand-btn" id="ex-${b.id}" onclick="toggleRec(${b.id})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Рецепт</button>
+        <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${b.id})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
+      </div>
+      <div class="recipe-panel" id="rec-${b.id}">
+        ${b.temp?`<div class="rrow"><span class="rrow-l">Температура</span><span class="rrow-v">${b.temp}°C</span></div>`:''}
+        ${b.filter?`<div class="rrow"><span class="rrow-l">Фильтр</span><span class="rrow-v">${b.filter} · ${b.filterWet?'смочен':'сухой'}</span></div>`:''}
+        ${b.notes?`<div class="rrow"><span class="rrow-l">Заметки</span><span class="rrow-v" style="max-width:200px;white-space:normal;text-align:right">${b.notes}</span></div>`:''}
+        ${b.steps&&b.steps.length?`<div style="margin-top:6px">${b.steps.map(st=>`<div class="step-row"><span class="sb ${st.type==='pour'?'sb-p':'sb-pa'}">${st.type==='pour'?'Влив':'Пауза'}</span><span style="font-size:12px;font-weight:600;color:#ccc;min-width:38px">${fmt(st.t)}</span><span style="font-size:12px;color:#555;flex:1;padding-left:6px">${fmt(st.ph)}</span><span style="font-size:12px;color:#4A9EDB">${st.ml!=null?st.ml.toFixed(1)+' мл':''}</span></div>`).join('')}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+function toggleRec(id){const p=document.getElementById('rec-'+id),b=document.getElementById('ex-'+id);const o=p.classList.toggle('open');b.classList.toggle('open',o);}
+function toggleLike(id){const b=S.brews.find(x=>x.id===id);if(!b)return;b.liked=!b.liked;b.likes+=b.liked?1:-1;save();renderFeed()}
+
+/* ── BEANS ── */
+function renderBeans(){
+  const el=document.getElementById('bean-list');
+  if(!S.beans.length){el.innerHTML=`<div class="empty" style="padding:40px 0"><i class="ti ti-package" aria-hidden="true"></i><div class="empty-t">Нет зерна</div><div class="empty-s">Добавь первую пачку</div></div>`;return}
+  el.innerHTML=S.beans.map(b=>{const pct=Math.round(b.current/b.total*100);return`<div class="bean-card">
+    <div class="bean-icon"><i class="ti ti-coffee" aria-hidden="true"></i></div>
+    <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div><div style="font-size:12px;color:#888;margin-top:2px">${b.roaster||'—'} · ${b.current}г / ${b.total}г</div><div style="height:2px;background:#222;border-radius:1px;margin-top:7px;overflow:hidden"><div style="height:100%;background:#4CAF50;border-radius:1px;width:${pct}%"></div></div></div>
+    <button class="del-btn" onclick="delBean(${b.id})" aria-label="Удалить"><i class="ti ti-trash" aria-hidden="true"></i></button>
+  </div>`;}).join('');
+}
+function addBean(){
+  const name=document.getElementById('bn-name').value.trim();if(!name)return;
+  const w=parseInt(document.getElementById('bn-weight').value)||250;
+  S.beans.unshift({id:++S.id,name,roaster:document.getElementById('bn-roast').value.trim(),total:w,current:w});
+  save();closeOv('ov-bean');
+  document.getElementById('bn-name').value='';document.getElementById('bn-roast').value='';
+  renderBeans();toast('Пачка добавлена');
+}
+function delBean(id){S.beans=S.beans.filter(b=>b.id!==id);save();renderBeans();toast('Удалено')}
+
+/* ── FILTERS ── */
+function addFilter(){
+  const name=document.getElementById('fl-name').value.trim();if(!name)return;
+  const cnt=parseInt(document.getElementById('fl-count').value)||100;
+  S.filters.unshift({id:++S.id,name,total:cnt,current:cnt});
+  save();closeOv('ov-filter-add');
+  document.getElementById('fl-name').value='';
+  const cont=document.getElementById('filter-list-cont');if(cont)renderFilterList(cont);
+  toast('Фильтры добавлены');
+}
+function delFilter(id){S.filters=S.filters.filter(f=>f.id!==id);save();const cont=document.getElementById('filter-list-cont');if(cont)renderFilterList(cont);toast('Удалено')}
+function renderFilterList(cont){
+  if(!cont)return;
+  if(!S.filters.length){cont.innerHTML='<div style="padding:16px;text-align:center;color:#555;font-size:13px">Нет фильтров</div>';return}
+  cont.innerHTML=S.filters.map(f=>{const pct=Math.round(f.current/f.total*100);return`<div class="filter-card">
+    <div class="filter-icon"><i class="ti ti-layers-subtract" aria-hidden="true"></i></div>
+    <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</div><div style="font-size:12px;color:#888;margin-top:2px">Осталось ${f.current} / ${f.total} шт</div><div style="height:2px;background:#222;border-radius:1px;margin-top:7px;overflow:hidden"><div style="height:100%;background:#9B7FE8;border-radius:1px;width:${pct}%"></div></div></div>
+    <button class="del-btn" onclick="delFilter(${f.id})" aria-label="Удалить"><i class="ti ti-trash" aria-hidden="true"></i></button>
+  </div>`;}).join('');
+}
+
+/* ── DEVICES ── */
+let activeCat='dripper';
+function renderCatGrid(){
+  document.getElementById('cat-grid').innerHTML=DB_CATS.map(c=>{
+    const n=c.id==='filter'?S.filters.length:S.equipment.filter(e=>e.type===c.id).length;
+    const dbLen=DB[c.id]?.length||0;
+    return`<div class="cat-card" onclick="openCat('${c.id}')"><div class="cat-icon ${c.cls}"><i class="ti ${c.icon}" aria-hidden="true"></i></div><div><div class="cat-name">${c.name}</div><div class="cat-count">${n?n+(c.id==='filter'?' пачек':' устр.'):(dbLen?'База '+dbLen:'0 пачек')}</div></div><i class="ti ti-chevron-right cat-arr" aria-hidden="true"></i></div>`;
+  }).join('');
+}
+function openCat(id){
+  activeCat=id;const m=DB_CATS.find(c=>c.id===id);
+  document.getElementById('devlist-title').textContent=m?m.name:'Девайсы';
+  document.getElementById('dev-search').value='';
+  renderDevList('');showScr('scr-devlist');
+}
+function filterDevs(){renderDevList(document.getElementById('dev-search').value.toLowerCase())}
+function renderDevList(q){
+  const body=document.getElementById('devlist-body');
+  if(activeCat==='filter'){
+    body.innerHTML=`<div class="sec-lbl">Мои пачки фильтров</div><div id="filter-list-cont" style="padding:0 16px"></div><div style="padding:10px 16px"><button onclick="openOv('ov-filter-add')" style="width:100%;background:#1a1a1a;border:0.5px dashed #333;border-radius:8px;padding:11px;font-size:12px;font-weight:500;color:#888;cursor:pointer;font-family:inherit">+ Добавить пачку фильтров</button></div>`;
+    renderFilterList(document.getElementById('filter-list-cont'));
+    return;
+  }
+  const myItems=S.equipment.filter(e=>e.type===activeCat);
+  const owned=new Set(myItems.map(e=>e.name));
+  const dbItems=(DB[activeCat]||[]).filter(d=>!q||d.name.toLowerCase().includes(q)||d.sub.toLowerCase().includes(q));
+  const m=DB_CATS.find(c=>c.id===activeCat)||{icon:'ti-tool',cls:'ic-gray'};
+  let html='';
+  if(myItems.length&&!q){
+    html+=`<div class="sec-lbl">Мои устройства</div>`;
+    html+=myItems.map(e=>`<div class="my-dev"><div class="my-dev-ico ${m.cls}"><i class="ti ${m.icon}" aria-hidden="true"></i></div><div style="flex:1;min-width:0"><div class="dev-item-name">${e.name}</div></div><button class="del-btn" onclick="delDev(${e.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></div>`).join('');
+  }
+  if(dbItems.length){
+    html+=`<div class="sec-lbl">${q?'Поиск':'База — '+dbItems.length+' устройств'}</div>`;
+    html+=dbItems.map(d=>{const has=owned.has(d.name);return`<div class="dev-item"><div style="flex:1;min-width:0"><div class="dev-item-name">${d.name}</div><div class="dev-item-sub">${d.sub}</div></div><button class="add-btn-sm ${has?'added':''}" onclick="toggleDev('${d.name.replace(/'/g,"\\'")}','${activeCat}')">${has?'Есть':'+ Мой'}</button></div>`;}).join('');
+  } else if(!myItems.length){
+    html+=`<div style="padding:24px;text-align:center;color:#555;font-size:13px">${q?'Ничего не найдено':'Нет устройств'}</div>`;
+  }
+  html+=`<div style="padding:10px 16px"><button onclick="openOv('ov-custom-dev')" style="width:100%;background:#1a1a1a;border:0.5px dashed #333;border-radius:8px;padding:11px;font-size:12px;font-weight:500;color:#888;cursor:pointer;font-family:inherit">+ Добавить свой девайс</button></div>`;
+  body.innerHTML=html;
+}
+function toggleDev(name,type){
+  const idx=S.equipment.findIndex(e=>e.name===name&&e.type===type);
+  if(idx>=0)S.equipment.splice(idx,1);else S.equipment.push({id:++S.id,name,type});
+  save();renderDevList(document.getElementById('dev-search').value.toLowerCase());renderCatGrid();
+  toast(idx>=0?'Удалено':'Добавлено');
+}
+function delDev(id){S.equipment=S.equipment.filter(e=>e.id!==id);save();renderDevList('');renderCatGrid();toast('Удалено')}
+function addCustomDev(){
+  const name=document.getElementById('cd-name').value.trim();if(!name)return;
+  S.equipment.push({id:++S.id,name,type:document.getElementById('cd-type').value});
+  save();closeOv('ov-custom-dev');document.getElementById('cd-name').value='';
+  renderDevList('');renderCatGrid();toast('Добавлено');
+}
+
+/* ── PROFILE ── */
+function renderProf(){
+  const p=S.profile;const init=p.name?p.name[0].toUpperCase():'?';
+  document.getElementById('pr-av').textContent=init;
+  document.getElementById('hdr-av').innerHTML=`<span style="font-size:13px;font-weight:700;color:#fff">${init}</span>`;
+  document.getElementById('pr-name').textContent=p.name||'Настрой профиль';
+  document.getElementById('pr-cat').innerHTML=`<i class="ti ti-leaf" aria-hidden="true"></i> ${p.cat||'Новичок'}`;
+  document.getElementById('pr-loc').textContent=p.loc||'';
+  document.getElementById('st-b').textContent=S.brews.length;
+  document.getElementById('st-i').textContent=S.beans.length;
+  document.getElementById('st-e').textContent=S.equipment.length;
+  document.getElementById('st-s').textContent=p.stazh||'—';
+}
+function saveProf(){
+  S.profile.name=document.getElementById('s-name').value.trim();
+  S.profile.loc=document.getElementById('s-loc').value.trim();
+  S.profile.cat=document.getElementById('s-cat').value;
+  S.profile.stazh=document.getElementById('s-stazh').value.trim();
+  save();closeOv('ov-settings');renderProf();toast('Профиль сохранён');
+}
+
+/* ── BREW STATE ── */
+let BS={bean:null,filter:null,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,phaseStart:null,elapsed:0,phaseMs:0,steps:[],pourCnt:0,phase:'idle',pouredFixed:0,firstDone:false};
+/* RATING STATE */
+let RS={rating:8.0,flavors:[],aroma:[],notes:''};
+
+function bCalc(){
+  BS.dose=parseFloat(document.getElementById('b-dose').value)||16;
+  BS.ratio=parseInt(document.getElementById('b-ratio').value)||16;
+  BS.pours=parseInt(document.getElementById('b-pours').value)||3;
+  const t=Math.round(BS.dose*BS.ratio);
+  document.getElementById('b-total-lbl').textContent=t+' мл';
+  document.getElementById('b-bloom-lbl').textContent=Math.round(BS.dose*3)+' мл';
+}
+function setWet(wet){
+  BS.wet=wet;
+  const wb=document.getElementById('wet-btn'),db=document.getElementById('dry-btn');
+  if(wet){wb.style.cssText='padding:8px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #1a4a8a;background:#0d1f35;color:#4A9EDB';db.style.cssText='padding:8px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:0.5px solid #333;background:#1a1a1a;color:#888';}
+  else{wb.style.cssText='padding:8px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:0.5px solid #333;background:#1a1a1a;color:#888';db.style.cssText='padding:8px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:2px solid #2a5a1a;background:#1a2e14;color:#4CAF50';}
+}
+function bSelBean(id){BS.bean=S.beans.find(b=>b.id===id);if(!BS.bean)return;const pct=Math.round(BS.bean.current/BS.bean.total*100);document.getElementById('bsel-bean').textContent=BS.bean.name;document.getElementById('bsel-bean-sub').textContent=BS.bean.roaster+' · '+BS.bean.current+'г / '+BS.bean.total+'г';document.getElementById('bbean-bar').style.display='block';document.getElementById('bbean-fill').style.width=pct+'%';document.getElementById('brew-title').textContent=BS.bean.name;closeOv('ov-bbean');}
+function bSelFilter(id){BS.filter=S.filters.find(f=>f.id===id);if(!BS.filter)return;const pct=Math.round(BS.filter.current/BS.filter.total*100);document.getElementById('bsel-filter').textContent=BS.filter.name;document.getElementById('bsel-filter-sub').textContent='Осталось '+BS.filter.current+' / '+BS.filter.total+' шт';document.getElementById('bfilter-bar').style.display='block';document.getElementById('bfilter-fill').style.width=pct+'%';closeOv('ov-bfilter');}
+function showBV(id){['bv-setup','bv-active','bv-rate','bv-result'].forEach(v=>document.getElementById(v).style.display=v===id?'block':'none');}
+function brewStart(){
+  bCalc();const total=Math.round(BS.dose*BS.ratio);
+  BS.steps=[];BS.pourCnt=0;BS.phase='idle';BS.mainStart=null;BS.elapsed=0;BS.phaseMs=0;BS.pouredFixed=0;BS.firstDone=false;
+  document.getElementById('b-pour-tot').textContent=BS.pours;
+  document.getElementById('b-bar-tot').textContent=total+' мл';
+  document.getElementById('b-main-t').textContent='0:00';
+  document.getElementById('b-phase-t').textContent='—';document.getElementById('b-phase-t').style.color='#555';
+  document.getElementById('b-phase-lbl').textContent='Фаза';document.getElementById('b-phase-lbl').style.color='#555';
+  document.getElementById('b-pour-cnt').textContent='0';
+  document.getElementById('b-pour-btn').disabled=false;document.getElementById('b-pour-btn').className='action-btn btn-pour';
+  document.getElementById('b-pour-lbl').textContent='Влив';document.getElementById('b-pour-sub').textContent='нажми для старта';
+  document.getElementById('b-ml-wrap').style.display='none';document.getElementById('b-ml-inp').value='';
+  document.getElementById('b-pause-btn').className='action-btn btn-pause';
+  document.getElementById('b-pause-lbl').textContent='Пауза';document.getElementById('b-pause-sub').textContent='пролив фильтра';
+  document.getElementById('b-pause-icon').style.color='#4CAF50';document.getElementById('b-p-ring').style.strokeDashoffset='131.9';
+  document.getElementById('b-log-box').innerHTML='';document.getElementById('b-log-wrap').style.display='none';
+  document.getElementById('b-bar-markers').innerHTML='';document.getElementById('b-bar-labels').innerHTML='';document.getElementById('b-hints').innerHTML='';
+  document.getElementById('brew-sub').textContent='1:'+BS.ratio+' · '+document.getElementById('b-temp-sl').value+'°C';
+  bUpdateBar(0,total);showBV('bv-active');
+}
+function bStartMain(){if(BS.mainStart!==null)return;BS.mainStart=Date.now();BS.mainInt=setInterval(()=>{BS.elapsed=Date.now()-BS.mainStart;document.getElementById('b-main-t').textContent=fmt(BS.elapsed);},100);}
+function bStartPhase(lbl,color){clearInterval(BS.phaseInt);BS.phaseStart=Date.now();BS.phaseMs=0;const pl=document.getElementById('b-phase-lbl'),pt=document.getElementById('b-phase-t');pl.textContent=lbl;pl.style.color=color;pt.style.color=color;BS.phaseInt=setInterval(()=>{BS.phaseMs=Date.now()-BS.phaseStart;pt.textContent=fmt(BS.phaseMs);},100);}
+function bStopPhase(){clearInterval(BS.phaseInt);BS.phaseInt=null;BS.phaseMs=BS.phaseStart?Date.now()-BS.phaseStart:0;return BS.phaseMs;}
+function bUpdateBar(projected,totalOverride){
+  const total=totalOverride||Math.round(BS.dose*BS.ratio);
+  const pct=Math.min(projected/total*100,100);
+  document.getElementById('b-bar-fill').style.width=pct.toFixed(1)+'%';
+  document.getElementById('b-bar-pct').textContent=Math.round(pct)+'%';
+  document.getElementById('b-poured-lbl').innerHTML=projected.toFixed(1)+' <span class="w-unit">мл</span>';
+  document.getElementById('b-remain-lbl').innerHTML=Math.max(total-projected,0).toFixed(1)+' <span class="w-unit">мл</span>';
+  const completedPours=BS.steps.filter(s=>s.type==='pour').length;
+  const poursLeft=BS.pours-completedPours-(BS.phase==='pour'?1:0);
+  if(!BS.firstDone){
+    document.getElementById('b-bar-markers').innerHTML='';document.getElementById('b-bar-labels').innerHTML='';
+    if(projected>0&&BS.pours>1){const pn=Math.round((total-projected)/(BS.pours-1));let h='<div style="display:flex;gap:6px">';for(let i=1;i<BS.pours;i++)h+=`<div class="hint-card"><div class="hint-lbl">Влив ${i+1}</div><div class="hint-val">${pn}<span class="hint-unit"> мл</span></div></div>`;h+='</div>';document.getElementById('b-hints').innerHTML=h;}
+    else document.getElementById('b-hints').innerHTML='';return;
+  }
+  const remain=total-BS.pouredFixed,partsLeft=BS.pours-completedPours;
+  let ml='',ll='';
+  if(partsLeft>0&&remain>0){const step=remain/partsLeft;for(let i=1;i<=partsLeft;i++){const atMl=BS.pouredFixed+step*i;if(atMl>=total)continue;const p=Math.min(atMl/total*100,100);const done=projected>=atMl;ml+=`<div style="position:absolute;top:0;bottom:0;left:${p.toFixed(1)}%;width:2px;background:${done?'rgba(255,255,255,.2)':'rgba(74,158,219,.5)'}"></div>`;const ls=p<8?'left:0':p>92?'right:0':`left:${p.toFixed(1)}%;transform:translateX(-50%)`;ll+=`<div style="position:absolute;${ls};top:0;text-align:center"><div style="width:5px;height:5px;border-radius:50%;background:${done?'#4CAF50':'#4A9EDB'};margin:0 auto 1px"></div><div style="font-size:9px;font-weight:700;color:${done?'#555':'#4A9EDB'};white-space:nowrap">${Math.round(atMl)}</div></div>`;}}
+  document.getElementById('b-bar-markers').innerHTML=ml;document.getElementById('b-bar-labels').innerHTML=ll;
+  const activePourIdx=BS.phase==='pour'?1:0,hintsLeft=partsLeft-activePourIdx;
+  if(hintsLeft>0&&remain>0){const pn=Math.round(remain/partsLeft);let h='<div style="display:flex;gap:6px">';for(let i=0;i<Math.min(hintsLeft,4);i++)h+=`<div class="hint-card"><div class="hint-lbl">Влив ${completedPours+activePourIdx+i+1}</div><div class="hint-val">${pn}<span class="hint-unit"> мл</span></div></div>`;h+='</div>';document.getElementById('b-hints').innerHTML=h;}
+  else document.getElementById('b-hints').innerHTML='';
+}
+function bOnMl(){const v=parseFloat(document.getElementById('b-ml-inp').value)||0;bUpdateBar(BS.pouredFixed+v);}
+function bHandlePour(){
+  if(BS.phase==='pour')return;if(BS.pourCnt>=BS.pours)return;
+  if(BS.phase==='pause'){const dur=bStopPhase();clearInterval(BS.pauseInt);BS.pauseInt=null;BS.steps.push({type:'pause',t:BS.elapsed,ph:dur,ml:null});bAddLog('pause',BS.steps.length-1,BS.elapsed,dur,null);document.getElementById('b-p-ring').style.strokeDashoffset='131.9';document.getElementById('b-pause-btn').className='action-btn btn-pause';document.getElementById('b-pause-lbl').textContent='Пауза';document.getElementById('b-pause-sub').textContent='пролив фильтра';document.getElementById('b-pause-icon').style.color='#4CAF50';}
+  bStartMain();BS.pourCnt++;BS.phase='pour';
+  document.getElementById('b-pour-cnt').textContent=BS.pourCnt;document.getElementById('b-pour-btn').className='action-btn btn-pour act';document.getElementById('b-pour-lbl').textContent='Вливаем...';document.getElementById('b-pour-sub').textContent='жми паузу когда закончил';
+  document.getElementById('b-ml-wrap').style.display='block';document.getElementById('b-ml-inp').value='';document.getElementById('b-ml-inp').focus();
+  bStartPhase('Влив '+BS.pourCnt,'#4A9EDB');
+}
+function bHandlePause(){
+  if(BS.phase==='pause')return;if(BS.phase!=='pour')return;
+  const v=parseFloat(document.getElementById('b-ml-inp').value)||0;const dur=bStopPhase();BS.pouredFixed+=v;
+  const idx=BS.steps.length;BS.steps.push({type:'pour',t:BS.elapsed,ph:dur,ml:v});bAddLog('pour',idx,BS.elapsed,dur,v);
+  if(!BS.firstDone)BS.firstDone=true;bUpdateBar(BS.pouredFixed);
+  document.getElementById('b-pour-btn').className='action-btn btn-pour';document.getElementById('b-pour-lbl').textContent='Влив';document.getElementById('b-ml-wrap').style.display='none';document.getElementById('b-ml-inp').value='';
+  document.getElementById('b-pour-sub').textContent=BS.pourCnt>=BS.pours?'все вливания выполнены':'следующий влив';
+  if(BS.pourCnt>=BS.pours)document.getElementById('b-pour-btn').disabled=true;
+  BS.phase='pause';document.getElementById('b-pause-btn').className='action-btn btn-pause act';document.getElementById('b-pause-lbl').textContent='Пролив...';document.getElementById('b-pause-icon').style.color='#fff';
+  bStartPhase('Пауза','#4CAF50');
+  const ring=document.getElementById('b-p-ring'),c=131.9,t0=Date.now();clearInterval(BS.pauseInt);
+  BS.pauseInt=setInterval(()=>{const el=Date.now()-t0,p=Math.min(el/30000,1);ring.style.strokeDashoffset=(c-c*p).toFixed(2);document.getElementById('b-pause-sub').textContent=Math.round(el/1000)+' с';if(p>=1){clearInterval(BS.pauseInt);BS.pauseInt=null;}},100);
+}
+function bAddLog(type,idx,t,ph,ml){
+  document.getElementById('b-log-wrap').style.display='block';
+  const d=document.createElement('div');d.className='step-row';d.id='lr-'+idx;
+  if(type==='pour'){d.innerHTML=`<span class="sb sb-p">Влив</span><span style="font-size:12px;font-weight:600;color:#fff;min-width:36px">${fmt(t)}</span><span style="font-size:12px;color:#555;flex:1;padding-left:5px">${fmt(ph)}</span><input type="number" step="0.1" class="edit-ml" id="em-${idx}" value="${ml!=null?ml.toFixed(1):''}"><button class="edit-apply" onclick="bEditMl(${idx})"><i class="ti ti-check" aria-hidden="true"></i></button>`;}
+  else{d.innerHTML=`<span class="sb sb-pa">Пауза</span><span style="font-size:12px;font-weight:600;color:#fff;min-width:36px">${fmt(t)}</span><span style="font-size:12px;color:#555;flex:1;padding-left:5px">${fmt(ph)}</span><span style="font-size:12px;color:#444">—</span>`;}
+  document.getElementById('b-log-box').appendChild(d);
+}
+function bEditMl(idx){const inp=document.getElementById('em-'+idx);if(!inp)return;const nv=parseFloat(inp.value)||0,step=BS.steps[idx];if(!step||step.type!=='pour')return;BS.pouredFixed+=nv-(step.ml||0);step.ml=nv;bUpdateBar(BS.pouredFixed);toast('Обновлено: '+nv.toFixed(1)+' мл');}
+function bFinalize(){
+  if(BS.phase==='pour'){const v=parseFloat(document.getElementById('b-ml-inp').value)||0;const dur=bStopPhase();BS.pouredFixed+=v;const idx=BS.steps.length;BS.steps.push({type:'pour',t:BS.elapsed,ph:dur,ml:v});if(!BS.firstDone)BS.firstDone=true;bAddLog('pour',idx,BS.elapsed,dur,v);}
+  else if(BS.phase==='pause'){const dur=bStopPhase();BS.steps.push({type:'pause',t:BS.elapsed,ph:dur,ml:null});}
+  clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);BS.mainInt=null;BS.phaseInt=null;BS.pauseInt=null;
+}
+
+/* Переход на экран оценки */
+function brewStop(){
+  bFinalize();
+  // Списание зерна и фильтра
+  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
+  if(BS.filter){const filter=S.filters.find(f=>f.id===BS.filter.id);if(filter){filter.current=Math.max(0,filter.current-1);if(filter.current===0)toast('⚠️ Фильтры '+filter.name+' закончились!');else if(filter.current<=10)toast('⚠️ Мало фильтров: '+filter.current+' шт');}}
+  save();
+  // Заполняем экран оценки
+  RS={rating:8.0,flavors:[],aroma:[],notes:''};
+  document.getElementById('rate-bean-name').textContent=BS.bean?BS.bean.name:'Без названия';
+  document.getElementById('rate-info').textContent='1:'+BS.ratio+' · '+document.getElementById('b-temp-sl').value+'°C · '+fmt(BS.elapsed);
+  document.getElementById('rate-time').textContent=fmt(BS.elapsed);
+  document.getElementById('rate-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
+  document.getElementById('rate-slider').value='8';
+  document.getElementById('rate-num').textContent='8.0';
+  document.getElementById('brew-notes').value='';
+  document.getElementById('sel-flavors').innerHTML='';
+  drawWheel();buildAromaButtons();
+  showBV('bv-rate');
+}
+
+/* ── FLAVOR WHEEL ── */
+function drawWheel(){
+  const c=document.getElementById('flavor-wheel');if(!c)return;
+  const sz=280,cx=sz/2,cy=sz/2;
+  let total=0;FLAVORS.forEach(f=>total+=f.subs.length);
+  const sa=(2*Math.PI)/total;let cur=-Math.PI/2,paths='',labels='';
+  FLAVORS.forEach(cat=>{
+    const n=cat.subs.length,ca=sa*n,s=cur,e=cur+ca,lg=ca>Math.PI?1:0;
+    const r1=22,r2=68;
+    const xi1=cx+r1*Math.cos(s),yi1=cy+r1*Math.sin(s),xi2=cx+r1*Math.cos(e),yi2=cy+r1*Math.sin(e);
+    const xo1=cx+r2*Math.cos(s),yo1=cy+r2*Math.sin(s),xo2=cx+r2*Math.cos(e),yo2=cy+r2*Math.sin(e);
+    paths+=`<path d="M${xi1} ${yi1}L${xo1} ${yo1}A${r2} ${r2} 0 ${lg} 1 ${xo2} ${yo2}L${xi2} ${yi2}A${r1} ${r1} 0 ${lg} 0 ${xi1} ${yi1}Z" fill="${cat.col}" opacity="0.55" stroke="#111" stroke-width="1.5"/>`;
+    const ma=s+ca/2,lr=(r1+r2)/2,lx=cx+lr*Math.cos(ma),ly=cy+lr*Math.sin(ma);
+    const sn=cat.n.length>5?cat.n.slice(0,4)+'…':cat.n;
+    labels+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="7.5" fill="#fff" font-weight="700" transform="rotate(${ma*180/Math.PI},${lx},${ly})">${sn}</text>`;
+    let sa2=cur;
+    cat.subs.forEach(sub=>{
+      const ss=sa2,se=sa2+sa,ri=70,ro=118;
+      const sx1=cx+ri*Math.cos(ss),sy1=cy+ri*Math.sin(ss),sx2=cx+ri*Math.cos(se),sy2=cy+ri*Math.sin(se);
+      const sx3=cx+ro*Math.cos(se),sy3=cy+ro*Math.sin(se),sx4=cx+ro*Math.cos(ss),sy4=cy+ro*Math.sin(ss);
+      const sel=RS.flavors.includes(sub);
+      const esc=sub.replace(/'/g,"\\'");
+      paths+=`<path d="M${sx1} ${sy1}L${sx4} ${sy4}A${ro} ${ro} 0 0 1 ${sx3} ${sy3}L${sx2} ${sy2}A${ri} ${ri} 0 0 0 ${sx1} ${sy1}Z" fill="${cat.col}" stroke="#111" stroke-width="0.8" opacity="${sel?1:0.25}" style="cursor:pointer" onclick="toggleFlavor('${esc}','${cat.c}')"/>`;
+      const msa=ss+sa/2,slr=(ri+ro)/2,slx=cx+slr*Math.cos(msa),sly=cy+slr*Math.sin(msa);
+      const disp=sub.length>7?sub.slice(0,6)+'…':sub;
+      labels+=`<text x="${slx}" y="${sly}" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="${sel?'#fff':'rgba(255,255,255,.5)'}" transform="rotate(${msa*180/Math.PI},${slx},${sly})" style="pointer-events:none">${disp}</text>`;
+      sa2+=sa;
+    });
+    cur+=ca;
+  });
+  c.innerHTML=`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}">${paths}${labels}<circle cx="${cx}" cy="${cy}" r="20" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" fill="#666" font-weight="600">ВКУС</text></svg>`;
+  updateFlavorTags();
+}
+function toggleFlavor(name,cat){
+  const idx=RS.flavors.indexOf(name);
+  if(idx>=0)RS.flavors.splice(idx,1);else RS.flavors.push(name);
+  drawWheel();
+}
+function updateFlavorTags(){
+  document.getElementById('sel-flavors').innerHTML=RS.flavors.map(f=>`<span class="sel-tag" onclick="toggleFlavor('${f}','')">${f}</span>`).join('');
+}
+function buildAromaButtons(){
+  const container=document.getElementById('aroma-buttons');
+  const allSubs=[];FLAVORS.forEach(f=>f.subs.forEach(s=>allSubs.push({sub:s,cls:FT[f.c]})));
+  container.innerHTML=allSubs.map(({sub,cls})=>`<button onclick="toggleAroma('${sub.replace(/'/g,"\\'")}','${cls}')" id="ab-${sub.replace(/\s/g,'_')}" style="font-size:10px;padding:3px 8px;border-radius:20px;cursor:pointer;font-family:inherit;border:0.5px solid #333;background:#1a1a1a;color:#888;margin-bottom:4px">${sub}</button>`).join('');
+}
+function toggleAroma(name,cls){
+  const idx=RS.aroma.indexOf(name);
+  if(idx>=0)RS.aroma.splice(idx,1);else RS.aroma.push(name);
+  const btn=document.getElementById('ab-'+name.replace(/\s/g,'_'));
+  if(btn){if(RS.aroma.includes(name)){btn.style.background='#1e1428';btn.style.color='#9B7FE8';btn.style.borderColor='#3a2a5a';}else{btn.style.background='#1a1a1a';btn.style.color='#888';btn.style.borderColor='#333';}}
+  document.getElementById('sel-aroma').innerHTML=RS.aroma.map(f=>`<span class="sel-tag" onclick="toggleAroma('${f}','')">${f}</span>`).join('');
+}
+
+/* Сохранить рецепт */
+function saveBrew(){
+  RS.rating=parseFloat(document.getElementById('rate-slider').value)||8;
+  RS.notes=document.getElementById('brew-notes').value.trim();
+  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',method:'Альтернатива',temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,likes:0,liked:false,ts:Date.now()};
+  S.brews.unshift(brew);save();
+  document.getElementById('b-res-t').textContent=fmt(BS.elapsed);
+  document.getElementById('b-res-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
+  document.getElementById('b-res-rating').textContent=brew.rating.toFixed(1);
+  document.getElementById('b-res-flavors').textContent=(RS.flavors.length+RS.aroma.length);
+  document.getElementById('b-res-info').textContent=(BS.bean?BS.bean.name+' · ':'')+brew.temp+'°C · 1:'+brew.ratio;
+  showBV('bv-result');toast('Рецепт сохранён!');
+}
+function brewGoSetup(){clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);Object.assign(BS,{mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});showBV('bv-setup');bCalc();}
+function brewReset(){bFinalize();Object.assign(BS,{bean:null,filter:null,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});document.getElementById('bsel-bean').textContent='Выбери пачку';document.getElementById('bsel-bean-sub').textContent='нажми для выбора';document.getElementById('bbean-bar').style.display='none';document.getElementById('bsel-filter').textContent='Выбери фильтр';document.getElementById('bsel-filter-sub').textContent='нажми для выбора';document.getElementById('bfilter-bar').style.display='none';document.getElementById('brew-title').textContent='Альтернатива';document.getElementById('b-dose').value='16';document.getElementById('b-ratio').value='16';document.getElementById('b-pours').value='3';document.getElementById('b-temp-sl').value='93';document.getElementById('b-temp-out').textContent='93°C';setWet(true);bCalc();showBV('bv-setup');}
+
+renderFeed();renderProf();bCalc();setWet(true);showBV('bv-setup');
+</script>
+</body>
+</html>
