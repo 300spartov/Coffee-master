@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Coffee Journal</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 <style>
@@ -44,6 +45,8 @@ body{font-family:var(--sans);background:radial-gradient(120% 80% at 50% -10%,#20
 .screens{flex:1;overflow:hidden;order:1;min-height:0}
 .scr{display:none;height:100%;overflow-y:auto;padding-bottom:24px}
 .scr.on{display:block;animation:scrIn .4s ease}
+#scr-market{flex-direction:column}
+#scr-market.on{display:flex;overflow:hidden}
 @keyframes scrIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 .hdr{padding:46px 22px 15px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line-soft)}
@@ -85,7 +88,7 @@ select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-
 .bstat-v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt)}
 .bc-flavors{padding:10px 15px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--line-soft)}
 .ftag{font-size:10.5px;padding:3px 9px;border-radius:20px;font-weight:500;letter-spacing:.3px;border:1px solid transparent}
-.ft-fruit{background:#2c1a20;color:#c98aa0;border-color:#3d2630}.ft-sweet{background:#2a2013;color:#d6a566;border-color:#3d2f18}.ft-nut{background:#24211e;color:#b29c88;border-color:#332e28}.ft-floral{background:#241f2a;color:#a892bf;border-color:#332b3c}.ft-roast{background:#222120;color:#9a958c;border-color:#312f2c}.ft-acid{background:#1e2722;color:#86b599;border-color:#2b362f}.ft-spice{background:#2b1f17;color:#cf9a78;border-color:#3c2c20}
+.ft-fruit{background:#2c1a20;color:#c98aa0;border-color:#3d2630}.ft-sweet{background:#2a2013;color:#d6a566;border-color:#3d2f18}.ft-nut{background:#24211e;color:#b29c88;border-color:#332e28}.ft-floral{background:#241f2a;color:#a892bf;border-color:#332b3c}.ft-roast{background:#222120;color:#9a958c;border-color:#312f2c}.ft-acid{background:#1e2722;color:#86b599;border-color:#2b362f}.ft-spice{background:#2b1f17;color:#cf9a78;border-color:#3c2c20}.ft-green{background:#1c2620;color:#8fb89a;border-color:#2a352e}.ft-other{background:#232425;color:#9b9d9f;border-color:#313335}
 .bc-foot{padding:10px 15px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center}
 .expand-btn{background:none;border:none;cursor:pointer;font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:4px;font-weight:500;font-family:inherit;letter-spacing:.5px}
 .expand-btn i{font-size:14px;transition:transform .25s}
@@ -104,6 +107,10 @@ select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-
 .rrow-v{font-size:12px;font-weight:600;color:var(--txt2)}
 
 /* BEANS */
+.bean-add{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:1.5px dashed var(--copper-dk);border-radius:14px;padding:13px;margin-bottom:9px;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--copper-lt);text-transform:uppercase;letter-spacing:1px;transition:background .15s,border-color .15s,transform .12s}
+.bean-add i{font-size:16px}
+.bean-add:active{transform:scale(.98)}
+.bean-add:hover{background:#1d1813;border-color:var(--copper)}
 .bean-card{background:linear-gradient(160deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:14px;margin-bottom:9px;display:flex;align-items:center;gap:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 5px 14px rgba(0,0,0,.3)}
 .bean-icon{width:42px;height:42px;border-radius:12px;background:radial-gradient(120% 120% at 30% 25%,#2e2620,#1a1714);border:1px solid var(--copper-dk);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
 .bean-icon i{font-size:20px}
@@ -244,6 +251,108 @@ select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-
 .wd-btn{padding:9px;border-radius:9px;font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:transform .12s}
 .wd-btn:active{transform:scale(.96)}
 
+/* ── PAUSE ACTIONS ── */
+.pause-actions-wrap{display:none;margin:0 0 10px;animation:fadeSlideIn .2s ease}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pause-actions-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:7px}
+.pause-actions-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.act-btn{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:12px;padding:8px 4px 7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s;position:relative;user-select:none;-webkit-tap-highlight-color:transparent;min-height:90px}
+.act-btn:active{transform:scale(.93)}
+.act-btn.done{border-color:var(--copper-dk);background:linear-gradient(160deg,#2a1e10,#1d1610)}
+.act-btn.active-now{border-color:var(--steel);background:linear-gradient(160deg,#1a2030,#121820)}
+/* Кольцо прогресса */
+.act-ring-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.act-ring-wrap svg{transform:rotate(-90deg)}
+.act-ring-bg{fill:none;stroke:#1e2025;stroke-width:3}
+.act-ring-fill{fill:none;stroke:var(--copper);stroke-width:3;stroke-dasharray:100.5;stroke-dashoffset:100.5;stroke-linecap:round;transition:stroke-dashoffset .1s linear}
+.act-btn.done .act-ring-fill{stroke:var(--copper-lt)}
+.act-btn.active-now .act-ring-fill{stroke:var(--steel)}
+.act-icon-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;color:var(--txt2);transition:color .15s}
+.act-btn.done .act-icon-center{color:var(--copper-lt);filter:drop-shadow(0 0 4px var(--copper-glow))}
+.act-btn.active-now .act-icon-center{color:var(--steel)}
+.act-name{font-family:var(--mono);font-size:9px;color:var(--txt3);text-align:center;line-height:1.2;letter-spacing:.3px}
+.act-btn.done .act-name{color:var(--copper-lt)}
+.act-btn.active-now .act-name{color:var(--steel)}
+.act-timer{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--copper-lt);letter-spacing:.3px;min-height:14px;text-align:center}
+.act-btn.active-now .act-timer{color:var(--steel)}
+.act-tick{display:none;position:absolute;top:4px;right:4px;width:13px;height:13px;background:var(--copper);border-radius:50%;align-items:center;justify-content:center}
+.act-btn.done .act-tick{display:flex}
+.act-tick i{font-size:7px;color:#1c130a}
+@keyframes pulseCopper{0%{box-shadow:0 0 0 0 rgba(216,152,88,.45)}70%{box-shadow:0 0 0 9px rgba(216,152,88,0)}100%{box-shadow:0 0 0 0 rgba(216,152,88,0)}}
+.act-btn.pulsing{animation:pulseCopper .7s ease-out}
+
+/* ── GRINDER SETUP ── */
+.grinder-setup{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:13px;padding:13px 15px;margin-bottom:11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.grinder-row{display:flex;align-items:center;gap:10px}
+.grinder-clicks{display:flex;align-items:center;gap:8px;flex:1}
+.click-btn{width:36px;height:36px;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;font-weight:700;color:var(--txt2);font-family:inherit;flex-shrink:0;transition:transform .12s,color .15s}
+.click-btn:active{transform:scale(.88);color:var(--copper-lt)}
+.clicks-val{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--copper-lt);text-align:center;flex:1;text-shadow:0 0 12px var(--copper-glow);min-width:60px}
+.clicks-unit{font-family:var(--mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px}
+
+/* ── MARKETPLACE ── */
+.mkt-hdr{padding:44px 14px 11px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line-soft);flex-shrink:0}
+.mkt-search{flex:1;display:flex;align-items:center;gap:7px;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:10px;padding:0 10px;height:34px}
+.mkt-search i{font-size:14px;color:var(--txt3);flex-shrink:0}
+.mkt-search input{flex:1;background:none;border:none;outline:none;font-size:12px;color:var(--txt);font-family:inherit;caret-color:var(--copper)}
+.mkt-search input::placeholder{color:var(--txt3)}
+.mkt-sort{background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--txt2);font-family:inherit;cursor:pointer;appearance:none;outline:none}
+.mkt-back,.mkt-filter-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;cursor:pointer;color:var(--txt2);flex-shrink:0;transition:all .15s;position:relative}
+.mkt-filter-toggle.active{background:rgba(184,115,51,.2);border-color:var(--copper);color:var(--copper-lt)}
+.mkt-filter-toggle i,.mkt-back i{font-size:17px}
+.mkt-filter-toggle span{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--copper);border-radius:50%;font-family:var(--mono);font-size:8px;font-weight:700;color:#1c130a;display:flex;align-items:center;justify-content:center}
+.mkt-body{display:flex;overflow:hidden;min-height:0;flex:1}
+.mkt-sidebar{width:110px;flex-shrink:0;border-right:1px solid var(--line-soft);overflow-y:auto;padding:8px 0;animation:slideRight .18s ease}
+@keyframes slideRight{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.mkt-main{flex:1;overflow-y:auto;padding:10px 12px}
+.mkt-grid-1{display:flex;flex-direction:column;gap:7px}
+.mkt-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mkt-pill-group{padding:0 8px 10px}
+.mkt-pill-lbl{font-family:var(--mono);font-size:8px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;display:block}
+.mkt-pill{font-size:9px;padding:2px 6px;border-radius:20px;border:0.5px solid var(--line);background:none;color:var(--txt2);cursor:pointer;font-family:inherit;margin:0 2px 3px 0;display:inline-block;transition:all .12s}
+.mkt-pill.on{background:var(--copper);border-color:var(--copper);color:#1c130a;font-weight:700}
+.mkt-divider{height:0.5px;background:var(--line-soft);margin:4px 8px 8px}
+.mkt-count{font-family:var(--mono);font-size:10px;color:var(--txt3);letter-spacing:.3px;margin-bottom:8px}
+/* Card base */
+.cc{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.cc:active{border-color:var(--copper-dk)}
+.cc.expanded{border-color:var(--copper-dk)}
+/* 1-col horizontal row */
+.cc-row{display:flex;gap:10px;padding:10px 12px;align-items:center}
+.cc-row-ico{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cc-row-info{flex:1;min-width:0}
+.cc-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+/* 2-col card */
+.cc-sq-img{height:64px;display:flex;align-items:center;justify-content:center;position:relative}
+.cc-sq-body{padding:7px 9px 9px}
+/* shared */
+.cc-score{font-family:var(--mono);font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:20px;background:var(--copper);color:#1c130a}
+.cc-roast-pill{font-family:var(--mono);font-size:8px;font-weight:600;padding:2px 5px;border-radius:20px}
+.cc-name{font-size:12px;font-weight:600;color:var(--txt);line-height:1.3}
+.cc-sub{font-size:10px;color:var(--txt3);margin-top:1px}
+.cc-brew-pills{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.cc-brew-pills span{font-size:8px;padding:1px 5px;border-radius:20px;border:0.5px solid var(--copper-dk);color:var(--copper-lt)}
+.cc-brew-pills .proc{border-color:var(--line);color:var(--txt3)}
+.cc-price{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt)}
+.cc-cart{font-size:9px;padding:4px 8px;border-radius:7px;border:0.5px solid var(--copper);background:none;color:var(--copper-lt);cursor:pointer;font-family:inherit;font-weight:600;transition:all .18s;white-space:nowrap}
+.cc-cart.added{background:var(--copper);border-color:var(--copper);color:#1c130a}
+.cc-cart:disabled{opacity:.35;cursor:not-allowed}
+/* Expand panel */
+.cc-expand{border-top:1px solid var(--line-soft);padding:10px 12px;animation:expandIn .18s ease}
+@keyframes expandIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.cc-bars{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.cc-bar-row{display:flex;align-items:center;gap:7px}
+.cc-bar-lbl{font-family:var(--mono);font-size:9px;color:var(--txt3);width:62px;flex-shrink:0}
+.cc-bar-track{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.cc-bar-fill{height:100%;border-radius:2px}
+.cc-descs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:9px}
+.cc-descs span{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,.05);color:var(--txt3)}
+.cc-add-inv{width:100%;padding:8px;border-radius:8px;background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);color:var(--copper-lt);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:.3px;transition:all .15s;margin-top:2px}
+.cc-add-inv:active{background:rgba(184,115,51,.25)}
+.cc-nostock-badge{font-family:var(--mono);font-size:8px;color:var(--txt3);letter-spacing:.6px;border:0.5px solid var(--line);padding:2px 7px;border-radius:20px;display:inline-block}
+.mkt-empty{text-align:center;padding:50px 20px;color:var(--txt3)}
+.mkt-empty i{font-size:36px;display:block;margin-bottom:10px;opacity:.35}
+.cart-badge{position:absolute;top:-4px;right:-4px;width:15px;height:15px;background:var(--copper);border-radius:50%;font-family:var(--mono);font-size:8px;font-weight:700;color:#1c130a;display:flex;align-items:center;justify-content:center}
 /* heat micro-icon */
 .heat-ico{display:inline-block;color:var(--copper-lt);animation:vibrate .25s linear infinite;font-size:15px;vertical-align:middle}
 @keyframes vibrate{0%,100%{transform:translate(0,0)}25%{transform:translate(.5px,-.5px)}50%{transform:translate(-.5px,.5px)}75%{transform:translate(.5px,.5px)}}
@@ -259,6 +368,35 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 /* WHEEL */
 .wheel-section{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 .wheel-lbl{font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.fw-search-wrap{position:relative;margin-bottom:14px}
+#fw-svg,#aw-svg{transform-origin:center center}
+@keyframes fwZoom{from{opacity:.35;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.fw-search{width:100%;background:#0f1011;border:1px solid var(--line);border-radius:11px;padding:11px 12px 11px 36px;font-size:13px;color:var(--txt);font-family:var(--sans);letter-spacing:.2px;box-shadow:inset 0 2px 5px rgba(0,0,0,.4)}
+.fw-search:focus{outline:none;border-color:var(--copper)}
+.fw-search::placeholder{color:var(--txt3)}
+.fw-search-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:17px;pointer-events:none}
+.fw-sugg{position:absolute;top:calc(100% + 5px);left:0;right:0;background:#1b1d20;border:1px solid var(--line);border-radius:11px;overflow:hidden;z-index:20;box-shadow:0 14px 32px rgba(0,0,0,.55);max-height:232px;overflow-y:auto}
+.fw-sugg-item{display:flex;align-items:center;gap:10px;padding:10px 13px;cursor:pointer;border-bottom:1px solid var(--line-soft)}
+.fw-sugg-item:last-child{border-bottom:none}
+.fw-sugg-item:active{background:#26282c}
+.fw-sugg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.fw-sugg-name{font-size:13px;color:var(--txt);font-weight:500;font-family:var(--sans)}
+.fw-sugg-name b{color:var(--copper-lt);font-weight:700}
+.fw-sugg-cat{font-family:var(--mono);font-size:9px;color:var(--txt3);margin-left:auto;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.fw-sugg-empty{padding:13px;text-align:center;color:var(--txt3);font-size:12px}
+.fw-hint{font-family:var(--mono);font-size:10px;color:var(--txt3);text-align:center;margin-bottom:8px;min-height:14px;letter-spacing:.5px}
+.fw-desc{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px;justify-content:center}
+.fw-desc-head{font-family:var(--mono);font-size:9.5px;color:var(--txt2);text-transform:uppercase;letter-spacing:1.5px;width:100%;text-align:center;margin-bottom:5px;display:flex;align-items:center;gap:7px;justify-content:center}
+.fw-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.fw-chip{font-size:12px;padding:7px 13px;border-radius:22px;cursor:pointer;font-weight:500;letter-spacing:.2px;background:#1a1c1f;border:1px solid var(--line);color:var(--txt2);transition:transform .12s,background .15s,border-color .15s,color .15s;font-family:var(--sans)}
+.fw-chip:active{transform:scale(.93)}
+.fw-chip.on{background:#2a1d10;border-color:var(--copper);color:var(--copper-lt);box-shadow:0 0 12px var(--copper-glow),inset 0 1px 0 rgba(255,255,255,.06);font-weight:600}
+.fw-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;min-height:22px;justify-content:center}
+.fw-tag{font-size:11px;padding:4px 11px;border-radius:20px;cursor:pointer;font-weight:600;letter-spacing:.2px;background:#221a12;color:var(--copper-lt);border:1px solid var(--copper-dk);font-family:var(--sans)}
+.fw-tag:active{transform:scale(.93)}
+.fw-tag-empty{font-size:12px;color:var(--txt3)}
+.fw-reset{width:100%;margin-top:14px;background:none;border:1px solid var(--line);border-radius:9px;padding:9px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px}
+.fw-reset:active{border-color:var(--copper-dk);color:var(--copper-lt)}
 .wheel-wrap{display:flex;justify-content:center;margin-bottom:12px}
 .sel-tags{display:flex;flex-wrap:wrap;gap:6px;min-height:24px}
 .sel-tag{font-size:11px;padding:4px 10px;border-radius:20px;cursor:pointer;font-weight:600;background:#221a12;color:var(--copper-lt);border:1px solid var(--copper-dk);letter-spacing:.3px}
@@ -278,7 +416,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 .overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.78);z-index:50;align-items:flex-end;backdrop-filter:blur(3px)}
 .overlay.open{display:flex;animation:ovIn .25s ease}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
-.sheet{background:linear-gradient(180deg,#222428,#1a1c1e);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:20px 18px 32px;width:100%;max-height:78%;overflow-y:auto;box-shadow:0 -16px 40px rgba(0,0,0,.5);animation:sheetIn .3s cubic-bezier(.2,.9,.3,1)}
+.sheet{background:linear-gradient(180deg,#222428,#1a1c1e);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:20px 18px 32px;width:100%;max-height:88%;overflow-y:auto;box-shadow:0 -16px 40px rgba(0,0,0,.5);animation:sheetIn .3s cubic-bezier(.2,.9,.3,1)}
 @keyframes sheetIn{from{transform:translateY(100%)}to{transform:none}}
 .sheet-title{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)}
 .sfi{width:100%;background:#0f1011;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:14px;color:var(--txt);font-family:inherit;margin-bottom:10px;appearance:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.4)}
@@ -315,6 +453,128 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 
 /* FEED TOGGLE */
 .feed-toggle{display:flex;gap:4px;margin:0 16px 14px;padding:4px;background:#121315;border:1px solid var(--line-soft);border-radius:13px;box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}
+
+/* ── СТАТИСТИКА: серия + календарь (свайп-пейджер) ── */
+#mine-stats{margin:0 16px 14px}
+
+/* серия — круглая кнопка строго по центру хедера */
+.cal-lbl{font-family:var(--mono);font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:1.5px;margin:6px 0 10px;display:flex;align-items:center;gap:7px}
+.cal-lbl i{font-size:15px;color:var(--copper-lt)}
+.jrnl-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 11px;flex-wrap:wrap}
+.jrnl-tabs{display:flex;gap:3px;padding:3px;background:#121315;border:1px solid var(--line-soft);border-radius:10px}
+.jrnl-tab{background:none;border:none;border-radius:7px;padding:6px 13px;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--txt3);cursor:pointer;text-transform:uppercase;letter-spacing:.6px;transition:all .2s}
+.jrnl-tab.on{background:linear-gradient(160deg,#2a231b,#1d1813);color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+/* STAT infographic */
+.stat-section{margin:16px 16px 4px;border:1px solid var(--copper-dk);border-radius:16px;background:linear-gradient(160deg,#2a231b,#1d1813);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+.stat-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;padding:16px 18px;font-family:inherit;transition:background .2s}
+.stat-toggle:active{background:rgba(0,0,0,.2)}
+.stat-lbl{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12.5px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px}
+.stat-lbl i{font-size:18px;color:var(--copper-lt);filter:drop-shadow(0 0 6px var(--copper-glow))}
+.stat-chev{color:var(--copper-lt);font-size:19px;transition:transform .3s,color .2s}
+.stat-toggle.open .stat-chev{transform:rotate(180deg)}
+.stat-collapse{max-height:0;overflow:hidden;opacity:0;transition:max-height .42s cubic-bezier(.4,.7,.3,1),opacity .3s}
+.stat-collapse.open{max-height:1000px;opacity:1}
+.stat-card{background:linear-gradient(165deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:18px;padding:16px 15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.stat-tot{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.stat-tot-v{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--copper-lt);line-height:1;text-shadow:0 0 14px var(--copper-glow)}
+.stat-tot-u{font-family:var(--mono);font-size:14px;color:var(--txt2);font-weight:600}
+.stat-tot-sub{display:flex;gap:8px;margin-bottom:18px}
+.stat-tot-sub .stat-pill{flex:1;background:#16171a;border:1px solid var(--line-soft);border-radius:10px;padding:8px 6px;text-align:center}
+.stat-tot-sub .stat-pill b{display:block;font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt)}
+.stat-tot-sub .stat-pill span{font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;display:block}
+.stat-seclbl{font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.2px;margin:4px 0 11px}
+.sbar{margin-bottom:13px}
+.sbar-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sbar-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sbar-name{font-size:12.5px;color:var(--txt);font-weight:600;flex:1;min-width:0}
+.sbar-cnt{font-family:var(--mono);font-size:10px;color:var(--txt3)}
+.sbar-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--copper-lt)}
+.sbar-track{height:9px;border-radius:5px;background:#16171a;overflow:hidden;border:1px solid var(--line-soft)}
+.sbar-fill{height:100%;border-radius:5px;transition:width .7s cubic-bezier(.3,.8,.3,1)}
+.stat-mini{display:flex;gap:9px;margin-top:16px}
+.stat-mini .mcell{flex:1;background:#16171a;border:1px solid var(--line-soft);border-radius:12px;padding:11px 8px;text-align:center}
+.stat-mini .mcell-v{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--txt)}
+.stat-mini .mcell-l{font-family:var(--mono);font-size:8.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+.hdr-feed{position:relative}
+.hdr-feed .hdr-left{position:relative;z-index:1}
+.hdr-feed .icon-btn{position:relative;z-index:1}
+.hdr-streak{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;width:56px;height:56px;border-radius:50%;background:radial-gradient(120% 120% at 32% 26%,#332820,#1b1611);border:1.5px solid var(--copper-dk);cursor:pointer;font-family:var(--mono);z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .14s,box-shadow .25s,border-color .25s}
+.hdr-streak.show{display:flex}
+.hdr-streak:active{transform:translate(-50%,-50%) scale(.92)}
+.hdr-streak.lit{border-color:var(--copper);box-shadow:0 4px 16px rgba(0,0,0,.5),0 0 18px var(--copper-glow),inset 0 1px 0 rgba(255,255,255,.08)}
+.hdr-streak #hdr-streak-num,.hdr-streak #pdate-num{font-size:21px;font-weight:700;color:#fff;line-height:1;text-shadow:0 0 12px rgba(232,168,96,.5)}
+.hdr-streak .cup-ic.hs-cup{width:17px;height:16px;margin-top:1px;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.hdr-streak .hs-mon{font-family:var(--mono);font-size:8px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* серия — раскрываемая панель (серия + календарь) */
+.streak-panel{max-height:0;overflow:hidden;opacity:0;transition:max-height .45s cubic-bezier(.4,.7,.3,1),opacity .3s,margin .3s;margin:0 16px}
+.streak-panel.open{max-height:920px;opacity:1;margin:0 16px 14px}
+.streak-full{display:flex;flex-direction:column;align-items:center;width:100%;background:linear-gradient(165deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:18px;padding:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.streak-full .cal-card{width:100%;margin-top:16px;background:#16171a}
+.se-title{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:4px;letter-spacing:.2px}
+.se-ring{position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center}
+#se-arc{transition:stroke-dashoffset .9s cubic-bezier(.3,.8,.3,1);filter:drop-shadow(0 0 6px var(--copper-glow))}
+.se-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.se-center .se-num{font-family:var(--mono);font-size:40px;font-weight:700;color:var(--copper-lt);line-height:1;text-shadow:0 0 16px var(--copper-glow)}
+.se-center .cup-ic.se-cup{width:30px;height:28px;margin-top:5px;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.se-record{font-size:12px;color:var(--txt2);margin-top:10px}
+.se-record b{color:var(--txt);font-weight:700}
+.se-week{display:flex;gap:0;justify-content:space-between;width:100%;margin-top:14px;padding:0 4px}
+.se-wd{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+.se-wd .dot{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--copper-dk)}
+.se-wd .dot.on{background:var(--copper-lt);border-color:var(--copper-lt);box-shadow:0 0 7px var(--copper-glow)}
+.se-wd .dot.future{opacity:.4}
+.se-wd .lbl{font-family:var(--mono);font-size:8.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+.se-collapse{margin-top:16px;background:none;border:1px solid var(--line);border-radius:8px;padding:7px 16px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px;display:flex;align-items:center;gap:5px}
+.se-collapse:active{border-color:var(--copper-dk);color:var(--copper-lt)}
+
+/* календарь */
+.cal-card{flex:1;background:linear-gradient(165deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:18px;padding:15px 14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.cal-monthnav{display:flex;align-items:center;gap:6px}
+.cal-monthnav button{width:24px;height:24px;border-radius:7px;border:1px solid var(--line-soft);background:#1b1d20;color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.cal-monthnav button:active{border-color:var(--copper-dk);color:var(--copper-lt)}
+.cal-monthnav span{font-size:13px;font-weight:700;color:var(--txt);min-width:84px;text-align:center;letter-spacing:.2px}
+.cal-modes{display:flex;gap:3px;padding:3px;background:#121315;border:1px solid var(--line-soft);border-radius:9px}
+.cal-mode{background:none;border:none;border-radius:7px;padding:5px 9px;font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--txt3);cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+.cal-mode.on{background:linear-gradient(160deg,#2a231b,#1d1813);color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.cal-wh{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:5px}
+.cal-wh span{font-family:var(--mono);font-size:8.5px;color:var(--txt3);text-align:center;letter-spacing:.3px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-cell{aspect-ratio:1/1;border:1px solid transparent;border-radius:9px;background:#16171a;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:5px 2px 4px;cursor:default;position:relative;overflow:hidden}
+.cal-cell.blank{background:none;border:none}
+.cal-cell.has{background:linear-gradient(160deg,#1f211f,#191b19);border-color:var(--line-soft);cursor:pointer}
+.cal-cell.has:active{transform:scale(.93)}
+.cal-cell.sel{border-color:var(--copper);box-shadow:0 0 0 1px var(--copper-dk),0 0 12px var(--copper-glow)}
+.cal-cell.today{border-color:var(--copper-dk)}
+.cc-d{font-family:var(--mono);font-size:10.5px;color:var(--txt2);line-height:1.1}
+.cal-cell.has .cc-d{color:var(--txt)}
+.cal-cell.ind-mode .cc-d{font-size:14px;font-weight:600;margin-top:3px}
+.cc-v{font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--copper-lt);margin-top:2px;letter-spacing:-.3px}
+.cc-dots{display:flex;gap:2.5px;margin-top:auto;padding-top:3px;justify-content:center}
+.cal-cell.ind-mode .cc-dots{margin-top:5px}
+.cc-dots i{width:5px;height:5px;border-radius:50%;display:block}
+.cal-cell.ind-mode .cc-dots i{width:6px;height:6px}
+.cc-dots i.filter{background:var(--copper-lt)}
+.cc-dots i.espresso{background:var(--steel)}
+.cc-dots i.other{background:none;border:1px solid var(--neutral)}
+.cal-legend{display:flex;gap:14px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.cal-legend span{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--txt2);font-family:var(--mono);letter-spacing:.3px}
+.cal-legend .d{width:8px;height:8px;border-radius:50%;display:block}
+.cal-legend .d.filter{background:var(--copper-lt)}
+.cal-legend .d.espresso{background:var(--steel)}
+.cal-legend .d.other{border:1px solid var(--neutral)}
+.cal-detail{margin-top:0;max-height:0;overflow:hidden;transition:max-height .4s ease,margin-top .3s}
+.cal-detail.open{max-height:340px;margin-top:13px}
+.cd-head{font-family:var(--mono);font-size:10px;color:var(--copper-lt);text-transform:uppercase;letter-spacing:1px;padding-bottom:9px;border-bottom:1px solid var(--line-soft);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.cd-item{display:flex;align-items:center;gap:9px;padding:8px 2px}
+.cd-item+.cd-item{border-top:1px solid var(--line-soft)}
+.cd-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.cd-dot.filter{background:var(--copper-lt)}.cd-dot.espresso{background:var(--steel)}.cd-dot.other{border:1px solid var(--neutral)}
+.cd-bean{font-size:12.5px;font-weight:600;color:var(--txt);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-method{font-family:var(--mono);font-size:9px;color:var(--txt3);background:#1b1d20;border:1px solid var(--line-soft);border-radius:5px;padding:2px 6px;text-transform:uppercase;letter-spacing:.4px}
+.cd-vol{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--copper-lt)}
+.cd-rate{font-family:var(--mono);font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:2px}
 .ft-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--txt3);letter-spacing:.3px;transition:color .2s}
 .ft-tab i{font-size:16px;transition:transform .2s}
 .ft-tab.on{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 2px 6px rgba(0,0,0,.35)}
@@ -343,13 +603,55 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 </style>
 
 <div class="app" id="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="cupBodyG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0BC7E"></stop><stop offset=".45" stop-color="#C07F3D"></stop><stop offset="1" stop-color="#71421f"></stop></linearGradient>
+  <radialGradient id="cupCoffeeG" cx=".38" cy=".32" r=".85"><stop offset="0" stop-color="#46291658"></stop><stop offset="0" stop-color="#412817"></stop><stop offset="1" stop-color="#15090400"></stop></radialGradient>
+  <symbol id="cupIcon" viewBox="0 0 48 44">
+    <path d="M20 8 C17 5 23 4 20 1" fill="none" stroke="#d9b48a" stroke-width="1.6" stroke-linecap="round" opacity=".55"></path>
+    <path d="M27.5 8 C24.5 5 30.5 4 27.5 1" fill="none" stroke="#d9b48a" stroke-width="1.6" stroke-linecap="round" opacity=".4"></path>
+    <path d="M34.5 21 C42 21 42 30.5 33.5 30.5" fill="none" stroke="url(#cupBodyG)" stroke-width="3.2" stroke-linecap="round"></path>
+    <path d="M11.5 16 L14 35 Q14.4 39 18.4 39 L29.6 39 Q33.6 39 34 35 L36.5 16 Z" fill="url(#cupBodyG)" stroke="#5e3819" stroke-width=".6"></path>
+    <ellipse cx="24" cy="16" rx="12.5" ry="3.3" fill="#2a190d"></ellipse>
+    <ellipse cx="24" cy="16" rx="12.5" ry="3.3" fill="url(#cupCoffeeG)"></ellipse>
+    <ellipse cx="24" cy="16" rx="12.5" ry="3.3" fill="none" stroke="#EBB87A" stroke-width="1.3"></ellipse>
+    <ellipse cx="20.5" cy="15" rx="4.5" ry="1.1" fill="rgba(255,238,214,.35)"></ellipse>
+    <path d="M15.6 18.5 L17.4 34.5" stroke="rgba(255,240,222,.4)" stroke-width="2" stroke-linecap="round"></path>
+  </symbol>
+</defs></svg>
 <div class="screens">
 
 <!-- ЛЕНТА -->
 <div class="scr on" id="scr-home">
-  <div class="hdr" style="margin-bottom:14px">
-    <div><div class="hdr-title">Лента</div><div class="hdr-sub" id="feed-sub">Мои рецепты</div></div>
+  <div class="hdr hdr-feed" style="margin-bottom:14px">
+    <div class="hdr-left"><div class="hdr-title">Лента</div><div class="hdr-sub" id="feed-sub">Мои рецепты</div></div>
+    <button class="hdr-streak" id="hdr-streak" onclick="toggleStreak()" aria-label="Серия завариваний"><span id="hdr-streak-num">0</span><svg class="cup-ic hs-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></button>
     <div class="icon-btn" id="hdr-av" onclick="showScr('scr-profile')"><i class="ti ti-user" aria-hidden="true"></i></div>
+  </div>
+  <div class="streak-panel" id="streak-panel">
+    <div class="streak-full">
+      <div class="se-title">Ваша серия завариваний</div>
+      <div class="se-ring">
+        <svg viewBox="0 0 130 130" width="140" height="140">
+          <circle cx="65" cy="65" r="54" fill="none" stroke="#262017" stroke-width="9"></circle>
+          <circle id="se-arc" cx="65" cy="65" r="54" fill="none" stroke="url(#seGrad)" stroke-width="9" stroke-linecap="round" transform="rotate(-90 65 65)" stroke-dasharray="339.3" stroke-dashoffset="339.3"></circle>
+          <defs><linearGradient id="seGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8c552a"></stop><stop offset="1" stop-color="#E8A860"></stop></linearGradient></defs>
+        </svg>
+        <div class="se-center"><span class="se-num" id="se-num">0</span><svg class="cup-ic se-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></div>
+      </div>
+      <div class="se-record">Ваш рекорд: <b id="se-rec">25</b> дней</div>
+      <div class="se-week" id="se-week"></div>
+      <div class="cal-card">
+        <div class="cal-top">
+          <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+          <div class="cal-modes"><button class="cal-mode cm-vol on" onclick="calMode('vol')">Объём</button><button class="cal-mode cm-ind" onclick="calMode('ind')">Индикаторы</button></div>
+        </div>
+        <div class="cal-wh"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="cal-grid"></div>
+        <div class="cal-legend"><span><i class="d filter"></i>Фильтр</span><span><i class="d espresso"></i>Эспрессо</span><span><i class="d other"></i>Другое</span></div>
+        <div class="cal-detail"></div>
+      </div>
+      <button class="se-collapse" onclick="toggleStreak()"><i class="ti ti-chevron-up" aria-hidden="true"></i> свернуть</button>
+    </div>
   </div>
   <div class="feed-toggle">
     <button class="ft-tab on" id="ft-mine" onclick="setFeedTab('mine')"><i class="ti ti-bookmark" aria-hidden="true"></i> Моя</button>
@@ -363,13 +665,13 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   <div class="hdr" style="margin-bottom:10px">
     <div><div class="hdr-title">Зерно</div><div class="hdr-sub">Инвентарь</div></div>
     <div style="display:flex;gap:8px">
-      <div class="icon-btn" onclick="openOv('ov-shop')" aria-label="Магазин"><i class="ti ti-building-store" aria-hidden="true"></i></div>
+      <div class="icon-btn" onclick="showScr('scr-market')" aria-label="Магазин"><i class="ti ti-building-store" aria-hidden="true"></i></div>
       <div class="icon-btn" onclick="openOv('ov-bean')" aria-label="Добавить"><i class="ti ti-plus" aria-hidden="true"></i></div>
     </div>
   </div>
   <div style="padding:0 16px" id="bean-list"></div>
   <div style="padding:4px 16px 0">
-    <button class="shop-cta" onclick="openOv('ov-shop')"><i class="ti ti-shopping-bag" aria-hidden="true"></i><div><div class="shop-cta-t">Купить свежее зерно</div><div class="shop-cta-s">Обжарщики · подписка · доставка</div></div><i class="ti ti-arrow-right" aria-hidden="true" style="margin-left:auto;opacity:.6"></i></button>
+    <button class="shop-cta" onclick="showScr('scr-market')"><i class="ti ti-shopping-bag" aria-hidden="true"></i><div><div class="shop-cta-t">Купить свежее зерно</div><div class="shop-cta-s">Обжарщики · подписка · доставка</div></div><i class="ti ti-arrow-right" aria-hidden="true" style="margin-left:auto;opacity:.6"></i></button>
   </div>
 </div>
 
@@ -389,7 +691,26 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 
 <!-- ПРОФИЛЬ -->
 <div class="scr" id="scr-profile">
-  <div class="hdr"><div><div class="hdr-title">Профиль</div><div class="hdr-sub">Coffee Master</div></div></div>
+  <div class="hdr hdr-feed">
+    <div class="hdr-left"><div class="hdr-title">Профиль</div><div class="hdr-sub">Coffee Master</div></div>
+    <button class="hdr-streak show" id="pdate-btn" onclick="toggleProfCal()" aria-label="Календарь завариваний"><span id="pdate-num">30</span><span class="hs-mon" id="pdate-mon">мая</span></button>
+  </div>
+  <div class="streak-panel" id="prof-cal-panel">
+    <div class="streak-full">
+      <div class="se-title">Календарь завариваний</div>
+      <div class="cal-card" style="margin-top:10px">
+        <div class="cal-top">
+          <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+          <div class="cal-modes"><button class="cal-mode cm-vol on" onclick="calMode('vol')">Объём</button><button class="cal-mode cm-ind" onclick="calMode('ind')">Индикаторы</button></div>
+        </div>
+        <div class="cal-wh"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="cal-grid"></div>
+        <div class="cal-legend"><span><i class="d filter"></i>Фильтр</span><span><i class="d espresso"></i>Эспрессо</span><span><i class="d other"></i>Другое</span></div>
+        <div class="cal-detail"></div>
+      </div>
+      <button class="se-collapse" onclick="toggleProfCal()"><i class="ti ti-chevron-up" aria-hidden="true"></i> свернуть</button>
+    </div>
+  </div>
   <div class="prof-hero">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
       <div class="prof-av" id="pr-av">?</div>
@@ -406,10 +727,17 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <div class="scell"><div class="scell-v" id="st-e">0</div><div class="scell-l">девайсов</div></div>
     <div class="scell"><div class="scell-v" id="st-s">—</div><div class="scell-l">стаж</div></div>
   </div>
+  <div class="stat-section">
+    <button class="stat-toggle" id="stat-toggle" onclick="toggleStat()">
+      <span class="stat-lbl"><i class="ti ti-chart-donut" aria-hidden="true"></i> Статистика завариваний</span>
+      <i class="ti ti-chevron-down stat-chev" id="stat-chev" aria-hidden="true"></i>
+    </button>
+    <div class="stat-collapse" id="stat-collapse"><div id="prof-stat-view" style="padding:4px 16px 16px"></div></div>
+  </div>
   <div style="margin-top:1px">
-    <div class="srow" onclick="openOv('ov-shop')"><i class="ti ti-building-store gear-ic" aria-hidden="true" style="color:var(--copper-lt)"></i><span class="srow-lbl">Магазин зерна и девайсов</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="showScr('scr-market')"><i class="ti ti-building-store gear-ic" aria-hidden="true" style="color:var(--copper-lt)"></i><span class="srow-lbl">Магазин зерна и девайсов</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
     <div class="srow" onclick="openOv('ov-settings')"><i class="ti ti-user-edit gear-ic" aria-hidden="true"></i><span class="srow-lbl">Редактировать профиль</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
-    <div class="srow" onclick="if(confirm('Сбросить данные?')){localStorage.removeItem('cj_clean');location.reload()}"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A">Сбросить данные</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="if(confirm('Сбросить данные?')){localStorage.removeItem('cj_v7');location.reload()}"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A">Сбросить данные</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
   </div>
 </div>
 
@@ -450,6 +778,24 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="wd-grid">
         <button class="wd-btn" id="wet-btn" onclick="setWet(true)" style="border:2px solid #1a4a8a;background:#0d1f35;color:#4A9EDB">Смочен</button>
         <button class="wd-btn" id="dry-btn" onclick="setWet(false)" style="border:0.5px solid #333;background:#1a1a1a;color:#888">Сухой</button>
+      </div>
+    </div>
+
+    <!-- КОФЕМОЛКА + КЛИКИ -->
+    <div class="card">
+      <div class="lbl">Кофемолка и помол</div>
+      <button class="sel-btn" onclick="openOv('ov-bgrinder')" style="margin-bottom:10px">
+        <div><div class="sel-main" id="bsel-grinder">Выбери кофемолку</div><div class="sel-sub" id="bsel-grinder-sub">нажми для выбора</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="field-lbl">Клики / деление помола</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="click-btn" onclick="clicksAdj(-1)">−</button>
+        <div style="flex:1;text-align:center">
+          <div class="clicks-val" id="clicks-val">28</div>
+          <div class="clicks-unit">кликов</div>
+        </div>
+        <button class="click-btn" onclick="clicksAdj(1)">+</button>
       </div>
     </div>
     <div class="card">
@@ -556,7 +902,10 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div style="position:relative;margin-bottom:20px">
         <div class="bar-track"><div class="bar-fill" id="b-bar-fill"></div><div class="bar-markers" id="b-bar-markers"></div></div>
         <div class="bar-labels" id="b-bar-labels"></div>
-        <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="font-size:11px;color:#555" id="b-bar-pct">0%</span><span style="font-size:11px;color:#555" id="b-bar-tot">256 мл</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px">
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt);text-shadow:0 0 8px var(--copper-glow)" id="b-bar-pct">0%</span>
+          <span style="font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt)" id="b-bar-tot">256 мл</span>
+        </div>
       </div>
       <div id="b-hints" style="display:flex;gap:6px"></div>
     </div>
@@ -566,7 +915,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         <div class="bl" id="b-pour-lbl">Влив</div>
         <div class="bs" id="b-pour-sub">нажми для старта</div>
         <div class="ml-wrap" id="b-ml-wrap" style="display:none">
-          <input type="number" step="0.1" class="ml-inp" id="b-ml-inp" placeholder="0" onclick="event.stopPropagation()" oninput="bOnMl()">
+          <input type="number" step="0.1" inputmode="decimal" pattern="[0-9]*" class="ml-inp" id="b-ml-inp" placeholder="0" onclick="event.stopPropagation()" oninput="bOnMl()">
           <span class="ml-unit-lbl">мл</span>
         </div>
       </button>
@@ -582,6 +931,50 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         <div class="bs" id="b-pause-sub">пролив фильтра</div>
       </button>
     </div>
+
+    <!-- ДЕЙСТВИЯ В ПАУЗЕ -->
+    <div class="pause-actions-wrap" id="pause-actions-wrap">
+      <div class="pause-actions-label">Действие в паузе</div>
+      <div class="pause-actions-grid">
+        <button class="act-btn" id="act-stir" onclick="brewDoAction('stir',this)" aria-label="Перемешивание">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-stir"/>
+            </svg>
+            <i class="ti ti-rotate-clockwise act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name">Перемеш.</span>
+          <span class="act-timer" id="timer-stir"></span>
+        </button>
+        <button class="act-btn" id="act-swirl" onclick="brewDoAction('swirl',this)" aria-label="Свэрл">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-swirl"/>
+            </svg>
+            <i class="ti ti-refresh act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name">Свэрл</span>
+          <span class="act-timer" id="timer-swirl"></span>
+        </button>
+        <button class="act-btn" id="act-shake" onclick="brewDoAction('shake',this)" aria-label="Взбалтывание">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-shake"/>
+            </svg>
+            <i class="ti ti-activity act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name">Взбалтыв.</span>
+          <span class="act-timer" id="timer-shake"></span>
+        </button>
+      </div>
+    </div>
+
     <button class="stop-btn" onclick="brewStop()"><i class="ti ti-square" aria-hidden="true"></i> Стоп — завершить</button>
     <div id="b-log-wrap" style="display:none;margin-bottom:14px">
       <div class="lbl" style="margin-bottom:5px;padding:0">Лог шагов</div>
@@ -614,17 +1007,32 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 
     <!-- Колесо вкусов -->
     <div class="wheel-section">
-      <div class="wheel-lbl">Колесо вкусов — нажми на сектор</div>
-      <div class="wheel-wrap" id="flavor-wheel"></div>
-      <div class="sel-tags" id="sel-flavors"></div>
+      <div class="wheel-lbl">Колесо вкусов</div>
+      <div class="fw-search-wrap">
+        <i class="ti ti-search fw-search-ic" aria-hidden="true"></i>
+        <input class="fw-search" id="fw-search" placeholder="Найти вкус: ягоды, карамель, жасмин…" oninput="fwSearch('fw')" onkeydown="fwSearchKey('fw',event)" autocomplete="off">
+        <div class="fw-sugg" id="fw-sugg" style="display:none"></div>
+      </div>
+      <div class="fw-hint" id="fw-hint">Нажми на категорию или найди вкус</div>
+      <svg id="fw-svg" width="300" height="300" viewBox="-150 -150 300 300" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
+      <div class="fw-desc" id="fw-desc"></div>
+      <div class="fw-tags" id="fw-tags"></div>
+      <button class="fw-reset" onclick="fwReset()">Сбросить вкусы</button>
     </div>
 
-    <!-- Аромат отдельно -->
+    <!-- Аромат — второе колесо -->
     <div class="wheel-section">
-      <div class="wheel-lbl">Аромат</div>
-      <div class="sel-tags" id="sel-aroma" style="min-height:32px"></div>
-      <div style="font-size:11px;color:#555;margin-top:8px">Нажми на сектор колеса вкусов выше, чтобы выбрать ароматические ноты</div>
-      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:10px" id="aroma-buttons"></div>
+      <div class="wheel-lbl">Колесо аромата</div>
+      <div class="fw-search-wrap">
+        <i class="ti ti-search fw-search-ic" aria-hidden="true"></i>
+        <input class="fw-search" id="aw-search" placeholder="Найти аромат: цветы, шоколад, табак…" oninput="fwSearch('aw')" onkeydown="fwSearchKey('aw',event)" autocomplete="off">
+        <div class="fw-sugg" id="aw-sugg" style="display:none"></div>
+      </div>
+      <div class="fw-hint" id="aw-hint">Нажми на категорию или найди аромат</div>
+      <svg id="aw-svg" width="300" height="300" viewBox="-150 -150 300 300" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
+      <div class="fw-desc" id="aw-desc"></div>
+      <div class="fw-tags" id="aw-tags"></div>
+      <button class="fw-reset" onclick="awReset()">Сбросить аромат</button>
     </div>
 
     <!-- Заметки -->
@@ -700,13 +1108,40 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   </div>
 </div>
 <div class="overlay" id="ov-bbean" onclick="if(event.target===this)closeOv('ov-bbean')">
-  <div class="sheet"><div class="sheet-title">Выбери зерно</div><div id="bbean-pick"></div></div>
+  <div class="sheet">
+    <div class="sheet-title">Выбери зерно</div>
+    <div id="bbean-pick"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)">
+      <button style="width:100%;background:none;border:1px dashed var(--copper-dk);border-radius:10px;padding:11px;font-size:12px;font-weight:600;color:var(--copper-lt);cursor:pointer;font-family:inherit;letter-spacing:.3px" onclick="closeOv('ov-bbean');openOv('ov-bean')">+ Добавить новое зерно</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="ov-bgrinder" onclick="if(event.target===this)closeOv('ov-bgrinder')">
+  <div class="sheet">
+    <div class="sheet-title">Выбери кофемолку</div>
+    <div id="bgrinder-pick"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)">
+      <button style="width:100%;background:none;border:1px dashed var(--copper-dk);border-radius:10px;padding:11px;font-size:12px;font-weight:600;color:var(--copper-lt);cursor:pointer;font-family:inherit;letter-spacing:.3px" onclick="closeOv('ov-bgrinder');activeCat='grinder';showScr('scr-devlist');document.getElementById('devlist-title').textContent='Кофемолки';renderDevList('')">+ Добавить кофемолку в список</button>
+    </div>
+  </div>
 </div>
 <div class="overlay" id="ov-bdripper" onclick="if(event.target===this)closeOv('ov-bdripper')">
-  <div class="sheet"><div class="sheet-title">Выбери воронку</div><div id="bdripper-pick"></div></div>
+  <div class="sheet">
+    <div class="sheet-title">Выбери воронку</div>
+    <div id="bdripper-pick"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)">
+      <button style="width:100%;background:none;border:1px dashed var(--copper-dk);border-radius:10px;padding:11px;font-size:12px;font-weight:600;color:var(--copper-lt);cursor:pointer;font-family:inherit;letter-spacing:.3px" onclick="closeOv('ov-bdripper');activeCat='dripper';showScr('scr-devlist');document.getElementById('devlist-title').textContent='Альтернатива';renderDevList('')">+ Добавить воронку в список</button>
+    </div>
+  </div>
 </div>
 <div class="overlay" id="ov-bfilter" onclick="if(event.target===this)closeOv('ov-bfilter')">
-  <div class="sheet"><div class="sheet-title">Выбери фильтр</div><div id="bfilter-pick"></div></div>
+  <div class="sheet">
+    <div class="sheet-title">Выбери фильтр</div>
+    <div id="bfilter-pick"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)">
+      <button style="width:100%;background:none;border:1px dashed var(--copper-dk);border-radius:10px;padding:11px;font-size:12px;font-weight:600;color:var(--copper-lt);cursor:pointer;font-family:inherit;letter-spacing:.3px" onclick="closeOv('ov-bfilter');openOv('ov-filter-add')">+ Добавить пачку фильтров</button>
+    </div>
+  </div>
 </div>
 <div class="overlay" id="ov-shop" onclick="if(event.target===this)closeOv('ov-shop')">
   <div class="sheet">
@@ -720,6 +1155,50 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <div class="shop-row"><i class="ti ti-filter" aria-hidden="true"></i><div><div class="shop-row-t">Воронки и фильтры</div><div class="shop-row-s">Origami · Hario · CAFEC</div></div><span class="shop-soon">скоро</span></div>
     <div class="shop-row"><i class="ti ti-repeat" aria-hidden="true"></i><div><div class="shop-row-t">Подписка на зерно</div><div class="shop-row-s">Авто-пополнение инвентаря</div></div><span class="shop-soon">скоро</span></div>
     <button class="btn-c" style="width:100%;margin-top:14px" onclick="closeOv('ov-shop')">Закрыть</button>
+  </div>
+</div>
+
+<!-- МАРКЕТПЛЕЙС -->
+<div class="scr" id="scr-market" style="padding-bottom:0">
+  <!-- Шапка -->
+  <div class="mkt-hdr">
+    <button class="mkt-back" onclick="showScr('scr-coffee')" aria-label="Назад"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <div class="mkt-search">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" id="mkt-q" placeholder="Кофе, ростер, дескриптор..." oninput="mktRender()">
+    </div>
+    <button class="mkt-filter-toggle" id="mkt-filter-btn" onclick="mktToggleFilter()" aria-label="Фильтры">
+      <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i>
+      <span id="mkt-filter-cnt" style="display:none"></span>
+    </button>
+    <div style="position:relative">
+      <button class="icon-btn" onclick="mktShowCart()" aria-label="Корзина" style="width:34px;height:34px"><i class="ti ti-shopping-bag" aria-hidden="true" style="font-size:17px"></i></button>
+      <div class="cart-badge" id="cart-badge" style="display:none">0</div>
+    </div>
+  </div>
+
+  <!-- Toolbar: сортировка + счётчик -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--line-soft);flex-shrink:0">
+    <div class="mkt-count" id="mkt-count" style="margin:0">12 позиций</div>
+    <select class="mkt-sort" id="mkt-sort" onchange="mktRender()">
+      <option value="score">По оценке</option>
+      <option value="price_asc">Цена ↑</option>
+      <option value="price_desc">Цена ↓</option>
+      <option value="name">По имени</option>
+    </select>
+  </div>
+
+  <!-- Active filter pills -->
+  <div id="mkt-active-pills" style="display:none;padding:6px 14px;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--line-soft);flex-shrink:0"></div>
+
+  <!-- Body: сайдбар + список -->
+  <div class="mkt-body">
+    <!-- Фильтр панель (скрытая по умолчанию) -->
+    <div class="mkt-sidebar" id="mkt-sidebar" style="display:none"></div>
+    <!-- Список карточек -->
+    <div class="mkt-main" id="mkt-main">
+      <div id="mkt-grid"></div>
+    </div>
   </div>
 </div>
 
@@ -748,7 +1227,7 @@ const FLAVORS=[
   {n:'Кислое',c:'acid',col:'#2E7D32',subs:['Уксус','Лимонная к-та']}
 ];
 const FT={fruit:'ft-fruit',sweet:'ft-sweet',nut:'ft-nut',spice:'ft-spice',roast:'ft-roast',floral:'ft-floral',acid:'ft-acid'};
-function ftCls(n){for(const f of FLAVORS)if(f.subs.includes(n))return FT[f.c]||'';return '';}
+function ftCls(n){const info=(typeof DESC_INDEX!=='undefined')&&DESC_INDEX[n];return info?(CAT_FT[info.catId]||''):'';}
 
 /* ── DEVICES DB (фильтры всегда сохраняем) ── */
 const DB_CATS=[
@@ -760,13 +1239,163 @@ const DB_CATS=[
   {id:'acc',name:'Аксессуары',icon:'ti-tool',cls:'ic-gray'},
 ];
 const DB={
-  dripper:[{name:'Hario V60 01',sub:'Пластик, 1 чашка'},{name:'Hario V60 02',sub:'Пластик/керамика, 2 чашки'},{name:'Hario V60 02 Metal',sub:'Нержавейка'},{name:'Kalita Wave 155',sub:'Нержавейка, 1–2 чашки'},{name:'Kalita Wave 185',sub:'Нержавейка, 2–4 чашки'},{name:'Chemex 3-cup',sub:'Стекло, 3 чашки'},{name:'Chemex 6-cup',sub:'Стекло, 6 чашек'},{name:'Origami Dripper S',sub:'Керамика, 1–2 чашки'},{name:'Origami Dripper M',sub:'Керамика, 2–4 чашки · синий'},{name:'CAFEC Flower Dripper 4 cup',sub:'Tritan, лепестки, 4 чашки'},{name:'Cafe Flower Dripper S',sub:'Пластик, 2 чашки'},{name:'Aeropress',sub:'Давление, 1–3 чашки'},{name:'Aeropress Go',sub:'Компактный'},{name:'Fellow Stagg X',sub:'Плоское дно'},{name:'Clever Dripper',sub:'Иммерсия + фильтр'},{name:'French Press 350ml',sub:'Иммерсия'},{name:'French Press 1L',sub:'Иммерсия, 4–5 чашек'},{name:'Siphon',sub:'Вакуумная варка'}],
-  espresso:[{name:'La Marzocco Linea Classic',sub:'Проф., 2 группы'},{name:'La Marzocco GS3',sub:'1 группа'},{name:'Rocket Appartamento',sub:'Домашняя'},{name:'ECM Synchronika',sub:'Двойной бойлер'},{name:'Lelit Bianca',sub:'E61, PID'},{name:'Breville Barista Express',sub:'Со встроенной кофемолкой'},{name:'Flair 58',sub:'Ручной рычажный, 58мм'},{name:'Flair Pro 2',sub:'Ручной рычажный'},{name:'Cafelat Robot',sub:'Ручной рычажный'},{name:'Sage Bambino Plus',sub:'Термоблок'},{name:'Wacaco Nanopresso',sub:'Портативный'}],
-  grinder:[{name:'Comandante C40 MK4',sub:'Ручная, нитробладе сталь'},{name:'Comandante C40 MK3',sub:'Ручная'},{name:'1Zpresso JX-Pro',sub:'Ручная, 48мм'},{name:'1Zpresso K-Pro',sub:'Ручная, 48мм'},{name:'Niche Zero',sub:'Электро, 63мм конус'},{name:'Fellow Ode Gen 2',sub:'Электро, 64мм'},{name:'Baratza Encore',sub:'Электро, 40мм'},{name:'Eureka Mignon Specialita',sub:'Электро, 55мм'},{name:'Mazzer Mini',sub:'Проф., 58мм'},{name:'Mahlkönig EK43',sub:'Проф., 98мм'},{name:'Timemore C2',sub:'Ручная, 38мм'},{name:'Kinu M47',sub:'Ручная, 47мм'},{name:'Hario Skerton Pro',sub:'Ручная, керамика'}],
-  kettle:[{name:'Fellow Stagg EKG',sub:'Электро, точная температура'},{name:'Fellow Stagg EKG Pro',sub:'Bluetooth'},{name:'Hario Buono V60',sub:'Гусиное горло, 1.2л'},{name:'Brewista Artisan',sub:'Переменная температура'},{name:'Timemore Fish',sub:'Электро'},{name:'Barista Space',sub:'Электро, 0.6л'}],
+  dripper:[
+    {name:'Hario V60 01',sub:'Конус · пластик/керамика/стекло · 1 чашка'},
+    {name:'Hario V60 02',sub:'Конус · пластик/керамика/стекло/медь · 2 чашки'},
+    {name:'Hario V60 02 Metal',sub:'Конус · нержавейка'},
+    {name:'Hario Switch',sub:'Иммерсия + пролив · V60'},
+    {name:'Origami Dripper S',sub:'Конус · керамика · 1–2 чашки'},
+    {name:'Origami Dripper M',sub:'Конус · керамика · 2–4 чашки · синий'},
+    {name:'Origami Air',sub:'Конус · пластик · универсал'},
+    {name:'Fellow Stagg [X]',sub:'Конус · нержавейка'},
+    {name:'Timemore Crystal Eye',sub:'Конус · стекло/пластик · V60'},
+    {name:'CAFEC Flower Dripper 4 cup',sub:'Лепестки · Tritan · 4 чашки'},
+    {name:'Cafec Flower Dripper S',sub:'Лепестки · пластик · 2 чашки'},
+    {name:'Sibarist FAST Cone',sub:'Конус · пластик'},
+    {name:'Kono Meimon',sub:'Конус · пластик'},
+    {name:'Cores C200',sub:'Конус · фарфор · V60'},
+    {name:'Kalita Wave 155',sub:'Плоское дно · нержавейка · 1–2 чашки'},
+    {name:'Kalita Wave 185',sub:'Плоское дно · нержавейка · 2–4 чашки'},
+    {name:'Chemex 3-cup',sub:'Боросиликат · 3 чашки'},
+    {name:'Chemex 6-cup',sub:'Боросиликат · 6 чашек'},
+    {name:'Chemex 8-cup',sub:'Боросиликат · 8 чашек'},
+    {name:'Melitta 1×4',sub:'Плоское дно · пластик/керамика'},
+    {name:'Clever Dripper',sub:'Иммерсия + фильтр'},
+    {name:'AeroPress Original',sub:'Иммерсия / давление'},
+    {name:'AeroPress Go',sub:'Иммерсия / давление · дорожный'},
+    {name:'AeroPress Clear',sub:'Иммерсия / давление · прозрачный'},
+    {name:'AeroPress XL',sub:'Иммерсия / давление · большой объём'},
+    {name:'Bialetti Moka 3-cup',sub:'Гейзерная · 3 чашки'},
+    {name:'Bialetti Moka 6-cup',sub:'Гейзерная · 6 чашек'},
+    {name:'French Press 350ml',sub:'Полное погружение'},
+    {name:'French Press 1L',sub:'Полное погружение · 4–5 чашек'},
+    {name:'Hario Siphon 5-cup',sub:'Сифон / вакуум'},
+    {name:'Hario Siphon Technica',sub:'Сифон / вакуум'},
+    {name:'Flair 58',sub:'Ручной эспрессо · 58мм'},
+    {name:'Flair NEO Flex',sub:'Ручной эспрессо'},
+    {name:'ROK Espresso',sub:'Ручной рычажный эспрессо'},
+    {name:'Wacaco Nanopresso',sub:'Портативный эспрессо'},
+    {name:'Wacaco Picopresso',sub:'Портативный эспрессо'},
+    {name:'Cafflano Kompresso',sub:'Портативный эспрессо'},
+    {name:'Delter Coffee Press',sub:'Иммерсия с давлением'}
+  ],
+  espresso:[
+    {name:'DeLonghi Dedica EC685',sub:'Полуавтомат · термоблок'},
+    {name:'DeLonghi Dedica Duo EC9155',sub:'Полуавтомат · термоблок'},
+    {name:'DeLonghi Stilosa EC230',sub:'Полуавтомат · термоблок'},
+    {name:'Breville Bambino',sub:'Полуавтомат · термоблок'},
+    {name:'Breville Bambino Plus',sub:'Полуавтомат · термоблок'},
+    {name:'Nespresso Vertuo Pop',sub:'Капсульная'},
+    {name:'Breville Barista Express',sub:'Со встроенной кофемолкой'},
+    {name:'Breville Barista Express Impress',sub:'Со встроенной кофемолкой'},
+    {name:'Breville Barista Pro',sub:'Полуавтомат · термоблок'},
+    {name:'Breville Barista Touch',sub:'Полуавтомат · тачскрин'},
+    {name:'Gaggia Classic Pro',sub:'Полуавтомат · однобойлер'},
+    {name:'Gaggia Classic Evo Pro',sub:'Полуавтомат · однобойлер'},
+    {name:'Rancilio Silvia',sub:'Полуавтомат · однобойлер'},
+    {name:'Rancilio Silvia Pro X',sub:'Полуавтомат · двойной бойлер'},
+    {name:'Lelit Mara X',sub:'Полуавтомат · HX бойлер'},
+    {name:'Lelit Bianca V3',sub:'Полуавтомат · двойной бойлер'},
+    {name:'ECM Classika PID',sub:'Полуавтомат · однобойлер'},
+    {name:'La Marzocco Linea Mini',sub:'Проф. · двойной бойлер'},
+    {name:'La Marzocco GS3 MP',sub:'Проф. · двойной бойлер'},
+    {name:'Rocket Appartamento',sub:'Полуавтомат · HX бойлер'},
+    {name:'Rocket R58 Cinquantotto',sub:'Полуавтомат · двойной бойлер'},
+    {name:'Decent DE1',sub:'Полуавтомат · профили давления'},
+    {name:'ECM Synchronika',sub:'Полуавтомат · двойной бойлер'},
+    {name:'Profitec Pro 700',sub:'Полуавтомат · двойной бойлер'},
+    {name:'Slayer Single Group',sub:'Проф. · HX бойлер'},
+    {name:'Flair 58',sub:'Ручной рычажный · 58мм'},
+    {name:'Cafelat Robot',sub:'Ручной рычажный'}
+  ],
+  grinder:[
+    {name:'Comandante C40 MK4',sub:'Ручная · нитробладе сталь · 40мм'},
+    {name:'1Zpresso X-Ultra',sub:'Ручная · сталь · 40мм'},
+    {name:'1Zpresso J-Ultra',sub:'Ручная · сталь · 48мм · эспрессо'},
+    {name:'1Zpresso K-Ultra',sub:'Ручная · сталь · 48мм · фильтр'},
+    {name:'1Zpresso Q2',sub:'Ручная · сталь · 38мм · трэвел'},
+    {name:'Timemore C3',sub:'Ручная · сталь · 38мм'},
+    {name:'Timemore C3 Pro',sub:'Ручная · сталь · 38мм'},
+    {name:'Timemore C3 ESP',sub:'Ручная · сталь · 38мм · эспрессо'},
+    {name:'Timemore Chestnut X',sub:'Ручная · сталь · 38мм'},
+    {name:'Kinu M47 Classic',sub:'Ручная · сталь · 47мм'},
+    {name:'Kinu M47 Phoenix',sub:'Ручная · сталь · 47мм'},
+    {name:'Kinu M68',sub:'Ручная · сталь · 68мм · эспрессо'},
+    {name:'Orphan Espresso Lido E',sub:'Ручная · сталь · 48мм'},
+    {name:'Hario Skerton Plus',sub:'Ручная · керамика · 38мм'},
+    {name:'Hario Mini Mill Plus',sub:'Ручная · керамика · 28мм'},
+    {name:'Porlex Mini II',sub:'Ручная · керамика · 35мм'},
+    {name:'Varia VS3',sub:'Ручная · сталь · 48мм'},
+    {name:'Fellow Ode Gen 2',sub:'Электро · плоские · 64мм'},
+    {name:'Fellow Opus',sub:'Электро · конические · 40мм'},
+    {name:'Baratza Encore ESP',sub:'Электро · конические · 40мм'},
+    {name:'Baratza Virtuoso+',sub:'Электро · конические · 40мм'},
+    {name:'Baratza Sette 270',sub:'Электро · конические · 40мм'},
+    {name:'OXO Brew Conical Burr',sub:'Электро · конические · 40мм'},
+    {name:'Breville Smart Grinder Pro',sub:'Электро · конические · 40мм'},
+    {name:'Timemore Electric Nano',sub:'Электро · конические · 38мм'},
+    {name:'Wilfa Svart',sub:'Электро · конические · 40мм'},
+    {name:'Eureka Mignon Filtro',sub:'Электро · плоские · 50мм'},
+    {name:'Niche Zero',sub:'Электро · конические · 63мм'},
+    {name:'Niche Duo',sub:'Электро · конические · 63мм'},
+    {name:'Mahlkönig X54',sub:'Электро · плоские · 54мм'},
+    {name:'Mahlkönig EK43',sub:'Проф. · плоские · 98мм'},
+    {name:'Eureka Mignon Specialita',sub:'Электро · плоские · 55мм'},
+    {name:'Eureka Atom 75',sub:'Электро · плоские · 75мм'},
+    {name:'Mazzer Mini',sub:'Проф. · конические · 58мм'},
+    {name:'DF64 Gen 2',sub:'Электро · плоские · 64мм'},
+    {name:'DF83 V2',sub:'Электро · плоские · 83мм'},
+    {name:'Option-O Lagom P64',sub:'Электро · плоские · 64мм'}
+  ],
+  kettle:[
+    {name:'Fellow Stagg EKG',sub:'Электро · 0.9л · 60–100°C ±1°'},
+    {name:'Fellow Stagg EKG Pro',sub:'Электро · 1.0л · 60–100°C ±1°'},
+    {name:'Fellow Corvo EKG',sub:'Электро · 0.9л · 60–100°C'},
+    {name:'Brewista Artisan',sub:'Электро · 1.0л · 40–100°C ±1°'},
+    {name:'Hario Buono V60 Electric',sub:'Электро · 0.8л · до 100°C'},
+    {name:'Hario Smart G',sub:'Электро · 0.8л · 60–100°C'},
+    {name:'Cosori Gooseneck',sub:'Электро · 0.8л · 40–100°C'},
+    {name:'Bodum Melior',sub:'Электро · 0.8л · до 100°C'},
+    {name:'Bonavita BKE820XL',sub:'Электро · 1.0л · до 100°C'},
+    {name:'KitchenAid Precision',sub:'Электро · 1.5л · 40–100°C'},
+    {name:'Timemore Fish Smart',sub:'Электро · 0.8л · 40–100°C'},
+    {name:'Normcore Pour-over',sub:'Электро · 1.0л · 40–100°C'},
+    {name:'Hario Buono Stovetop',sub:'Плита · нержавейка · 1.2л'},
+    {name:'Takahiro',sub:'Плита · нержавейка · 0.5–0.9л'},
+    {name:'Kalita Wave Kettle',sub:'Плита · нержавейка · 0.7л'}
+  ],
   /* Фильтры — только пользовательские (пачки), база пустая */
   filter:[],
-  acc:[{name:'Acaia Pearl',sub:'Весы, 0.1г'},{name:'Acaia Lunar',sub:'Весы эспрессо'},{name:'Timemore Black Mirror',sub:'Весы с таймером'},{name:'Kruve Sifter',sub:'Сито'},{name:'OCD Distributor',sub:'Дистрибьютор'},{name:'WDT Tool',sub:'Игла распределения'},{name:'Pullman Tamper',sub:'Темпер 58.5мм'},{name:'Hario Server 600ml',sub:'Джаг стекло'},{name:'Fellow Stagg Server',sub:'Джаг с термометром'}]
+  acc:[
+    {name:'Acaia Pearl',sub:'Весы · 0.1г · таймер · Bluetooth'},
+    {name:'Acaia Pearl S',sub:'Весы эспрессо · 0.1г · Bluetooth'},
+    {name:'Acaia Lunar S',sub:'Весы эспрессо · 0.1г · Bluetooth'},
+    {name:'Acaia Pyxis',sub:'Весы эспрессо · 0.1г · Bluetooth'},
+    {name:'Timemore Black Mirror Pro',sub:'Весы · 0.1г · таймер'},
+    {name:'Timemore Black Mirror Basic 2',sub:'Весы · 0.1г · таймер'},
+    {name:'Timemore Cube 3.0',sub:'Весы эспрессо · 0.1г'},
+    {name:'Fellow Tally Pro',sub:'Весы · 0.1г · таймер'},
+    {name:'Fellow Tally',sub:'Весы · 1г · таймер'},
+    {name:'Hario V60 Drip Scale',sub:'Весы · 0.1г · таймер'},
+    {name:'Normcore Pocket Scale V3',sub:'Весы эспрессо · 0.1г'},
+    {name:'Pullman Big Step Tamper',sub:'Темпер · 57–58.5мм'},
+    {name:'Normcore Spring V4',sub:'Темпер калиброванный · 45.5–58.5мм'},
+    {name:'Barista Hustle Tamper',sub:'Темпер · 58.4мм'},
+    {name:'Cafelat Tamper',sub:'Темпер · 58мм'},
+    {name:'Normcore Heavy Distributor',sub:'Дистрибьютор · 58.5мм'},
+    {name:'Ona Coffee OCD v3',sub:'Дистрибьютор · пропеллер · 58мм'},
+    {name:'Nucleus NCD',sub:'Дистрибьютор · пропеллер · 58.5мм'},
+    {name:'WDT Tool',sub:'Игла распределения'},
+    {name:'Fellow Prismo',sub:'Металлический фильтр для AeroPress'},
+    {name:'Fellow Atmos Canister',sub:'Вакуумное хранение кофе'},
+    {name:'Airscape Canister',sub:'Хранение кофе'},
+    {name:'Normcore Puck Screen 58мм',sub:'Диспершн-скрин'},
+    {name:'VST Precision Basket 58мм',sub:'Корзина портафильтра'},
+    {name:'Dosing Funnel',sub:'Воронка для дозирования'},
+    {name:'Knock Box',sub:'Контейнер для жмыха'},
+    {name:'Hario Server 600ml',sub:'Джаг · стекло'},
+    {name:'Fellow Stagg Server',sub:'Джаг с термометром'}
+  ]
 };
 
 /* ── COMMUNITY FEED (хардкод, тред о кофе) ── */
@@ -785,21 +1414,38 @@ const SEED={
   filters:[],
   equipment:[],
   brews:[],
+  log:[],
+  record:25,
   id:0
 };
-let S=JSON.parse(localStorage.getItem('cj_clean')||'null')||JSON.parse(JSON.stringify(SEED));
-function save(){localStorage.setItem('cj_clean',JSON.stringify(S))}
+/* демо-журнал завариваний за май 2026 (для календаря и серии) */
+function makeLog(){
+  const M=[['V60','filter'],['Origami','filter'],['Flower','filter'],['Эспрессо','espresso'],['Aeropress','other'],['Кемекс','filter']];
+  const BEANS=['Эфиопия Иргачеффе','Колумбия Уила','Кения Ньери','Бразилия Бурбон','Гватемала Антигуа','Руанда Киву'];
+  // день: [ [методIdx, мл], ... ]
+  const PLAN={
+    1:[[0,240],[1,240],[3,240]], 2:[[0,240],[1,112]], 3:[[0,240],[3,56]],
+    4:[[0,240]], 5:[[1,112]], 8:[[4,56]], 9:[[0,240],[1,240]], 10:[[0,240]],
+    12:[[0,240],[1,168]], 13:[[0,296]], 14:[[0,180],[3,116]], 15:[[1,240]],
+    17:[[0,240]], 18:[[3,112]], 19:[[0,240],[4,112]], 20:[[0,240]],
+    21:[[0,240],[1,240],[3,240]], 22:[[0,180],[3,116]], 23:[[0,180],[4,116]],
+    24:[[0,180],[3,116]], 25:[[0,240]], 26:[[1,112]], 27:[[0,240]],
+    28:[[0,120],[4,120]], 29:[[0,176],[3,176]], 30:[[0,240],[1,240]]
+  };
+  const out=[];let id=900;
+  Object.keys(PLAN).forEach(ds=>{const d=+ds;
+    PLAN[d].forEach((e,i)=>{const m=M[e[0]];
+      out.push({id:id++,ts:new Date(2026,4,d,8+i*4,30).getTime(),vol:e[1],cat:m[1],method:m[0],bean:BEANS[(d+i)%BEANS.length],rating:+(7.4+((d*3+i*5)%13)/4).toFixed(1)});
+    });
+  });
+  return out;
+}
+let S=JSON.parse(localStorage.getItem('cj_v7')||'null')||JSON.parse(JSON.stringify(SEED));
+if(!S.log||!S.log.length)S.log=makeLog();
+if(!S.record)S.record=25;
+function save(){localStorage.setItem('cj_v7',JSON.stringify(S))}
 function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sc=s%60;return m+':'+(sc<10?'0':'')+sc}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
-
-const NB_MAP={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile','scr-brew':null};
-function showScr(id){
-  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  const nb=NB_MAP[id];if(nb)document.getElementById(nb).classList.add('on');
-  ({'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf})[id]?.();
-}
 
 function openOv(id){
   if(id==='ov-settings'){
@@ -833,6 +1479,15 @@ function openOv(id){
           <i class="ti ${sel?'ti-check" style="color:#4CAF50':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
       :'<div style="padding:20px;text-align:center;color:#666;font-size:13px">Нет фильтров — добавь в Девайсы → Фильтры</div>';
   }
+  if(id==='ov-bgrinder'){
+    const gr=S.equipment.filter(e=>e.type==='grinder');
+    document.getElementById('bgrinder-pick').innerHTML=gr.length
+      ?gr.map(g=>{const sel=BS.grinder&&BS.grinder.id===g.id;
+        return`<div class="pick-item" onclick="bSelGrinder(${g.id})">
+          <div style="flex:1;min-width:0;margin-right:10px"><div class="pick-main">${g.name}</div><div class="pick-sub">Кофемолка</div></div>
+          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
+      :'<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Нет кофемолок — добавь в Девайсы → Кофемолки</div>';
+  }
   document.getElementById(id).classList.add('open');
 }
 function closeOv(id){document.getElementById(id).classList.remove('open')}
@@ -846,7 +1501,141 @@ function setFeedTab(t){
   document.getElementById('feed-sub').textContent=t==='mine'?'Мои рецепты':'Обсуждения и рецепты';
   renderFeed();
 }
+/* ── СЕРИЯ + КАЛЕНДАРЬ ── */
+function methodCat(m){m=(m||'').toLowerCase();if(m.includes('эспрес')||m.includes('espres'))return 'espresso';if(m.includes('aero')||m.includes('аэро')||m.includes('френч')||m.includes('гейзер')||m.includes('турка')||m.includes('пресс'))return 'other';return 'filter';}
+function logToday(){let mx=0;S.log.forEach(e=>{if(e.ts>mx)mx=e.ts});const d=mx?new Date(mx):new Date();d.setHours(12,0,0,0);return d;}
+function dayKey(d){return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
+function logDaySet(){return new Set(S.log.map(e=>dayKey(new Date(e.ts))));}
+function calcStreak(){const set=logDaySet();let n=0;const c=logToday();for(;;){if(set.has(dayKey(c))){n++;c.setDate(c.getDate()-1);}else break;}return n;}
+function logByDay(year,month){const map={};S.log.forEach(e=>{const d=new Date(e.ts);if(d.getFullYear()===year&&d.getMonth()===month){const k=d.getDate();(map[k]=map[k]||{vol:0,items:[]});map[k].vol+=e.vol;map[k].items.push(e);}});Object.values(map).forEach(o=>o.items.sort((a,b)=>a.ts-b.ts));return map;}
+
+let statsPage=0,_statsInit=false;
+function statsGo(i){statsPage=Math.max(0,Math.min(1,i));const tr=document.getElementById('stats-track');if(tr){tr.style.transition='';tr.style.transform='translateX(-'+(statsPage*100)+'%)';}document.getElementById('pd0').classList.toggle('on',statsPage===0);document.getElementById('pd1').classList.toggle('on',statsPage===1);}
+function initStats(){
+  if(_statsInit)return;const pager=document.querySelector('.stats-pager');const tr=document.getElementById('stats-track');if(!pager||!tr)return;_statsInit=true;
+  let sx=0,sy=0,dx=0,drag=false,w=0,lock=null;
+  pager.addEventListener('pointerdown',e=>{drag=true;sx=e.clientX;sy=e.clientY;dx=0;lock=null;w=pager.clientWidth;tr.style.transition='none';});
+  window.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;const dy=e.clientY-sy;
+    if(lock===null&&(Math.abs(dx)>6||Math.abs(dy)>6))lock=Math.abs(dx)>Math.abs(dy)?'x':'y';
+    if(lock==='x'){e.preventDefault();const base=-statsPage*w;let t=Math.max(-w,Math.min(0,base+dx));tr.style.transform='translateX('+t+'px)';}
+  },{passive:false});
+  window.addEventListener('pointerup',()=>{if(!drag)return;drag=false;tr.style.transition='';if(lock==='x'&&Math.abs(dx)>w*0.18)statsGo(statsPage+(dx<0?1:-1));else statsGo(statsPage);lock=null;});
+  pager.addEventListener('dragstart',e=>e.preventDefault());
+}
+function toggleStreak(){const p=document.getElementById('streak-panel');const open=p.classList.toggle('open');document.getElementById('hdr-streak').classList.toggle('lit',open);if(open){renderStreak();renderCalendar();}}
+function renderStreak(){
+  const streak=calcStreak();const rec=Math.max(S.record||0,streak);
+  const hn=document.getElementById('hdr-streak-num');if(hn)hn.textContent=streak;
+  const td=logToday();const MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  const pn=document.getElementById('pdate-num');if(pn)pn.textContent=td.getDate();
+  const pm=document.getElementById('pdate-mon');if(pm)pm.textContent=MON[td.getMonth()];
+  const sn=document.getElementById('se-num');if(sn)sn.textContent=streak;
+  const sr=document.getElementById('se-rec');if(sr)sr.textContent=rec;
+  const C=2*Math.PI*54,frac=Math.min(streak/Math.max(rec,1),1);
+  const arc=document.getElementById('se-arc');
+  if(arc){arc.setAttribute('stroke-dasharray',C.toFixed(1));arc.setAttribute('stroke-dashoffset',C.toFixed(1));requestAnimationFrame(()=>requestAnimationFrame(()=>arc.setAttribute('stroke-dashoffset',(C*(1-frac)).toFixed(1))));}
+  const t=logToday(),dow=(t.getDay()+6)%7,mon=new Date(t);mon.setDate(t.getDate()-dow);
+  const set=logDaySet(),L=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];let h='';
+  for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);const on=set.has(dayKey(d)),fut=dayKey(d)!==dayKey(t)&&d>t;h+=`<div class="se-wd"><span class="dot ${on?'on':''} ${fut?'future':''}"></span><span class="lbl">${L[i]}</span></div>`;}
+  document.getElementById('se-week').innerHTML=h;
+}
+
+const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+let calState=null;
+function calInit(){if(calState)return;const t=logToday();calState={y:t.getFullYear(),m:t.getMonth(),mode:'vol',sel:null};}
+function calNav(dir){calInit();calState.sel=null;let m=calState.m+dir,y=calState.y;if(m<0){m=11;y--;}if(m>11){m=0;y++;}calState.m=m;calState.y=y;renderCalendar();}
+function calMode(mode){calInit();calState.mode=mode;renderCalendar();}
+function calTap(d){calInit();calState.sel=calState.sel===d?null:d;renderCalendar();}
+function plural(n,a,b,c){const m10=n%10,m100=n%100;return m10===1&&m100!==11?a:(m10>=2&&m10<=4&&(m100<10||m100>=20)?b:c);}
+function renderCalendar(){
+  calInit();
+  const map=logByDay(calState.y,calState.m);
+  const lead=(new Date(calState.y,calState.m,1).getDay()+6)%7;
+  const dim=new Date(calState.y,calState.m+1,0).getDate();
+  const t=logToday(),isTM=t.getFullYear()===calState.y&&t.getMonth()===calState.m;
+  let grid='';
+  for(let i=0;i<lead;i++)grid+='<div class="cal-cell blank"></div>';
+  for(let d=1;d<=dim;d++){
+    const day=map[d],has=!!day,sel=calState.sel===d,today=isTM&&t.getDate()===d;
+    let dots='';if(has)day.items.slice(0,3).forEach(it=>dots+=`<i class="${it.cat}"></i>`);
+    grid+=`<div class="cal-cell ${calState.mode==='ind'?'ind-mode':''} ${has?'has':''} ${sel?'sel':''} ${today?'today':''}" ${has?`onclick="calTap(${d})"`:''}>
+      <span class="cc-d">${d}</span>
+      ${has&&calState.mode==='vol'?`<span class="cc-v">${day.vol}мл</span>`:''}
+      ${has&&calState.mode==='ind'?`<span class="cc-dots">${dots}</span>`:''}
+    </div>`;
+  }
+  let detailHTML='',detailOpen=false;
+  if(calState.sel&&map[calState.sel]){
+    const day=map[calState.sel],cnt=day.items.length,word=plural(cnt,'заваривание','заваривания','завариваний');
+    const items=day.items.map(it=>`<div class="cd-item"><span class="cd-dot ${it.cat}"></span><span class="cd-bean">${it.bean}</span><span class="cd-method">${it.method}</span><span class="cd-vol">${it.vol}мл</span><span class="cd-rate"><i class="ti ti-star-filled" style="font-size:10px;color:var(--copper-lt)"></i>${(+it.rating).toFixed(1)}</span></div>`).join('');
+    detailHTML=`<div class="cd-head"><i class="ti ti-coffee" aria-hidden="true"></i>${calState.sel} ${MONTHS[calState.m].toLowerCase()} · ${day.vol} мл · ${cnt} ${word}</div>${items}`;
+    detailOpen=true;
+  }
+  document.querySelectorAll('.cal-card').forEach(card=>{
+    const ml=card.querySelector('.cal-month-lbl');if(ml)ml.textContent=MONTHS[calState.m]+' '+calState.y;
+    const g=card.querySelector('.cal-grid');if(g)g.innerHTML=grid;
+    const cv=card.querySelector('.cm-vol'),ci=card.querySelector('.cm-ind');
+    if(cv)cv.classList.toggle('on',calState.mode==='vol');
+    if(ci)ci.classList.toggle('on',calState.mode==='ind');
+    const det=card.querySelector('.cal-detail');
+    if(det){if(detailOpen){det.innerHTML=detailHTML;det.classList.add('open');}else{det.classList.remove('open');det.innerHTML='';}}
+  });
+}
+
+/* профиль: переключатель Календарь / Статистика */
+let profV='cal';
+function profView(v){
+  profV=v;
+  document.getElementById('jt-cal').classList.toggle('on',v==='cal');
+  document.getElementById('jt-stat').classList.toggle('on',v==='stat');
+  document.getElementById('prof-cal-view').style.display=v==='cal'?'block':'none';
+  document.getElementById('prof-stat-view').style.display=v==='stat'?'block':'none';
+  if(v==='cal')renderCalendar();else renderStat();
+}
+const STAT_CATS=[
+  {id:'filter',label:'Фильтр / пуровер',color:'var(--copper-lt)',raw:'#E8A860'},
+  {id:'espresso',label:'Эспрессо-напитки',color:'var(--steel)',raw:'#6f93b0'},
+  {id:'other',label:'Аэропресс / другое',color:'var(--neutral)',raw:'#9b958c'}
+];
+/* профиль: сворачиваемая статистика */
+let statOpen=false;
+function toggleStat(){statOpen=!statOpen;document.getElementById('stat-toggle').classList.toggle('open',statOpen);document.getElementById('stat-collapse').classList.toggle('open',statOpen);if(statOpen)renderStat();}
+function toggleProfCal(){const p=document.getElementById('prof-cal-panel');const open=p.classList.toggle('open');document.getElementById('pdate-btn').classList.toggle('lit',open);if(open)renderCalendar();}
+function renderStat(){
+  const box=document.getElementById('prof-stat-view');if(!box)return;
+  const agg={};let total=0,cups=0;const days=new Set();
+  S.log.forEach(e=>{const c=e.cat||'filter';agg[c]=agg[c]||{vol:0,n:0};agg[c].vol+=e.vol;agg[c].n++;total+=e.vol;cups++;days.add(dayKey(new Date(e.ts)));});
+  if(!cups){box.innerHTML=`<div class="empty" style="padding:34px 0"><i class="ti ti-chart-bar" aria-hidden="true"></i><div class="empty-t">Пока нет данных</div><div class="empty-s">Свари кофе — здесь появится статистика</div></div>`;return;}
+  const max=Math.max(...STAT_CATS.map(c=>(agg[c.id]||{vol:0}).vol),1);
+  const liters=(total/1000).toFixed(1);
+  const bars=STAT_CATS.map(c=>{const a=agg[c.id]||{vol:0,n:0};const pct=Math.round(a.vol/total*100)||0;const w=Math.round(a.vol/max*100);
+    return`<div class="sbar">
+      <div class="sbar-top"><span class="sbar-dot" style="background:${c.color}"></span><span class="sbar-name">${c.label}</span><span class="sbar-cnt">${a.n}×</span><span class="sbar-val">${a.vol} мл · ${pct}%</span></div>
+      <div class="sbar-track"><div class="sbar-fill" style="width:${w}%;background:linear-gradient(90deg,${c.raw}aa,${c.raw})"></div></div>
+    </div>`;}).join('');
+  const avgCup=Math.round(total/cups),avgDay=Math.round(total/days.size);
+  box.innerHTML=`<div class="stat-card">
+    <div class="stat-tot"><span class="stat-tot-v">${liters}</span><span class="stat-tot-u">литров кофе</span></div>
+    <div class="stat-tot-sub">
+      <div class="stat-pill"><b>${total.toLocaleString('ru-RU')}</b><span>мл всего</span></div>
+      <div class="stat-pill"><b>${cups}</b><span>чашек</span></div>
+      <div class="stat-pill"><b>${days.size}</b><span>дней</span></div>
+    </div>
+    <div class="stat-seclbl">Сравнение по типам напитка</div>
+    ${bars}
+    <div class="stat-mini">
+      <div class="mcell"><div class="mcell-v">${avgCup}<span style="font-size:10px"> мл</span></div><div class="mcell-l">средн. чашка</div></div>
+      <div class="mcell"><div class="mcell-v">${avgDay}<span style="font-size:10px"> мл</span></div><div class="mcell-l">в день</div></div>
+      <div class="mcell"><div class="mcell-v">${(cups/days.size).toFixed(1)}</div><div class="mcell-l">чашек/день</div></div>
+    </div>
+  </div>`;
+}
+
 function renderFeed(){
+  const hs=document.getElementById('hdr-streak');
+  if(hs)hs.classList.toggle('show',feedTab==='mine');
+  if(feedTab!=='mine'){const p=document.getElementById('streak-panel');if(p&&p.classList.contains('open')){p.classList.remove('open');hs&&hs.classList.remove('lit');}}
+  else{renderStreak();renderCalendar();}
   const el=document.getElementById('feed-list');
   if(feedTab==='comm'){renderCommunity(el);return}
   if(!S.brews.length){el.innerHTML=`<div class="empty"><i class="ti ti-coffee" aria-hidden="true"></i><div class="empty-t">Нет рецептов</div><div class="empty-s">Нажми <i class="ti ti-droplet"></i> внизу чтобы<br>записать первое заваривание</div></div>`;return}
@@ -913,12 +1702,13 @@ function togglePostLike(i){commLikes[i]=!commLikes[i];renderFeed()}
 /* ── BEANS ── */
 function renderBeans(){
   const el=document.getElementById('bean-list');
-  if(!S.beans.length){el.innerHTML=`<div class="empty" style="padding:40px 0"><i class="ti ti-package" aria-hidden="true"></i><div class="empty-t">Нет зерна</div><div class="empty-s">Добавь первую пачку</div></div>`;return}
+  const addTile=`<button class="bean-add" onclick="openOv('ov-bean')"><i class="ti ti-plus" aria-hidden="true"></i> Добавить пачку</button>`;
+  if(!S.beans.length){el.innerHTML=`<div class="empty" style="padding:34px 0 18px"><i class="ti ti-package" aria-hidden="true"></i><div class="empty-t">Нет зерна</div><div class="empty-s">Добавь первую пачку</div></div>${addTile}`;return}
   el.innerHTML=S.beans.map(b=>{const pct=Math.round(b.current/b.total*100);return`<div class="bean-card">
     <div class="bean-icon"><i class="ti ti-coffee" aria-hidden="true"></i></div>
     <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div><div style="font-size:12px;color:#888;margin-top:2px">${b.roaster||'—'} · ${b.current}г / ${b.total}г</div><div style="height:2px;background:#222;border-radius:1px;margin-top:7px;overflow:hidden"><div style="height:100%;background:#4CAF50;border-radius:1px;width:${pct}%"></div></div></div>
     <button class="del-btn" onclick="delBean(${b.id})" aria-label="Удалить"><i class="ti ti-trash" aria-hidden="true"></i></button>
-  </div>`;}).join('');
+  </div>`;}).join('')+addTile;
 }
 function addBean(){
   const name=document.getElementById('bn-name').value.trim();if(!name)return;
@@ -1018,6 +1808,13 @@ function renderProf(){
   document.getElementById('st-i').textContent=S.beans.length;
   document.getElementById('st-e').textContent=S.equipment.length;
   document.getElementById('st-s').textContent=p.stazh||'—';
+  renderStreak();
+  const pcp=document.getElementById('prof-cal-panel');if(pcp)pcp.classList.remove('open');
+  const pdb=document.getElementById('pdate-btn');if(pdb)pdb.classList.remove('lit');
+  statOpen=false;
+  document.getElementById('stat-toggle').classList.remove('open');
+  document.getElementById('stat-collapse').classList.remove('open');
+  renderStat();
 }
 function saveProf(){
   S.profile.name=document.getElementById('s-name').value.trim();
@@ -1028,7 +1825,7 @@ function saveProf(){
 }
 
 /* ── BREW STATE ── */
-let BS={bean:null,filter:null,dripper:null,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,phaseStart:null,elapsed:0,phaseMs:0,steps:[],pourCnt:0,phase:'idle',pouredFixed:0,firstDone:false};
+let BS={bean:null,filter:null,dripper:null,grinder:null,clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,phaseStart:null,elapsed:0,phaseMs:0,steps:[],pourCnt:0,phase:'idle',pouredFixed:0,firstDone:false};
 /* RATING STATE */
 let RS={rating:8.0,flavors:[],aroma:[],notes:''};
 
@@ -1048,6 +1845,28 @@ function setWet(wet){
 }
 function bSelBean(id){BS.bean=S.beans.find(b=>b.id===id);if(!BS.bean)return;const pct=Math.round(BS.bean.current/BS.bean.total*100);document.getElementById('bsel-bean').textContent=BS.bean.name;document.getElementById('bsel-bean-sub').textContent=BS.bean.roaster+' · '+BS.bean.current+'г / '+BS.bean.total+'г';document.getElementById('bbean-bar').style.display='block';document.getElementById('bbean-fill').style.width=pct+'%';document.getElementById('brew-title').textContent=BS.bean.name;closeOv('ov-bbean');}
 function bSelFilter(id){BS.filter=S.filters.find(f=>f.id===id);if(!BS.filter)return;const pct=Math.round(BS.filter.current/BS.filter.total*100);document.getElementById('bsel-filter').textContent=BS.filter.name;document.getElementById('bsel-filter-sub').textContent='Осталось '+BS.filter.current+' / '+BS.filter.total+' шт';document.getElementById('bfilter-bar').style.display='block';document.getElementById('bfilter-fill').style.width=pct+'%';closeOv('ov-bfilter');}
+
+function bSelGrinder(id){
+  BS.grinder=S.equipment.find(e=>e.id===id);if(!BS.grinder)return;
+  document.getElementById('bsel-grinder').textContent=BS.grinder.name;
+  document.getElementById('bsel-grinder-sub').textContent=BS.grinder.sub||'кофемолка выбрана';
+  closeOv('ov-bgrinder');
+}
+
+function clicksAdj(delta){
+  BS.clicks=Math.max(1,Math.min(200,BS.clicks+delta));
+  document.getElementById('clicks-val').textContent=BS.clicks;
+}
+
+function openGrinderPick(){
+  const grinders=S.equipment.filter(e=>e.type==='grinder');
+  document.getElementById('bgrinder-pick').innerHTML=grinders.length
+    ?grinders.map(g=>{const sel=BS.grinder&&BS.grinder.id===g.id;return`<div class="pick-item" onclick="bSelGrinder(${g.id})">
+      <div style="flex:1;min-width:0"><div class="pick-main">${g.name}</div></div>
+      <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:var(--txt3)'};font-size:16px" aria-hidden="true"></i>
+    </div>`;}).join('')
+    :'<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Нет кофемолок — добавь в Девайсы → Кофемолки</div>';
+}
 
 /* ── DRIPPER VISUALS ── */
 function dripperType(name){
@@ -1121,6 +1940,7 @@ function brewStart(){
   document.getElementById('b-pause-icon').style.color='#4CAF50';document.getElementById('b-p-ring').style.strokeDashoffset='131.9';
   document.getElementById('b-log-box').innerHTML='';document.getElementById('b-log-wrap').style.display='none';
   document.getElementById('b-bar-markers').innerHTML='';document.getElementById('b-bar-labels').innerHTML='';document.getElementById('b-hints').innerHTML='';
+  showPauseActions(false);resetPauseActions();
   document.getElementById('brew-sub').textContent='1:'+BS.ratio+' · '+document.getElementById('b-temp-sl').value+'°C';
   bRenderDripper();bDrip(false);
   const liq0=document.getElementById('vessel-liquid');if(liq0)liq0.setAttribute('transform','translate(0,197)');
@@ -1155,32 +1975,159 @@ function bUpdateBar(projected,totalOverride){
   else document.getElementById('b-hints').innerHTML='';
 }
 function bOnMl(){const v=parseFloat(document.getElementById('b-ml-inp').value)||0;bUpdateBar(BS.pouredFixed+v);}
+
+/* ── ДЕЙСТВИЯ В ПАУЗЕ ── */
+const ACT_DURATION=15; // секунд
+const ACT_CIRC=100.5;  // 2π×16
+const actTimers={};    // {id: intervalId}
+const actStarted={};   // {id: Date}
+
+function showPauseActions(show){
+  const w=document.getElementById('pause-actions-wrap');
+  if(w)w.style.display=show?'block':'none';
+}
+function resetPauseActions(){
+  ['stir','swirl','shake'].forEach(id=>{
+    clearInterval(actTimers[id]);delete actTimers[id];delete actStarted[id];
+    const btn=document.getElementById('act-'+id);
+    if(btn)btn.classList.remove('done','pulsing','active-now');
+    const ring=document.getElementById('ring-'+id);
+    if(ring)ring.style.strokeDashoffset=ACT_CIRC;
+    const timer=document.getElementById('timer-'+id);
+    if(timer)timer.textContent='';
+  });
+}
+function brewDoAction(id,btn){
+  if(BS.phase!=='pause')return;
+  const isDone=btn.classList.contains('done');
+  const isActive=btn.classList.contains('active-now');
+
+  if(isActive){
+    // Останавливаем — сохраняем как выполненное
+    clearInterval(actTimers[id]);delete actTimers[id];
+    const elapsed=actStarted[id]?Math.round((Date.now()-actStarted[id])/1000):ACT_DURATION;
+    btn.classList.remove('active-now');btn.classList.add('done','pulsing');
+    setTimeout(()=>btn.classList.remove('pulsing'),800);
+    const ring=document.getElementById('ring-'+id);
+    if(ring)ring.style.strokeDashoffset='0';
+    const timer=document.getElementById('timer-'+id);
+    if(timer)timer.textContent=elapsed+'с';
+    const labels={stir:'Перемешивание',swirl:'Свэрл',shake:'Взбалтывание'};
+    const lbl=labels[id];
+    BS.steps.push({type:'action',t:BS.elapsed,label:lbl,dur:elapsed,ml:null});
+    // Добавляем в лог паузы
+    const logIdx=BS.steps.length-1;
+    bAddLog('action',logIdx,elapsed,lbl,id);
+    return;
+  }
+  if(isDone){
+    // Снимаем
+    btn.classList.remove('done');
+    const ring=document.getElementById('ring-'+id);if(ring)ring.style.strokeDashoffset=ACT_CIRC;
+    const timer=document.getElementById('timer-'+id);if(timer)timer.textContent='';
+    const labels={stir:'Перемешивание',swirl:'Свэрл',shake:'Взбалтывание'};
+    const lbl=labels[id];
+    for(let i=BS.steps.length-1;i>=0;i--){
+      if(BS.steps[i].type==='action'&&BS.steps[i].label===lbl){BS.steps.splice(i,1);break;}
+    }
+    return;
+  }
+  // Запускаем секундомер
+  btn.classList.add('active-now');
+  actStarted[id]=Date.now();
+  const ring=document.getElementById('ring-'+id);
+  const timerEl=document.getElementById('timer-'+id);
+  actTimers[id]=setInterval(()=>{
+    const sec=Math.min(Math.round((Date.now()-actStarted[id])/1000),ACT_DURATION);
+    const pct=sec/ACT_DURATION;
+    if(ring)ring.style.strokeDashoffset=(ACT_CIRC*(1-pct)).toFixed(2);
+    if(timerEl)timerEl.textContent=sec+'с';
+    if(sec>=ACT_DURATION){
+      clearInterval(actTimers[id]);delete actTimers[id];
+      btn.classList.remove('active-now');btn.classList.add('done','pulsing');
+      setTimeout(()=>btn.classList.remove('pulsing'),800);
+      if(ring)ring.style.strokeDashoffset='0';
+      const labels={stir:'Перемешивание',swirl:'Свэрл',shake:'Взбалтывание'};
+      const lbl=labels[id];
+      BS.steps.push({type:'action',t:BS.elapsed,label:lbl,dur:ACT_DURATION,ml:null});
+      const logIdx=BS.steps.length-1;
+      bAddLog('action',logIdx,ACT_DURATION,lbl,id);
+    }
+  },100);
+}
+
 function bHandlePour(){
-  if(BS.phase==='pour')return;if(BS.pourCnt>=BS.pours)return;
-  if(BS.phase==='pause'){const dur=bStopPhase();clearInterval(BS.pauseInt);BS.pauseInt=null;BS.steps.push({type:'pause',t:BS.elapsed,ph:dur,ml:null});bAddLog('pause',BS.steps.length-1,BS.elapsed,dur,null);document.getElementById('b-p-ring').style.strokeDashoffset='131.9';document.getElementById('b-pause-btn').className='action-btn btn-pause';document.getElementById('b-pause-lbl').textContent='Пауза';document.getElementById('b-pause-sub').textContent='пролив фильтра';document.getElementById('b-pause-icon').style.color='#4CAF50';}
-  bStartMain();BS.pourCnt++;BS.phase='pour';
-  document.getElementById('b-pour-cnt').textContent=BS.pourCnt;document.getElementById('b-pour-btn').className='action-btn btn-pour act';document.getElementById('b-pour-lbl').textContent='Вливаем...';document.getElementById('b-pour-sub').textContent='жми паузу когда закончил';
-  document.getElementById('b-ml-wrap').style.display='block';document.getElementById('b-ml-inp').value='';document.getElementById('b-ml-inp').focus();
+  if(BS.phase==='pour')return;
+  if(BS.phase==='pause'){
+    const dur=bStopPhase();clearInterval(BS.pauseInt);BS.pauseInt=null;
+    BS.steps.push({type:'pause',t:BS.elapsed,ph:dur,ml:null});
+    bAddLog('pause',BS.steps.length-1,BS.elapsed,dur,null);
+    document.getElementById('b-p-ring').style.strokeDashoffset='131.9';
+    document.getElementById('b-pause-btn').className='action-btn btn-pause';
+    document.getElementById('b-pause-lbl').textContent='Пауза';
+    document.getElementById('b-pause-sub').textContent='пролив фильтра';
+    document.getElementById('b-pause-icon').style.color='#4CAF50';
+    showPauseActions(false);resetPauseActions();
+  }
+  bStartMain();
+  if(BS.pourCnt<BS.pours)BS.pourCnt++;
+  BS.phase='pour';
+  document.getElementById('b-pour-cnt').textContent=BS.pourCnt;
+  document.getElementById('b-pour-btn').className='action-btn btn-pour act';
+  document.getElementById('b-pour-btn').disabled=false;
+  document.getElementById('b-pour-lbl').textContent='Вливаем...';
+  document.getElementById('b-pour-sub').textContent='жми паузу когда закончил';
+  document.getElementById('b-ml-wrap').style.display='block';
+  document.getElementById('b-ml-inp').value='';
+  document.getElementById('b-ml-inp').focus();
   bStartPhase('Влив '+BS.pourCnt,'#4A9EDB');bDrip(true);
 }
+
 function bHandlePause(){
   if(BS.phase==='pause')return;if(BS.phase!=='pour')return;
-  const v=parseFloat(document.getElementById('b-ml-inp').value)||0;const dur=bStopPhase();BS.pouredFixed+=v;
-  const idx=BS.steps.length;BS.steps.push({type:'pour',t:BS.elapsed,ph:dur,ml:v});bAddLog('pour',idx,BS.elapsed,dur,v);
-  if(!BS.firstDone)BS.firstDone=true;bUpdateBar(BS.pouredFixed);
-  document.getElementById('b-pour-btn').className='action-btn btn-pour';document.getElementById('b-pour-lbl').textContent='Влив';document.getElementById('b-ml-wrap').style.display='none';document.getElementById('b-ml-inp').value='';
-  document.getElementById('b-pour-sub').textContent=BS.pourCnt>=BS.pours?'все вливания выполнены':'следующий влив';
-  if(BS.pourCnt>=BS.pours)document.getElementById('b-pour-btn').disabled=true;
-  BS.phase='pause';bDrip(false);document.getElementById('b-pause-btn').className='action-btn btn-pause act';document.getElementById('b-pause-lbl').textContent='Пролив...';document.getElementById('b-pause-icon').style.color='#fff';
+  const v=parseFloat(document.getElementById('b-ml-inp').value)||0;
+  const dur=bStopPhase();BS.pouredFixed+=v;
+  const idx=BS.steps.length;
+  BS.steps.push({type:'pour',t:BS.elapsed,ph:dur,ml:v});
+  bAddLog('pour',idx,BS.elapsed,dur,v);
+  if(!BS.firstDone)BS.firstDone=true;
+  bUpdateBar(BS.pouredFixed);
+  document.getElementById('b-pour-btn').className='action-btn btn-pour';
+  document.getElementById('b-pour-btn').disabled=false;
+  document.getElementById('b-pour-lbl').textContent='Влив';
+  document.getElementById('b-ml-wrap').style.display='none';
+  document.getElementById('b-ml-inp').value='';
+  const remaining=Math.round(BS.dose*BS.ratio)-BS.pouredFixed;
+  document.getElementById('b-pour-sub').textContent=remaining>1?'ещё ~'+Math.round(remaining)+' мл':'дожать →';
+  BS.phase='pause';bDrip(false);
+  showPauseActions(true);
+  document.getElementById('b-pause-btn').className='action-btn btn-pause act';
+  document.getElementById('b-pause-lbl').textContent='Пролив...';
+  document.getElementById('b-pause-icon').style.color='#fff';
   bStartPhase('Пауза','#4CAF50');
-  const ring=document.getElementById('b-p-ring'),c=131.9,t0=Date.now();clearInterval(BS.pauseInt);
-  BS.pauseInt=setInterval(()=>{const el=Date.now()-t0,p=Math.min(el/30000,1);ring.style.strokeDashoffset=(c-c*p).toFixed(2);document.getElementById('b-pause-sub').textContent=Math.round(el/1000)+' с';if(p>=1){clearInterval(BS.pauseInt);BS.pauseInt=null;}},100);
+  const dname=(BS.dripper?BS.dripper.name:'').toLowerCase();
+  const isQuick=dname.includes('v60')||dname.includes('chemex')||dname.includes('aeropress')||dname.includes('aero');
+  const pauseMax=isQuick?60000:30000;
+  const ring=document.getElementById('b-p-ring'),c=131.9,t0=Date.now();
+  clearInterval(BS.pauseInt);
+  BS.pauseInt=setInterval(()=>{
+    const el=Date.now()-t0,p=Math.min(el/pauseMax,1);
+    ring.style.strokeDashoffset=(c-c*p).toFixed(2);
+    document.getElementById('b-pause-sub').textContent=Math.round(el/1000)+' с';
+    if(p>=1){clearInterval(BS.pauseInt);BS.pauseInt=null;}
+  },100);
 }
 function bAddLog(type,idx,t,ph,ml){
   document.getElementById('b-log-wrap').style.display='block';
   const d=document.createElement('div');d.className='step-row';d.id='lr-'+idx;
-  if(type==='pour'){d.innerHTML=`<span class="sb sb-p">Влив</span><span style="font-size:12px;font-weight:600;color:#fff;min-width:36px">${fmt(t)}</span><span style="font-size:12px;color:#555;flex:1;padding-left:5px">${fmt(ph)}</span><input type="number" step="0.1" class="edit-ml" id="em-${idx}" value="${ml!=null?ml.toFixed(1):''}"><button class="edit-apply" onclick="bEditMl(${idx})"><i class="ti ti-check" aria-hidden="true"></i></button>`;}
-  else{d.innerHTML=`<span class="sb sb-pa">Пауза</span><span style="font-size:12px;font-weight:600;color:#fff;min-width:36px">${fmt(t)}</span><span style="font-size:12px;color:#555;flex:1;padding-left:5px">${fmt(ph)}</span><span style="font-size:12px;color:#444">—</span>`;}
+  if(type==='pour'){
+    d.innerHTML=`<span class="sb sb-p">Влив</span><span style="font-size:12px;font-weight:600;color:var(--txt);min-width:36px">${fmt(t)}</span><span style="font-size:12px;color:var(--txt3);flex:1;padding-left:5px">${fmt(ph)}</span><input type="number" step="0.1" inputmode="decimal" class="edit-ml" id="em-${idx}" value="${ml!=null?ml.toFixed(1):''}"><button class="edit-apply" onclick="bEditMl(${idx})"><i class="ti ti-check" aria-hidden="true"></i></button>`;
+  } else if(type==='action') {
+    const icons={stir:'ti-rotate-clockwise',swirl:'ti-refresh',shake:'ti-activity'};
+    d.innerHTML=`<span class="sb" style="background:#221a12;color:var(--copper-lt);border:1px solid var(--copper-dk)"><i class="ti ${icons[ml]||'ti-bolt'}" style="font-size:9px" aria-hidden="true"></i></span><span style="font-size:12px;font-weight:500;color:var(--copper-lt);flex:1;padding-left:5px">${ph}</span><span style="font-size:11px;color:var(--txt3)">${t}с</span>`;
+  } else {
+    d.innerHTML=`<span class="sb sb-pa">Пауза</span><span style="font-size:12px;font-weight:600;color:var(--txt);min-width:36px">${fmt(t)}</span><span style="font-size:12px;color:var(--txt3);flex:1;padding-left:5px">${fmt(ph)}</span><span style="font-size:12px;color:var(--txt3)">—</span>`;
+  }
   document.getElementById('b-log-box').appendChild(d);
 }
 function bEditMl(idx){const inp=document.getElementById('em-'+idx);if(!inp)return;const nv=parseFloat(inp.value)||0,step=BS.steps[idx];if(!step||step.type!=='pour')return;BS.pouredFixed+=nv-(step.ml||0);step.ml=nv;bUpdateBar(BS.pouredFixed);toast('Обновлено: '+nv.toFixed(1)+' мл');}
@@ -1188,17 +2135,16 @@ function bFinalize(){
   if(BS.phase==='pour'){const v=parseFloat(document.getElementById('b-ml-inp').value)||0;const dur=bStopPhase();BS.pouredFixed+=v;const idx=BS.steps.length;BS.steps.push({type:'pour',t:BS.elapsed,ph:dur,ml:v});if(!BS.firstDone)BS.firstDone=true;bAddLog('pour',idx,BS.elapsed,dur,v);}
   else if(BS.phase==='pause'){const dur=bStopPhase();BS.steps.push({type:'pause',t:BS.elapsed,ph:dur,ml:null});}
   clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);BS.mainInt=null;BS.phaseInt=null;BS.pauseInt=null;bDrip(false);
+  resetPauseActions();
 }
 
 /* Переход на экран оценки */
 function brewStop(){
   bFinalize();
-  // Списание зерна и фильтра
   if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
   if(BS.filter){const filter=S.filters.find(f=>f.id===BS.filter.id);if(filter){filter.current=Math.max(0,filter.current-1);if(filter.current===0)toast('⚠️ Фильтры '+filter.name+' закончились!');else if(filter.current<=10)toast('⚠️ Мало фильтров: '+filter.current+' шт');}}
   save();
-  // Заполняем экран оценки
-  RS={rating:8.0,flavors:[],aroma:[],notes:''};
+  RS={rating:8.0,flavors:[],aroma:[],notes:'',_fwSel:{_active:null,_activeSub:null,sel:{}},_awSel:{_active:null,_activeSub:null,sel:{}}};
   document.getElementById('rate-bean-name').textContent=BS.bean?BS.bean.name:'Без названия';
   document.getElementById('rate-info').textContent='1:'+BS.ratio+' · '+document.getElementById('b-temp-sl').value+'°C · '+fmt(BS.elapsed);
   document.getElementById('rate-time').textContent=fmt(BS.elapsed);
@@ -1206,73 +2152,292 @@ function brewStop(){
   document.getElementById('rate-slider').value='8';
   document.getElementById('rate-num').textContent='8.0';
   document.getElementById('brew-notes').value='';
-  document.getElementById('sel-flavors').innerHTML='';
-  drawWheel();buildAromaButtons();
+  drawWheel();
   showBV('bv-rate');
 }
 
-/* ── FLAVOR WHEEL ── */
-function drawWheel(){
-  const c=document.getElementById('flavor-wheel');if(!c)return;
-  const sz=280,cx=sz/2,cy=sz/2;
-  let total=0;FLAVORS.forEach(f=>total+=f.subs.length);
-  const sa=(2*Math.PI)/total;let cur=-Math.PI/2,paths='',labels='';
-  FLAVORS.forEach(cat=>{
-    const n=cat.subs.length,ca=sa*n,s=cur,e=cur+ca,lg=ca>Math.PI?1:0;
-    const r1=22,r2=68;
-    const xi1=cx+r1*Math.cos(s),yi1=cy+r1*Math.sin(s),xi2=cx+r1*Math.cos(e),yi2=cy+r1*Math.sin(e);
-    const xo1=cx+r2*Math.cos(s),yo1=cy+r2*Math.sin(s),xo2=cx+r2*Math.cos(e),yo2=cy+r2*Math.sin(e);
-    paths+=`<path d="M${xi1} ${yi1}L${xo1} ${yo1}A${r2} ${r2} 0 ${lg} 1 ${xo2} ${yo2}L${xi2} ${yi2}A${r1} ${r1} 0 ${lg} 0 ${xi1} ${yi1}Z" fill="${cat.col}" opacity="0.55" stroke="#111" stroke-width="1.5"/>`;
-    const ma=s+ca/2,lr=(r1+r2)/2,lx=cx+lr*Math.cos(ma),ly=cy+lr*Math.sin(ma);
-    const sn=cat.n.length>5?cat.n.slice(0,4)+'…':cat.n;
-    labels+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="7.5" fill="#fff" font-weight="700" transform="rotate(${ma*180/Math.PI},${lx},${ly})">${sn}</text>`;
-    let sa2=cur;
-    cat.subs.forEach(sub=>{
-      const ss=sa2,se=sa2+sa,ri=70,ro=118;
-      const sx1=cx+ri*Math.cos(ss),sy1=cy+ri*Math.sin(ss),sx2=cx+ri*Math.cos(se),sy2=cy+ri*Math.sin(se);
-      const sx3=cx+ro*Math.cos(se),sy3=cy+ro*Math.sin(se),sx4=cx+ro*Math.cos(ss),sy4=cy+ro*Math.sin(ss);
-      const sel=RS.flavors.includes(sub);
-      const esc=sub.replace(/'/g,"\\'");
-      paths+=`<path d="M${sx1} ${sy1}L${sx4} ${sy4}A${ro} ${ro} 0 0 1 ${sx3} ${sy3}L${sx2} ${sy2}A${ri} ${ri} 0 0 0 ${sx1} ${sy1}Z" fill="${cat.col}" stroke="#111" stroke-width="0.8" opacity="${sel?1:0.25}" style="cursor:pointer" onclick="toggleFlavor('${esc}','${cat.c}')"/>`;
-      const msa=ss+sa/2,slr=(ri+ro)/2,slx=cx+slr*Math.cos(msa),sly=cy+slr*Math.sin(msa);
-      const disp=sub.length>7?sub.slice(0,6)+'…':sub;
-      labels+=`<text x="${slx}" y="${sly}" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="${sel?'#fff':'rgba(255,255,255,.5)'}" transform="rotate(${msa*180/Math.PI},${slx},${sly})" style="pointer-events:none">${disp}</text>`;
-      sa2+=sa;
+/* ── КОЛЕСО ВКУСОВ (полная таксономия SCA) ── */
+const FW_DATA=[
+  {id:'fruity',label:'Фрукты',color:'#d24b54',sub:[
+    {id:'berry',label:'Ягоды',desc:['Клубника','Малина','Черника','Ежевика','Смородина']},
+    {id:'dried',label:'Сухофрукты',desc:['Изюм','Чернослив','Финик','Инжир']},
+    {id:'other',label:'Фрукты',desc:['Яблоко','Груша','Виноград','Вишня','Гранат','Ананас','Персик','Манго','Личи']},
+    {id:'citrus',label:'Цитрус',desc:['Грейпфрут','Апельсин','Лимон','Лайм']}]},
+  {id:'sour',label:'Кислое',color:'#c7a93e',sub:[
+    {id:'sour',label:'Кислое',desc:['Кислые ароматы','Уксусная к-та','Лимонная к-та','Яблочная к-та']},
+    {id:'ferment',label:'Алко/Ферм.',desc:['Винное','Виски','Ферментир.','Перезрелое']}]},
+  {id:'green',label:'Зелёное',color:'#5a9e57',sub:[
+    {id:'oliveoil',label:'Олив. масло',desc:['Оливковое масло']},
+    {id:'raw',label:'Сырое',desc:['Сырое']},
+    {id:'veg',label:'Травянистое',desc:['Недозрелое','Стручок','Свежее','Тёмно-зелёное','Травянистое','Сено','Травы']},
+    {id:'beany',label:'Бобовое',desc:['Бобовое']}]},
+  {id:'other',label:'Другое',color:'#7d8893',sub:[
+    {id:'papery',label:'Бум./Затх.',desc:['Несвежее','Картон','Бумага','Древесное','Плесень','Пыльное','Землистое','Животное','Бульон','Фенол']},
+    {id:'chem',label:'Химия',desc:['Горькое','Солёное','Лекарство','Нефть','Скунс','Резина']}]},
+  {id:'roasted',label:'Обжарка',color:'#9c5a3c',sub:[
+    {id:'tobacco',label:'Табак',desc:['Трубочный табак','Табак']},
+    {id:'burnt',label:'Горелое',desc:['Едкое','Зольное','Дымное','Тёмная обжарка']},
+    {id:'cereal',label:'Злаки',desc:['Зерно','Солод']}]},
+  {id:'spices',label:'Специи',color:'#b5453a',sub:[
+    {id:'pungent',label:'Жгучее',desc:['Жгучее']},
+    {id:'pepper',label:'Перец',desc:['Перец']},
+    {id:'brown',label:'Пряности',desc:['Анис','Мускат','Корица','Гвоздика']}]},
+  {id:'nutty',label:'Орехи',color:'#8a6a44',sub:[
+    {id:'nuts',label:'Орехи',desc:['Арахис','Фундук','Миндаль']},
+    {id:'cocoa',label:'Какао',desc:['Шоколад','Тёмный шоколад']}]},
+  {id:'sweet',label:'Сладкое',color:'#d98b3a',sub:[
+    {id:'sugar',label:'Карамель',desc:['Меласса','Клен. сироп','Карамель','Мёд']},
+    {id:'vanilla',label:'Ваниль',desc:['Ваниль','Ванилин']},
+    {id:'oversweet',label:'Сладость',desc:['Общая сладость','Сладкие ароматы']}]},
+  {id:'floral',label:'Цветы',color:'#b25b86',sub:[
+    {id:'tea',label:'Чёрный чай',desc:['Чёрный чай']},
+    {id:'flower',label:'Цветочное',desc:['Ромашка','Роза','Жасмин']}]}
+];
+
+/* индекс: дескриптор → {catId, subId, color, catLabel} */
+const DESC_INDEX={};
+FW_DATA.forEach(cat=>cat.sub.forEach(sub=>sub.desc.forEach(d=>{
+  DESC_INDEX[d]={catId:cat.id,subId:sub.id,color:cat.color,catLabel:cat.label,subLabel:sub.label};
+})));
+const CAT_FT={fruity:'ft-fruit',sour:'ft-acid',green:'ft-green',other:'ft-other',roasted:'ft-roast',spices:'ft-spice',nutty:'ft-nut',sweet:'ft-sweet',floral:'ft-floral'};
+
+const WHEELS={
+  fw:{svg:'fw-svg',hint:'fw-hint',desc:'fw-desc',tags:'fw-tags',search:'fw-search',sugg:'fw-sugg',key:'_fwSel'},
+  aw:{svg:'aw-svg',hint:'aw-hint',desc:'aw-desc',tags:'aw-tags',search:'aw-search',sugg:'aw-sugg',key:'_awSel'}
+};
+const W_R0=30,W_R1=83,W_R2=135,FW_TAU=Math.PI*2;
+const SVGNS='http://www.w3.org/2000/svg';
+
+function fwEsc(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function fwShade(hex,amt){
+  let c=hex.replace('#','');if(c.length===3)c=c.split('').map(x=>x+x).join('');
+  let r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  const cl=x=>Math.max(0,Math.min(255,Math.round(x)));
+  return '#'+[cl(r+amt),cl(g+amt),cl(b+amt)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function fwArcPath(r1,r2,a1,a2,gap){
+  const c=Math.cos,s=Math.sin;a1+=gap;a2-=gap;
+  const lg=(a2-a1)>Math.PI?1:0;
+  return `M${(c(a1)*r1).toFixed(2)},${(s(a1)*r1).toFixed(2)}A${r1},${r1} 0 ${lg} 1 ${(c(a2)*r1).toFixed(2)},${(s(a2)*r1).toFixed(2)}L${(c(a2)*r2).toFixed(2)},${(s(a2)*r2).toFixed(2)}A${r2},${r2} 0 ${lg} 0 ${(c(a1)*r1*r2/r1).toFixed(2)},${(s(a1)*r2).toFixed(2)}Z`;
+}
+
+function fwMakeWheel(prefix){
+  const cfg=WHEELS[prefix],sel=RS[cfg.key];
+  if(!sel.sel)sel.sel={};
+  const svg=document.getElementById(cfg.svg);if(!svg)return;
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const gap=0.022;
+  const ac=sel._active,asb=sel._activeSub;
+  const TOP=-Math.PI/2;
+
+  function mkPath(d,fill,stroke,sw,op,onClick){
+    const p=document.createElementNS(SVGNS,'path');
+    p.setAttribute('d',d);p.setAttribute('fill',fill);p.setAttribute('stroke',stroke);
+    p.setAttribute('stroke-width',sw);p.setAttribute('opacity',op);p.setAttribute('stroke-linejoin','round');
+    if(onClick){p.style.cursor='pointer';p.addEventListener('click',onClick);}
+    svg.appendChild(p);return p;
+  }
+  function mkText(x,y,txt,sz,fill,angRad,weight){
+    const t=document.createElementNS(SVGNS,'text');
+    let deg=angRad*180/Math.PI;let flip=(deg>90&&deg<270);let rot=flip?deg+180:deg;
+    t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');
+    t.setAttribute('dominant-baseline','central');t.setAttribute('fill',fill);
+    t.setAttribute('font-size',sz);t.setAttribute('font-family',"'Helvetica Neue',Helvetica,sans-serif");
+    if(weight)t.setAttribute('font-weight',weight);t.setAttribute('pointer-events','none');
+    t.setAttribute('transform',`rotate(${rot.toFixed(1)},${x},${y})`);
+    t.textContent=txt;svg.appendChild(t);
+  }
+  function fitFont(n,big){
+    if(n<=4)return big?13:11; if(n<=6)return big?11:9.5;
+    if(n<=8)return big?9.5:8.4; if(n<=10)return big?8.4:7.6; return big?7.4:6.8;
+  }
+  function mkCenter(r,fill,stroke){
+    const c=document.createElementNS(SVGNS,'circle');
+    c.setAttribute('r',r);c.setAttribute('fill',fill);c.setAttribute('stroke',stroke||'#34383d');c.setAttribute('stroke-width',1.4);
+    svg.appendChild(c);return c;
+  }
+  function animate(){svg.style.animation='none';void svg.offsetWidth;svg.style.animation='fwZoom .28s cubic-bezier(.34,1.2,.5,1)';}
+
+  /* ── УРОВЕНЬ C: подкатегория крупно + ноты вокруг ── */
+  if(ac&&asb){
+    const cat=FW_DATA.find(c=>c.id===ac);
+    const sub=cat&&cat.sub.find(s=>cat.id+'.'+s.id===asb);
+    if(cat&&sub){
+      const notes=sub.desc,n=notes.length,seg=FW_TAU/n,CR=44,fs=fitFont(n,true);
+      notes.forEach((d,i)=>{
+        const a1=TOP+i*seg,a2=a1+seg,am=(a1+a2)/2;
+        const on=!!sel.sel[d];
+        mkPath(fwArcPath(CR,W_R2,a1,a2,gap),on?'#3a2a16':fwShade(cat.color,-4),on?'#E0A45E':'#15161a',on?2:1,on?1:0.9,
+          ()=>{fwToggleDesc(prefix,d);});
+        mkText(Math.cos(am)*(CR+W_R2)/2,Math.sin(am)*(CR+W_R2)/2,d,fs,on?'#F0C488':'#fbf6ee',am,on?700:600);
+      });
+      const cen=mkCenter(CR-2,'#16171a',cat.color);
+      cen.style.cursor='pointer';
+      cen.addEventListener('click',()=>{sel._activeSub=null;fwRender(prefix);});
+      const dot=document.createElementNS(SVGNS,'circle');dot.setAttribute('r',5);dot.setAttribute('cy',-22);dot.setAttribute('fill',cat.color);svg.appendChild(dot);
+      mkText(0,-8,'‹ назад',6,'#9a958c',0,600);
+      mkText(0,6,sub.label,fitFont(sub.label.length>9?9:6,false),'#fff',0,700);
+      const selCnt=notes.filter(d=>sel.sel[d]).length;
+      if(selCnt)mkText(0,20,selCnt+' выбрано',5.4,'#D89858',0,600);
+      animate();
+    }
+  }
+  /* ── УРОВЕНЬ B: категория крупно, подкатегории большим веером ── */
+  else if(ac){
+    const cat=FW_DATA.find(c=>c.id===ac);
+    if(cat){
+      const subs=cat.sub,n=subs.length,seg=FW_TAU/n,CR=44,fs=fitFont(n,true);
+      subs.forEach((sub,i)=>{
+        const a1=TOP+i*seg,a2=a1+seg,am=(a1+a2)/2;
+        const subHasSel=sub.desc.some(d=>sel.sel[d]);
+        const cnt=sub.desc.filter(d=>sel.sel[d]).length;
+        mkPath(fwArcPath(CR,W_R2,a1,a2,gap),subHasSel?fwShade(cat.color,18):fwShade(cat.color,-2),subHasSel?'#E0A45E':'#15161a',subHasSel?2:1,subHasSel?1:0.92,
+          ()=>{sel._activeSub=cat.id+'.'+sub.id;fwRender(prefix);});
+        const rmid=(CR+W_R2)/2;
+        mkText(Math.cos(am)*rmid,Math.sin(am)*rmid,sub.label,fs,'#fff',am,700);
+        if(cnt){const bx=Math.cos(am)*(W_R2-14),by=Math.sin(am)*(W_R2-14);
+          const bdg=document.createElementNS(SVGNS,'circle');bdg.setAttribute('cx',bx);bdg.setAttribute('cy',by);bdg.setAttribute('r',7);bdg.setAttribute('fill','#D89858');svg.appendChild(bdg);
+          mkText(bx,by,String(cnt),7,'#1c130a',0,700);}
+      });
+      const cen=mkCenter(CR-2,'#16171a',cat.color);
+      cen.style.cursor='pointer';
+      cen.addEventListener('click',()=>{sel._active=null;sel._activeSub=null;fwRender(prefix);});
+      const dot=document.createElementNS(SVGNS,'circle');dot.setAttribute('r',5);dot.setAttribute('cy',-22);dot.setAttribute('fill',cat.color);svg.appendChild(dot);
+      mkText(0,-8,'‹ обзор',6,'#9a958c',0,600);
+      mkText(0,7,cat.label,fitFont(cat.label.length>8?8:6,false),'#fff',0,700);
+      animate();
+    }
+  }
+  /* ── УРОВЕНЬ A: обзор всех категорий ── */
+  else{
+    const n1=FW_DATA.length,s1=FW_TAU/n1;
+    FW_DATA.forEach((cat,i)=>{
+      const a1=TOP+i*s1,a2=a1+s1,am=(a1+a2)/2;
+      const catHasSel=cat.sub.some(sub=>sub.desc.some(d=>sel.sel[d]));
+      mkPath(fwArcPath(W_R0,W_R1,a1,a2,gap),cat.color,catHasSel?'#D89858':'#141517',catHasSel?1.8:1.3,0.92,()=>{
+        sel._active=cat.id;sel._activeSub=null;fwRender(prefix);
+      });
+      mkText(Math.cos(am)*(W_R0+W_R1)/2,Math.sin(am)*(W_R0+W_R1)/2,cat.label,8.4,'#fff',am,700);
+      const n2=cat.sub.length,s2=s1/n2;
+      cat.sub.forEach((sub,j)=>{
+        const b1=a1+j*s2,b2=b1+s2,bm=(b1+b2)/2;
+        const subHasSel=sub.desc.some(d=>sel.sel[d]);
+        mkPath(fwArcPath(W_R1,W_R2,b1,b2,gap*0.7),cat.color,subHasSel?'#D89858':'#141517',subHasSel?1.6:0.9,subHasSel?0.5:0.17,
+          ()=>{sel._active=cat.id;sel._activeSub=cat.id+'.'+sub.id;fwRender(prefix);});
+      });
     });
-    cur+=ca;
-  });
-  c.innerHTML=`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}">${paths}${labels}<circle cx="${cx}" cy="${cy}" r="20" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" fill="#666" font-weight="600">ВКУС</text></svg>`;
-  updateFlavorTags();
+    const center=mkCenter(W_R0-3,'#16171a');
+    const total=Object.keys(sel.sel).length;
+    mkText(0,-4,total?String(total):'•',total?15:13,total?'#D89858':'#6b6862',0,700);
+    if(total)mkText(0,9,'выбрано',5.2,'#6b6862',0,500);
+  }
+
+  const hint=document.getElementById(cfg.hint);
+  if(hint){
+    if(!ac)hint.textContent='Нажми на категорию';
+    else if(!asb)hint.textContent='Выбери подкатегорию — ноты раскроются вокруг';
+    else hint.textContent='Отмечай ноты в кольце или в списке ниже';
+  }
 }
-function toggleFlavor(name,cat){
-  const idx=RS.flavors.indexOf(name);
-  if(idx>=0)RS.flavors.splice(idx,1);else RS.flavors.push(name);
-  drawWheel();
+
+function fwRenderDesc(prefix){
+  const cfg=WHEELS[prefix],sel=RS[cfg.key];
+  const box=document.getElementById(cfg.desc);if(!box)return;
+  if(!sel._active||!sel._activeSub){box.innerHTML='';return;}
+  const [catId,subId]=sel._activeSub.split('.');
+  const cat=FW_DATA.find(c=>c.id===catId);const sub=cat&&cat.sub.find(s=>s.id===subId);
+  if(!sub){box.innerHTML='';return;}
+  box.innerHTML=`<div class="fw-desc-head"><span class="fw-dot" style="background:${cat.color}"></span>${cat.label} · ${sub.label}</div>`
+    +sub.desc.map(d=>`<button class="fw-chip ${sel.sel[d]?'on':''}" onclick="fwToggleDesc('${prefix}','${fwEsc(d)}')">${d}</button>`).join('');
 }
-function updateFlavorTags(){
-  document.getElementById('sel-flavors').innerHTML=RS.flavors.map(f=>`<span class="sel-tag" onclick="toggleFlavor('${f}','')">${f}</span>`).join('');
+
+function fwRenderTags(prefix){
+  const cfg=WHEELS[prefix],sel=RS[cfg.key];
+  const tags=document.getElementById(cfg.tags);if(!tags)return;
+  const all=Object.keys(sel.sel||{});
+  tags.innerHTML=all.length
+    ?all.map(d=>`<span class="fw-tag" onclick="fwToggleDesc('${prefix}','${fwEsc(d)}')">${d} ×</span>`).join('')
+    :'<span class="fw-tag-empty">Пока ничего не выбрано</span>';
 }
-function buildAromaButtons(){
-  const container=document.getElementById('aroma-buttons');
-  const allSubs=[];FLAVORS.forEach(f=>f.subs.forEach(s=>allSubs.push({sub:s,cls:FT[f.c]})));
-  container.innerHTML=allSubs.map(({sub,cls})=>`<button onclick="toggleAroma('${sub.replace(/'/g,"\\'")}','${cls}')" id="ab-${sub.replace(/\s/g,'_')}" style="font-size:10px;padding:3px 8px;border-radius:20px;cursor:pointer;font-family:inherit;border:0.5px solid #333;background:#1a1a1a;color:#888;margin-bottom:4px">${sub}</button>`).join('');
+
+function fwRender(prefix){fwMakeWheel(prefix);fwRenderDesc(prefix);fwRenderTags(prefix);}
+
+function fwToggleDesc(prefix,d){
+  const sel=RS[WHEELS[prefix].key];if(!sel.sel)sel.sel={};
+  if(sel.sel[d])delete sel.sel[d];else sel.sel[d]=true;
+  fwRender(prefix);
 }
-function toggleAroma(name,cls){
-  const idx=RS.aroma.indexOf(name);
-  if(idx>=0)RS.aroma.splice(idx,1);else RS.aroma.push(name);
-  const btn=document.getElementById('ab-'+name.replace(/\s/g,'_'));
-  if(btn){if(RS.aroma.includes(name)){btn.style.background='#1e1428';btn.style.color='#9B7FE8';btn.style.borderColor='#3a2a5a';}else{btn.style.background='#1a1a1a';btn.style.color='#888';btn.style.borderColor='#333';}}
-  document.getElementById('sel-aroma').innerHTML=RS.aroma.map(f=>`<span class="sel-tag" onclick="toggleAroma('${f}','')">${f}</span>`).join('');
+
+function fwMatches(q){
+  q=q.trim().toLowerCase();if(!q)return[];
+  const res=[];
+  FW_DATA.forEach(cat=>cat.sub.forEach(sub=>sub.desc.forEach(d=>{
+    if(d.toLowerCase().includes(q))res.push({d,cat,sub});
+  })));
+  return res;
 }
+function fwSearch(prefix){
+  const cfg=WHEELS[prefix];
+  const q=document.getElementById(cfg.search).value;
+  const sg=document.getElementById(cfg.sugg);
+  const m=fwMatches(q);
+  if(!q.trim()){sg.style.display='none';sg.innerHTML='';return;}
+  if(!m.length){sg.style.display='block';sg.innerHTML='<div class="fw-sugg-empty">Ничего не найдено</div>';return;}
+  const ql=q.trim().toLowerCase();
+  sg.style.display='block';
+  sg.innerHTML=m.slice(0,8).map(({d,cat})=>{
+    const idx=d.toLowerCase().indexOf(ql);
+    const hl=idx>=0?d.slice(0,idx)+'<b>'+d.slice(idx,idx+ql.length)+'</b>'+d.slice(idx+ql.length):d;
+    return `<div class="fw-sugg-item" onclick="fwPick('${prefix}','${fwEsc(d)}')"><span class="fw-sugg-dot" style="background:${cat.color}"></span><span class="fw-sugg-name">${hl}</span><span class="fw-sugg-cat">${cat.label}</span></div>`;
+  }).join('');
+}
+function fwSearchKey(prefix,e){
+  if(e.key==='Enter'){
+    e.preventDefault();
+    const q=document.getElementById(WHEELS[prefix].search).value;
+    const m=fwMatches(q);if(m.length)fwPick(prefix,m[0].d);
+  }else if(e.key==='Escape'){
+    document.getElementById(WHEELS[prefix].search).value='';
+    document.getElementById(WHEELS[prefix].sugg).style.display='none';
+  }
+}
+function fwPick(prefix,d){
+  const sel=RS[WHEELS[prefix].key];if(!sel.sel)sel.sel={};
+  const info=DESC_INDEX[d];if(!info)return;
+  sel.sel[d]=true;sel._active=info.catId;sel._activeSub=info.catId+'.'+info.subId;
+  const cfg=WHEELS[prefix];
+  document.getElementById(cfg.search).value='';
+  document.getElementById(cfg.sugg).style.display='none';
+  fwRender(prefix);
+}
+
+function fwGetSelected(selObj){return Object.keys((selObj&&selObj.sel)||{});}
+
+function drawWheel(){
+  if(!RS._fwSel||typeof RS._fwSel!=='object')RS._fwSel={};
+  if(!RS._awSel||typeof RS._awSel!=='object')RS._awSel={};
+  if(!RS._fwSel.sel)RS._fwSel.sel={};if(!RS._awSel.sel)RS._awSel.sel={};
+  RS._fwSel._active=RS._fwSel._active||null;RS._fwSel._activeSub=RS._fwSel._activeSub||null;
+  RS._awSel._active=RS._awSel._active||null;RS._awSel._activeSub=RS._awSel._activeSub||null;
+  fwRender('fw');fwRender('aw');
+}
+function fwReset(){RS._fwSel={_active:null,_activeSub:null,sel:{}};fwRender('fw');}
+function awReset(){RS._awSel={_active:null,_activeSub:null,sel:{}};fwRender('aw');}
+function buildAromaButtons(){}
 
 /* Сохранить рецепт */
 function saveBrew(){
   RS.rating=parseFloat(document.getElementById('rate-slider').value)||8;
   RS.notes=document.getElementById('brew-notes').value.trim();
+  RS.flavors=fwGetSelected(RS._fwSel||{});
+  RS.aroma=fwGetSelected(RS._awSel||{});
   const dripName=BS.dripper?BS.dripper.name:'';
   const methodLbl=BS.dripper?DRIPPER_LABEL[dripperType(BS.dripper.name)]:'Альтернатива';
-  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',method:methodLbl,dripper:dripName,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,likes:0,liked:false,ts:Date.now()};
-  S.brews.unshift(brew);save();
+  const grinderName=BS.grinder?BS.grinder.name:'';
+  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',method:methodLbl,dripper:dripName,grinder:grinderName,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,likes:0,liked:false,ts:Date.now()};
+  S.brews.unshift(brew);
+  S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(BS.pouredFixed||(BS.dose*BS.ratio)),cat:methodCat(methodLbl),method:methodLbl,bean:brew.beanName,rating:brew.rating});
+  save();
   document.getElementById('b-res-t').textContent=fmt(BS.elapsed);
   document.getElementById('b-res-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
   document.getElementById('b-res-rating').textContent=brew.rating.toFixed(1);
@@ -1281,10 +2446,377 @@ function saveBrew(){
   showBV('bv-result');toast('Рецепт сохранён!');
 }
 function brewGoSetup(){clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);Object.assign(BS,{mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});showBV('bv-setup');bCalc();}
-function brewReset(){bFinalize();Object.assign(BS,{bean:null,filter:null,dripper:null,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});document.getElementById('bsel-bean').textContent='Выбери пачку';document.getElementById('bsel-bean-sub').textContent='нажми для выбора';document.getElementById('bbean-bar').style.display='none';document.getElementById('bsel-dripper').textContent='Выбери воронку';document.getElementById('bsel-dripper-sub').textContent='нажми для выбора';document.getElementById('bsel-dripper-ico').innerHTML='';document.getElementById('bsel-filter').textContent='Выбери фильтр';document.getElementById('bsel-filter-sub').textContent='нажми для выбора';document.getElementById('bfilter-bar').style.display='none';document.getElementById('brew-title').textContent='Альтернатива';document.getElementById('b-dose').value='16';document.getElementById('b-ratio').value='16';document.getElementById('b-pours').value='3';document.getElementById('b-temp-sl').value='93';document.getElementById('b-temp-out').textContent='93°C';setWet(true);bCalc();showBV('bv-setup');}
+function brewReset(){
+  bFinalize();
+  Object.assign(BS,{bean:null,filter:null,dripper:null,grinder:null,clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});
+  document.getElementById('bsel-bean').textContent='Выбери пачку';
+  document.getElementById('bsel-bean-sub').textContent='нажми для выбора';
+  document.getElementById('bbean-bar').style.display='none';
+  document.getElementById('bsel-dripper').textContent='Выбери воронку';
+  document.getElementById('bsel-dripper-sub').textContent='нажми для выбора';
+  document.getElementById('bsel-dripper-ico').innerHTML='';
+  document.getElementById('bsel-filter').textContent='Выбери фильтр';
+  document.getElementById('bsel-filter-sub').textContent='нажми для выбора';
+  document.getElementById('bfilter-bar').style.display='none';
+  document.getElementById('bsel-grinder').textContent='Выбери кофемолку';
+  document.getElementById('bsel-grinder-sub').textContent='нажми для выбора';
+  document.getElementById('clicks-val').textContent='28';
+  document.getElementById('brew-title').textContent='Альтернатива';
+  document.getElementById('b-dose').value='16';
+  document.getElementById('b-ratio').value='16';
+  document.getElementById('b-pours').value='3';
+  document.getElementById('b-temp-sl').value='93';
+  document.getElementById('b-temp-out').textContent='93°C';
+  showPauseActions(false);resetPauseActions();
+  setWet(true);bCalc();showBV('bv-setup');
+}
 
-renderFeed();renderProf();bCalc();setWet(true);showBV('bv-setup');
+/* ══════════════════════════════════════════
+   MARKETPLACE
+   ══════════════════════════════════════════ */
+const MKT_COFFEES=[
+  {id:1,name:'Yirgacheffe Kochere',roaster:'Tasty Coffee',country:'Ефіопія',variety:'Heirloom',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:890,score:92,sweetness:80,acidity:90,bitterness:15,descriptors:['Жасмин','Персик','Чорний чай'],color:'#E8C090',inStock:true},
+  {id:2,name:'Colombia Huila',roaster:'Double B',country:'Колумбія',variety:'Caturra',process:'Washed',roast:'Середня',brew:['Фільтр','Омні','Еспресо'],weight:250,price:680,score:89,sweetness:75,acidity:65,bitterness:30,descriptors:['Лайм','Нектарин','Горіхова солодкість'],color:'#D4A060',inStock:true},
+  {id:3,name:'Guatemala Antigua',roaster:'Skuratov',country:'Гватемала',variety:'Bourbon',process:'Washed',roast:'Середня',brew:['Еспресо','Омні'],weight:500,price:990,score:88,sweetness:70,acidity:55,bitterness:50,descriptors:['Шоколад','Карамель','Темна вишня'],color:'#A06830',inStock:true},
+  {id:4,name:'Kenya Kirinyaga AA',roaster:'Tasty Coffee',country:'Кенія',variety:'SL-28',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:250,price:1150,score:93,sweetness:60,acidity:95,bitterness:10,descriptors:['Смородина','Томат','Грейпфрут'],color:'#C04820',inStock:true},
+  {id:5,name:'Burundi Kayanza',roaster:'Coffee Factory',country:'Бурунді',variety:'Red Bourbon',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:200,price:620,score:87,sweetness:85,acidity:70,bitterness:15,descriptors:['Малина','Ваніль','Молочний шоколад'],color:'#D88050',inStock:true},
+  {id:6,name:'Brazil Cerrado Natural',roaster:'Double B',country:'Бразилія',variety:'Yellow Bourbon',process:'Natural',roast:'Темна',brew:['Еспресо'],weight:1000,price:1450,score:85,sweetness:90,acidity:20,bitterness:75,descriptors:['Арахіс','Молочний шоколад','Тростник'],color:'#784020',inStock:false},
+  {id:7,name:'Panama Geisha',roaster:'Skuratov',country:'Панама',variety:'Geisha',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:100,price:3200,score:96,sweetness:85,acidity:80,bitterness:5,descriptors:['Жасмин','Бергамот','Манго'],color:'#F0C870',inStock:true},
+  {id:8,name:'Rwanda Musasa',roaster:'Coffee Factory',country:'Руанда',variety:'Red Bourbon',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:760,score:90,sweetness:78,acidity:75,bitterness:12,descriptors:['Слива','Гібіскус','Цедра'],color:'#E09040',inStock:true},
+  {id:9,name:'Mexico Chiapas Honey',roaster:'Tasty Coffee',country:'Мексика',variety:'Typica',process:'Honey',roast:'Середня',brew:['Омні','Еспресо'],weight:500,price:520,score:84,sweetness:88,acidity:40,bitterness:35,descriptors:['Мед','Абрикос','Мигдаль'],color:'#C89050',inStock:true},
+  {id:10,name:'Ethiopia Guji Natural',roaster:'Double B',country:'Ефіопія',variety:'Heirloom',process:'Natural',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:930,score:91,sweetness:90,acidity:60,bitterness:10,descriptors:['Чорниця','Полуниця','Тропіки'],color:'#903018',inStock:true},
+  {id:11,name:'Sumatra Mandheling',roaster:'Skuratov',country:'Індонезія',variety:'Typica',process:'Wet-Hulled',roast:'Темна',brew:['Еспресо','Омні'],weight:500,price:600,score:83,sweetness:50,acidity:25,bitterness:85,descriptors:['Кедр','Темний шоколад','Спеції'],color:'#603010',inStock:true},
+  {id:12,name:'Costa Rica Tarrazu',roaster:'Coffee Factory',country:'Коста-Ріка',variety:'Caturra',process:'Washed',roast:'Середня',brew:['Фільтр','Еспресо'],weight:250,price:720,score:88,sweetness:72,acidity:58,bitterness:38,descriptors:['Горіховість','Яблуко','Карамель'],color:'#B07840',inStock:true},
+];
+
+const ROAST_COLORS_MKT={'Світла':{bg:'rgba(160,200,60,.18)',c:'#9cc040'},'Середня':{bg:'rgba(200,135,42,.18)',c:'var(--copper-lt)'},'Темна':{bg:'rgba(180,60,20,.18)',c:'#d05030'}};
+const BAR_COLORS_MKT={sweetness:'var(--copper-lt)',acidity:'#E86040',bitterness:'#6b6862'};
+
+let MKT={roast:[],brew:[],country:[],process:[],inStockOnly:false,cart:[],expanded:null,filterOpen:false};
+
+function mktToggleFilter(){
+  MKT.filterOpen=!MKT.filterOpen;
+  const sb=document.getElementById('mkt-sidebar');
+  const btn=document.getElementById('mkt-filter-btn');
+  if(sb)sb.style.display=MKT.filterOpen?'block':'none';
+  if(btn)btn.classList.toggle('active',MKT.filterOpen);
+  mktRender();
+}
+
+function mktFilteredList(){
+  const q=(document.getElementById('mkt-q')||{}).value?.toLowerCase()||'';
+  const sort=(document.getElementById('mkt-sort')||{}).value||'score';
+  let list=MKT_COFFEES.filter(c=>{
+    if(MKT.roast.length&&!MKT.roast.includes(c.roast))return false;
+    if(MKT.brew.length&&!MKT.brew.some(b=>c.brew.includes(b)))return false;
+    if(MKT.country.length&&!MKT.country.includes(c.country))return false;
+    if(MKT.process.length&&!MKT.process.includes(c.process))return false;
+    if(MKT.inStockOnly&&!c.inStock)return false;
+    if(q&&![c.name,c.roaster,c.country,...c.descriptors].some(v=>v.toLowerCase().includes(q)))return false;
+    return true;
+  });
+  if(sort==='score')list.sort((a,b)=>b.score-a.score);
+  else if(sort==='price_asc')list.sort((a,b)=>a.price-b.price);
+  else if(sort==='price_desc')list.sort((a,b)=>b.price-a.price);
+  else list.sort((a,b)=>a.name.localeCompare(b.name,'uk'));
+  return list;
+}
+
+function mktToggle(key,val){
+  const arr=MKT[key];const i=arr.indexOf(val);
+  if(i>=0)arr.splice(i,1);else arr.push(val);
+  mktRender();
+}
+
+function mktReset(){
+  MKT.roast=[];MKT.brew=[];MKT.country=[];MKT.process=[];MKT.inStockOnly=false;
+  const q=document.getElementById('mkt-q');if(q)q.value='';
+  mktRender();
+}
+
+function mktExpandCard(id){
+  MKT.expanded=MKT.expanded===id?null:id;
+  mktRender();
+}
+
+function mktRender(){
+  const list=mktFilteredList();
+  const filterOpen=MKT.filterOpen;
+  const activeCount=[MKT.roast,MKT.brew,MKT.country,MKT.process].reduce((n,a)=>n+(a.length?1:0),0)+(MKT.inStockOnly?1:0);
+
+  // Sidebar фильтров
+  const sb=document.getElementById('mkt-sidebar');
+  if(sb&&filterOpen){
+    const allCountries=[...new Set(MKT_COFFEES.map(c=>c.country))].sort();
+    const allProcesses=[...new Set(MKT_COFFEES.map(c=>c.process))].sort();
+    sb.innerHTML=`
+      <div class="mkt-pill-group">
+        <span class="mkt-pill-lbl">Наявність</span>
+        <button class="mkt-pill ${MKT.inStockOnly?'on':''}" onclick="MKT.inStockOnly=!MKT.inStockOnly;mktRender()">В наявності</button>
+      </div>
+      <div class="mkt-divider"></div>
+      <div class="mkt-pill-group">
+        <span class="mkt-pill-lbl">Обжарка</span>
+        ${['Світла','Середня','Темна'].map(v=>`<button class="mkt-pill ${MKT.roast.includes(v)?'on':''}" onclick="mktToggle('roast','${v}')">${v}</button>`).join('')}
+      </div>
+      <div class="mkt-pill-group">
+        <span class="mkt-pill-lbl">Заварювання</span>
+        ${['Фільтр','Еспресо','Омні'].map(v=>`<button class="mkt-pill ${MKT.brew.includes(v)?'on':''}" onclick="mktToggle('brew','${v}')">${v}</button>`).join('')}
+      </div>
+      <div class="mkt-pill-group">
+        <span class="mkt-pill-lbl">Обробка</span>
+        ${allProcesses.map(v=>`<button class="mkt-pill ${MKT.process.includes(v)?'on':''}" onclick="mktToggle('process','${v}')">${v}</button>`).join('')}
+      </div>
+      <div class="mkt-divider"></div>
+      <div class="mkt-pill-group">
+        <span class="mkt-pill-lbl">Країна</span>
+        ${allCountries.map(v=>`<button class="mkt-pill ${MKT.country.includes(v)?'on':''}" onclick="mktToggle('country','${v}')">${v}</button>`).join('')}
+      </div>
+      ${activeCount?`<div style="padding:0 8px"><button onclick="mktReset()" style="width:100%;font-size:9px;padding:5px;border-radius:7px;background:none;border:0.5px solid var(--copper-dk);color:var(--copper-lt);cursor:pointer;font-family:inherit;margin-top:2px">Скинути</button></div>`:''}`;
+  }
+
+  // Filter count badge
+  const filterBtn=document.getElementById('mkt-filter-btn');
+  const cntEl=document.getElementById('mkt-filter-cnt');
+  if(cntEl){cntEl.textContent=activeCount||'';cntEl.style.display=activeCount?'flex':'none';}
+
+  // Active pills bar
+  const pillsBar=document.getElementById('mkt-active-pills');
+  if(pillsBar){
+    const tags=[];
+    MKT.roast.forEach(v=>tags.push({k:'roast',v}));
+    MKT.brew.forEach(v=>tags.push({k:'brew',v}));
+    MKT.country.forEach(v=>tags.push({k:'country',v}));
+    MKT.process.forEach(v=>tags.push({k:'process',v}));
+    if(MKT.inStockOnly)tags.push({k:'inStockOnly',v:'В наявності'});
+    if(tags.length){
+      pillsBar.style.display='flex';
+      pillsBar.innerHTML=tags.map(t=>`<span style="font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(184,115,51,.18);color:var(--copper-lt);cursor:pointer;font-family:var(--mono);font-weight:600;border:0.5px solid var(--copper-dk)" onclick="mktToggle('${t.k}','${t.v}')">${t.v} ×</span>`).join('');
+    } else {
+      pillsBar.style.display='none';
+    }
+  }
+
+  // Count
+  const cnt=document.getElementById('mkt-count');
+  if(cnt)cnt.textContent=list.length+' позиц'+(list.length===1?'ія':list.length<5?'ії':'ій');
+
+  // Grid
+  const grid=document.getElementById('mkt-grid');
+  if(!grid)return;
+
+  const gridClass=filterOpen?'mkt-grid-1':'mkt-grid-2';
+
+  if(!list.length){
+    grid.outerHTML='<div id="mkt-grid"></div>';
+    document.getElementById('mkt-grid').innerHTML=`<div class="mkt-empty"><i class="ti ti-coffee" aria-hidden="true"></i><div style="font-size:13px;font-weight:600;color:var(--txt2);margin-bottom:6px">Нічого не знайдено</div><button onclick="mktReset()" style="font-size:11px;color:var(--copper-lt);background:none;border:none;cursor:pointer;font-family:inherit">Скинути фільтри</button></div>`;
+    return;
+  }
+
+  const rclrMap={'Світла':'rgba(160,200,60,.18):#9cc040','Середня':'rgba(200,135,42,.18):var(--copper-lt)','Темна':'rgba(180,60,20,.18):#d05030'};
+
+  grid.className=gridClass;
+  grid.innerHTML=list.map(c=>{
+    const rParts=(rclrMap[c.roast]||'rgba(255,255,255,.08):#aaa').split(':');
+    const rBg=rParts[0],rC=rParts[1];
+    const inCart=MKT.cart.includes(c.id);
+    const isExp=MKT.expanded===c.id;
+
+    // Expand panel HTML
+    const expandHtml=isExp?`<div class="cc-expand">
+      <div class="cc-bars">
+        ${[['sweetness','Солодкість'],['acidity','Кислотність'],['bitterness','Гіркота']].map(([k,l])=>`
+        <div class="cc-bar-row">
+          <span class="cc-bar-lbl">${l}</span>
+          <div class="cc-bar-track"><div class="cc-bar-fill" style="width:${c[k]}%;background:${BAR_COLORS_MKT[k]}"></div></div>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--txt3);width:22px;text-align:right">${c[k]}</span>
+        </div>`).join('')}
+      </div>
+      <div class="cc-descs">${c.descriptors.map(d=>`<span>${d}</span>`).join('')}</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="cc-price">${c.price.toLocaleString('uk-UA')} ₴</span>
+        ${!c.inStock?'<span class="cc-nostock-badge">немає в наявності</span>':`<button class="cc-cart ${inCart?'added':''}" onclick="event.stopPropagation();mktAddCart(${c.id})">${inCart?'✓ У кошику':'+ Купити'}</button>`}
+        <button class="cc-add-inv" style="flex:1" onclick="event.stopPropagation();mktAddToInventory(${c.id})"><i class="ti ti-seeding" style="font-size:11px;vertical-align:middle;margin-right:4px"></i>В інвентар</button>
+      </div>
+    </div>`:'';
+
+    if(filterOpen){
+      // Горизонтальна карточка — 1 колонка
+      return`<div class="cc ${isExp?'expanded':''}" onclick="mktExpandCard(${c.id})">
+        <div class="cc-row">
+          <div class="cc-row-ico" style="background:${c.color}18">
+            <svg width="32" height="32" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+              <ellipse cx="26" cy="26" rx="18" ry="22" fill="${c.color}" opacity=".65"/>
+              <path d="M26 6 Q34 18 34 26 Q34 36 26 46" stroke="${c.color}" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".45"/>
+            </svg>
+          </div>
+          <div class="cc-row-info">
+            <div class="cc-name">${c.name}</div>
+            <div class="cc-sub">${c.roaster} · ${c.weight}г · ${c.country}</div>
+            <div class="cc-brew-pills">
+              ${c.brew.map(b=>`<span>${b}</span>`).join('')}
+              <span class="proc">${c.process}</span>
+            </div>
+          </div>
+          <div class="cc-row-right">
+            <span class="cc-score">${c.score}</span>
+            <span class="cc-roast-pill" style="background:${rBg};color:${rC}">${c.roast}</span>
+            <span class="cc-price">${c.price.toLocaleString('uk-UA')} ₴</span>
+          </div>
+        </div>
+        ${expandHtml}
+      </div>`;
+    } else {
+      // Карточка-квадрат — 2 колонки
+      return`<div class="cc ${isExp?'expanded':''}" onclick="mktExpandCard(${c.id})">
+        <div class="cc-sq-img" style="background:${c.color}18">
+          <svg width="38" height="38" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+            <ellipse cx="26" cy="26" rx="18" ry="22" fill="${c.color}" opacity=".65"/>
+            <path d="M26 6 Q34 18 34 26 Q34 36 26 46" stroke="${c.color}" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".45"/>
+          </svg>
+          <span class="cc-score" style="position:absolute;top:5px;right:5px">${c.score}</span>
+          <span class="cc-roast-pill" style="position:absolute;top:5px;left:5px;background:${rBg};color:${rC}">${c.roast.slice(0,3)}</span>
+          ${!c.inStock?`<div style="position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--mono);font-size:7px;color:var(--txt3);letter-spacing:.6px">НЕМАЄ</span></div>`:''}
+        </div>
+        <div class="cc-sq-body">
+          <div class="cc-name">${c.name}</div>
+          <div class="cc-sub">${c.roaster} · ${c.weight}г</div>
+          <div class="cc-brew-pills" style="margin-top:4px">
+            ${c.brew.slice(0,2).map(b=>`<span>${b}</span>`).join('')}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+            <span class="cc-price">${c.price.toLocaleString('uk-UA')} ₴</span>
+            <i class="ti ti-chevron-${isExp?'up':'down'}" style="font-size:12px;color:var(--txt3)"></i>
+          </div>
+        </div>
+        ${expandHtml}
+      </div>`;
+    }
+  }).join('');
+
+  // Бейдж корзины
+  const badge=document.getElementById('cart-badge');
+  if(badge){badge.textContent=MKT.cart.length;badge.style.display=MKT.cart.length?'flex':'none';}
+}
+
+function mktAddCart(id){
+  if(!MKT.cart.includes(id))MKT.cart.push(id);
+  mktRender();
+  const c=MKT_COFFEES.find(x=>x.id===id);
+  if(c)toast('У кошик: '+c.name);
+}
+
+function mktAddToInventory(id){
+  const c=MKT_COFFEES.find(x=>x.id===id);if(!c)return;
+  // Добавляем в инвентарь зерна
+  S.beans.unshift({id:++S.id,name:c.name,roaster:c.roaster,total:c.weight,current:c.weight});
+  save();
+  toast('Додано в інвентар: '+c.name);
+}
+
+function mktShowCart(){
+  const items=MKT.cart.map(id=>MKT_COFFEES.find(c=>c.id===id)).filter(Boolean);
+  if(!items.length){toast('Кошик порожній');return;}
+  const total=items.reduce((s,c)=>s+c.price,0);
+  alert('Кошик:\n'+items.map(c=>`• ${c.name} — ${c.price.toLocaleString('uk-UA')} ₴`).join('\n')+'\n\nРазом: '+total.toLocaleString('uk-UA')+' ₴\n\n(Оплата з\'явиться в наступній версії)');
+}
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  const el=document.getElementById(id);if(el)el.classList.add('on');
+  const nbMap={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile'};
+  const nb=nbMap[id];if(nb)document.getElementById(nb)?.classList.add('on');
+  const fn={'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf,'scr-market':mktRender};
+  if(fn[id])fn[id]();
+}
+
+/* ── SUPABASE SYNC ── */
+const SUPABASE_URL='https://mhudtufaxjjvvxefeyrs.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odWR0dWZheGpqdnZ4ZWZleXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTU2NDEsImV4cCI6MjA5NTYzMTY0MX0.IKMFN_y4oOa_3dcxxLNLW2txPoKRyXjPaS05p_S3t8M';
+
+let TG_USER_ID=null;
+try{
+  var tg=window.Telegram;
+  if(tg&&tg.WebApp&&tg.WebApp.initDataUnsafe&&tg.WebApp.initDataUnsafe.user){
+    TG_USER_ID=String(tg.WebApp.initDataUnsafe.user.id);
+    tg.WebApp.ready();
+    tg.WebApp.expand();
+  }
+}catch(e){}
+
+async function sbLoad(){
+  if(!TG_USER_ID)return false;
+  try{
+    var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    });
+    var rows=await res.json();
+    if(rows&&rows.length&&rows[0].data){
+      S=rows[0].data;
+      localStorage.setItem('cj_clean',JSON.stringify(S));
+      return true;
+    }
+  }catch(e){console.log('sb load err',e);}
+  return false;
+}
+
+var sbSaveTimer=null;
+function sbSave(){
+  if(!TG_USER_ID)return;
+  clearTimeout(sbSaveTimer);
+  sbSaveTimer=setTimeout(async function(){
+    try{
+      await fetch(SUPABASE_URL+'/rest/v1/users',{
+        method:'POST',
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+SUPABASE_KEY,
+          'Content-Type':'application/json',
+          'Prefer':'resolution=merge-duplicates'
+        },
+        body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
+      });
+    }catch(e){console.log('sb save err',e);}
+  },1200);
+}
+
+// Патчим save() чтобы синхронизировал с Supabase
+var _origSave=save;
+save=function(){
+  localStorage.setItem('cj_clean',JSON.stringify(S));
+  sbSave();
+};
+
+// Инициализация с загрузкой данных
+(async function(){
+  var app=document.getElementById('app');
+  var loader=document.createElement('div');
+  loader.id='sb-loader';
+  loader.style.position='absolute';
+  loader.style.inset='0';
+  loader.style.background='#17181a';
+  loader.style.display='flex';
+  loader.style.flexDirection='column';
+  loader.style.alignItems='center';
+  loader.style.justifyContent='center';
+  loader.style.zIndex='999';
+  loader.style.gap='12px';
+  loader.innerHTML='<svg width="52" height="52" viewBox="0 0 52 52" fill="none"><ellipse cx="26" cy="26" rx="18" ry="22" fill="#B87333" opacity=".7"/><path d="M26 6 Q34 18 34 26 Q34 36 26 46" stroke="#D89858" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg><div style="font-family:monospace;font-size:10px;color:#6b6862;letter-spacing:2px;text-transform:uppercase">Загрузка...</div>';
+  app.appendChild(loader);
+  if(TG_USER_ID){await sbLoad();}
+  loader.remove();
+  renderFeed();renderProf();bCalc();setWet(true);showBV('bv-setup');
+})();
 </script>
-<template id="__bundler_thumbnail" data-bg-color="#17181a" style="display:none"></template>
+<template id="__bundler_thumbnail" data-bg-color="#17181a">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#17181a"/>
+    <path d="M480,250 L557,475 Q600,490 643,475 L720,250 Z" fill="none" stroke="#aeb6bf" stroke-width="9" stroke-linejoin="round"/>
+    <ellipse cx="600" cy="250" rx="120" ry="24" fill="none" stroke="#aeb6bf" stroke-width="9"/>
+    <path d="M540,250 L550,560 Q552,600 600,600 Q648,600 650,560 L660,250 Z" fill="none" stroke="#9aa3ad" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M545,440 L655,440 L650,560 Q650,584 600,584 Q550,584 550,560 Z" fill="#B87333"/>
+    <text x="600" y="710" font-family="monospace" font-size="40" fill="#D89858" text-anchor="middle" letter-spacing="8">COFFEE MASTER</text>
+  </svg>
+</template>
 </body>
 </html>
