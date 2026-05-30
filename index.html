@@ -413,7 +413,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 .save-btn:active{transform:scale(.98)}
 
 /* OVERLAYS */
-.overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.78);z-index:50;align-items:flex-end;backdrop-filter:blur(3px)}
+.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.78);z-index:50;align-items:flex-end;backdrop-filter:blur(3px)}
 .overlay.open{display:flex;animation:ovIn .25s ease}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
 .sheet{background:linear-gradient(180deg,#222428,#1a1c1e);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:20px 18px 32px;width:100%;max-height:88%;overflow-y:auto;box-shadow:0 -16px 40px rgba(0,0,0,.5);animation:sheetIn .3s cubic-bezier(.2,.9,.3,1)}
@@ -638,8 +638,9 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         </svg>
         <div class="se-center"><span class="se-num" id="se-num">0</span><svg class="cup-ic se-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></div>
       </div>
-      <div class="se-record">Ваш рекорд: <b id="se-rec">25</b> дней</div>
+      <div class="se-record">Ваш рекорд: <b id="se-rec">0</b> дней</div>
       <div class="se-week" id="se-week"></div>
+      <button onclick="openLogBrew()" class="bean-add" style="margin:12px 0 4px"><i class="ti ti-plus" aria-hidden="true"></i> Добавить выпитое</button>
       <div class="cal-card">
         <div class="cal-top">
           <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
@@ -698,6 +699,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   <div class="streak-panel" id="prof-cal-panel">
     <div class="streak-full">
       <div class="se-title">Календарь завариваний</div>
+      <button onclick="openLogBrew()" class="bean-add" style="margin:12px 0 4px"><i class="ti ti-plus" aria-hidden="true"></i> Добавить выпитое</button>
       <div class="cal-card" style="margin-top:10px">
         <div class="cal-top">
           <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперёд"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
@@ -1202,6 +1204,97 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   </div>
 </div>
 
+
+<!-- ДОБАВИТЬ ЗАВАРИВАНИЕ вручную -->
+<div class="overlay" id="ov-log-brew" onclick="if(event.target===this)closeOv('ov-log-brew')">
+  <div class="sheet" style="max-height:92vh">
+    <div class="sheet-title">Добавить выпитое</div>
+
+    <!-- Где пил -->
+    <div style="margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px">Где пил</div>
+      <div style="display:flex;background:#0f1011;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px">
+        <button id="lb-src-home" onclick="lbSetSource('home')"
+          style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;letter-spacing:.2px;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
+          ☕ Сам готовил
+        </button>
+        <button id="lb-src-place" onclick="lbSetSource('place')"
+          style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;letter-spacing:.2px;background:none;color:var(--txt3)">
+          📍 Заведение
+        </button>
+      </div>
+    </div>
+
+    <!-- Заведение (скрыто) -->
+    <div id="lb-place-wrap" style="display:none;margin-bottom:2px">
+      <div class="field-lbl" style="margin-bottom:5px">Название заведения</div>
+      <input class="sfi" id="lb-place" placeholder="напр. Specialty Coffee Shop">
+    </div>
+
+    <!-- Дата -->
+    <div class="field-lbl" style="margin-bottom:5px">Дата</div>
+    <input type="date" class="sfi" id="lb-date">
+
+    <!-- Напиток -->
+    <div class="field-lbl" style="margin-bottom:5px">Напиток / зерно</div>
+    <input class="sfi" id="lb-bean" placeholder="напр. Эфиопия Иргачеффе, Капучино...">
+
+    <!-- Метод -->
+    <div class="field-lbl" style="margin-bottom:5px">Метод</div>
+    <select class="sfi" id="lb-method">
+      <option value="V60">V60</option>
+      <option value="Origami">Origami</option>
+      <option value="Flower">Flower Dripper</option>
+      <option value="Chemex">Chemex</option>
+      <option value="Kalita">Kalita Wave</option>
+      <option value="AeroPress">AeroPress</option>
+      <option value="French Press">French Press</option>
+      <option value="Эспрессо">Эспрессо</option>
+      <option value="Капучино">Капучино</option>
+      <option value="Флэт уайт">Флэт уайт</option>
+      <option value="Американо">Американо</option>
+      <option value="Мока">Мока</option>
+      <option value="Другое">Другое</option>
+    </select>
+
+    <!-- Параметры только для "сам готовил" -->
+    <div id="lb-home-params">
+      <div class="grid2" style="gap:9px;margin-bottom:10px">
+        <div><div class="field-lbl" style="margin-bottom:5px">Доза (г)</div>
+          <input type="number" class="sfi" id="lb-dose" placeholder="16" value="16" step="0.1" style="margin-bottom:0"></div>
+        <div><div class="field-lbl" style="margin-bottom:5px">Коэф.</div>
+          <select class="sfi" id="lb-ratio" style="margin-bottom:0">
+            <option value="12">1:12</option><option value="14">1:14</option><option value="15">1:15</option>
+            <option value="16" selected>1:16</option><option value="17">1:17</option><option value="18">1:18</option>
+          </select></div>
+      </div>
+      <div class="grid2" style="gap:9px;margin-bottom:10px">
+        <div><div class="field-lbl" style="margin-bottom:5px">Кофемолка</div>
+          <input class="sfi" id="lb-grinder" placeholder="Comandante..." style="margin-bottom:0"></div>
+        <div><div class="field-lbl" style="margin-bottom:5px">Температура °C</div>
+          <input type="number" class="sfi" id="lb-temp" placeholder="93" value="93" min="60" max="100" style="margin-bottom:0"></div>
+      </div>
+    </div>
+
+    <!-- Объём и оценка -->
+    <div class="grid2" style="gap:9px;margin-bottom:10px">
+      <div><div class="field-lbl" style="margin-bottom:5px">Объём (мл)</div>
+        <input type="number" class="sfi" id="lb-vol" placeholder="240" value="240" style="margin-bottom:0"></div>
+      <div><div class="field-lbl" style="margin-bottom:5px">Оценка (1–10)</div>
+        <input type="number" class="sfi" id="lb-rating" placeholder="8.0" value="8.0" step="0.1" min="1" max="10" style="margin-bottom:0"></div>
+    </div>
+
+    <!-- Заметки -->
+    <div class="field-lbl" style="margin-bottom:5px">Заметки</div>
+    <input class="sfi" id="lb-notes" placeholder="Впечатления о вкусе...">
+
+    <div class="sbtns">
+      <button class="btn-c" onclick="closeOv('ov-log-brew')">Отмена</button>
+      <button class="btn-s" onclick="logBrewManual()">Добавить</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /screens -->
 
 <nav class="nav">
@@ -1415,7 +1508,7 @@ const SEED={
   equipment:[],
   brews:[],
   log:[],
-  record:0,
+  record:25,
   id:0
 };
 let S=JSON.parse(localStorage.getItem('cj_v7')||'null')||JSON.parse(JSON.stringify(SEED));
@@ -2708,6 +2801,75 @@ function showScr(id){
   if(fn[id])fn[id]();
 }
 
+
+/* ── РУЧНОЕ ДОБАВЛЕНИЕ В ЖУРНАЛ ── */
+var _lbSource='home';
+
+function lbSetSource(src){
+  _lbSource=src;
+  var bH=document.getElementById('lb-src-home'),bP=document.getElementById('lb-src-place');
+  var pw=document.getElementById('lb-place-wrap'),hp=document.getElementById('lb-home-params');
+  var on='flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);';
+  var off='flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:none;';
+  if(src==='home'){
+    if(bH)bH.style.cssText=on+'background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);';
+    if(bP)bP.style.cssText=off+'color:var(--txt3);';
+    if(pw)pw.style.display='none';
+    if(hp)hp.style.display='block';
+  } else {
+    if(bP)bP.style.cssText=on+'background:linear-gradient(160deg,#1a2030,#121820);color:var(--steel);';
+    if(bH)bH.style.cssText=off+'color:var(--txt3);';
+    if(pw)pw.style.display='block';
+    if(hp)hp.style.display='none';
+  }
+}
+
+function openLogBrew(){
+  _lbSource='home';
+  var t=new Date();
+  var d=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  var el=document.getElementById('lb-date');if(el)el.value=d;
+  ['lb-bean','lb-notes','lb-place','lb-grinder'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var defaults={lb_vol:'240',lb_rating:'8.0',lb_dose:'16',lb_temp:'93'};
+  Object.keys(defaults).forEach(function(k){var e=document.getElementById(k.replace('_','-'));if(e)e.value=defaults[k];});
+  var r=document.getElementById('lb-ratio');if(r)r.value='16';
+  var m=document.getElementById('lb-method');if(m)m.value='V60';
+  if(typeof BS!=='undefined'&&BS.grinder){var g=document.getElementById('lb-grinder');if(g)g.value=BS.grinder.name;}
+  lbSetSource('home');
+  openOv('ov-log-brew');
+}
+
+function logBrewManual(){
+  var dateVal=(document.getElementById('lb-date')||{}).value||'';
+  if(!dateVal){toast('Укажи дату');return;}
+  var bean=((document.getElementById('lb-bean')||{}).value||'').trim()||'Кофе';
+  var method=(document.getElementById('lb-method')||{}).value||'V60';
+  var vol=parseInt((document.getElementById('lb-vol')||{}).value)||240;
+  var rating=Math.round((parseFloat((document.getElementById('lb-rating')||{}).value)||8)*10)/10;
+  var notes=((document.getElementById('lb-notes')||{}).value||'').trim();
+  var place=_lbSource==='place'?((document.getElementById('lb-place')||{}).value||'').trim():'';
+  var parts=dateVal.split('-');
+  var ts=new Date(+parts[0],+parts[1]-1,+parts[2],12,0,0).getTime();
+  var entry={id:++S.id,ts:ts,vol:vol,cat:methodCat(method),method:method,bean:bean,rating:rating,source:_lbSource,manual:true};
+  if(notes)entry.notes=notes;
+  if(place)entry.place=place;
+  if(_lbSource==='home'){
+    entry.dose=parseFloat((document.getElementById('lb-dose')||{}).value)||16;
+    entry.ratio=parseInt((document.getElementById('lb-ratio')||{}).value)||16;
+    entry.temp=parseInt((document.getElementById('lb-temp')||{}).value)||93;
+    var gr=((document.getElementById('lb-grinder')||{}).value||'').trim();
+    if(gr)entry.grinder=gr;
+  }
+  var inserted=false;
+  for(var i=0;i<S.log.length;i++){if(S.log[i].ts<=ts){S.log.splice(i,0,entry);inserted=true;break;}}
+  if(!inserted)S.log.push(entry);
+  var streak=calcStreak();if(streak>(S.record||0))S.record=streak;
+  save();closeOv('ov-log-brew');
+  renderCalendar();renderStreak();
+  if(document.getElementById('scr-home').classList.contains('on'))renderFeed();
+  toast(place?'Добавлено: '+place:'Добавлено: '+bean);
+}
+
 /* ── SUPABASE SYNC ── */
 const SUPABASE_URL='https://mhudtufaxjjvvxefeyrs.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odWR0dWZheGpqdnZ4ZWZleXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTU2NDEsImV4cCI6MjA5NTYzMTY0MX0.IKMFN_y4oOa_3dcxxLNLW2txPoKRyXjPaS05p_S3t8M';
@@ -2731,6 +2893,8 @@ async function sbLoad(){
     var rows=await res.json();
     if(rows&&rows.length&&rows[0].data){
       S=rows[0].data;
+      if(!S.log)S.log=[];
+      if(!S.record)S.record=0;
       localStorage.setItem('cj_clean',JSON.stringify(S));
       return true;
     }
