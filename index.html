@@ -1415,34 +1415,12 @@ const SEED={
   equipment:[],
   brews:[],
   log:[],
-  record:25,
+  record:0,
   id:0
 };
-/* демо-журнал завариваний за май 2026 (для календаря и серии) */
-function makeLog(){
-  const M=[['V60','filter'],['Origami','filter'],['Flower','filter'],['Эспрессо','espresso'],['Aeropress','other'],['Кемекс','filter']];
-  const BEANS=['Эфиопия Иргачеффе','Колумбия Уила','Кения Ньери','Бразилия Бурбон','Гватемала Антигуа','Руанда Киву'];
-  // день: [ [методIdx, мл], ... ]
-  const PLAN={
-    1:[[0,240],[1,240],[3,240]], 2:[[0,240],[1,112]], 3:[[0,240],[3,56]],
-    4:[[0,240]], 5:[[1,112]], 8:[[4,56]], 9:[[0,240],[1,240]], 10:[[0,240]],
-    12:[[0,240],[1,168]], 13:[[0,296]], 14:[[0,180],[3,116]], 15:[[1,240]],
-    17:[[0,240]], 18:[[3,112]], 19:[[0,240],[4,112]], 20:[[0,240]],
-    21:[[0,240],[1,240],[3,240]], 22:[[0,180],[3,116]], 23:[[0,180],[4,116]],
-    24:[[0,180],[3,116]], 25:[[0,240]], 26:[[1,112]], 27:[[0,240]],
-    28:[[0,120],[4,120]], 29:[[0,176],[3,176]], 30:[[0,240],[1,240]]
-  };
-  const out=[];let id=900;
-  Object.keys(PLAN).forEach(ds=>{const d=+ds;
-    PLAN[d].forEach((e,i)=>{const m=M[e[0]];
-      out.push({id:id++,ts:new Date(2026,4,d,8+i*4,30).getTime(),vol:e[1],cat:m[1],method:m[0],bean:BEANS[(d+i)%BEANS.length],rating:+(7.4+((d*3+i*5)%13)/4).toFixed(1)});
-    });
-  });
-  return out;
-}
 let S=JSON.parse(localStorage.getItem('cj_v7')||'null')||JSON.parse(JSON.stringify(SEED));
-if(!S.log||!S.log.length)S.log=makeLog();
-if(!S.record)S.record=25;
+if(!S.log)S.log=[];
+if(!S.record)S.record=0;
 function save(){localStorage.setItem('cj_v7',JSON.stringify(S))}
 function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sc=s%60;return m+':'+(sc<10?'0':'')+sc}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
