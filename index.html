@@ -87,8 +87,8 @@ select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-
 .bstat-l{font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
 .bstat-v{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt)}
 .bc-flavors{padding:10px 15px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--line-soft)}
-.ftag{font-size:10.5px;padding:3px 9px;border-radius:20px;font-weight:500;letter-spacing:.3px;border:1px solid transparent}
-.ft-fruit{background:#2c1a20;color:#c98aa0;border-color:#3d2630}.ft-sweet{background:#2a2013;color:#d6a566;border-color:#3d2f18}.ft-nut{background:#24211e;color:#b29c88;border-color:#332e28}.ft-floral{background:#241f2a;color:#a892bf;border-color:#332b3c}.ft-roast{background:#222120;color:#9a958c;border-color:#312f2c}.ft-acid{background:#1e2722;color:#86b599;border-color:#2b362f}.ft-spice{background:#2b1f17;color:#cf9a78;border-color:#3c2c20}.ft-green{background:#1c2620;color:#8fb89a;border-color:#2a352e}.ft-other{background:#232425;color:#9b9d9f;border-color:#313335}
+.ftag{font-size:10.5px;padding:4px 10px;border-radius:20px;font-weight:700;letter-spacing:.2px;border:none;box-shadow:0 2px 6px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.2);text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.ft-fruit{background:#c84a6e;color:#fff}.ft-sweet{background:#d98b3a;color:#fff}.ft-nut{background:#8a6a44;color:#fff}.ft-floral{background:#b25b86;color:#fff}.ft-roast{background:#9c5a3c;color:#fff}.ft-acid{background:#c7a93e;color:#fff}.ft-spice{background:#b5453a;color:#fff}.ft-green{background:#5a9e57;color:#fff}.ft-other{background:#7d8893;color:#fff}
 .bc-foot{padding:10px 15px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center}
 .expand-btn{background:none;border:none;cursor:pointer;font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:4px;font-weight:500;font-family:inherit;letter-spacing:.5px}
 .expand-btn i{font-size:14px;transition:transform .25s}
@@ -390,11 +390,11 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 .fw-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 .fw-chip{font-size:12px;padding:7px 13px;border-radius:22px;cursor:pointer;font-weight:500;letter-spacing:.2px;background:#1a1c1f;border:1px solid var(--line);color:var(--txt2);transition:transform .12s,background .15s,border-color .15s,color .15s;font-family:var(--sans)}
 .fw-chip:active{transform:scale(.93)}
-.fw-chip.on{background:#2a1d10;border-color:var(--copper);color:var(--copper-lt);box-shadow:0 0 12px var(--copper-glow),inset 0 1px 0 rgba(255,255,255,.06);font-weight:600}
+.fw-chip.on{border:none;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2);text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .fw-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;min-height:22px;justify-content:center}
-.fw-tag{font-size:11px;padding:4px 11px;border-radius:20px;cursor:pointer;font-weight:600;letter-spacing:.2px;background:#221a12;color:var(--copper-lt);border:1px solid var(--copper-dk);font-family:var(--sans)}
+.fw-tag{font-size:11px;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:700;letter-spacing:.2px;font-family:var(--sans);border:none;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18);text-shadow:0 1px 2px rgba(0,0,0,.5)}
 .fw-tag:active{transform:scale(.93)}
-.fw-tag-empty{font-size:12px;color:var(--txt3)}
+.fw-tag-empty{font-size:12px;color:var(--txt3);padding:4px 0}
 .fw-reset{width:100%;margin-top:14px;background:none;border:1px solid var(--line);border-radius:9px;padding:9px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px}
 .fw-reset:active{border-color:var(--copper-dk);color:var(--copper-lt)}
 .wheel-wrap{display:flex;justify-content:center;margin-bottom:12px}
@@ -600,6 +600,67 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 .post-act:active i{transform:scale(.82)}
 .post-act.liked{color:var(--copper-lt)}
 .post-act.liked i{animation:beat .4s ease}
+
+/* ── METHOD PICK SCREEN ── */
+.method-pick-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;padding:32px 24px;gap:16px}
+.method-pick-title{font-size:20px;font-weight:700;color:var(--txt);letter-spacing:-.3px;margin-bottom:8px;text-align:center}
+.method-pick-sub{font-family:var(--mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;text-align:center}
+.method-big-btn{width:100%;padding:22px 20px;border-radius:18px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:18px;transition:transform .12s;border:1.5px solid var(--line-soft);background:linear-gradient(160deg,var(--card-hi),var(--card-lo));box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 6px 18px rgba(0,0,0,.35)}
+.method-big-btn:active{transform:scale(.97)}
+.method-big-btn.alt{border-color:var(--copper-dk)}
+.method-big-btn.alt:active{border-color:var(--copper)}
+.method-big-btn.esp{border-color:var(--steel-dk)}
+.method-big-btn.esp:active{border-color:var(--steel)}
+.mbtn-ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mbtn-ico.alt{background:linear-gradient(160deg,#2a1e10,#1d1610);border:1px solid var(--copper-dk)}
+.mbtn-ico.esp{background:linear-gradient(160deg,#1a2030,#121820);border:1px solid var(--steel-dk)}
+.mbtn-ico i{font-size:24px}
+.mbtn-ico.alt i{color:var(--copper-lt)}
+.mbtn-ico.esp i{color:var(--steel)}
+.mbtn-name{font-size:17px;font-weight:700;color:var(--txt);margin-bottom:3px}
+.mbtn-sub{font-size:12px;color:var(--txt3);letter-spacing:.2px}
+
+
+/* ── BREW CARD RESULT TABS ── */
+.bc-tabs{display:flex;border-bottom:1px solid var(--line-soft);background:#14151a}
+.bc-tab{flex:1;padding:8px 4px;text-align:center;font-family:var(--mono);font-size:9.5px;font-weight:600;color:var(--txt3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.8px;transition:all .18s}
+.bc-tab.on{color:var(--copper-lt);border-bottom-color:var(--copper-lt)}
+.bc-pages{overflow:hidden}
+.bc-page{display:none;padding:13px 15px}
+.bc-page.on{display:block}
+/* Диаграмма */
+.bc-donut-wrap{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.bc-donut-center{font-family:var(--mono);font-size:11px;color:var(--txt3);text-align:center;margin-top:3px;letter-spacing:.3px}
+.bc-donut-info{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--txt);line-height:1.1}
+.bc-donut-sub{font-family:var(--mono);font-size:9px;color:var(--txt3);margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+.bc-seg-legend{display:flex;flex-direction:column;gap:5px;flex:1}
+.bc-seg-row{display:flex;align-items:center;gap:7px;cursor:pointer;padding:3px 5px;border-radius:7px;transition:background .15s}
+.bc-seg-row:active{background:rgba(255,255,255,.04)}
+.bc-seg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.bc-seg-name{font-size:11px;color:var(--txt2);flex:1}
+.bc-seg-val{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--txt)}
+/* Центр диаграммы — инфо при тапе */
+.bc-donut-detail{min-height:36px;text-align:center;padding:4px 0 8px}
+.bc-donut-detail-v{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--copper-lt);line-height:1}
+.bc-donut-detail-l{font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+/* Лог строки */
+.bc-log-row{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.bc-log-row:last-child{border-bottom:none}
+.bc-log-badge{font-family:var(--mono);font-size:9px;font-weight:600;padding:3px 8px;border-radius:20px;flex-shrink:0;letter-spacing:.4px;min-width:44px;text-align:center}
+.bc-log-badge.pour{background:#1a2d3d;color:#4A9EDB}
+.bc-log-badge.pause{background:#2e2114;color:var(--copper-lt)}
+.bc-log-badge.action{background:#1c2a1c;color:#7dba7d}
+.bc-log-t{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--txt);min-width:34px}
+.bc-log-ph{font-family:var(--mono);font-size:11px;color:var(--txt3);min-width:30px}
+.bc-log-ml{font-family:var(--mono);font-size:11px;font-weight:700;color:#4A9EDB;margin-left:auto}
+.bc-log-lbl{font-size:11px;color:var(--txt2);flex:1;padding-left:2px}
+/* Заметки */
+.bc-notes-box{margin-top:10px;background:rgba(255,255,255,.028);border:1px solid var(--line-soft);border-radius:9px;padding:9px 11px}
+.bc-notes-lbl{font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.bc-notes-txt{font-size:12px;color:var(--txt2);line-height:1.55;white-space:pre-wrap}
+/* Теги колеса — фиксированная высота на ~10 нот */
+.bc-wheel-tags{display:flex;flex-wrap:wrap;gap:5px;min-height:108px;align-content:flex-start;margin-top:10px}
+
 </style>
 
 <div class="app" id="app">
@@ -750,8 +811,45 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <div class="icon-btn" onclick="brewReset()"><i class="ti ti-refresh" aria-hidden="true"></i></div>
   </div>
 
+  <!-- ВЫБОР МЕТОДА -->
+  <div id="bv-method-pick" style="padding:14px 16px 20px">
+    <div class="method-pick-screen">
+      <div>
+        <div class="method-pick-title">Как завариваем?</div>
+        <div class="method-pick-sub">Выбери метод</div>
+      </div>
+      <button class="method-big-btn alt" onclick="pickBrewMethod('alt')">
+        <div class="mbtn-ico alt"><i class="ti ti-filter" aria-hidden="true"></i></div>
+        <div>
+          <div class="mbtn-name">Альтернатива</div>
+          <div class="mbtn-sub">V60 · Origami · Aeropress · Chemex и др.</div>
+        </div>
+        <i class="ti ti-chevron-right" style="margin-left:auto;font-size:18px;color:var(--copper-dk)" aria-hidden="true"></i>
+      </button>
+      <button class="method-big-btn esp" onclick="pickBrewMethod('esp')">
+        <div class="mbtn-ico esp"><i class="ti ti-coffee" aria-hidden="true"></i></div>
+        <div>
+          <div class="mbtn-name">Эспрессо</div>
+          <div class="mbtn-sub">Шот · Таймер · Коэффициент · TDS</div>
+        </div>
+        <i class="ti ti-chevron-right" style="margin-left:auto;font-size:18px;color:var(--steel-dk)" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- SETUP -->
   <div id="bv-setup" style="padding:14px 16px 20px">
+
+    <!-- МЕТОД: Альтернатива / Эспрессо -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">
+      <button id="bm-alt" onclick="setBrewMethod('alt')" style="padding:10px;border-radius:10px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s">
+        <i class="ti ti-filter" aria-hidden="true" style="font-size:16px"></i> Альтернатива
+      </button>
+      <button id="bm-esp" onclick="setBrewMethod('esp')" style="padding:10px;border-radius:10px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s">
+        <i class="ti ti-coffee" aria-hidden="true" style="font-size:16px"></i> Еспресо
+      </button>
+    </div>
+
     <div class="card">
       <div class="lbl">Зерно</div>
       <button class="sel-btn" onclick="openOv('ov-bbean')">
@@ -760,8 +858,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       </button>
       <div class="wbar" id="bbean-bar" style="display:none"><div class="wfill-g" id="bbean-fill" style="width:0%"></div></div>
     </div>
-    <div class="card">
-      <div class="lbl">Воронка</div>
+    <div class="card" id="bcard-dripper">
       <button class="sel-btn" onclick="openOv('ov-bdripper')">
         <div style="display:flex;align-items:center;gap:11px">
           <span id="bsel-dripper-ico" style="flex-shrink:0;display:flex;width:34px;height:34px;align-items:center;justify-content:center"></span>
@@ -770,7 +867,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
       </button>
     </div>
-    <div class="card">
+    <div class="card" id="bcard-filter">
       <div class="lbl">Фильтр</div>
       <button class="sel-btn" onclick="openOv('ov-bfilter')">
         <div><div class="sel-main" id="bsel-filter">Выбери фильтр</div><div class="sel-sub" id="bsel-filter-sub">нажми для выбора</div></div>
@@ -800,34 +897,85 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         <button class="click-btn" onclick="clicksAdj(1)">+</button>
       </div>
     </div>
-    <div class="card">
-      <div class="lbl">Параметры</div>
-      <div class="grid2" style="margin-bottom:8px">
-        <div><div class="field-lbl">Кофе (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="100" class="fi" oninput="bCalc()"></div>
-        <div><div class="field-lbl">Коэффициент</div>
-          <select id="b-ratio" class="fi" onchange="bCalc()">
-            <option value="12">1 : 12</option><option value="14">1 : 14</option><option value="15">1 : 15</option>
-            <option value="16" selected>1 : 16</option><option value="17">1 : 17</option><option value="18">1 : 18</option>
-          </select>
-        </div>
+
+    <!-- АКСЕССУАРЫ (только для эспрессо) -->
+    <div class="card" id="bcard-acc" style="display:none">
+      <div class="lbl">Аксессуары</div>
+      <div id="bacc-list" style="display:flex;flex-wrap:wrap;gap:6px">
+        <div style="font-size:12px;color:var(--txt3)">Добавь аксессуары в Девайсы → Аксессуары</div>
       </div>
-      <div class="grid2">
-        <div><div class="field-lbl">Вливаний</div>
-          <select id="b-pours" class="fi" onchange="bCalc()">
-            <option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
-          </select>
+    </div>
+
+    <!-- Параметры альтернативы (вливания) -->
+    <div id="bcard-pours-wrap">
+      <div class="card" style="margin-bottom:10px">
+        <div class="lbl">Параметры</div>
+        <div class="grid2" style="margin-bottom:8px">
+          <div><div class="field-lbl">Кофе (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="100" class="fi" oninput="bCalc()"></div>
+          <div><div class="field-lbl">Коэффициент</div>
+            <select id="b-ratio" class="fi" onchange="bCalc()">
+              <option value="12">1 : 12</option><option value="14">1 : 14</option><option value="15">1 : 15</option>
+              <option value="16" selected>1 : 16</option><option value="17">1 : 17</option><option value="18">1 : 18</option>
+            </select>
+          </div>
         </div>
-        <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
-          <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)">
-            <div style="display:flex;align-items:center;gap:8px">
-              <input id="b-temp-sl" type="range" min="80" max="100" step="1" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-temp-out').textContent=this.value+'°C'">
-              <span id="b-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+        <div class="grid2">
+          <div><div class="field-lbl">Вливаний</div>
+            <select id="b-pours" class="fi" onchange="bCalc()">
+              <option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+            </select>
+          </div>
+          <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
+            <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <input id="b-temp-sl" type="range" min="80" max="100" step="1" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-temp-out').textContent=this.value+'°C'">
+                <span id="b-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="calc-box">
+
+    <!-- Параметры эспрессо -->
+    <div id="bcard-esp-params" style="display:none">
+      <div class="card" style="margin-bottom:10px">
+        <div class="lbl">Параметры еспресо</div>
+        <div class="grid2" style="margin-bottom:8px">
+          <div><div class="field-lbl">Доза (г)</div><input id="b-esp-dose" type="number" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()"></div>
+          <div><div class="field-lbl">Ретіо (1 : X)</div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <button class="click-btn" onclick="espRatioAdj(-0.1)" style="width:32px;height:38px;font-size:16px">−</button>
+              <input id="b-esp-ratio-sel" type="number" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()">
+              <button class="click-btn" onclick="espRatioAdj(0.1)" style="width:32px;height:38px;font-size:16px">+</button>
+            </div>
+          </div>
+        </div>
+        <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
+          <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <input id="b-esp-temp-sl" type="range" min="88" max="96" step="0.5" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-temp-out').textContent=this.value+'°C'">
+              <span id="b-esp-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="field-lbl">Тиск (бар)</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+            <input id="b-esp-bar-sl" type="range" min="6" max="12" step="0.5" value="9" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-bar-out').textContent=this.value+' бар'">
+            <span id="b-esp-bar-out" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt);min-width:52px;text-align:right">9 бар</span>
+          </div>
+        </div>
+      </div>
+      <div class="calc-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div><div style="font-size:11px;color:var(--txt3);margin-bottom:3px">Доза / Вихід</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);line-height:1"><span id="b-esp-dose-lbl">18</span> / <span id="b-esp-yield-lbl">36</span> г</div></div>
+          <div style="text-align:right"><div style="font-size:11px;color:var(--txt3);margin-bottom:3px">Коефіцієнт</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);line-height:1">1 : <span id="b-esp-ratio-lbl">2.0</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-box" id="bcard-altcalc">
       <div style="display:flex;justify-content:space-between;align-items:flex-end">
         <div><div style="font-size:11px;color:#888;margin-bottom:3px">Всего воды</div><div style="font-size:24px;font-weight:700;color:#4A9EDB;line-height:1" id="b-total-lbl">256 мл</div></div>
         <div style="text-align:right"><div style="font-size:11px;color:#888;margin-bottom:3px">Bloom ~</div><div style="font-size:20px;font-weight:700;color:#fff;line-height:1" id="b-bloom-lbl">48 мл</div></div>
@@ -1010,31 +1158,19 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <!-- Колесо вкусов -->
     <div class="wheel-section">
       <div class="wheel-lbl">Колесо вкусов</div>
-      <div class="fw-search-wrap">
-        <i class="ti ti-search fw-search-ic" aria-hidden="true"></i>
-        <input class="fw-search" id="fw-search" placeholder="Найти вкус: ягоды, карамель, жасмин…" oninput="fwSearch('fw')" onkeydown="fwSearchKey('fw',event)" autocomplete="off">
-        <div class="fw-sugg" id="fw-sugg" style="display:none"></div>
-      </div>
-      <div class="fw-hint" id="fw-hint">Нажми на категорию или найди вкус</div>
-      <svg id="fw-svg" width="300" height="300" viewBox="-150 -150 300 300" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
-      <div class="fw-desc" id="fw-desc"></div>
-      <div class="fw-tags" id="fw-tags"></div>
-      <button class="fw-reset" onclick="fwReset()">Сбросить вкусы</button>
+      <div id="fw-hint" style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-align:center;margin-bottom:10px;min-height:14px;letter-spacing:.5px">Нажми на категорию</div>
+      <svg id="fw-svg" width="280" height="280" viewBox="-140 -140 280 280" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;min-height:24px" id="fw-tags"></div>
+      <button onclick="fwReset()" style="width:100%;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px">Сбросить вкусы</button>
     </div>
 
     <!-- Аромат — второе колесо -->
     <div class="wheel-section">
-      <div class="wheel-lbl">Колесо аромата</div>
-      <div class="fw-search-wrap">
-        <i class="ti ti-search fw-search-ic" aria-hidden="true"></i>
-        <input class="fw-search" id="aw-search" placeholder="Найти аромат: цветы, шоколад, табак…" oninput="fwSearch('aw')" onkeydown="fwSearchKey('aw',event)" autocomplete="off">
-        <div class="fw-sugg" id="aw-sugg" style="display:none"></div>
-      </div>
-      <div class="fw-hint" id="aw-hint">Нажми на категорию или найди аромат</div>
-      <svg id="aw-svg" width="300" height="300" viewBox="-150 -150 300 300" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
-      <div class="fw-desc" id="aw-desc"></div>
-      <div class="fw-tags" id="aw-tags"></div>
-      <button class="fw-reset" onclick="awReset()">Сбросить аромат</button>
+      <div class="wheel-lbl">Аромат</div>
+      <div id="aw-hint" style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-align:center;margin-bottom:10px;min-height:14px;letter-spacing:.5px">Нажми на категорию</div>
+      <svg id="aw-svg" width="280" height="280" viewBox="-140 -140 280 280" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;min-height:24px" id="aw-tags"></div>
+      <button onclick="awReset()" style="width:100%;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px">Сбросить аромат</button>
     </div>
 
     <!-- Заметки -->
@@ -1062,7 +1198,121 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <button onclick="showScr('scr-home')" style="width:100%;background:#4CAF50;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:8px">Перейти в Ленту</button>
     <button onclick="brewGoSetup()" style="width:100%;background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit">Новое заваривание</button>
   </div>
+  <!-- ЭСПРЕССО — АКТИВНЫЙ -->
+  <div id="bv-esp-active" style="display:none;padding:14px 16px 20px">
+    <div class="timer-bar" style="margin-bottom:16px">
+      <div><div class="t-lbl">Час проливу</div><div class="t-val" id="esp-timer">0:00</div></div>
+      <div style="text-align:center"><div class="t-lbl">Доза</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt)" id="esp-dose-disp">18 г</div></div>
+      <div style="text-align:right"><div class="t-lbl">Ціль</div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt)" id="esp-yield-disp">36 г</div></div>
+    </div>
+
+    <!-- Анимация пролива -->
+    <div style="background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:20px;text-align:center;margin-bottom:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--copper-lt);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px" id="esp-phase-lbl">Готовий до старту</div>
+      <!-- Простая визуализация: чашка + капля -->
+      <div style="position:relative;display:inline-block;margin-bottom:10px">
+        <svg width="100" height="80" viewBox="0 0 100 80" fill="none">
+          <!-- Чашка -->
+          <path d="M20 30 L25 70 Q50 78 75 70 L80 30 Z" fill="rgba(184,115,51,0.12)" stroke="var(--copper)" stroke-width="1.5"/>
+          <ellipse cx="50" cy="30" rx="30" ry="6" fill="rgba(184,115,51,0.08)" stroke="var(--copper)" stroke-width="1.5"/>
+          <!-- Ручка -->
+          <path d="M80 35 Q92 35 92 50 Q92 65 80 65" fill="none" stroke="var(--copper)" stroke-width="1.5"/>
+          <!-- Эспрессо в чашке (динамически растёт) -->
+          <clipPath id="cup-clip"><path d="M20 30 L25 70 Q50 78 75 70 L80 30 Z"/></clipPath>
+          <rect id="esp-fill" x="20" y="70" width="60" height="0" fill="rgba(139,80,43,0.6)" clip-path="url(#cup-clip)" style="transition:all .5s ease"/>
+          <!-- Капля -->
+          <ellipse id="esp-drop" cx="50" cy="22" rx="3" ry="4" fill="var(--copper-lt)" opacity="0" style="transition:opacity .3s"/>
+        </svg>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--copper-lt);margin-top:6px;text-shadow:0 0 14px var(--copper-glow)" id="esp-seconds">0</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:.5px">секунд</div>
+      </div>
+      <!-- Целевая полоска -->
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--txt3);margin-bottom:4px">
+          <span>0</span><span id="esp-target-s">27с ціль</span>
+        </div>
+        <div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+          <div id="esp-time-bar" style="height:100%;background:var(--copper-lt);border-radius:2px;width:0%;transition:width .5s linear"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Кнопки Старт/Стоп -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button id="esp-start-btn" onclick="espStartTimer()" style="padding:14px;border-radius:14px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s">
+        <i class="ti ti-player-play" aria-hidden="true" style="font-size:18px"></i> Старт
+      </button>
+      <button id="esp-stop-btn" onclick="espStopTimer()" disabled style="padding:14px;border-radius:14px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.5;transition:all .15s">
+        <i class="ti ti-player-stop" aria-hidden="true" style="font-size:18px"></i> Стоп
+      </button>
+    </div>
+    <button class="stop-btn" onclick="espAbandon()"><i class="ti ti-x" aria-hidden="true"></i> Скасувати шот</button>
+  </div>
+
+  <!-- ЭСПРЕССО — РЕЗУЛЬТАТ (ввод данных после стопа) -->
+  <div id="bv-esp-result" style="display:none;padding:14px 16px 20px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:700;color:var(--txt)">Результат шота</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--copper-lt);margin-top:4px" id="esp-res-time-lbl">Час проливу: —</div>
+    </div>
+
+    <!-- Фактические данные -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="lbl">Фактичні дані</div>
+      <div class="grid2" style="gap:8px;margin-bottom:10px">
+        <div>
+          <div class="field-lbl">Час (сек)</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)" id="esp-res-sec">—</div>
+        </div>
+        <div>
+          <div class="field-lbl">Доза (г)</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)" id="esp-res-dose-disp">—</div>
+        </div>
+      </div>
+      <div class="field-lbl">Вихід — скільки мл вийшло фактично</div>
+      <input type="number" step="0.5" inputmode="decimal" class="fi" id="esp-actual-yield" placeholder="напр. 38" style="margin-bottom:10px">
+    </div>
+
+    <!-- Концентрация -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="lbl">Концентрація</div>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="field-lbl">Бажана (TDS %)</div>
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-target" value="9.0" placeholder="9.0">
+        </div>
+        <div>
+          <div class="field-lbl">Фактична (TDS %)</div>
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-actual" placeholder="виміряй">
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)">
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Фактичний коефіцієнт</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt)" id="esp-actual-ratio">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Оценка -->
+    <div class="rating-block" style="margin-bottom:14px">
+      <div class="rating-big" id="esp-rate-num">8.0</div>
+      <div class="rating-sub">оцінка шота</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="esp-rate-slider" oninput="document.getElementById('esp-rate-num').textContent=parseFloat(this.value).toFixed(1)">
+      <div class="rrange"><span>Погано</span><span>Ідеально</span></div>
+    </div>
+
+    <div class="notes-block" style="margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:8px">Нотатки</div>
+      <textarea class="notes-inp" id="esp-notes" placeholder="Враження: тіло, гіркота, солодкість, баланс..."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="espSave()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> Зберегти шот</button>
+  </div>
+
 </div>
+
+
 
 <!-- OVERLAYS -->
 <div class="overlay" id="ov-bean" onclick="if(event.target===this)closeOv('ov-bean')">
@@ -1710,31 +1960,218 @@ function renderFeed(){
   const el=document.getElementById('feed-list');
   if(feedTab==='comm'){renderCommunity(el);return}
   if(!S.brews.length){el.innerHTML=`<div class="empty"><i class="ti ti-coffee" aria-hidden="true"></i><div class="empty-t">Нет рецептов</div><div class="empty-s">Нажми <i class="ti ti-droplet"></i> внизу чтобы<br>записать первое заваривание</div></div>`;return}
-  el.innerHTML=S.brews.map(b=>`
-    <div class="brew-card">
-      <div class="bc-top">
-        <div style="min-width:0"><div class="bc-name">${b.beanName||'Без названия'}</div>${b.roaster?`<div class="bc-roaster">${b.roaster}</div>`:''}</div>
-        <div class="bc-right"><span class="method-pill">${b.method||'Альтернатива'}</span><span class="rating-num">${parseFloat(b.rating||0).toFixed(1)}</span></div>
+  el.innerHTML=S.brews.map(b=>{
+  const bid=b.id;
+  const totalMs=b.steps&&b.steps.length?Math.max(...b.steps.map(s=>s.t+(s.ph||0))):0;
+  const totalSec=Math.round(totalMs/1000);
+
+  /* ── ЛОГ ── */
+  const logRows=b.steps&&b.steps.length?b.steps.map(st=>{
+    const icons={stir:'ti-rotate-clockwise',swirl:'ti-refresh',shake:'ti-activity'};
+    if(st.type==='action'){
+      return`<div class="bc-log-row"><span class="bc-log-badge action"><i class="ti ${icons[st.label?.toLowerCase().includes('перем')?'stir':st.label?.toLowerCase().includes('свэ')?'swirl':'shake']||'ti-bolt'}" style="font-size:9px"></i></span><span class="bc-log-lbl">${st.label||'Действие'}</span><span class="bc-log-ph">${st.dur||0}с</span></div>`;
+    }
+    return`<div class="bc-log-row"><span class="bc-log-badge ${st.type==='pour'?'pour':'pause'}">${st.type==='pour'?'Влив':'Пауза'}</span><span class="bc-log-t">${fmt(st.t)}</span><span class="bc-log-ph">${fmt(st.ph||0)}</span>${st.ml!=null?`<span class="bc-log-ml">${st.ml.toFixed(1)}мл</span>`:''}</div>`;
+  }).join(''):'<div style="font-size:12px;color:var(--txt3);padding:8px 0">Нет данных лога</div>';
+
+  /* ── ДИАГРАММА — кольцо (из b.steps) ── */
+  const _steps=(b.steps||[]).filter(s=>s.type==='pour'||s.type==='pause'||s.type==='action');
+  const _totalSec=_steps.reduce((s,x)=>s+(x.ph!=null?x.ph/1000:(x.dur||0)),0)||1;
+  const _COL={pour:{base:'#3E8FCE',on:'#74C0F5',glow:'rgba(116,192,245,.6)'},pause:{base:'#DC7E16',on:'#F7AC34',glow:'rgba(247,172,52,.6)'},action:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'}};
+  const _CX=140,_CY=140,_R=104,_W=14,_GAP=2.8;
+  const _totGap=(_steps.length>1?(_steps.length-1)*_GAP:0)+_GAP;
+  const _span=360-_totGap;
+  function _rpol(deg){const a=(deg-90)*Math.PI/180;return[_CX+_R*Math.cos(a),_CY+_R*Math.sin(a)];}
+  function _rarc(a0,a1){const[x0,y0]=_rpol(a0),[x1,y1]=_rpol(a1);const lg=(a1-a0)>180?1:0;return`M${x0.toFixed(2)} ${y0.toFixed(2)} A${_R} ${_R} 0 ${lg} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
+  let _rp='',_rc=_GAP/2;
+  _steps.forEach((st,i)=>{
+    const dur=st.ph!=null?st.ph/1000:(st.dur||0);
+    const sp=dur/_totalSec*_span;
+    const c=_COL[st.type]||_COL.action;
+    _rp+=`<path d="${_rarc(_rc,_rc+sp)}" fill="none" stroke="${c.base}" stroke-width="${_W}" stroke-linecap="butt" class="rring-seg" onclick="ringTap(${bid},${i})" style="cursor:pointer;transition:stroke-width .28s cubic-bezier(.3,.8,.3,1),stroke .25s,opacity .25s,filter .25s"/>`;
+    _rc+=sp+_GAP;
+  });
+  const donutSVG=`<div style="position:relative;width:280px;height:280px;margin:0 auto">
+    <svg viewBox="0 0 280 280" width="280" height="280" id="rring-${bid}">
+      <circle cx="${_CX}" cy="${_CY}" r="${_R}" fill="none" stroke="#202225" stroke-width="${_W}"/>
+      ${_rp}
+    </svg>
+    <div id="rring-center-${bid}" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:168px;height:168px;border-radius:50%;overflow:hidden;display:flex;flex-direction:column;align-items:stretch;background:radial-gradient(120% 120% at 50% 18%,#2f3237 0%,#212328 52%,#191b1e 100%);border:1px solid rgba(255,255,255,.07);box-shadow:0 10px 22px rgba(0,0,0,.5),0 2px 5px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06),inset 0 -8px 18px rgba(0,0,0,.35)">
+      <div onclick="ringNext(${bid})" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding-top:10px;box-shadow:inset 0 -1px 0 rgba(0,0,0,.4);transition:background .14s" onmouseover="this.style.background='rgba(255,255,255,.025)'" onmouseout="this.style.background=''" onmousedown="this.style.background='rgba(0,0,0,.18)'" onmouseup="this.style.background='rgba(255,255,255,.025)'">
+        <div id="rring-t-${bid}" style="font-family:var(--mono);font-weight:700;font-size:38px;letter-spacing:-1.5px;line-height:1;color:var(--txt);transition:color .25s">${b.totalTime||'—'}</div>
+        <div id="rring-c-${bid}" style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-top:7px">ВСЕГО</div>
+        <div id="rring-n-${bid}" style="font-size:13px;font-weight:600;letter-spacing:.3px;margin-top:5px;min-height:16px;transition:color .25s"></div>
+        <div id="rring-x-${bid}" style="font-family:var(--mono);font-size:11px;color:var(--txt2);margin-top:1px;min-height:13px"></div>
+        <div id="rring-foot-${bid}" style="display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt3);margin-top:6px">этапы <svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:var(--txt3);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><polyline points="9 6 15 12 9 18"/></svg></div>
       </div>
-      <div class="bc-stats">
-        <div class="bstat"><div class="bstat-l">Доза</div><div class="bstat-v">${b.dose||'—'}г</div></div>
-        <div class="bstat"><div class="bstat-l">Коэф.</div><div class="bstat-v">1:${b.ratio||'—'}</div></div>
-        <div class="bstat"><div class="bstat-l">Время</div><div class="bstat-v">${b.totalTime||'—'}</div></div>
+      <button id="rring-reset-${bid}" onclick="ringReset(${bid})" disabled style="flex-shrink:0;height:38px;border:none;cursor:pointer;background:linear-gradient(180deg,#1c1e21,#191b1e);border-top:1px solid rgba(0,0,0,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.07);color:var(--txt3);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,color .15s;opacity:.4"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>сброс</button>
+    </div>
+  </div>`;
+  const legendRows=`<div style="display:flex;justify-content:center;gap:18px;margin-top:12px"><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#74C0F5;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Влив</span></div><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#F7AC34;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Пауза</span></div><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#C3BFB8;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Действие</span></div></div>`;
+
+/* ── ВКУС теги ── */
+  const fwTags=(b.flavors&&b.flavors.length)?b.flavors.map(f=>`<span class="ftag ${ftCls(f)}">${f}</span>`).join(''):'<span style="font-size:12px;color:var(--txt3)">Не указано</span>';
+  const awTags=(b.aroma&&b.aroma.length)?b.aroma.map(f=>`<span class="ftag ${ftCls(f)}">${f}</span>`).join(''):'<span style="font-size:12px;color:var(--txt3)">Не указано</span>';
+
+  const notesBox=b.notes?`<div class="bc-notes-box"><div class="bc-notes-lbl">Заметки</div><div class="bc-notes-txt">${b.notes}</div></div>`:'';
+
+  return`<div class="brew-card">
+    <div class="bc-top">
+      <div style="min-width:0"><div class="bc-name">${b.beanName||'Без названия'}</div>${b.roaster?`<div class="bc-roaster">${b.roaster}</div>`:''}</div>
+      <div class="bc-right"><span class="method-pill">${b.method||'Альтернатива'}</span><span class="rating-num">${parseFloat(b.rating||0).toFixed(1)}</span></div>
+    </div>
+    <div class="bc-stats">
+      <div class="bstat"><div class="bstat-l">Доза</div><div class="bstat-v">${b.dose||'—'}г</div></div>
+      <div class="bstat"><div class="bstat-l">Коэф.</div><div class="bstat-v">1:${b.ratio||'—'}</div></div>
+      <div class="bstat"><div class="bstat-l">Время</div><div class="bstat-v">${b.totalTime||'—'}</div></div>
+    </div>
+    <div class="bc-foot">
+      <button class="expand-btn" id="ex-${bid}" onclick="toggleRec(${bid})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Детали</button>
+      <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${bid})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
+    </div>
+    <div class="recipe-panel" id="rec-${bid}">
+      <!-- ТАБЫ (3 шт) -->
+      <div class="bc-tabs">
+        <button class="bc-tab on" onclick="bcTab(${bid},0,this)">Лог</button>
+        <button class="bc-tab" onclick="bcTab(${bid},1,this)">Вкус</button>
+        <button class="bc-tab" onclick="bcTab(${bid},2,this)">Аромат</button>
       </div>
-      ${b.flavors&&b.flavors.length?`<div class="bc-flavors">${b.flavors.map(f=>`<span class="ftag ${ftCls(f)}">${f}</span>`).join('')}</div>`:''}
-      <div class="bc-foot">
-        <button class="expand-btn" id="ex-${b.id}" onclick="toggleRec(${b.id})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Рецепт</button>
-        <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${b.id})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
+      <div class="bc-pages">
+        <!-- PAGE 0: ЛОГ + тумблер таблица/диаграмма -->
+        <div class="bc-page on" id="bcp-0-${bid}">
+          <!-- Тумблер -->
+          <div style="display:flex;gap:3px;padding:3px;background:#121315;border:1px solid var(--line-soft);border-radius:10px;margin-bottom:12px">
+            <button id="bct-log-${bid}" onclick="bcLogToggle(${bid},'log',this)" style="flex:1;padding:7px 8px;border-radius:7px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.5px;background:none">Таблица</button>
+            <button id="bct-dia-${bid}" onclick="bcLogToggle(${bid},'dia',this)" style="flex:1;padding:7px 8px;border-radius:7px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--copper-lt);letter-spacing:.5px;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">Диаграмма</button>
+          </div>
+          <!-- Таблица (лог) -->
+          <div id="bcl-log-${bid}" style="display:none">
+            <div style="display:flex;gap:12px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line-soft)">
+              ${b.temp?`<div><span style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Темп</span><div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--txt)">${b.temp}°C</div></div>`:''}
+              ${b.dripper?`<div><span style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Воронка</span><div style="font-size:12px;font-weight:600;color:var(--txt)">${b.dripper}</div></div>`:''}
+              ${b.grinder?`<div><span style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Кофемолка</span><div style="font-size:12px;font-weight:600;color:var(--txt)">${b.grinder}${b.clicks?' · '+b.clicks+' кл':''}</div></div>`:''}
+            </div>
+            ${logRows}
+            ${notesBox}
+          </div>
+          <!-- Диаграмма -->
+          <div id="bcl-dia-${bid}" style="padding-top:4px">
+            ${donutSVG}
+            ${legendRows}
+            ${notesBox}
+          </div>
+        </div>
+        <!-- PAGE 1: ВКУС с колесом -->
+        <div class="bc-page" id="bcp-1-${bid}">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Вкусовые дескрипторы</div>
+          <div class="bc-wheel-tags">${fwTags}</div>
+          ${notesBox}
+        </div>
+        <!-- PAGE 2: АРОМАТ с колесом -->
+        <div class="bc-page" id="bcp-2-${bid}">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Ароматические дескрипторы</div>
+          <div class="bc-wheel-tags">${awTags}</div>
+          ${notesBox}
+        </div>
       </div>
-      <div class="recipe-panel" id="rec-${b.id}">
-        ${b.dripper?`<div class="rrow"><span class="rrow-l">Воронка</span><span class="rrow-v">${b.dripper}</span></div>`:''}
-        ${b.temp?`<div class="rrow"><span class="rrow-l">Температура</span><span class="rrow-v">${b.temp}°C</span></div>`:''}
-        ${b.filter?`<div class="rrow"><span class="rrow-l">Фильтр</span><span class="rrow-v">${b.filter} · ${b.filterWet?'смочен':'сухой'}</span></div>`:''}
-        ${b.notes?`<div class="rrow"><span class="rrow-l">Заметки</span><span class="rrow-v" style="max-width:200px;white-space:normal;text-align:right">${b.notes}</span></div>`:''}
-        ${b.steps&&b.steps.length?`<div style="margin-top:6px">${b.steps.map(st=>`<div class="step-row"><span class="sb ${st.type==='pour'?'sb-p':'sb-pa'}">${st.type==='pour'?'Влив':'Пауза'}</span><span style="font-size:12px;font-weight:600;color:#ccc;min-width:38px">${fmt(st.t)}</span><span style="font-size:12px;color:#555;flex:1;padding-left:6px">${fmt(st.ph)}</span><span style="font-size:12px;color:#4A9EDB">${st.ml!=null?st.ml.toFixed(1)+' мл':''}</span></div>`).join('')}</div>`:''}
-      </div>
-    </div>`).join('');
+    </div>
+  </div>`;
+}).join('');
 }
+
+/* ── BREW CARD TABS & DIAGRAM ── */
+function bcTab(bid,n,btn){
+  for(var i=0;i<3;i++){
+    var p=document.getElementById('bcp-'+i+'-'+bid);
+    if(p)p.classList.toggle('on',i===n);
+  }
+  var tabs=btn.closest('.bc-tabs').querySelectorAll('.bc-tab');
+  tabs.forEach(function(t,i){t.classList.toggle('on',i===n);});
+}
+function bcLogToggle(bid,mode,btn){
+  var logDiv=document.getElementById('bcl-log-'+bid);
+  var diaDiv=document.getElementById('bcl-dia-'+bid);
+  var logBtn=document.getElementById('bct-log-'+bid);
+  var diaBtn=document.getElementById('bct-dia-'+bid);
+  var onStyle='flex:1;padding:7px 8px;border-radius:7px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));box-shadow:inset 0 1px 0 rgba(255,255,255,.05);';
+  var offStyle='flex:1;padding:7px 8px;border-radius:7px;border:none;cursor:pointer;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.5px;background:none;';
+  if(mode==='log'){
+    if(logDiv)logDiv.style.display='block';
+    if(diaDiv)diaDiv.style.display='none';
+    if(logBtn)logBtn.style.cssText=onStyle+'color:var(--copper-lt);';
+    if(diaBtn)diaBtn.style.cssText=offStyle+'color:var(--txt3);';
+  } else {
+    if(logDiv)logDiv.style.display='none';
+    if(diaDiv)diaDiv.style.display='block';
+    if(logBtn)logBtn.style.cssText=offStyle+'color:var(--txt3);';
+    if(diaBtn)diaBtn.style.cssText=onStyle+'color:var(--steel);';
+  }
+}
+function bcSegTap(bid,idx,val,lbl){
+  var vEl=document.getElementById('bcdv-'+bid);
+  var lEl=document.getElementById('bcdl-'+bid);
+  if(vEl)vEl.textContent=val;
+  if(lEl)lEl.textContent=lbl;
+}
+
+/* ── RING TAP — интерактив кольца ── */
+var _ringSelected={};
+
+function ringNext(bid){
+  var brew=S.brews.find(function(b){return b.id===bid;});
+  var steps=(brew?brew.steps||[]:[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action';});
+  var cur=_ringSelected[bid];
+  var next=(cur===null||cur===undefined)?0:cur+1;
+  if(next>=steps.length)next=null;
+  _ringSelected[bid]=next;
+  ringTap(bid, next===null?-1:next, true);
+}
+function ringReset(bid){
+  _ringSelected[bid]=null;
+  ringTap(bid,-1,true);
+}
+function ringTap(bid,i,fromNext){
+  var brew=S.brews.find(function(b){return b.id===bid;});
+  var steps=(brew?brew.steps||[]:[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action';});
+  var prev=_ringSelected[bid];
+  if(i===-1){_ringSelected[bid]=null;}
+  else if(!fromNext){_ringSelected[bid]=(prev===i)?null:i;}
+  var sel=_ringSelected[bid];
+  var COL={pour:{base:'#3E8FCE',on:'#74C0F5',glow:'rgba(116,192,245,.6)'},pause:{base:'#DC7E16',on:'#F7AC34',glow:'rgba(247,172,52,.6)'},action:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'}};
+  function fmtSec(sec){var m=Math.floor(sec/60);return m+':'+String(Math.round(sec)%60).padStart(2,'0');}
+  var svg=document.getElementById('rring-'+bid);if(!svg)return;
+  var segs=svg.querySelectorAll('.rring-seg');
+  segs.forEach(function(p,j){
+    var st=steps[j];if(!st)return;
+    var c=COL[st.type]||COL.action,on=(sel===j);
+    p.setAttribute('stroke',on?c.on:c.base);
+    p.setAttribute('stroke-width',on?22:14);
+    p.style.opacity=(sel===null||on)?'1':'.38';
+    p.style.filter=on?'drop-shadow(0 0 7px '+c.glow+')':'none';
+  });
+  var tEl=document.getElementById('rring-t-'+bid),cEl=document.getElementById('rring-c-'+bid);
+  var nEl=document.getElementById('rring-n-'+bid),xEl=document.getElementById('rring-x-'+bid);
+  var rstBtn=document.getElementById('rring-reset-'+bid);
+  var footEl=document.getElementById('rring-foot-'+bid);
+  if(sel===null){
+    if(tEl){tEl.textContent=brew?brew.totalTime||'—':'—';tEl.style.color='var(--txt)';}
+    if(cEl){cEl.textContent='ВСЕГО';cEl.style.color='var(--txt3)';}
+    if(nEl)nEl.textContent='';if(xEl)xEl.textContent='';
+    if(footEl)footEl.style.display='flex';
+    if(rstBtn){rstBtn.disabled=true;rstBtn.style.opacity='.4';rstBtn.style.background='linear-gradient(180deg,#1c1e21,#191b1e)';rstBtn.style.color='var(--txt3)';}
+  }else{
+    var st=steps[sel],c=COL[st.type]||COL.action;
+    var durSec=st.ph!=null?st.ph/1000:(st.dur||0);
+    if(tEl){tEl.textContent=fmtSec(durSec);tEl.style.color=c.on;}
+    if(cEl){cEl.textContent='';cEl.style.color='transparent';}
+    var labels={pour:'Влив',pause:'Пауза',action:'Действие'};
+    if(nEl){nEl.textContent=st.label||(labels[st.type]||'Шаг');nEl.style.color=c.on;}
+    if(xEl)xEl.textContent=st.ml?st.ml.toFixed(0)+' мл':(sel+1)+' / '+steps.length;
+    if(footEl)footEl.style.display='none';
+    if(rstBtn){rstBtn.disabled=false;rstBtn.style.opacity='1';rstBtn.style.background='linear-gradient(180deg,#26282c,#202225)';rstBtn.style.color='var(--txt)';}
+  }
+}
+
 function toggleRec(id){const p=document.getElementById('rec-'+id),b=document.getElementById('ex-'+id);const o=p.classList.toggle('open');b.classList.toggle('open',o);}
 function toggleLike(id){const b=S.brews.find(x=>x.id===id);if(!b)return;b.liked=!b.liked;b.likes+=b.liked?1:-1;save();renderFeed()}
 
@@ -1900,6 +2337,167 @@ let BS={bean:null,filter:null,dripper:null,grinder:null,clicks:28,wet:true,dose:
 /* RATING STATE */
 let RS={rating:8.0,flavors:[],aroma:[],notes:''};
 
+/* ── МЕТОД ЗАВАРИВАНИЯ ── */
+let brewMethod='alt'; // 'alt' | 'esp'
+
+function setBrewMethod(m){
+  brewMethod=m;
+  const isEsp=m==='esp';
+  // Кнопки
+  document.getElementById('bm-alt').style.cssText=`padding:10px;border-radius:10px;border:${!isEsp?'2px solid var(--copper)':'1px solid var(--line-soft)'};background:${!isEsp?'linear-gradient(160deg,#2a1e10,#1d1610)':'var(--card-lo)'};color:${!isEsp?'var(--copper-lt)':'var(--txt3)'};font-family:inherit;font-size:13px;font-weight:${!isEsp?700:600};cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s`;
+  document.getElementById('bm-esp').style.cssText=`padding:10px;border-radius:10px;border:${isEsp?'2px solid var(--copper)':'1px solid var(--line-soft)'};background:${isEsp?'linear-gradient(160deg,#2a1e10,#1d1610)':'var(--card-lo)'};color:${isEsp?'var(--copper-lt)':'var(--txt3)'};font-family:inherit;font-size:13px;font-weight:${isEsp?700:600};cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s`;
+  // Заголовок
+  document.getElementById('brew-title').textContent=isEsp?'Еспресо':'Альтернатива';
+  // Показ/скрытие карточек
+  document.getElementById('bcard-dripper').style.display=isEsp?'none':'block';
+  document.getElementById('bcard-filter').style.display=isEsp?'none':'block';
+  document.getElementById('bcard-acc').style.display=isEsp?'block':'none';
+  document.getElementById('bcard-pours-wrap').style.display=isEsp?'none':'block';
+  document.getElementById('bcard-altcalc').style.display=isEsp?'none':'block';
+  document.getElementById('bcard-esp-params').style.display=isEsp?'block':'none';
+  // Аксессуары — подтягиваем из инвентаря
+  if(isEsp){
+    const accs=S.equipment.filter(e=>e.type==='acc');
+    const accList=document.getElementById('bacc-list');
+    if(accList){
+      if(accs.length){
+        accList.innerHTML=accs.map(a=>`<button onclick="this.classList.toggle('on')" style="font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--line);background:none;color:var(--txt2);cursor:pointer;font-family:inherit;transition:all .12s" class="">${a.name}</button>`).join('');
+      } else {
+        accList.innerHTML='<div style="font-size:12px;color:var(--txt3)">Додай аксессуари в Девайси → Аксессуари</div>';
+      }
+    }
+  }
+}
+
+function bEspCalc(){
+  const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
+  const ratio=parseFloat(document.getElementById('b-esp-ratio-sel').value)||2;
+  const yld=Math.round(dose*ratio*10)/10;
+  document.getElementById('b-esp-dose-lbl').textContent=dose;
+  document.getElementById('b-esp-yield-lbl').textContent=yld;
+  document.getElementById('b-esp-ratio-lbl').textContent=ratio.toFixed(1);
+  // сохраняем для таймера
+  if(window._espYield!==undefined)window._espYield=yld;
+}
+
+function espStartShot(){
+  clearInterval(espInt);espSec=0;espRunning=false;
+  const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
+  const ratio=parseFloat(document.getElementById('b-esp-ratio-sel').value)||2;
+  const yld=Math.round(dose*ratio*10)/10;
+  const targetSec=27; // стандарт, уточняется фактом
+  document.getElementById('esp-dose-disp').textContent=dose+' г';
+  document.getElementById('esp-yield-disp').textContent=yld+' г';
+  document.getElementById('esp-target-s').textContent=targetSec+'с ціль';
+  document.getElementById('esp-timer').textContent='0:00';
+  document.getElementById('esp-seconds').textContent='0';
+  document.getElementById('esp-time-bar').style.width='0%';
+  document.getElementById('esp-time-bar').style.background='var(--copper-lt)';
+  document.getElementById('esp-fill').setAttribute('y','70');
+  document.getElementById('esp-fill').setAttribute('height','0');
+  document.getElementById('esp-drop').setAttribute('opacity','0');
+  document.getElementById('esp-phase-lbl').textContent='Готовий до старту';
+  document.getElementById('brew-title').textContent='Еспресо';
+  document.getElementById('brew-sub').textContent=dose+'г → '+yld+'г · '+document.getElementById('b-esp-temp-out').textContent;
+  document.getElementById('esp-start-btn').disabled=false;
+  document.getElementById('esp-start-btn').style.opacity='1';
+  document.getElementById('esp-stop-btn').disabled=true;
+  document.getElementById('esp-stop-btn').style.opacity='0.5';
+  window._espTargetSec=targetSec;
+  window._espYield=yld;
+  showBV('bv-esp-active');
+}
+
+function espStartTimer(){
+  if(espRunning)return;
+  espRunning=true;espSec=0;
+  const targetSec=window._espTargetSec||27;
+  document.getElementById('esp-start-btn').disabled=true;
+  document.getElementById('esp-start-btn').style.opacity='0.5';
+  document.getElementById('esp-stop-btn').disabled=false;
+  document.getElementById('esp-stop-btn').style.opacity='1';
+  document.getElementById('esp-phase-lbl').textContent='Пролив іде...';
+  document.getElementById('esp-drop').setAttribute('opacity','1');
+  espInt=setInterval(()=>{
+    espSec++;
+    const m=Math.floor(espSec/60),s=espSec%60;
+    document.getElementById('esp-timer').textContent=m+':'+(s<10?'0':'')+s;
+    document.getElementById('esp-seconds').textContent=espSec;
+    const pct=Math.min(espSec/targetSec*100,100);
+    document.getElementById('esp-time-bar').style.width=pct+'%';
+    const fillH=Math.min(pct*0.4,40);
+    document.getElementById('esp-fill').setAttribute('y',(70-fillH).toString());
+    document.getElementById('esp-fill').setAttribute('height',fillH.toString());
+    if(espSec>=targetSec){
+      document.getElementById('esp-phase-lbl').textContent='Оптимальний час!';
+      document.getElementById('esp-time-bar').style.background='#4CAF50';
+    }
+  },1000);
+}
+
+function espStopTimer(){
+  clearInterval(espInt);espRunning=false;
+  document.getElementById('esp-drop').setAttribute('opacity','0');
+  document.getElementById('esp-phase-lbl').textContent='Готово — '+espSec+'с';
+  // Переходим на экран результата
+  const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
+  document.getElementById('esp-res-time-lbl').textContent='Час проливу: '+espSec+' секунд';
+  document.getElementById('esp-res-sec').textContent=espSec+'с';
+  document.getElementById('esp-res-dose-disp').textContent=dose+' г';
+  document.getElementById('esp-actual-yield').value='';
+  document.getElementById('esp-tds-actual').value='';
+  document.getElementById('esp-notes').value='';
+  document.getElementById('esp-rate-slider').value='8';
+  document.getElementById('esp-rate-num').textContent='8.0';
+  // Слушаем изменение выхода для расчёта коэффициента
+  const yieldInp=document.getElementById('esp-actual-yield');
+  yieldInp.oninput=()=>{
+    const y=parseFloat(yieldInp.value)||0;
+    const r=dose>0?(y/dose).toFixed(2):'—';
+    document.getElementById('esp-actual-ratio').textContent='1 : '+r;
+  };
+  showBV('bv-esp-result');
+}
+
+function espAbandon(){
+  clearInterval(espInt);espRunning=false;
+  showBV('bv-setup');
+}
+
+function espSave(){
+  const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
+  const ratio=parseFloat(document.getElementById('b-esp-ratio-sel').value)||2;
+  const targetYield=Math.round(dose*ratio*10)/10;
+  const actualYield=parseFloat(document.getElementById('esp-actual-yield').value)||0;
+  const tdsTarget=parseFloat(document.getElementById('esp-tds-target').value)||0;
+  const tdsActual=parseFloat(document.getElementById('esp-tds-actual').value)||0;
+  const rating=parseFloat(document.getElementById('esp-rate-slider').value)||8;
+  const notes=document.getElementById('esp-notes').value.trim();
+  const temp=document.getElementById('b-esp-temp-out').textContent;
+  const bar=document.getElementById('b-esp-bar-out').textContent;
+  const brew={
+    id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',
+    method:'Еспресо',dose:dose.toString(),temp:temp.replace('°C',''),
+    grinder:BS.grinder?BS.grinder.name:'',clicks:BS.clicks,
+    espresso:{dose,targetYield,actualYield,shotTime:espSec,tdsTarget,tdsActual,pressure:bar},
+    totalTime:espSec+'с',ratio:(actualYield>0?(actualYield/dose).toFixed(2):ratio.toFixed(2)),
+    rating:Math.round(rating*10)/10,flavors:[],aroma:[],notes,likes:0,liked:false,ts:Date.now()
+  };
+  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean)bean.current=Math.max(0,bean.current-dose);}
+  S.brews.unshift(brew);save();
+  toast('Шот збережено!');
+  showScr('scr-home');
+}
+
+function espRatioAdj(delta){
+  const el=document.getElementById('b-esp-ratio-sel');if(!el)return;
+  const v=Math.round((parseFloat(el.value||2)+delta)*10)/10;
+  el.value=Math.min(5,Math.max(1,v)).toFixed(1);
+  bEspCalc();
+}
+
+// esp поля подключены через oninput в HTML
+
 function bCalc(){
   BS.dose=parseFloat(document.getElementById('b-dose').value)||16;
   BS.ratio=parseInt(document.getElementById('b-ratio').value)||16;
@@ -1993,8 +2591,18 @@ function bSelDripper(id){
   closeOv('ov-bdripper');
 }
 function bDrip(on){const d=document.getElementById('drip-stream');if(d)d.classList.toggle('on',!!on);}
-function showBV(id){['bv-setup','bv-active','bv-rate','bv-result'].forEach(v=>document.getElementById(v).style.display=v===id?'block':'none');}
+function pickBrewMethod(m){
+  if(m==='alt'){setBrewMethod('alt');}
+  else{setBrewMethod('esp');}
+  showBV('bv-setup');
+}
+
+function showBV(id){['bv-method-pick','bv-setup','bv-active','bv-rate','bv-result','bv-esp-active','bv-esp-result'].forEach(v=>{const el=document.getElementById(v);if(el)el.style.display=v===id?'block':'none';});}
+
+/* ── ЭСПРЕССО ТАЙМЕР ── */
+let espInt=null,espSec=0,espRunning=false;
 function brewStart(){
+  if(brewMethod==='esp'){espStartShot();return;}
   bCalc();const total=Math.round(BS.dose*BS.ratio);
   BS.steps=[];BS.pourCnt=0;BS.phase='idle';BS.mainStart=null;BS.elapsed=0;BS.phaseMs=0;BS.pouredFixed=0;BS.firstDone=false;
   document.getElementById('b-pour-tot').textContent=BS.pours;
@@ -2085,7 +2693,23 @@ function brewDoAction(id,btn){
     if(timer)timer.textContent=elapsed+'с';
     const labels={stir:'Перемешивание',swirl:'Свэрл',shake:'Взбалтывание'};
     const lbl=labels[id];
-    BS.steps.push({type:'action',t:BS.elapsed,label:lbl,dur:elapsed,ml:null});
+    // Разделяем предыдущую паузу: пауза1 → действие → пауза2
+    const lastPauseIdx=BS.steps.map((s,i)=>s.type==='pause'?i:-1).filter(i=>i>=0).pop();
+    if(lastPauseIdx!=null){
+      const prevPause=BS.steps[lastPauseIdx];
+      const pauseTotalMs=prevPause.ph||0;
+      const actionMs=elapsed*1000;
+      // Пауза1 = от начала паузы до начала действия (всё что до)
+      const pause1Ms=Math.max(0,pauseTotalMs-actionMs);
+      // Обновляем предыдущую паузу под pause1
+      prevPause.ph=pause1Ms;
+      // Вставляем: действие после паузы1
+      const actionEntry={type:'action',t:BS.elapsed,label:lbl,dur:elapsed,ph:actionMs,ml:null};
+      // Пауза2 = время уже идёт после действия (пока 0, дополнится в bHandlePause)
+      BS.steps.splice(lastPauseIdx+1,0,actionEntry);
+    } else {
+      BS.steps.push({type:'action',t:BS.elapsed,label:lbl,dur:elapsed,ph:elapsed*1000,ml:null});
+    }
     // Добавляем в лог паузы
     const logIdx=BS.steps.length-1;
     bAddLog('action',logIdx,elapsed,lbl,id);
@@ -2215,7 +2839,7 @@ function brewStop(){
   if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
   if(BS.filter){const filter=S.filters.find(f=>f.id===BS.filter.id);if(filter){filter.current=Math.max(0,filter.current-1);if(filter.current===0)toast('⚠️ Фильтры '+filter.name+' закончились!');else if(filter.current<=10)toast('⚠️ Мало фильтров: '+filter.current+' шт');}}
   save();
-  RS={rating:8.0,flavors:[],aroma:[],notes:'',_fwSel:{_active:null,_activeSub:null,sel:{}},_awSel:{_active:null,_activeSub:null,sel:{}}};
+  RS={rating:8.0,flavors:[],aroma:[],notes:'',_fwSel:{_active:null,_activeSub:null},_awSel:{_active:null,_activeSub:null}};
   document.getElementById('rate-bean-name').textContent=BS.bean?BS.bean.name:'Без названия';
   document.getElementById('rate-info').textContent='1:'+BS.ratio+' · '+document.getElementById('b-temp-sl').value+'°C · '+fmt(BS.elapsed);
   document.getElementById('rate-time').textContent=fmt(BS.elapsed);
@@ -2226,6 +2850,8 @@ function brewStop(){
   drawWheel();
   showBV('bv-rate');
 }
+
+
 
 /* ── КОЛЕСО ВКУСОВ (полная таксономия SCA) ── */
 const FW_DATA=[
@@ -2419,7 +3045,11 @@ function fwRenderDesc(prefix){
   const cat=FW_DATA.find(c=>c.id===catId);const sub=cat&&cat.sub.find(s=>s.id===subId);
   if(!sub){box.innerHTML='';return;}
   box.innerHTML=`<div class="fw-desc-head"><span class="fw-dot" style="background:${cat.color}"></span>${cat.label} · ${sub.label}</div>`
-    +sub.desc.map(d=>`<button class="fw-chip ${sel.sel[d]?'on':''}" onclick="fwToggleDesc('${prefix}','${fwEsc(d)}')">${d}</button>`).join('');
+    +sub.desc.map(d=>{
+      const on=!!sel.sel[d];
+      const style=on?`background:${cat.color};color:#fff`:'';
+      return`<button class="fw-chip ${on?'on':''}" style="${style}" onclick="fwToggleDesc('${prefix}','${fwEsc(d)}')">${d}</button>`;
+    }).join('');
 }
 
 function fwRenderTags(prefix){
@@ -2427,7 +3057,12 @@ function fwRenderTags(prefix){
   const tags=document.getElementById(cfg.tags);if(!tags)return;
   const all=Object.keys(sel.sel||{});
   tags.innerHTML=all.length
-    ?all.map(d=>`<span class="fw-tag" onclick="fwToggleDesc('${prefix}','${fwEsc(d)}')">${d} ×</span>`).join('')
+    ?all.map(d=>{
+      const info=DESC_INDEX[d]||{};
+      const bg=info.color||'var(--copper)';
+      // darken for background — 60% opacity fill
+      return`<span class="fw-tag" style="background:${bg};color:#fff;opacity:.92" onclick="fwToggleDesc('${prefix}','${fwEsc(d)}')">${d} ×</span>`;
+    }).join('')
     :'<span class="fw-tag-empty">Пока ничего не выбрано</span>';
 }
 
@@ -2539,7 +3174,7 @@ function brewReset(){
   document.getElementById('b-temp-sl').value='93';
   document.getElementById('b-temp-out').textContent='93°C';
   showPauseActions(false);resetPauseActions();
-  setWet(true);bCalc();showBV('bv-setup');
+  setWet(true);bCalc();showBV('bv-method-pick');
 }
 
 /* ══════════════════════════════════════════
@@ -2797,7 +3432,7 @@ function showScr(id){
   const el=document.getElementById(id);if(el)el.classList.add('on');
   const nbMap={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile'};
   const nb=nbMap[id];if(nb)document.getElementById(nb)?.classList.add('on');
-  const fn={'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf,'scr-market':mktRender};
+  const fn={'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf,'scr-market':mktRender};if(id==='scr-brew')showBV('bv-method-pick');
   if(fn[id])fn[id]();
 }
 
