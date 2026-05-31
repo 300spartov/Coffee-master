@@ -23,12 +23,13 @@
   --sans:'Helvetica Neue',Helvetica,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
 body{font-family:var(--sans);background:radial-gradient(120% 80% at 50% -10%,#202225 0%,#101113 60%,#0b0c0d 100%);color:var(--txt);font-size:14px;line-height:1.45;letter-spacing:.1px}
 .app{max-width:390px;margin:0 auto;background:
   repeating-linear-gradient(90deg,rgba(255,255,255,.010) 0 1px,transparent 1px 4px),
   linear-gradient(165deg,#1c1e21 0%,#171819 55%,#141517 100%);
-  min-height:760px;display:flex;flex-direction:column;position:relative;
-  box-shadow:0 0 0 1px #000,0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.03)}
+  height:100dvh;height:100vh;display:flex;flex-direction:column;position:relative;
+  box-shadow:0 0 0 1px #000,0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.03);overflow:hidden}
 
 /* NAV — icon-only, copper active */
 .nav{background:linear-gradient(180deg,#1c1e21,#141517);border-top:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-around;padding:11px 8px 26px;flex-shrink:0;order:2;position:relative;z-index:10;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
@@ -74,7 +75,15 @@ select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 
 /* FEED */
-.brew-card{background:linear-gradient(165deg,var(--card-hi) 0%,var(--card) 45%,var(--card-lo) 100%);border:1px solid var(--line-soft);border-radius:15px;margin:0 16px 12px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 20px rgba(0,0,0,.34)}
+.swipe-outer{position:relative;border-radius:15px;margin:0 16px 12px}
+.swipe-delete-bg{position:absolute;top:0;right:0;bottom:0;width:84px;background:linear-gradient(160deg,#e02820 0%,#c01c16 55%,#8c1510 100%);border-radius:0 15px 15px 0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer;overflow:hidden}
+.swipe-delete-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1) 0%,transparent 55%);pointer-events:none}
+.swipe-delete-bg i{font-size:22px;color:#fff}
+.swipe-delete-bg span{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.8);letter-spacing:1.2px;text-transform:uppercase}
+.brew-card{position:relative;z-index:1;background:linear-gradient(165deg,var(--card-hi) 0%,var(--card) 45%,var(--card-lo) 100%);border:1px solid var(--line-soft);border-top:1px solid rgba(255,255,255,.06);border-radius:15px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);cursor:grab;will-change:transform;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)) drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+.brew-card.bc-swiping{transition:none;cursor:grabbing}
+.brew-card.bc-snapping{transition:transform .3s cubic-bezier(.25,.9,.3,1)}
+.brew-card.bc-deleting{transition:transform .35s cubic-bezier(.4,0,1,1),opacity .3s;opacity:0}
 .bc-top{padding:14px 15px 11px;display:flex;justify-content:space-between;align-items:flex-start}
 .bc-name{font-size:15px;font-weight:600;color:var(--txt);line-height:1.25}
 .bc-roaster{font-size:11px;color:var(--txt2);margin-top:3px;letter-spacing:.4px}
@@ -356,6 +365,7 @@ select.fi{appearance:none;cursor:pointer;font-size:14px;text-align:left;padding-
 /* heat micro-icon */
 .heat-ico{display:inline-block;color:var(--copper-lt);animation:vibrate .25s linear infinite;font-size:15px;vertical-align:middle}
 @keyframes vibrate{0%,100%{transform:translate(0,0)}25%{transform:translate(.5px,-.5px)}50%{transform:translate(-.5px,.5px)}75%{transform:translate(.5px,.5px)}}
+
 
 /* RATING */
 .rating-block{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:20px;text-align:center;margin-bottom:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
@@ -800,7 +810,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   <div style="margin-top:1px">
     <div class="srow" onclick="showScr('scr-market')"><i class="ti ti-building-store gear-ic" aria-hidden="true" style="color:var(--copper-lt)"></i><span class="srow-lbl">Магазин зерна и девайсов</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
     <div class="srow" onclick="openOv('ov-settings')"><i class="ti ti-user-edit gear-ic" aria-hidden="true"></i><span class="srow-lbl">Редактировать профиль</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
-    <div class="srow" onclick="if(confirm('Сбросить данные?')){localStorage.removeItem('cj_v7');location.reload()}"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A">Сбросить данные</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="openDeletedTrash()"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A">Удалённые рецепты</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
   </div>
 </div>
 
@@ -1237,16 +1247,23 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       </div>
     </div>
 
-    <!-- Кнопки Старт/Стоп -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <button id="esp-start-btn" onclick="espStartTimer()" style="padding:14px;border-radius:14px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s">
-        <i class="ti ti-player-play" aria-hidden="true" style="font-size:18px"></i> Старт
-      </button>
-      <button id="esp-stop-btn" onclick="espStopTimer()" disabled style="padding:14px;border-radius:14px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.5;transition:all .15s">
-        <i class="ti ti-player-stop" aria-hidden="true" style="font-size:18px"></i> Стоп
+    <!-- Предсмачивание — такой же стиль как act-btn -->
+    <div id="esp-preinf-wrap" style="margin-bottom:10px">
+      <button id="esp-preinf-btn" onclick="espPreinfusion(this)" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid #32363c;background:linear-gradient(160deg,#2a2d32 0%,#1e2025 60%,#18191d 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 6px rgba(0,0,0,.35);color:#ECE9E3;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;letter-spacing:.3px">
+        <i class="ti ti-droplet-half" aria-hidden="true" style="font-size:16px"></i>
+        Предсмачивание
+        <span id="esp-preinf-timer" style="font-family:var(--mono);font-size:11px;color:var(--txt3);margin-left:2px"></span>
       </button>
     </div>
-    <button class="stop-btn" onclick="espAbandon()"><i class="ti ti-x" aria-hidden="true"></i> Скасувати шот</button>
+    <!-- Кнопки Старт/Стоп -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button id="esp-start-btn" onclick="espStartTimer()" style="padding:16px;border-radius:14px;border:2px solid #2a5fa0;background:linear-gradient(160deg,#0e1e38,#091428);color:#74C0F5;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s">
+        <i class="ti ti-player-play" aria-hidden="true" style="font-size:20px"></i> Старт
+      </button>
+      <button id="esp-stop-btn" onclick="espStopTimer()" disabled style="padding:16px;border-radius:14px;border:2px solid #5a1a1a;background:linear-gradient(160deg,#200e0e,#160808);color:#E24B4A;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.4;transition:all .15s">
+        <i class="ti ti-square" aria-hidden="true" style="font-size:20px"></i> Стоп
+      </button>
+    </div>
   </div>
 
   <!-- ЭСПРЕССО — РЕЗУЛЬТАТ (ввод данных после стопа) -->
@@ -1305,6 +1322,24 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <div class="notes-block" style="margin-bottom:14px">
       <div class="lbl" style="margin-bottom:8px">Нотатки</div>
       <textarea class="notes-inp" id="esp-notes" placeholder="Враження: тіло, гіркота, солодкість, баланс..."></textarea>
+    </div>
+
+    <!-- Колесо вкусов -->
+    <div class="wheel-section">
+      <div class="wheel-lbl">Колесо вкусов</div>
+      <div id="efw-hint" style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-align:center;margin-bottom:10px;min-height:14px;letter-spacing:.5px">Нажми на категорию</div>
+      <svg id="efw-svg" width="280" height="280" viewBox="-140 -140 280 280" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;min-height:24px" id="efw-tags"></div>
+      <button onclick="efwReset()" style="width:100%;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px">Сбросить вкусы</button>
+    </div>
+
+    <!-- Аромат -->
+    <div class="wheel-section">
+      <div class="wheel-lbl">Аромат</div>
+      <div id="eaw-hint" style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-align:center;margin-bottom:10px;min-height:14px;letter-spacing:.5px">Нажми на категорию</div>
+      <svg id="eaw-svg" width="280" height="280" viewBox="-140 -140 280 280" style="display:block;margin:0 auto;touch-action:manipulation"></svg>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;min-height:24px" id="eaw-tags"></div>
+      <button onclick="eawReset()" style="width:100%;margin-top:10px;background:none;border:1px solid var(--line);border-radius:8px;padding:8px;font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;letter-spacing:.5px">Сбросить аромат</button>
     </div>
 
     <button class="save-btn" onclick="espSave()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> Зберегти шот</button>
@@ -1410,6 +1445,111 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   </div>
 </div>
 
+<div class="overlay" id="ov-trash" onclick="if(event.target===this)closeOv('ov-trash')">
+  <div class="sheet" style="max-height:82%">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="sheet-title" style="margin-bottom:0">Удалённые рецепты</div>
+      <button onclick="closeOv('ov-trash')" style="background:none;border:none;cursor:pointer;color:var(--txt3);font-size:22px;line-height:1;padding:2px"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div style="font-family:var(--mono);font-size:9.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">Хранятся 30 дней, затем удаляются навсегда</div>
+    <div id="trash-list"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-log-brew" onclick="if(event.target===this)closeOv('ov-log-brew')">
+  <div class="sheet">
+    <div class="sheet-title">Добавить выпитое</div>
+    <div style="display:flex;gap:4px;background:#111214;padding:4px;border-radius:11px;margin-bottom:14px">
+      <button id="lb-src-home" onclick="lbSetSource('home')" style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">Дома</button>
+      <button id="lb-src-place" onclick="lbSetSource('place')" style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:none;color:var(--txt3)">В заведении</button>
+    </div>
+    <div class="field-lbl">Дата</div>
+    <input type="hidden" id="lb-date">
+    <button type="button" id="lb-date-btn" onclick="lbDatePickerToggle()" style="width:100%;background:linear-gradient(160deg,#222427,#191b1d);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;margin-bottom:8px;transition:border-color .2s">
+      <span id="lb-date-lbl" style="font-size:15px;font-weight:600;color:var(--txt)">Сегодня</span>
+      <i class="ti ti-calendar" style="font-size:18px;color:var(--copper-lt)" aria-hidden="true"></i>
+    </button>
+    <div id="lb-date-picker" style="display:none;background:#16171a;border:1px solid var(--line-soft);border-radius:12px;padding:12px;margin-bottom:11px">
+      <!-- Month nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <button type="button" onclick="lbPickerNav(-1)" style="background:none;border:none;cursor:pointer;color:var(--txt2);padding:4px 8px;font-size:18px;border-radius:8px"><i class="ti ti-chevron-left"></i></button>
+        <span id="lb-picker-title" style="font-family:var(--mono);font-size:11px;font-weight:600;color:var(--txt);letter-spacing:1px;text-transform:uppercase"></span>
+        <button type="button" onclick="lbPickerNav(1)" style="background:none;border:none;cursor:pointer;color:var(--txt2);padding:4px 8px;font-size:18px;border-radius:8px"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <!-- Day-of-week headers -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Пн</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Вт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Ср</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Чт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Пт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Сб</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Вс</div>
+      </div>
+      <div id="lb-picker-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+      <!-- Quick: today / yesterday -->
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button type="button" onclick="lbPickerQuick(0)" style="flex:1;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--copper-lt);cursor:pointer;font-weight:600">Сегодня</button>
+        <button type="button" onclick="lbPickerQuick(-1)" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-soft);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--txt2);cursor:pointer;font-weight:600">Вчера</button>
+        <button type="button" onclick="lbPickerQuick(-2)" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-soft);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--txt2);cursor:pointer;font-weight:600">Позавчера</button>
+      </div>
+    </div>
+    <div class="field-lbl">Кофе / название</div>
+    <input class="fi" type="text" id="lb-bean" placeholder="Например: Ethiopia Ayla" style="font-size:14px;font-weight:500;text-align:left;margin-bottom:11px">
+    <div id="lb-place-wrap" style="display:none;margin-bottom:11px">
+      <div class="field-lbl">Название заведения</div>
+      <input class="fi" type="text" id="lb-place" placeholder="Coffee Shop, бар..." style="font-size:14px;font-weight:500;text-align:left">
+    </div>
+    <div class="grid2" style="margin-bottom:11px">
+      <div>
+        <div class="field-lbl">Метод</div>
+        <select class="fi" id="lb-method">
+          <option>V60</option><option>Origami</option><option>Chemex</option><option>Aeropress</option>
+          <option>Moka</option><option>French Press</option><option>Espresso</option><option>Flat White</option>
+          <option>Latte</option><option>Cappuccino</option><option>Другое</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-lbl">Объём (мл)</div>
+        <input class="fi" type="number" id="lb-vol" value="240" min="10" max="1000">
+      </div>
+    </div>
+    <div id="lb-home-params">
+      <div class="grid2" style="margin-bottom:11px">
+        <div>
+          <div class="field-lbl">Доза (г)</div>
+          <input class="fi" type="number" id="lb-dose" value="16" step="0.1" min="1" max="100">
+        </div>
+        <div>
+          <div class="field-lbl">Коэф.</div>
+          <input class="fi" type="number" id="lb-ratio" value="16" min="1" max="30">
+        </div>
+      </div>
+      <div class="grid2" style="margin-bottom:11px">
+        <div>
+          <div class="field-lbl">Температура (°C)</div>
+          <input class="fi" type="number" id="lb-temp" value="93" min="60" max="100">
+        </div>
+        <div>
+          <div class="field-lbl">Кофемолка</div>
+          <input class="fi" type="text" id="lb-grinder" placeholder="Необязательно" style="font-size:13px;font-weight:400;text-align:left">
+        </div>
+      </div>
+    </div>
+    <div class="field-lbl">Оценка</div>
+    <input class="fi" type="number" id="lb-rating" value="8.0" step="0.1" min="1" max="10" style="margin-bottom:11px">
+    <div class="field-lbl">Заметки</div>
+    <input class="fi" type="text" id="lb-notes" placeholder="Необязательно" style="font-size:13px;font-weight:400;text-align:left;margin-bottom:14px">
+    <div class="sbtns">
+      <button class="btn-c" onclick="closeOv('ov-log-brew')">Отмена</button>
+      <button class="btn-s" onclick="logBrewManual()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<div id="brew-del-toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:#2a0a0a;border:1px solid #7a1a1a;color:#f5a0a0;font-family:var(--mono);font-size:11px;letter-spacing:.5px;padding:9px 18px;border-radius:20px;transition:transform .35s cubic-bezier(.25,.9,.3,1),opacity .35s;opacity:0;white-space:nowrap;pointer-events:none;display:flex;align-items:center;gap:7px;z-index:999"><i class="ti ti-trash" aria-hidden="true" style="font-size:14px"></i> Перемещено в «Удалённые рецепты»</div>
+<style>#brew-del-toast.show{transform:translateX(-50%) translateY(0);opacity:1}</style>
+
 <!-- МАРКЕТПЛЕЙС -->
 <div class="scr" id="scr-market" style="padding-bottom:0">
   <!-- Шапка -->
@@ -1455,95 +1595,6 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 </div>
 
 
-<!-- ДОБАВИТЬ ЗАВАРИВАНИЕ вручную -->
-<div class="overlay" id="ov-log-brew" onclick="if(event.target===this)closeOv('ov-log-brew')">
-  <div class="sheet" style="max-height:92vh">
-    <div class="sheet-title">Добавить выпитое</div>
-
-    <!-- Где пил -->
-    <div style="margin-bottom:14px">
-      <div class="field-lbl" style="margin-bottom:6px">Где пил</div>
-      <div style="display:flex;background:#0f1011;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px">
-        <button id="lb-src-home" onclick="lbSetSource('home')"
-          style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;letter-spacing:.2px;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">
-          ☕ Сам готовил
-        </button>
-        <button id="lb-src-place" onclick="lbSetSource('place')"
-          style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;letter-spacing:.2px;background:none;color:var(--txt3)">
-          📍 Заведение
-        </button>
-      </div>
-    </div>
-
-    <!-- Заведение (скрыто) -->
-    <div id="lb-place-wrap" style="display:none;margin-bottom:2px">
-      <div class="field-lbl" style="margin-bottom:5px">Название заведения</div>
-      <input class="sfi" id="lb-place" placeholder="напр. Specialty Coffee Shop">
-    </div>
-
-    <!-- Дата -->
-    <div class="field-lbl" style="margin-bottom:5px">Дата</div>
-    <input type="date" class="sfi" id="lb-date">
-
-    <!-- Напиток -->
-    <div class="field-lbl" style="margin-bottom:5px">Напиток / зерно</div>
-    <input class="sfi" id="lb-bean" placeholder="напр. Эфиопия Иргачеффе, Капучино...">
-
-    <!-- Метод -->
-    <div class="field-lbl" style="margin-bottom:5px">Метод</div>
-    <select class="sfi" id="lb-method">
-      <option value="V60">V60</option>
-      <option value="Origami">Origami</option>
-      <option value="Flower">Flower Dripper</option>
-      <option value="Chemex">Chemex</option>
-      <option value="Kalita">Kalita Wave</option>
-      <option value="AeroPress">AeroPress</option>
-      <option value="French Press">French Press</option>
-      <option value="Эспрессо">Эспрессо</option>
-      <option value="Капучино">Капучино</option>
-      <option value="Флэт уайт">Флэт уайт</option>
-      <option value="Американо">Американо</option>
-      <option value="Мока">Мока</option>
-      <option value="Другое">Другое</option>
-    </select>
-
-    <!-- Параметры только для "сам готовил" -->
-    <div id="lb-home-params">
-      <div class="grid2" style="gap:9px;margin-bottom:10px">
-        <div><div class="field-lbl" style="margin-bottom:5px">Доза (г)</div>
-          <input type="number" class="sfi" id="lb-dose" placeholder="16" value="16" step="0.1" style="margin-bottom:0"></div>
-        <div><div class="field-lbl" style="margin-bottom:5px">Коэф.</div>
-          <select class="sfi" id="lb-ratio" style="margin-bottom:0">
-            <option value="12">1:12</option><option value="14">1:14</option><option value="15">1:15</option>
-            <option value="16" selected>1:16</option><option value="17">1:17</option><option value="18">1:18</option>
-          </select></div>
-      </div>
-      <div class="grid2" style="gap:9px;margin-bottom:10px">
-        <div><div class="field-lbl" style="margin-bottom:5px">Кофемолка</div>
-          <input class="sfi" id="lb-grinder" placeholder="Comandante..." style="margin-bottom:0"></div>
-        <div><div class="field-lbl" style="margin-bottom:5px">Температура °C</div>
-          <input type="number" class="sfi" id="lb-temp" placeholder="93" value="93" min="60" max="100" style="margin-bottom:0"></div>
-      </div>
-    </div>
-
-    <!-- Объём и оценка -->
-    <div class="grid2" style="gap:9px;margin-bottom:10px">
-      <div><div class="field-lbl" style="margin-bottom:5px">Объём (мл)</div>
-        <input type="number" class="sfi" id="lb-vol" placeholder="240" value="240" style="margin-bottom:0"></div>
-      <div><div class="field-lbl" style="margin-bottom:5px">Оценка (1–10)</div>
-        <input type="number" class="sfi" id="lb-rating" placeholder="8.0" value="8.0" step="0.1" min="1" max="10" style="margin-bottom:0"></div>
-    </div>
-
-    <!-- Заметки -->
-    <div class="field-lbl" style="margin-bottom:5px">Заметки</div>
-    <input class="sfi" id="lb-notes" placeholder="Впечатления о вкусе...">
-
-    <div class="sbtns">
-      <button class="btn-c" onclick="closeOv('ov-log-brew')">Отмена</button>
-      <button class="btn-s" onclick="logBrewManual()">Добавить</button>
-    </div>
-  </div>
-</div>
 
 </div><!-- /screens -->
 
@@ -1764,6 +1815,9 @@ const SEED={
 let S=JSON.parse(localStorage.getItem('cj_v7')||'null')||JSON.parse(JSON.stringify(SEED));
 if(!S.log)S.log=[];
 if(!S.record)S.record=0;
+if(!S.trash)S.trash=[];
+// purge old trash on load
+(function(){var now=Date.now();S.trash=S.trash.filter(function(b){return now-(b._deletedAt||0)<30*24*60*60*1000;});save();})();
 function save(){localStorage.setItem('cj_v7',JSON.stringify(S))}
 function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sc=s%60;return m+':'+(sc<10?'0':'')+sc}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
@@ -1827,7 +1881,21 @@ function methodCat(m){m=(m||'').toLowerCase();if(m.includes('эспрес')||m.i
 function logToday(){let mx=0;S.log.forEach(e=>{if(e.ts>mx)mx=e.ts});const d=mx?new Date(mx):new Date();d.setHours(12,0,0,0);return d;}
 function dayKey(d){return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
 function logDaySet(){return new Set(S.log.map(e=>dayKey(new Date(e.ts))));}
-function calcStreak(){const set=logDaySet();let n=0;const c=logToday();for(;;){if(set.has(dayKey(c))){n++;c.setDate(c.getDate()-1);}else break;}return n;}
+function calcStreak(){
+  const set=logDaySet();
+  if(!set.size)return 0;
+  // Start from today; if today has no entry, check yesterday (allow 1-day grace so streak isn't broken mid-day)
+  const today=new Date();today.setHours(12,0,0,0);
+  const yesterday=new Date(today);yesterday.setDate(today.getDate()-1);
+  let c;
+  if(set.has(dayKey(today)))c=new Date(today);
+  else if(set.has(dayKey(yesterday)))c=new Date(yesterday);
+  else return 0;
+  // Walk back counting consecutive days
+  let n=0;
+  for(;;){if(set.has(dayKey(c))){n++;c.setDate(c.getDate()-1);}else break;}
+  return n;
+}
 function logByDay(year,month){const map={};S.log.forEach(e=>{const d=new Date(e.ts);if(d.getFullYear()===year&&d.getMonth()===month){const k=d.getDate();(map[k]=map[k]||{vol:0,items:[]});map[k].vol+=e.vol;map[k].items.push(e);}});Object.values(map).forEach(o=>o.items.sort((a,b)=>a.ts-b.ts));return map;}
 
 let statsPage=0,_statsInit=false;
@@ -1968,6 +2036,9 @@ function renderFeed(){
   /* ── ЛОГ ── */
   const logRows=b.steps&&b.steps.length?b.steps.map(st=>{
     const icons={stir:'ti-rotate-clockwise',swirl:'ti-refresh',shake:'ti-activity'};
+    if(st.type==='preinfusion'){
+      return`<div class="bc-log-row"><span class="bc-log-badge" style="background:rgba(74,80,96,.35);color:#8a9ab0">Предсмач.</span><span class="bc-log-lbl">${st.label||'Предсмачивание'}</span><span class="bc-log-ph">${st.dur||0}с</span></div>`;
+    }
     if(st.type==='action'){
       return`<div class="bc-log-row"><span class="bc-log-badge action"><i class="ti ${icons[st.label?.toLowerCase().includes('перем')?'stir':st.label?.toLowerCase().includes('свэ')?'swirl':'shake']||'ti-bolt'}" style="font-size:9px"></i></span><span class="bc-log-lbl">${st.label||'Действие'}</span><span class="bc-log-ph">${st.dur||0}с</span></div>`;
     }
@@ -1975,9 +2046,9 @@ function renderFeed(){
   }).join(''):'<div style="font-size:12px;color:var(--txt3);padding:8px 0">Нет данных лога</div>';
 
   /* ── ДИАГРАММА — кольцо (из b.steps) ── */
-  const _steps=(b.steps||[]).filter(s=>s.type==='pour'||s.type==='pause'||s.type==='action');
+  const _steps=(b.steps||[]).filter(s=>s.type==='pour'||s.type==='pause'||s.type==='action'||s.type==='preinfusion');
   const _totalSec=_steps.reduce((s,x)=>s+(x.ph!=null?x.ph/1000:(x.dur||0)),0)||1;
-  const _COL={pour:{base:'#3E8FCE',on:'#74C0F5',glow:'rgba(116,192,245,.6)'},pause:{base:'#DC7E16',on:'#F7AC34',glow:'rgba(247,172,52,.6)'},action:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'}};
+  const _COL={pour:{base:'#2E7EC4',on:'#74C0F5',glow:'rgba(116,192,245,.6)'},pause:{base:'#DC7E16',on:'#F7AC34',glow:'rgba(247,172,52,.6)'},action:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'},preinfusion:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'}};
   const _CX=140,_CY=140,_R=104,_W=14,_GAP=2.8;
   const _totGap=(_steps.length>1?(_steps.length-1)*_GAP:0)+_GAP;
   const _span=360-_totGap;
@@ -2007,7 +2078,8 @@ function renderFeed(){
       <button id="rring-reset-${bid}" onclick="ringReset(${bid})" disabled style="flex-shrink:0;height:38px;border:none;cursor:pointer;background:linear-gradient(180deg,#1c1e21,#191b1e);border-top:1px solid rgba(0,0,0,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.07);color:var(--txt3);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,color .15s;opacity:.4"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>сброс</button>
     </div>
   </div>`;
-  const legendRows=`<div style="display:flex;justify-content:center;gap:18px;margin-top:12px"><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#74C0F5;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Влив</span></div><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#F7AC34;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Пауза</span></div><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#C3BFB8;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Действие</span></div></div>`;
+  const hasPreinf=(b.steps||[]).some(s=>s.type==='preinfusion');
+  const legendRows=`<div style="display:flex;justify-content:center;gap:18px;margin-top:12px"><div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#74C0F5;display:inline-block"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Влив</span></div>${hasPreinf?'<div style="display:flex;align-items:center;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#6C6C72;display:inline-block"></span><span style="font-family:var(--mono);font-size:11px;color:var(--txt2)">Предсмач.</span></div>':''}</div>`;
 
 /* ── ВКУС теги ── */
   const fwTags=(b.flavors&&b.flavors.length)?b.flavors.map(f=>`<span class="ftag ${ftCls(f)}">${f}</span>`).join(''):'<span style="font-size:12px;color:var(--txt3)">Не указано</span>';
@@ -2015,9 +2087,9 @@ function renderFeed(){
 
   const notesBox=b.notes?`<div class="bc-notes-box"><div class="bc-notes-lbl">Заметки</div><div class="bc-notes-txt">${b.notes}</div></div>`:'';
 
-  return`<div class="brew-card">
+  return`<div class="swipe-outer" id="so-${bid}"><div class="swipe-delete-bg" onclick="softDeleteBrew(${bid})"><i class="ti ti-trash" aria-hidden="true"></i><span>Удалить</span></div><div class="brew-card" id="bc-${bid}">
     <div class="bc-top">
-      <div style="min-width:0"><div class="bc-name">${b.beanName||'Без названия'}</div>${b.roaster?`<div class="bc-roaster">${b.roaster}</div>`:''}</div>
+      <div style="min-width:0"><div class="bc-name">${b.beanName||'Без названия'}</div><div class="bc-roaster">${b.roaster?b.roaster+' · ':''}${b.ts?new Date(b.ts).toLocaleDateString('ru',{day:'numeric',month:'short'}):'—'}</div></div>
       <div class="bc-right"><span class="method-pill">${b.method||'Альтернатива'}</span><span class="rating-num">${parseFloat(b.rating||0).toFixed(1)}</span></div>
     </div>
     <div class="bc-stats">
@@ -2027,7 +2099,10 @@ function renderFeed(){
     </div>
     <div class="bc-foot">
       <button class="expand-btn" id="ex-${bid}" onclick="toggleRec(${bid})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Детали</button>
-      <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${bid})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
+      <div style="display:flex;gap:6px">
+        <button class="like-btn" onclick="shareRecipe(${bid})" title="Поделиться"><i class="ti ti-share" aria-hidden="true"></i></button>
+        <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${bid})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
+      </div>
     </div>
     <div class="recipe-panel" id="rec-${bid}">
       <!-- ТАБЫ (3 шт) -->
@@ -2075,8 +2150,9 @@ function renderFeed(){
         </div>
       </div>
     </div>
-  </div>`;
+  </div></div></div>`;
 }).join('');
+setTimeout(function(){document.querySelectorAll('.swipe-outer').forEach(function(o){var c=o.querySelector('.brew-card');if(c&&!c._swipeReady)initBrewSwipe(c);});},0);
 }
 
 /* ── BREW CARD TABS & DIAGRAM ── */
@@ -2119,7 +2195,7 @@ var _ringSelected={};
 
 function ringNext(bid){
   var brew=S.brews.find(function(b){return b.id===bid;});
-  var steps=(brew?brew.steps||[]:[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action';});
+  var steps=(brew?brew.steps||[]:[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action'||s.type==='preinfusion';});
   var cur=_ringSelected[bid];
   var next=(cur===null||cur===undefined)?0:cur+1;
   if(next>=steps.length)next=null;
@@ -2132,12 +2208,13 @@ function ringReset(bid){
 }
 function ringTap(bid,i,fromNext){
   var brew=S.brews.find(function(b){return b.id===bid;});
-  var steps=(brew?brew.steps||[]:[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action';});
+  // Include preinfusion so segment indices match
+  var steps=(brew?brew.steps||[]:[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action'||s.type==='preinfusion';});
   var prev=_ringSelected[bid];
   if(i===-1){_ringSelected[bid]=null;}
   else if(!fromNext){_ringSelected[bid]=(prev===i)?null:i;}
   var sel=_ringSelected[bid];
-  var COL={pour:{base:'#3E8FCE',on:'#74C0F5',glow:'rgba(116,192,245,.6)'},pause:{base:'#DC7E16',on:'#F7AC34',glow:'rgba(247,172,52,.6)'},action:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'}};
+  var COL={pour:{base:'#2E7EC4',on:'#74C0F5',glow:'rgba(116,192,245,.6)'},pause:{base:'#DC7E16',on:'#F7AC34',glow:'rgba(247,172,52,.6)'},action:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'},preinfusion:{base:'#6C6C72',on:'#C3BFB8',glow:'rgba(178,178,188,.6)'}};
   function fmtSec(sec){var m=Math.floor(sec/60);return m+':'+String(Math.round(sec)%60).padStart(2,'0');}
   var svg=document.getElementById('rring-'+bid);if(!svg)return;
   var segs=svg.querySelectorAll('.rring-seg');
@@ -2164,7 +2241,7 @@ function ringTap(bid,i,fromNext){
     var durSec=st.ph!=null?st.ph/1000:(st.dur||0);
     if(tEl){tEl.textContent=fmtSec(durSec);tEl.style.color=c.on;}
     if(cEl){cEl.textContent='';cEl.style.color='transparent';}
-    var labels={pour:'Влив',pause:'Пауза',action:'Действие'};
+    var labels={pour:'Влив',pause:'Пауза',action:'Действие',preinfusion:'Предсмач.'};
     if(nEl){nEl.textContent=st.label||(labels[st.type]||'Шаг');nEl.style.color=c.on;}
     if(xEl)xEl.textContent=st.ml?st.ml.toFixed(0)+' мл':(sel+1)+' / '+steps.length;
     if(footEl)footEl.style.display='none';
@@ -2174,6 +2251,187 @@ function ringTap(bid,i,fromNext){
 
 function toggleRec(id){const p=document.getElementById('rec-'+id),b=document.getElementById('ex-'+id);const o=p.classList.toggle('open');b.classList.toggle('open',o);}
 function toggleLike(id){const b=S.brews.find(x=>x.id===id);if(!b)return;b.liked=!b.liked;b.likes+=b.liked?1:-1;save();renderFeed()}
+
+/* ── SOFT DELETE / TRASH ── */
+var TRASH_TTL=30*24*60*60*1000;
+if(!S.trash)S.trash=[];
+
+function softDeleteBrew(id){
+  if(!S.trash)S.trash=[];
+  var idx=S.brews.findIndex(function(b){return b.id===id;});
+  if(idx===-1)return;
+  var brew=S.brews.splice(idx,1)[0];
+  brew._deletedAt=Date.now();
+  S.trash.push(brew);
+  // Remove matching log entries by id OR (same day + same bean)
+  var brewDay=dayKey(new Date(brew.ts));
+  var brewBean=(brew.beanName||'').toLowerCase();
+  S.log=S.log.filter(function(e){
+    if(e.id===brew.id)return false;
+    var sameDay=dayKey(new Date(e.ts))===brewDay;
+    var sameBean=(e.bean||'').toLowerCase()===brewBean;
+    if(sameDay&&sameBean)return false;
+    return true;
+  });
+  // Recalc streak — do NOT update record downward, only upward
+  var _st=calcStreak();
+  if(_st>(S.record||0))S.record=_st;
+  save();
+  renderStreak();
+  var outer=document.getElementById('so-'+id);
+  if(!outer)return;
+  var card=outer.querySelector('.brew-card');
+  card.classList.add('bc-deleting');
+  card.style.transform='translateX(-120px)';
+  setTimeout(function(){
+    outer.style.transition='max-height .35s ease,opacity .3s,margin .3s';
+    outer.style.overflow='hidden';
+    outer.style.maxHeight=outer.offsetHeight+'px';
+    requestAnimationFrame(function(){
+      outer.style.maxHeight='0';
+      outer.style.opacity='0';
+      outer.style.marginBottom='0';
+      outer.style.marginTop='0';
+    });
+  },280);
+  showBrewToast();
+}
+
+function showBrewToast(){
+  var t=document.getElementById('brew-del-toast');
+  if(!t)return;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+function initBrewSwipe(cardEl){
+  cardEl._swipeReady=true;
+  var DEL_W=84,THRESHOLD=40;
+  var startX=0,startY=0,curX=0,open=false,dragging=false,dirLocked=null;
+  function clamp(x){return Math.max(-DEL_W-6,Math.min(0,x));}
+  function onStart(x,y){
+    startX=x;startY=y;curX=open?-DEL_W:0;
+    dragging=true;dirLocked=null;
+    cardEl.classList.add('bc-swiping');
+    cardEl.classList.remove('bc-snapping');
+  }
+  function onMove(x,y){
+    if(!dragging)return;
+    var dx=x-startX,dy=y-startY;
+    if(!dirLocked){if(Math.abs(dx)<5&&Math.abs(dy)<5)return;dirLocked=Math.abs(dx)>Math.abs(dy)?'h':'v';}
+    if(dirLocked==='v')return;
+    curX=clamp((open?-DEL_W:0)+dx);
+    cardEl.style.transform='translateX('+curX+'px)';
+  }
+  function onEnd(){
+    if(!dragging||dirLocked!=='h'){dragging=false;return;}
+    dragging=false;
+    cardEl.classList.remove('bc-swiping');
+    cardEl.classList.add('bc-snapping');
+    if(!open&&curX<-THRESHOLD){cardEl.style.transform='translateX(-'+DEL_W+'px)';open=true;}
+    else if(open&&curX>-DEL_W+THRESHOLD){cardEl.style.transform='translateX(0)';open=false;}
+    else if(open){cardEl.style.transform='translateX(-'+DEL_W+'px)';}
+    else{cardEl.style.transform='translateX(0)';}
+  }
+  cardEl.addEventListener('mousedown',function(e){onStart(e.clientX,e.clientY);});
+  window.addEventListener('mousemove',function(e){if(dragging)onMove(e.clientX,e.clientY);});
+  window.addEventListener('mouseup',onEnd);
+  cardEl.addEventListener('touchstart',function(e){var t=e.touches[0];onStart(t.clientX,t.clientY);},{passive:true});
+  cardEl.addEventListener('touchmove',function(e){var t=e.touches[0];onMove(t.clientX,t.clientY);},{passive:true});
+  cardEl.addEventListener('touchend',onEnd);
+  // close on outside tap
+  document.addEventListener('click',function(e){
+    if(open&&!cardEl.contains(e.target)){
+      cardEl.classList.add('bc-snapping');
+      cardEl.style.transform='translateX(0)';
+      open=false;
+    }
+  });
+}
+
+function purgeOldTrash(){
+  if(!S.trash)return;
+  var now=Date.now();
+  S.trash=S.trash.filter(function(b){return now-(b._deletedAt||0)<TRASH_TTL;});
+  save();
+}
+
+function openDeletedTrash(){
+  purgeOldTrash();
+  renderTrashList();
+  openOv('ov-trash');
+}
+
+function renderTrashList(){
+  var el=document.getElementById('trash-list');
+  if(!el)return;
+  var now=Date.now();
+  var items=(S.trash||[]).slice().sort(function(a,b){return b._deletedAt-a._deletedAt;});
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--txt3);font-size:13px"><i class="ti ti-trash" style="font-size:32px;display:block;margin-bottom:10px;opacity:.3"></i>Нет удалённых рецептов</div>';
+    return;
+  }
+  el.innerHTML=items.map(function(b){
+    var daysLeft=Math.ceil((TRASH_TTL-(now-b._deletedAt))/86400000);
+    var dateStr=b.ts?new Date(b.ts).toLocaleDateString('ru',{day:'numeric',month:'short',year:'numeric'}):'';
+    return '<div style="background:linear-gradient(165deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-radius:13px;padding:13px 14px;margin-bottom:9px">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'
+      +'<div style="min-width:0;cursor:pointer;flex:1" onclick="openTrashCard('+b.id+')">'
+      +'<div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(b.beanName||'Без названия')+'</div>'
+      +'<div style="font-size:11px;color:var(--txt2);margin-top:2px">'+(b.roaster||'')+(b.roaster&&dateStr?' · ':'')+dateStr+'</div>'
+      +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);margin-top:5px;letter-spacing:.5px">Удалится через '+daysLeft+' дн.</div>'
+      +'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
+      +'<button onclick="openTrashCard('+b.id+')" style="background:rgba(255,255,255,.05);border:1px solid var(--line-soft);border-radius:9px;color:var(--txt2);font-family:var(--mono);font-size:10px;font-weight:600;padding:7px 12px;cursor:pointer;letter-spacing:.5px;white-space:nowrap">Открыть</button>'
+      +'<button onclick="restoreBrew('+b.id+')" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);font-family:var(--mono);font-size:10px;font-weight:600;padding:7px 12px;cursor:pointer;letter-spacing:.5px;white-space:nowrap">Восстановить</button>'
+      +'</div>'
+      +'</div>'
+      // expandable details panel
+      +'<div id="tc-panel-'+b.id+'" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;margin-bottom:10px">'
+      +'<div style="padding:9px 11px;border-right:1px solid var(--line-soft)"><div style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Доза</div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt)">'+(b.dose||'—')+'г</div></div>'
+      +'<div style="padding:9px 11px;border-right:1px solid var(--line-soft)"><div style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Коэф.</div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt)">1:'+(b.ratio||'—')+'</div></div>'
+      +'<div style="padding:9px 11px"><div style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Время</div><div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt)">'+(b.totalTime||'—')+'</div></div>'
+      +'</div>'
+      +(b.method?'<div style="font-family:var(--mono);font-size:10px;color:var(--txt3);margin-bottom:6px;letter-spacing:.5px">Метод: <span style="color:var(--txt2)">'+b.method+'</span></div>':'')
+      +(b.dripper?'<div style="font-family:var(--mono);font-size:10px;color:var(--txt3);margin-bottom:6px;letter-spacing:.5px">Воронка: <span style="color:var(--txt2)">'+b.dripper+'</span></div>':'')
+      +(b.grinder?'<div style="font-family:var(--mono);font-size:10px;color:var(--txt3);margin-bottom:6px;letter-spacing:.5px">Кофемолка: <span style="color:var(--txt2)">'+b.grinder+'</span></div>':'')
+      +(b.rating?'<div style="font-family:var(--mono);font-size:10px;color:var(--txt3);margin-bottom:6px;letter-spacing:.5px">Оценка: <span style="color:var(--copper-lt);font-weight:700">'+parseFloat(b.rating).toFixed(1)+'</span></div>':'')
+      +(b.notes?'<div style="font-size:12px;color:var(--txt2);background:#16171a;border-radius:9px;padding:9px 11px;margin-top:4px;line-height:1.5">'+b.notes+'</div>':'')
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function openTrashCard(id){
+  var panel=document.getElementById('tc-panel-'+id);
+  if(!panel)return;
+  var open=panel.style.display==='block';
+  panel.style.display=open?'none':'block';
+}
+
+function restoreBrew(id){
+  if(!S.trash)return;
+  var idx=S.trash.findIndex(function(b){return b.id===id;});
+  if(idx===-1)return;
+  var brew=S.trash.splice(idx,1)[0];
+  delete brew._deletedAt;
+  // Re-insert into brews sorted by ts
+  var brewInserted=false;
+  for(var j=0;j<S.brews.length;j++){if(S.brews[j].ts<=brew.ts){S.brews.splice(j,0,brew);brewInserted=true;break;}}
+  if(!brewInserted)S.brews.push(brew);
+  // Re-insert into log sorted by ts
+  var logEntry={id:brew.id,ts:brew.ts,vol:Math.round((brew.dose||16)*(brew.ratio||16)),cat:methodCat(brew.method||''),method:brew.method||'',bean:brew.beanName||'',rating:brew.rating||8};
+  var logInserted=false;
+  for(var k=0;k<S.log.length;k++){if(S.log[k].ts<=brew.ts){S.log.splice(k,0,logEntry);logInserted=true;break;}}
+  if(!logInserted)S.log.push(logEntry);
+  var _st=calcStreak();if(_st>(S.record||0))S.record=_st;
+  save();
+  renderStreak();
+  renderTrashList();
+  renderFeed();
+}
 
 /* ── COMMUNITY ── */
 const commLikes={};
@@ -2335,7 +2593,8 @@ function saveProf(){
 /* ── BREW STATE ── */
 let BS={bean:null,filter:null,dripper:null,grinder:null,clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,phaseStart:null,elapsed:0,phaseMs:0,steps:[],pourCnt:0,phase:'idle',pouredFixed:0,firstDone:false};
 /* RATING STATE */
-let RS={rating:8.0,flavors:[],aroma:[],notes:''};
+let RS={rating:8.0,flavors:[],aroma:[],notes:'',_fwSel:{_active:null,_activeSub:null,sel:{}},_awSel:{_active:null,_activeSub:null,sel:{}}};
+let ESP={_fwSel:{_active:null,_activeSub:null,sel:{}},_awSel:{_active:null,_activeSub:null,sel:{}}};
 
 /* ── МЕТОД ЗАВАРИВАНИЯ ── */
 let brewMethod='alt'; // 'alt' | 'esp'
@@ -2382,6 +2641,14 @@ function bEspCalc(){
 
 function espStartShot(){
   clearInterval(espInt);espSec=0;espRunning=false;
+  window._espSteps=[];window._espShotStartMs=0;
+  _espPreinfSec=0;_espPreinfActive=false;_espPreinfDone=false;
+  clearInterval(_espPreinfInt);_espPreinfInt=null;
+  // Reset preinf button
+  var pb=document.getElementById('esp-preinf-btn');
+  if(pb){pb.style.borderColor='';pb.style.color='';pb.style.background='';}
+  var pt=document.getElementById('esp-preinf-timer');
+  if(pt)pt.textContent='';
   const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
   const ratio=parseFloat(document.getElementById('b-esp-ratio-sel').value)||2;
   const yld=Math.round(dose*ratio*10)/10;
@@ -2410,13 +2677,21 @@ function espStartShot(){
 
 function espStartTimer(){
   if(espRunning)return;
+  // Auto-stop preinfusion if still running
+  if(_espPreinfActive){
+    var pb=document.getElementById('esp-preinf-btn');
+    if(pb)espPreinfusion(pb);
+  }
   espRunning=true;espSec=0;
   const targetSec=window._espTargetSec||27;
+  var preinfDur=(_espPreinfDone&&window._espSteps&&window._espSteps.length)?window._espSteps[0].dur:0;
+  window._espShotStartMs=preinfDur*1000;
   document.getElementById('esp-start-btn').disabled=true;
   document.getElementById('esp-start-btn').style.opacity='0.5';
   document.getElementById('esp-stop-btn').disabled=false;
   document.getElementById('esp-stop-btn').style.opacity='1';
-  document.getElementById('esp-phase-lbl').textContent='Пролив іде...';
+  document.getElementById('esp-stop-btn').style.borderColor='#8c1a1a';
+  document.getElementById('esp-phase-lbl').textContent='Пролив идёт...';
   document.getElementById('esp-drop').setAttribute('opacity','1');
   espInt=setInterval(()=>{
     espSec++;
@@ -2439,6 +2714,10 @@ function espStopTimer(){
   clearInterval(espInt);espRunning=false;
   document.getElementById('esp-drop').setAttribute('opacity','0');
   document.getElementById('esp-phase-lbl').textContent='Готово — '+espSec+'с';
+  // Record shot as a step
+  if(!window._espSteps)window._espSteps=[];
+  var shotOffset=window._espShotStartMs||0;
+  window._espSteps.push({type:'pour',t:shotOffset,ph:espSec*1000,dur:espSec,ml:null,label:'Пролив'});
   // Переходим на экран результата
   const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
   document.getElementById('esp-res-time-lbl').textContent='Час проливу: '+espSec+' секунд';
@@ -2449,6 +2728,9 @@ function espStopTimer(){
   document.getElementById('esp-notes').value='';
   document.getElementById('esp-rate-slider').value='8';
   document.getElementById('esp-rate-num').textContent='8.0';
+  // Reset and render ESP flavor/aroma wheels
+  ESP={_fwSel:{_active:null,_activeSub:null,sel:{}},_awSel:{_active:null,_activeSub:null,sel:{}}};
+  setTimeout(function(){fwRender('efw');fwRender('eaw');},80);
   // Слушаем изменение выхода для расчёта коэффициента
   const yieldInp=document.getElementById('esp-actual-yield');
   yieldInp.oninput=()=>{
@@ -2473,20 +2755,62 @@ function espSave(){
   const tdsActual=parseFloat(document.getElementById('esp-tds-actual').value)||0;
   const rating=parseFloat(document.getElementById('esp-rate-slider').value)||8;
   const notes=document.getElementById('esp-notes').value.trim();
+  const espFlavors=fwGetSelected(ESP._fwSel);
+  const espAroma=fwGetSelected(ESP._awSel);
   const temp=document.getElementById('b-esp-temp-out').textContent;
   const bar=document.getElementById('b-esp-bar-out').textContent;
+  var preinfSec=(_espPreinfDone&&window._espSteps)?(_espStepDurSum=0,window._espSteps.filter(s=>s.type==='preinfusion').reduce((a,s)=>a+s.dur,0)):0;
+  var totalEspSec=(preinfSec||0)+espSec;
   const brew={
     id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',
-    method:'Еспресо',dose:dose.toString(),temp:temp.replace('°C',''),
+    method:'Эспрессо',dose:dose.toString(),temp:temp.replace('°C',''),
     grinder:BS.grinder?BS.grinder.name:'',clicks:BS.clicks,
-    espresso:{dose,targetYield,actualYield,shotTime:espSec,tdsTarget,tdsActual,pressure:bar},
-    totalTime:espSec+'с',ratio:(actualYield>0?(actualYield/dose).toFixed(2):ratio.toFixed(2)),
-    rating:Math.round(rating*10)/10,flavors:[],aroma:[],notes,likes:0,liked:false,ts:Date.now()
+    ratio:(actualYield>0?(actualYield/dose).toFixed(2):ratio.toFixed(2)),
+    espresso:{dose,targetYield,actualYield,shotTime:espSec,preinfSec:preinfSec,tdsTarget,tdsActual,pressure:bar},
+    steps:window._espSteps||[],
+    totalTime:totalEspSec+'с',
+    rating:Math.round(rating*10)/10,flavors:espFlavors,aroma:espAroma,notes,likes:0,liked:false,ts:Date.now()
   };
   if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean)bean.current=Math.max(0,bean.current-dose);}
   S.brews.unshift(brew);save();
   toast('Шот збережено!');
   showScr('scr-home');
+}
+
+/* ── ESPRESSO PREINFUSION ── */
+var _espPreinfSec=0,_espPreinfInt=null,_espPreinfActive=false,_espPreinfDone=false;
+
+function espPreinfusion(btn){
+  if(_espPreinfDone)return; // once only
+  if(!_espPreinfActive){
+    // Start preinfusion
+    _espPreinfActive=true;_espPreinfSec=0;
+    btn.style.borderColor='var(--line)';
+    btn.style.color='var(--txt2)';
+    btn.style.background='linear-gradient(160deg,#1e2126,#181b1e)';
+    var timerEl=document.getElementById('esp-preinf-timer');
+    document.getElementById('esp-phase-lbl').textContent='Предсмачивание...';
+    _espPreinfInt=setInterval(function(){
+      _espPreinfSec++;
+      if(timerEl)timerEl.textContent=_espPreinfSec+'с';
+    },1000);
+    // Animate drop slowly
+    document.getElementById('esp-drop').setAttribute('opacity','0.4');
+  } else {
+    // Stop preinfusion
+    clearInterval(_espPreinfInt);_espPreinfInt=null;_espPreinfActive=false;_espPreinfDone=true;
+    var dur=_espPreinfSec;
+    // Save as step
+    if(!window._espSteps)window._espSteps=[];
+    window._espSteps.push({type:'preinfusion',t:0,ph:dur*1000,dur:dur,label:'Предсмачивание'});
+    btn.style.borderColor='#2e6c38';
+    btn.style.color='#5a9e57';
+    btn.style.background='linear-gradient(160deg,#0e1e14,#0a1610)';
+    var timerEl=document.getElementById('esp-preinf-timer');
+    if(timerEl)timerEl.textContent='✓ '+dur+'с';
+    document.getElementById('esp-phase-lbl').textContent='Предсмачивание '+dur+'с — готово';
+    document.getElementById('esp-drop').setAttribute('opacity','0');
+  }
 }
 
 function espRatioAdj(delta){
@@ -2900,7 +3224,9 @@ const CAT_FT={fruity:'ft-fruit',sour:'ft-acid',green:'ft-green',other:'ft-other'
 
 const WHEELS={
   fw:{svg:'fw-svg',hint:'fw-hint',desc:'fw-desc',tags:'fw-tags',search:'fw-search',sugg:'fw-sugg',key:'_fwSel'},
-  aw:{svg:'aw-svg',hint:'aw-hint',desc:'aw-desc',tags:'aw-tags',search:'aw-search',sugg:'aw-sugg',key:'_awSel'}
+  aw:{svg:'aw-svg',hint:'aw-hint',desc:'aw-desc',tags:'aw-tags',search:'aw-search',sugg:'aw-sugg',key:'_awSel'},
+  efw:{svg:'efw-svg',hint:'efw-hint',desc:'efw-desc',tags:'efw-tags',search:'efw-search',sugg:'efw-sugg',key:'_fwSel',store:'ESP'},
+  eaw:{svg:'eaw-svg',hint:'eaw-hint',desc:'eaw-desc',tags:'eaw-tags',search:'eaw-search',sugg:'eaw-sugg',key:'_awSel',store:'ESP'}
 };
 const W_R0=30,W_R1=83,W_R2=135,FW_TAU=Math.PI*2;
 const SVGNS='http://www.w3.org/2000/svg';
@@ -2919,7 +3245,7 @@ function fwArcPath(r1,r2,a1,a2,gap){
 }
 
 function fwMakeWheel(prefix){
-  const cfg=WHEELS[prefix],sel=RS[cfg.key];
+  const cfg=WHEELS[prefix],_store=(cfg.store==='ESP'?ESP:RS),sel=_store[cfg.key];
   if(!sel.sel)sel.sel={};
   const svg=document.getElementById(cfg.svg);if(!svg)return;
   while(svg.firstChild)svg.removeChild(svg.firstChild);
@@ -3038,7 +3364,7 @@ function fwMakeWheel(prefix){
 }
 
 function fwRenderDesc(prefix){
-  const cfg=WHEELS[prefix],sel=RS[cfg.key];
+  const cfg=WHEELS[prefix],_store=(cfg.store==='ESP'?ESP:RS),sel=_store[cfg.key];
   const box=document.getElementById(cfg.desc);if(!box)return;
   if(!sel._active||!sel._activeSub){box.innerHTML='';return;}
   const [catId,subId]=sel._activeSub.split('.');
@@ -3053,7 +3379,7 @@ function fwRenderDesc(prefix){
 }
 
 function fwRenderTags(prefix){
-  const cfg=WHEELS[prefix],sel=RS[cfg.key];
+  const cfg=WHEELS[prefix],_store=(cfg.store==='ESP'?ESP:RS),sel=_store[cfg.key];
   const tags=document.getElementById(cfg.tags);if(!tags)return;
   const all=Object.keys(sel.sel||{});
   tags.innerHTML=all.length
@@ -3069,7 +3395,8 @@ function fwRenderTags(prefix){
 function fwRender(prefix){fwMakeWheel(prefix);fwRenderDesc(prefix);fwRenderTags(prefix);}
 
 function fwToggleDesc(prefix,d){
-  const sel=RS[WHEELS[prefix].key];if(!sel.sel)sel.sel={};
+  const cfg=WHEELS[prefix],_store=(cfg.store==='ESP'?ESP:RS);
+  const sel=_store[cfg.key];if(!sel.sel)sel.sel={};
   if(sel.sel[d])delete sel.sel[d];else sel.sel[d]=true;
   fwRender(prefix);
 }
@@ -3108,10 +3435,10 @@ function fwSearchKey(prefix,e){
   }
 }
 function fwPick(prefix,d){
-  const sel=RS[WHEELS[prefix].key];if(!sel.sel)sel.sel={};
+  const cfg=WHEELS[prefix],_store=(cfg.store==='ESP'?ESP:RS);
+  const sel=_store[cfg.key];if(!sel.sel)sel.sel={};
   const info=DESC_INDEX[d];if(!info)return;
   sel.sel[d]=true;sel._active=info.catId;sel._activeSub=info.catId+'.'+info.subId;
-  const cfg=WHEELS[prefix];
   document.getElementById(cfg.search).value='';
   document.getElementById(cfg.sugg).style.display='none';
   fwRender(prefix);
@@ -3129,6 +3456,8 @@ function drawWheel(){
 }
 function fwReset(){RS._fwSel={_active:null,_activeSub:null,sel:{}};fwRender('fw');}
 function awReset(){RS._awSel={_active:null,_activeSub:null,sel:{}};fwRender('aw');}
+function efwReset(){ESP._fwSel={_active:null,_activeSub:null,sel:{}};fwRender('efw');}
+function eawReset(){ESP._awSel={_active:null,_activeSub:null,sel:{}};fwRender('eaw');}
 function buildAromaButtons(){}
 
 /* Сохранить рецепт */
@@ -3143,7 +3472,9 @@ function saveBrew(){
   const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',method:methodLbl,dripper:dripName,grinder:grinderName,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,likes:0,liked:false,ts:Date.now()};
   S.brews.unshift(brew);
   S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(BS.pouredFixed||(BS.dose*BS.ratio)),cat:methodCat(methodLbl),method:methodLbl,bean:brew.beanName,rating:brew.rating});
+  var _st=calcStreak();if(_st>(S.record||0))S.record=_st;
   save();
+  renderStreak();
   document.getElementById('b-res-t').textContent=fmt(BS.elapsed);
   document.getElementById('b-res-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
   document.getElementById('b-res-rating').textContent=brew.rating.toFixed(1);
@@ -3181,24 +3512,84 @@ function brewReset(){
    MARKETPLACE
    ══════════════════════════════════════════ */
 const MKT_COFFEES=[
-  {id:1,name:'Yirgacheffe Kochere',roaster:'Tasty Coffee',country:'Ефіопія',variety:'Heirloom',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:890,score:92,sweetness:80,acidity:90,bitterness:15,descriptors:['Жасмин','Персик','Чорний чай'],color:'#E8C090',inStock:true},
-  {id:2,name:'Colombia Huila',roaster:'Double B',country:'Колумбія',variety:'Caturra',process:'Washed',roast:'Середня',brew:['Фільтр','Омні','Еспресо'],weight:250,price:680,score:89,sweetness:75,acidity:65,bitterness:30,descriptors:['Лайм','Нектарин','Горіхова солодкість'],color:'#D4A060',inStock:true},
-  {id:3,name:'Guatemala Antigua',roaster:'Skuratov',country:'Гватемала',variety:'Bourbon',process:'Washed',roast:'Середня',brew:['Еспресо','Омні'],weight:500,price:990,score:88,sweetness:70,acidity:55,bitterness:50,descriptors:['Шоколад','Карамель','Темна вишня'],color:'#A06830',inStock:true},
-  {id:4,name:'Kenya Kirinyaga AA',roaster:'Tasty Coffee',country:'Кенія',variety:'SL-28',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:250,price:1150,score:93,sweetness:60,acidity:95,bitterness:10,descriptors:['Смородина','Томат','Грейпфрут'],color:'#C04820',inStock:true},
-  {id:5,name:'Burundi Kayanza',roaster:'Coffee Factory',country:'Бурунді',variety:'Red Bourbon',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:200,price:620,score:87,sweetness:85,acidity:70,bitterness:15,descriptors:['Малина','Ваніль','Молочний шоколад'],color:'#D88050',inStock:true},
-  {id:6,name:'Brazil Cerrado Natural',roaster:'Double B',country:'Бразилія',variety:'Yellow Bourbon',process:'Natural',roast:'Темна',brew:['Еспресо'],weight:1000,price:1450,score:85,sweetness:90,acidity:20,bitterness:75,descriptors:['Арахіс','Молочний шоколад','Тростник'],color:'#784020',inStock:false},
-  {id:7,name:'Panama Geisha',roaster:'Skuratov',country:'Панама',variety:'Geisha',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:100,price:3200,score:96,sweetness:85,acidity:80,bitterness:5,descriptors:['Жасмин','Бергамот','Манго'],color:'#F0C870',inStock:true},
-  {id:8,name:'Rwanda Musasa',roaster:'Coffee Factory',country:'Руанда',variety:'Red Bourbon',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:760,score:90,sweetness:78,acidity:75,bitterness:12,descriptors:['Слива','Гібіскус','Цедра'],color:'#E09040',inStock:true},
-  {id:9,name:'Mexico Chiapas Honey',roaster:'Tasty Coffee',country:'Мексика',variety:'Typica',process:'Honey',roast:'Середня',brew:['Омні','Еспресо'],weight:500,price:520,score:84,sweetness:88,acidity:40,bitterness:35,descriptors:['Мед','Абрикос','Мигдаль'],color:'#C89050',inStock:true},
-  {id:10,name:'Ethiopia Guji Natural',roaster:'Double B',country:'Ефіопія',variety:'Heirloom',process:'Natural',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:930,score:91,sweetness:90,acidity:60,bitterness:10,descriptors:['Чорниця','Полуниця','Тропіки'],color:'#903018',inStock:true},
-  {id:11,name:'Sumatra Mandheling',roaster:'Skuratov',country:'Індонезія',variety:'Typica',process:'Wet-Hulled',roast:'Темна',brew:['Еспресо','Омні'],weight:500,price:600,score:83,sweetness:50,acidity:25,bitterness:85,descriptors:['Кедр','Темний шоколад','Спеції'],color:'#603010',inStock:true},
-  {id:12,name:'Costa Rica Tarrazu',roaster:'Coffee Factory',country:'Коста-Ріка',variety:'Caturra',process:'Washed',roast:'Середня',brew:['Фільтр','Еспресо'],weight:250,price:720,score:88,sweetness:72,acidity:58,bitterness:38,descriptors:['Горіховість','Яблуко','Карамель'],color:'#B07840',inStock:true},
+  {id:1,name:'Ethiopia Shakiso',roaster:'Penyora',country:'Ефіопія',region:'Оромія',station:'Оддо Шакісо',variety:'Heirloom',process:'Natural',roast:'Світла',brew:['Еспресо','Омні'],weight:250,price:490,score:87,sweetness:85,acidity:72,bitterness:12,descriptors:['Персик','Апельсин','Гранат','Порічка','Квіти'],color:'#E8904A',inStock:false,url:'https://specialtycoffee.com.ua/shop/product/f240-espresso-ethiopia-shakiso-espresso'},
+  {id:2,name:'Rwanda Gitoki',roaster:'Penyora',country:'Руанда',region:'Північна провінція',station:'Gitoki',variety:'Red Bourbon',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:490,score:89,sweetness:82,acidity:70,bitterness:10,descriptors:['Чорна смородина','Кленовий сироп','Банан','Жовті фрукти'],color:'#D06030',inStock:true,url:'https://specialtycoffee.com.ua/shop/product/19bc3-filter-rwanda-gitoki-filter-250g'},
+  {id:3,name:'Colombia Decaf',roaster:'Penyora',country:'Колумбія',region:'Уїла',station:null,variety:'Castillo',process:'Sugar Cane Decaf',roast:'Середня',brew:['Еспресо','Омні'],weight:250,price:520,score:85,sweetness:78,acidity:45,bitterness:30,descriptors:['Червоне яблуко','Слива','Молочний шоколад','Какао'],color:'#A07040',inStock:true,url:'https://specialtycoffee.com.ua/shop/66fb3-espresso-colombia-decaf-250g'},
+  {id:4,name:'Ethiopia Ayla Bombe',roaster:'Penyora',country:'Ефіопія',region:'Гуджі',station:'Ayla Bombe',variety:'Heirloom',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:510,score:90,sweetness:75,acidity:85,bitterness:8,descriptors:['Жасмин','Лимон','Персик','Квітковий чай'],color:'#F0D060',inStock:true,url:'https://specialtycoffee.com.ua/shop'},
+  {id:5,name:'Colombia Santa Monica',roaster:'Penyora',country:'Колумбія',region:'Уїла',station:'Santa Monica',variety:'Caturra',process:'Washed',roast:'Середня',brew:['Еспресо','Омні','Фільтр'],weight:1000,price:1590,score:88,sweetness:72,acidity:60,bitterness:32,descriptors:['Карамель','Червоне яблуко','Темний шоколад','Горіх'],color:'#C08040',inStock:true,url:'https://specialtycoffee.com.ua/shop/product/3652e-espresso-colombia-santa-monica-espresso-1000g'},
+  {id:6,name:'Salvador Filter',roaster:'Penyora',country:'Сальвадор',region:'Santa Ana',station:null,variety:'Pacamara',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:250,price:460,score:86,sweetness:80,acidity:65,bitterness:15,descriptors:['Жовта слива','Ваніль','Манго','Цедра'],color:'#D4A050',inStock:true,url:'https://specialtycoffee.com.ua/shop'},
+  {id:7,name:'Peru Espresso',roaster:'Penyora',country:'Перу',region:'Cajamarca',station:null,variety:'Typica',process:'Washed',roast:'Середня',brew:['Еспресо','Омні'],weight:250,price:440,score:84,sweetness:82,acidity:42,bitterness:38,descriptors:['Молочний шоколад','Коричневий цукор','Горіх',"М'ята"],color:'#B09050',inStock:true,url:'https://specialtycoffee.com.ua/shop'},
+  {id:8,name:'Honduras Espresso',roaster:'Penyora',country:'Гондурас',region:'Marcala',station:null,variety:'Catuai',process:'Washed',roast:'Середня',brew:['Еспресо'],weight:1000,price:1350,score:83,sweetness:78,acidity:38,bitterness:48,descriptors:['Карамель','Темний шоколад','Сухофрукти'],color:'#906030',inStock:true,url:'https://specialtycoffee.com.ua/shop'},
+  {id:9,name:'Kenya Kirinyaga',roaster:'Wonder&Full',country:'Кенія',region:'Кіріньяга',station:'Kegwa',variety:'SL-28, SL-34',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:580,score:88,sweetness:62,acidity:90,bitterness:10,descriptors:['Чорна смородина','Томат','Грейпфрут','Хібіскус'],color:'#C03820',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:10,name:'Kenya Kahuro Gikaru',roaster:'Wonder&Full',country:'Кенія',region:'Мурангʼа',station:'Kahuro Gikaru',variety:'SL-28, Ruiru 11',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:250,price:680,score:87,sweetness:65,acidity:88,bitterness:8,descriptors:['Ягідна солодкість','Квіти','Чорна смородина'],color:'#B02818',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:11,name:'Ethiopia Coromii Kochere',roaster:'Wonder&Full',country:'Ефіопія',region:'Єргачеффе',station:'Coromii Kochere',variety:'Heirloom',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:520,score:91,sweetness:78,acidity:88,bitterness:10,descriptors:['Жасмин','Бергамот','Персик','Чорний чай'],color:'#E8C060',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:12,name:'Ethiopia Yirgacheffe',roaster:'Wonder&Full',country:'Ефіопія',region:'Єргачеффе',station:null,variety:'Heirloom',process:'Natural',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:490,score:89,sweetness:88,acidity:68,bitterness:8,descriptors:['Чорниця','Полуниця','Троянда','Тропіки'],color:'#C84020',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:13,name:'Rwanda Gishyita',roaster:'Wonder&Full',country:'Руанда',region:'Ківу',station:'Gishyita',variety:'Red Bourbon',process:'Washed',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:500,score:88,sweetness:80,acidity:72,bitterness:12,descriptors:['Слива','Малина','Карамель','Жасмин'],color:'#D07030',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:14,name:'Colombia Geisha',roaster:'Wonder&Full',country:'Колумбія',region:'Уїла',station:'Barahona',variety:'Geisha',process:'Washed',roast:'Світла',brew:['Фільтр'],weight:100,price:980,score:94,sweetness:88,acidity:78,bitterness:5,descriptors:['Жасмин','Мандарин','Персик','Нектар'],color:'#F0C860',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:15,name:'Indonesia Wanagiri',roaster:'Wonder&Full',country:'Індонезія',region:'Балі',station:'Wanagiri',variety:'Typica',process:'Honey',roast:'Середня',brew:['Еспресо','Омні'],weight:250,price:520,score:85,sweetness:75,acidity:30,bitterness:60,descriptors:['Темний шоколад','Тютюн','Спеції','Кедр'],color:'#704020',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:16,name:'Peru Levi',roaster:'Wonder&Full',country:'Перу',region:'Cajamarca',station:'Levi',variety:'Typica',process:'Washed',roast:'Середня',brew:['Фільтр','Еспресо','Омні'],weight:250,price:460,score:84,sweetness:80,acidity:45,bitterness:30,descriptors:['Карамель','Мед','Горіх','Зелене яблуко'],color:'#B08840',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:17,name:'Colombia Decaf',roaster:'Wonder&Full',country:'Колумбія',region:'Уїла',station:null,variety:'Castillo',process:'Sugar Cane Decaf',roast:'Середня',brew:['Фільтр','Еспресо','Омні'],weight:250,price:500,score:83,sweetness:75,acidity:42,bitterness:25,descriptors:['Молочний шоколад','Карамель','Сухофрукти'],color:'#907040',inStock:true,url:'https://wonderfull.coffee/kava/'},
+  {id:18,name:'Black Honey Anaerob',roaster:'Wonder&Full',country:'Колумбія',region:'Антіокія',station:null,variety:'Castillo',process:'Anaerobic Honey',roast:'Світла',brew:['Фільтр','Омні'],weight:250,price:650,score:90,sweetness:92,acidity:60,bitterness:8,descriptors:['Троянда','Панела','Бергамот','Вино'],color:'#A03080',inStock:true,url:'https://wonderfull.coffee/kava/anaerobnij-blek-hani'},
+  {id:19,name:'ТВОЯ кава',roaster:'Wonder&Full',country:'Blend',region:'Blend',station:null,variety:'Blend',process:'Washed',roast:'Середня',brew:['Фільтр','Еспресо','Омні'],weight:250,price:480,score:87,sweetness:85,acidity:55,bitterness:20,descriptors:['Молочний шоколад','Персик','Кокос','Карамель'],color:'#C87040',inStock:true,url:'https://wonderfull.coffee/kava/tvoya_kava_natkhnenna_pochuttyamy'},
 ];
 
 const ROAST_COLORS_MKT={'Світла':{bg:'rgba(160,200,60,.18)',c:'#9cc040'},'Середня':{bg:'rgba(200,135,42,.18)',c:'var(--copper-lt)'},'Темна':{bg:'rgba(180,60,20,.18)',c:'#d05030'}};
 const BAR_COLORS_MKT={sweetness:'var(--copper-lt)',acidity:'#E86040',bitterness:'#6b6862'};
 
-let MKT={roast:[],brew:[],country:[],process:[],inStockOnly:false,cart:[],expanded:null,filterOpen:false};
+/* ── SVG-ПАЧКИ ── */
+const SC_STRIPES=['#4A7EC8','#D4901C','#58A848','#C84838'];
+const PENYORA_LABEL={1:'#B84060',2:'#2E6C38',3:'#2A5098',4:'#966010',5:'#703060',6:'#706010',7:'#2E6020',8:'#703018'};
+function bagSvg(c,W,H){
+  const isPen=c.roaster==='Penyora';
+  const rx=7,sw=9,uid='bg'+c.id;
+  const method=c.brew[0]||'';
+  const parts=c.name.split(' ');
+  const l1=parts[0]||'',l2=parts.slice(1).join(' ')||'';
+  if(isPen){
+    const lc=PENYORA_LABEL[c.id]||'#7A4060';
+    const segH=Math.round((H-4)/4);
+    const segs=SC_STRIPES.map((col,i)=>{const y=2+i*segH,h=i===3?(H-4)-3*segH:segH;return`<rect x="2" y="${y}" width="${sw}" height="${h}" fill="${col}"/><rect x="${W-2-sw}" y="${y}" width="${sw}" height="${h}" fill="${col}"/>`;}).join('');
+    return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0">
+<defs><clipPath id="${uid}"><rect x="2" y="2" width="${W-4}" height="${H-4}" rx="${rx}"/></clipPath><clipPath id="${uid}lbl"><rect x="${W*.18}" y="33" width="${W*.64}" height="${H*.27}" rx="3"/></clipPath></defs>
+<ellipse cx="${W/2}" cy="${H-1}" rx="${W/2-4}" ry="3" fill="rgba(0,0,0,.10)"/>
+<rect x="2" y="2" width="${W-4}" height="${H-4}" rx="${rx}" fill="#F0EDE7" stroke="#D0CAC2" stroke-width="0.7"/>
+<g clip-path="url(#${uid})">${segs}<rect x="2" y="2" width="${W-4}" height="17" fill="#FFFFFF"/></g>
+<text x="${W/2}" y="13" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?5.2:4.5}" font-weight="700" fill="#1A1818" letter-spacing="1.5">${method.toUpperCase()}</text>
+<text x="${W/2}" y="28" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?4.5:4}" font-weight="700" fill="#252220" letter-spacing="1.5">PENYORA</text>
+<rect x="${W*.18}" y="33" width="${W*.64}" height="${H*.27}" rx="3" fill="${lc}"/>
+<g clip-path="url(#${uid}lbl)">
+<text x="${W*.38}" y="${33+H*.155}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?14:11}" font-weight="700" fill="#fff">${c.score}</text>
+<text x="${W*.38}" y="${33+H*.22}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="3.5" fill="rgba(255,255,255,.65)">SCA</text>
+<text x="${W*.72}" y="${33+H*.12}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${l1.length>5?(W>70?3.8:3.2):(W>70?5.2:4.2)}" font-weight="700" fill="#fff" textLength="${Math.min(l1.length*(W>70?3.0:2.4),W*.3)}" lengthAdjust="spacingAndGlyphs">${l1.toUpperCase()}</text>
+<text x="${W*.72}" y="${33+H*.19}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${l2.length>6?(W>70?3.6:3.0):(W>70?5.2:4.2)}" font-weight="700" fill="#fff" textLength="${Math.min(l2.length*(W>70?3.0:2.4),W*.3)}" lengthAdjust="spacingAndGlyphs">${l2.toUpperCase()}</text>
+<text x="${W*.72}" y="${33+H*.245}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="3.5" fill="rgba(255,255,255,.6)">${c.process}</text>
+</g>
+<text x="${W/2}" y="${H*.73}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?7.5:6.5}" font-weight="600" fill="#252220">${l1}</text>
+<text x="${W/2}" y="${H*.83}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?7.5:6.5}" font-weight="600" fill="#252220">${l2}</text>
+<rect x="${W*.2}" y="${H*.88}" width="${W*.6}" height="${H*.09}" rx="${H*.045}" fill="#E4DED6"/>
+<text x="${W/2}" y="${H*.935}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?5.8:5}" font-weight="600" fill="#2A2520">${c.weight} г</text>
+</svg>`;}
+  const acc=c.color||'#C83820';
+  return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;flex-shrink:0">
+<defs><clipPath id="${uid}"><rect x="2" y="2" width="${W-4}" height="${H-4}" rx="${rx}"/></clipPath>
+<radialGradient id="gl${uid}" cx="40%" cy="45%" r="60%"><stop offset="0%" stop-color="${acc}" stop-opacity="0.32"/><stop offset="100%" stop-color="${acc}" stop-opacity="0"/></radialGradient></defs>
+<ellipse cx="${W/2}" cy="${H-1}" rx="${W/2-4}" ry="3" fill="rgba(0,0,0,.13)"/>
+<rect x="2" y="2" width="${W-4}" height="${H-4}" rx="${rx}" fill="#181614" stroke="#2C2826" stroke-width="0.7"/>
+<g clip-path="url(#${uid})"><rect x="2" y="2" width="${W-4}" height="${H-4}" fill="url(#gl${uid})"/><rect x="2" y="2" width="${W-4}" height="15" fill="#111010"/></g>
+<text x="${W/2}" y="11.5" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?6:5}" font-weight="600" fill="#C8C0B0" letter-spacing="1.5">${method.toUpperCase()}</text>
+<text x="${W/2}" y="${H*.33}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?12:9}" font-weight="900" fill="#fff" letter-spacing="-0.3">WONDER</text>
+<text x="${W/2}" y="${H*.44}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?11:9}" font-weight="900" fill="${acc}">&amp;</text>
+<text x="${W/2}" y="${H*.55}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?12:9}" font-weight="900" fill="#fff" letter-spacing="-0.3">FULL</text>
+<rect x="5" y="${H*.6}" width="${W-10}" height="${H*.32}" rx="3" fill="rgba(0,0,0,.65)"/>
+<rect x="${W-24}" y="${H*.62}" width="18" height="14" rx="3" fill="${acc}"/>
+<text x="${W-15}" y="${H*.62+9}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?9:8}" font-weight="700" fill="#fff">${c.score}</text>
+<text x="9" y="${H*.71}" font-family="Helvetica Neue,sans-serif" font-size="${W>70?6.5:5.5}" font-weight="600" fill="#E8E0D0">${l1}</text>
+<text x="9" y="${H*.80}" font-family="Helvetica Neue,sans-serif" font-size="${W>70?6.5:5.5}" font-weight="600" fill="#E8E0D0">${l2}</text>
+<text x="9" y="${H*.88}" font-family="Helvetica Neue,sans-serif" font-size="3.8" fill="#706860">${c.descriptors.slice(0,2).join(' · ')}</text>
+<text x="${W/2}" y="${H*.96}" text-anchor="middle" font-family="Helvetica Neue,sans-serif" font-size="${W>70?5.5:4.8}" font-weight="600" fill="#E0D8C8">${c.weight} г</text>
+</svg>`;}
+
+let MKT={roast:[],brew:[],country:[],process:[],roaster:[],inStockOnly:false,cart:[],expanded:null,filterOpen:false};
 
 function mktToggleFilter(){
   MKT.filterOpen=!MKT.filterOpen;
@@ -3217,6 +3608,7 @@ function mktFilteredList(){
     if(MKT.brew.length&&!MKT.brew.some(b=>c.brew.includes(b)))return false;
     if(MKT.country.length&&!MKT.country.includes(c.country))return false;
     if(MKT.process.length&&!MKT.process.includes(c.process))return false;
+    if(MKT.roaster&&MKT.roaster.length&&!MKT.roaster.includes(c.roaster))return false;
     if(MKT.inStockOnly&&!c.inStock)return false;
     if(q&&![c.name,c.roaster,c.country,...c.descriptors].some(v=>v.toLowerCase().includes(q)))return false;
     return true;
@@ -3235,7 +3627,7 @@ function mktToggle(key,val){
 }
 
 function mktReset(){
-  MKT.roast=[];MKT.brew=[];MKT.country=[];MKT.process=[];MKT.inStockOnly=false;
+  MKT.roast=[];MKT.brew=[];MKT.country=[];MKT.process=[];MKT.roaster=[];MKT.inStockOnly=false;
   const q=document.getElementById('mkt-q');if(q)q.value='';
   mktRender();
 }
@@ -3248,17 +3640,23 @@ function mktExpandCard(id){
 function mktRender(){
   const list=mktFilteredList();
   const filterOpen=MKT.filterOpen;
-  const activeCount=[MKT.roast,MKT.brew,MKT.country,MKT.process].reduce((n,a)=>n+(a.length?1:0),0)+(MKT.inStockOnly?1:0);
+  const activeCount=[MKT.roast,MKT.brew,MKT.country,MKT.process,MKT.roaster].reduce((n,a)=>n+(a.length?1:0),0)+(MKT.inStockOnly?1:0);
 
   // Sidebar фильтров
   const sb=document.getElementById('mkt-sidebar');
   if(sb&&filterOpen){
     const allCountries=[...new Set(MKT_COFFEES.map(c=>c.country))].sort();
     const allProcesses=[...new Set(MKT_COFFEES.map(c=>c.process))].sort();
+    const allRoasters=[...new Set(MKT_COFFEES.map(c=>c.roaster))].sort();
     sb.innerHTML=`
       <div class="mkt-pill-group">
         <span class="mkt-pill-lbl">Наявність</span>
         <button class="mkt-pill ${MKT.inStockOnly?'on':''}" onclick="MKT.inStockOnly=!MKT.inStockOnly;mktRender()">В наявності</button>
+      </div>
+      <div class="mkt-divider"></div>
+      <div class="mkt-pill-group">
+        <span class="mkt-pill-lbl">Обжарщик</span>
+        ${allRoasters.map(v=>`<button class="mkt-pill ${MKT.roaster.includes(v)?'on':''}" onclick="mktToggle('roaster','${v}')">${v}</button>`).join('')}
       </div>
       <div class="mkt-divider"></div>
       <div class="mkt-pill-group">
@@ -3294,6 +3692,7 @@ function mktRender(){
     MKT.brew.forEach(v=>tags.push({k:'brew',v}));
     MKT.country.forEach(v=>tags.push({k:'country',v}));
     MKT.process.forEach(v=>tags.push({k:'process',v}));
+    MKT.roaster.forEach(v=>tags.push({k:'roaster',v}));
     if(MKT.inStockOnly)tags.push({k:'inStockOnly',v:'В наявності'});
     if(tags.length){
       pillsBar.style.display='flex';
@@ -3350,11 +3749,8 @@ function mktRender(){
       // Горизонтальна карточка — 1 колонка
       return`<div class="cc ${isExp?'expanded':''}" onclick="mktExpandCard(${c.id})">
         <div class="cc-row">
-          <div class="cc-row-ico" style="background:${c.color}18">
-            <svg width="32" height="32" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-              <ellipse cx="26" cy="26" rx="18" ry="22" fill="${c.color}" opacity=".65"/>
-              <path d="M26 6 Q34 18 34 26 Q34 36 26 46" stroke="${c.color}" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".45"/>
-            </svg>
+          <div class="cc-row-ico" style="background:transparent;padding:0;overflow:hidden;width:52px;height:68px;flex-shrink:0">
+            ${bagSvg(c,52,68)}
           </div>
           <div class="cc-row-info">
             <div class="cc-name">${c.name}</div>
@@ -3375,14 +3771,9 @@ function mktRender(){
     } else {
       // Карточка-квадрат — 2 колонки
       return`<div class="cc ${isExp?'expanded':''}" onclick="mktExpandCard(${c.id})">
-        <div class="cc-sq-img" style="background:${c.color}18">
-          <svg width="38" height="38" viewBox="0 0 52 52" fill="none" aria-hidden="true">
-            <ellipse cx="26" cy="26" rx="18" ry="22" fill="${c.color}" opacity=".65"/>
-            <path d="M26 6 Q34 18 34 26 Q34 36 26 46" stroke="${c.color}" stroke-width="2.5" stroke-linecap="round" fill="none" opacity=".45"/>
-          </svg>
-          <span class="cc-score" style="position:absolute;top:5px;right:5px">${c.score}</span>
-          <span class="cc-roast-pill" style="position:absolute;top:5px;left:5px;background:${rBg};color:${rC}">${c.roast.slice(0,3)}</span>
-          ${!c.inStock?`<div style="position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--mono);font-size:7px;color:var(--txt3);letter-spacing:.6px">НЕМАЄ</span></div>`:''}
+        <div class="cc-sq-img" style="background:transparent;padding:0;overflow:hidden;height:110px;display:flex;align-items:center;justify-content:center;position:relative">
+          ${bagSvg(c,84,104)}
+          ${!c.inStock?`<div style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center"><span style="font-family:var(--mono);font-size:7px;color:var(--txt3);letter-spacing:.6px">НЕМАЄ</span></div>`:''}
         </div>
         <div class="cc-sq-body">
           <div class="cc-name">${c.name}</div>
@@ -3426,6 +3817,8 @@ function mktShowCart(){
   const total=items.reduce((s,c)=>s+c.price,0);
   alert('Кошик:\n'+items.map(c=>`• ${c.name} — ${c.price.toLocaleString('uk-UA')} ₴`).join('\n')+'\n\nРазом: '+total.toLocaleString('uk-UA')+' ₴\n\n(Оплата з\'явиться в наступній версії)');
 }
+
+
 function showScr(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
@@ -3439,6 +3832,90 @@ function showScr(id){
 
 /* ── РУЧНОЕ ДОБАВЛЕНИЕ В ЖУРНАЛ ── */
 var _lbSource='home';
+var _lbPickerDate=new Date();
+var _lbPickerMonth=new Date();
+
+var LB_MON=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var LB_MSHORT=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+
+function lbDateStr(d){
+  var today=new Date();today.setHours(0,0,0,0);
+  var dd=new Date(d);dd.setHours(0,0,0,0);
+  var diff=(today-dd)/86400000;
+  if(diff===0)return 'Сегодня, '+d.getDate()+' '+LB_MSHORT[d.getMonth()];
+  if(diff===1)return 'Вчера, '+d.getDate()+' '+LB_MSHORT[d.getMonth()];
+  if(diff===2)return 'Позавчера, '+d.getDate()+' '+LB_MSHORT[d.getMonth()];
+  return d.getDate()+' '+LB_MSHORT[d.getMonth()]+' '+d.getFullYear();
+}
+
+function lbDateValue(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function lbPickerSetDate(d){
+  _lbPickerDate=new Date(d);
+  var hidden=document.getElementById('lb-date');
+  if(hidden)hidden.value=lbDateValue(d);
+  var lbl=document.getElementById('lb-date-lbl');
+  if(lbl)lbl.textContent=lbDateStr(d);
+  var btn=document.getElementById('lb-date-btn');
+  if(btn)btn.style.borderColor='var(--copper-dk)';
+  lbPickerRender();
+}
+
+function lbDatePickerToggle(){
+  var p=document.getElementById('lb-date-picker');
+  if(!p)return;
+  var open=p.style.display==='block';
+  p.style.display=open?'none':'block';
+  if(!open){_lbPickerMonth=new Date(_lbPickerDate.getFullYear(),_lbPickerDate.getMonth(),1);lbPickerRender();}
+}
+
+function lbPickerNav(dir){
+  _lbPickerMonth.setMonth(_lbPickerMonth.getMonth()+dir);
+  lbPickerRender();
+}
+
+function lbPickerQuick(offsetDays){
+  var d=new Date();d.setHours(12,0,0,0);
+  d.setDate(d.getDate()+offsetDays);
+  lbPickerSetDate(d);
+  document.getElementById('lb-date-picker').style.display='none';
+}
+
+function lbPickerRender(){
+  var title=document.getElementById('lb-picker-title');
+  if(title)title.textContent=LB_MON[_lbPickerMonth.getMonth()]+' '+_lbPickerMonth.getFullYear();
+  var grid=document.getElementById('lb-picker-grid');
+  if(!grid)return;
+  var year=_lbPickerMonth.getFullYear(),month=_lbPickerMonth.getMonth();
+  var firstDay=new Date(year,month,1);
+  var startDow=(firstDay.getDay()+6)%7; // Mon=0
+  var daysInMonth=new Date(year,month+1,0).getDate();
+  var today=new Date();today.setHours(0,0,0,0);
+  var selKey=lbDateValue(_lbPickerDate);
+  var html='';
+  // Empty cells before first day
+  for(var i=0;i<startDow;i++)html+='<div></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var dd=new Date(year,month,d);
+    var key=lbDateValue(dd);
+    var isSel=key===selKey;
+    var isToday=dd.getTime()===today.getTime();
+    var isFuture=dd>today;
+    var bg=isSel?'background:var(--copper);color:#1c130a;font-weight:700;':'';
+    var todayRing=(!isSel&&isToday)?'box-shadow:inset 0 0 0 1.5px var(--copper-dk);':'';
+    var opacity=isFuture?'opacity:.3;pointer-events:none;':'';
+    html+='<button type="button" onclick="lbPickerPickDay('+year+','+month+','+d+')" style="aspect-ratio:1/1;border:none;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:12px;font-weight:500;color:'+(isSel?'#1c130a':'var(--txt)')+';background:'+(isSel?'var(--copper)':'rgba(255,255,255,.04)')+';'+todayRing+opacity+'transition:background .12s">'+d+'</button>';
+  }
+  grid.innerHTML=html;
+}
+
+function lbPickerPickDay(y,m,d){
+  var picked=new Date(y,m,d,12,0,0);
+  lbPickerSetDate(picked);
+  document.getElementById('lb-date-picker').style.display='none';
+}
 
 function lbSetSource(src){
   _lbSource=src;
@@ -3461,9 +3938,17 @@ function lbSetSource(src){
 
 function openLogBrew(){
   _lbSource='home';
-  var t=new Date();
-  var d=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
-  var el=document.getElementById('lb-date');if(el)el.value=d;
+  var t=new Date();t.setHours(12,0,0,0);
+  _lbPickerDate=new Date(t);
+  _lbPickerMonth=new Date(t.getFullYear(),t.getMonth(),1);
+  var hidden=document.getElementById('lb-date');
+  if(hidden)hidden.value=lbDateValue(t);
+  var lbl=document.getElementById('lb-date-lbl');
+  if(lbl)lbl.textContent=lbDateStr(t);
+  var btn=document.getElementById('lb-date-btn');
+  if(btn)btn.style.borderColor='';
+  var dp=document.getElementById('lb-date-picker');
+  if(dp)dp.style.display='none';
   ['lb-bean','lb-notes','lb-place','lb-grinder'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   var defaults={lb_vol:'240',lb_rating:'8.0',lb_dose:'16',lb_temp:'93'};
   Object.keys(defaults).forEach(function(k){var e=document.getElementById(k.replace('_','-'));if(e)e.value=defaults[k];});
@@ -3498,11 +3983,299 @@ function logBrewManual(){
   var inserted=false;
   for(var i=0;i<S.log.length;i++){if(S.log[i].ts<=ts){S.log.splice(i,0,entry);inserted=true;break;}}
   if(!inserted)S.log.push(entry);
-  var streak=calcStreak();if(streak>(S.record||0))S.record=streak;
+
+  // Also create a brew card so it appears in the feed at the right date
+  var brewId=++S.id;
+  var brew={id:brewId,beanName:bean,roaster:'',method:method,dripper:'',grinder:entry.grinder||'',clicks:'',temp:entry.temp||93,ratio:entry.ratio||16,filter:'',filterWet:true,dose:entry.dose||16,steps:[],totalTime:'—',rating:rating,flavors:[],aroma:[],notes:notes||'',likes:0,liked:false,ts:ts,manual:true};
+  // Insert brew sorted by ts (newest first = larger ts first)
+  var brewInserted=false;
+  for(var j=0;j<S.brews.length;j++){if(S.brews[j].ts<=ts){S.brews.splice(j,0,brew);brewInserted=true;break;}}
+  if(!brewInserted)S.brews.push(brew);
+
+  var streak=calcStreak();if(streak>(S.record||0)){S.record=streak;}
   save();closeOv('ov-log-brew');
   renderCalendar();renderStreak();
-  if(document.getElementById('scr-home').classList.contains('on'))renderFeed();
+  renderFeed();
   toast(place?'Добавлено: '+place:'Добавлено: '+bean);
+}
+
+/* ── SHARE RECIPE ── */
+function shareRecipe(bid){
+  var b=S.brews.find(function(x){return x.id===bid;});
+  if(!b)return;
+  var cards=[];
+  try{
+    cards.push(shareCard1(b));
+    if(b.steps&&b.steps.length){
+      cards.push(shareCardLog(b));
+      cards.push(shareCardDiagram(b));
+    }
+    if((b.flavors&&b.flavors.length)||(b.aroma&&b.aroma.length)){
+      cards.push(shareCardTaste(b));
+    }
+  }catch(e){console.error('share render',e);toast('Ошибка генерации');return;}
+
+  Promise.all(cards.map(function(c){return canvasToBlob(c);})).then(function(blobs){
+    var files=blobs.map(function(bl,i){return new File([bl],'recipe_'+(i+1)+'.png',{type:'image/png'});});
+    var title=(b.beanName||'Кофе')+' · '+parseFloat(b.rating||0).toFixed(1);
+    var text='☕ '+title+'\n'+[b.method,b.dripper,b.grinder].filter(Boolean).join(' · ')+'\nCoffee Master';
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:files})){
+      navigator.share({title:title,text:text,files:files}).catch(function(){});
+    } else if(navigator.share){
+      navigator.share({title:title,text:text}).catch(function(){});
+    } else {
+      // Fallback: download first image
+      var url=URL.createObjectURL(blobs[0]);
+      var a=document.createElement('a');a.href=url;a.download='recipe.png';a.click();
+      setTimeout(function(){URL.revokeObjectURL(url);},2000);
+      toast('Картинка сохранена');
+    }
+  });
+}
+
+function canvasToBlob(canvas){
+  return new Promise(function(res){canvas.toBlob(res,'image/png');});
+}
+
+var SH={W:1080,pad:64,bg:'#17181a',card:'#222428',line:'#282b2f',copper:'#D89858',copperDk:'#B87333',txt:'#ECE9E3',txt2:'#9a968f',txt3:'#6b6862'};
+
+function shCanvas(h){
+  var c=document.createElement('canvas');
+  c.width=SH.W;c.height=h;
+  var g=c.getContext('2d');
+  g.fillStyle=SH.bg;g.fillRect(0,0,SH.W,h);
+  return{c:c,g:g};
+}
+
+function shRoundRect(g,x,y,w,h,r,fill,stroke){
+  g.beginPath();g.roundRect(x,y,w,h,r);
+  if(fill){g.fillStyle=fill;g.fill();}
+  if(stroke){g.strokeStyle=stroke;g.lineWidth=1.5;g.stroke();}
+}
+
+function shText(g,txt,x,y,opts){
+  var o=opts||{};
+  g.font=(o.weight||'400')+' '+(o.size||28)+'px '+(o.mono?'"JetBrains Mono",monospace':'Helvetica,sans-serif');
+  g.fillStyle=o.color||SH.txt;
+  g.textAlign=o.align||'left';
+  g.textBaseline=o.base||'alphabetic';
+  g.fillText(txt,x,y,o.maxW||9999);
+}
+
+function shLogo(g,x,y){
+  g.font='500 22px Helvetica,sans-serif';
+  g.fillStyle='rgba(255,255,255,.18)';
+  g.textAlign='right';
+  g.textBaseline='middle';
+  g.fillText('COFFEE MASTER',x,y);
+  g.textAlign='left';
+}
+
+/* ── CARD 1: Main info ── */
+function shareCard1(b){
+  var H=1080;
+  var _=shCanvas(H);var g=_.g;
+  // subtle grid pattern
+  g.strokeStyle='rgba(255,255,255,.025)';g.lineWidth=1;
+  for(var i=0;i<SH.W;i+=4){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke();}
+  // radial glow top
+  var grd=g.createRadialGradient(SH.W/2,0,0,SH.W/2,0,600);
+  grd.addColorStop(0,'rgba(184,115,51,.22)');grd.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=grd;g.fillRect(0,0,SH.W,H);
+
+  var P=SH.pad,W=SH.W,cw=W-P*2;
+
+  // Logo
+  shLogo(g,W-P,P+18);
+
+  // Rating circle
+  var rcx=W/2,rcy=260,rr=110;
+  g.beginPath();g.arc(rcx,rcy,rr,0,Math.PI*2);
+  g.fillStyle='#1a1c1f';g.fill();
+  g.strokeStyle=SH.copperDk;g.lineWidth=2.5;g.stroke();
+  // rating arc
+  var rating=parseFloat(b.rating||0),frac=rating/10;
+  g.beginPath();
+  g.arc(rcx,rcy,rr,-Math.PI/2,-Math.PI/2+Math.PI*2*frac);
+  g.strokeStyle=SH.copper;g.lineWidth=8;g.lineCap='round';g.stroke();
+  shText(g,rating.toFixed(1),rcx,rcy+22,{size:80,weight:'700',mono:true,color:SH.copper,align:'center'});
+
+  // Bean name
+  var nameSize=b.beanName&&b.beanName.length>18?52:62;
+  shText(g,b.beanName||'Без названия',W/2,430,{size:nameSize,weight:'700',color:SH.txt,align:'center'});
+  if(b.roaster){shText(g,b.roaster,W/2,480,{size:30,color:SH.txt2,align:'center'});}
+
+  // Date
+  var dateStr=b.ts?new Date(b.ts).toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'}):'';
+  if(dateStr)shText(g,dateStr,W/2,520,{size:24,color:SH.txt3,align:'center'});
+
+  // Method pill
+  if(b.method){
+    var mw=240,mh=50,mx=W/2-mw/2,my=560;
+    shRoundRect(g,mx,my,mw,mh,25,'#111213',SH.line);
+    shText(g,(b.method||'').toUpperCase(),W/2,my+32,{size:20,weight:'700',mono:true,color:SH.txt2,align:'center',letter:2});
+  }
+
+  // Stats row
+  var sy=660,sh=130,stats=[['Доза',b.dose?b.dose+'г':'—'],['Коэф.','1:'+(b.ratio||'—')],['Время',b.totalTime||'—'],['Оценка',rating.toFixed(1)]];
+  var sw=cw/stats.length;
+  stats.forEach(function(s,i){
+    var sx=P+i*sw;
+    if(i>0){g.strokeStyle=SH.line;g.lineWidth=1;g.beginPath();g.moveTo(sx,sy+16);g.lineTo(sx,sy+sh-16);g.stroke();}
+    shText(g,s[0].toUpperCase(),sx+sw/2,sy+36,{size:18,mono:true,color:SH.txt3,align:'center'});
+    shText(g,s[1],sx+sw/2,sy+96,{size:44,weight:'700',mono:true,color:SH.txt,align:'center'});
+  });
+  // Stats border
+  shRoundRect(g,P,sy,cw,sh,16,null,SH.line);
+
+  // Devices row
+  var devs=[b.dripper,b.grinder,b.filter].filter(Boolean);
+  if(devs.length){
+    var dy=830;
+    shText(g,'Устройства',P,dy,{size:22,color:SH.txt3});
+    devs.forEach(function(d,i){
+      shRoundRect(g,P+i*240,dy+30,220,52,12,'#1a1c1f',SH.line);
+      shText(g,d,P+i*240+16,dy+62,{size:22,color:SH.txt2,maxW:188});
+    });
+  }
+
+  // Notes
+  if(b.notes){
+    var ny=960;
+    shRoundRect(g,P,ny,cw,80,12,'#16171a',SH.line);
+    shText(g,'"'+b.notes+'"',P+20,ny+48,{size:22,color:SH.txt2,maxW:cw-40});
+  }
+
+  // bottom bar
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
+
+  return _.c;
+}
+
+/* ── CARD 2: Log table ── */
+function shareCardLog(b){
+  var steps=(b.steps||[]);
+  var rows=steps.length;
+  var H=Math.max(600,160+rows*72+100);
+  var _=shCanvas(H);var g=_.g;
+  var P=SH.pad,W=SH.W,cw=W-P*2;
+  shLogo(g,W-P,P+18);
+  shText(g,'Лог заваривания',P,P+18,{size:44,weight:'700'});
+  shText(g,(b.beanName||'Кофе')+' · '+parseFloat(b.rating||0).toFixed(1),P,P+60,{size:24,color:SH.txt2});
+
+  var COL={pour:'#74C0F5',pause:'#F7AC34',action:'#C3BFB8'};
+  var ry=P+100;
+  steps.forEach(function(st,i){
+    var even=i%2===0;
+    shRoundRect(g,P,ry,cw,60,10,even?'#1d1f22':'#191b1d',null);
+    // badge
+    var bc=COL[st.type]||COL.action;
+    shRoundRect(g,P+12,ry+12,80,36,8,bc+'22',null);
+    shText(g,st.type==='pour'?'Влив':st.type==='pause'?'Пауза':'Действие',P+16,ry+37,{size:18,weight:'700',color:bc});
+    // time start
+    var ts=typeof st.t==='number'?fmt(st.t):'—';
+    shText(g,ts,P+120,ry+37,{size:22,mono:true,color:SH.txt2});
+    // duration
+    var ph=st.ph!=null?fmt(st.ph):(st.dur!=null?st.dur+'с':'—');
+    shText(g,ph,P+300,ry+37,{size:22,mono:true,color:SH.txt});
+    // ml
+    if(st.ml!=null)shText(g,st.ml.toFixed(1)+'мл',P+500,ry+37,{size:22,mono:true,color:SH.copper});
+    ry+=68;
+  });
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
+  return _.c;
+}
+
+/* ── CARD 3: Diagram ── */
+function shareCardDiagram(b){
+  var H=900;
+  var _=shCanvas(H);var g=_.g;
+  var P=SH.pad,W=SH.W;
+  shLogo(g,W-P,P+18);
+  shText(g,'Диаграмма этапов',P,P+18,{size:44,weight:'700'});
+  shText(g,(b.beanName||'Кофе'),P,P+60,{size:24,color:SH.txt2});
+
+  var steps=(b.steps||[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action'||s.type==='preinfusion';});
+  var total=steps.reduce(function(s,x){return s+(x.ph!=null?x.ph/1000:(x.dur||0));},0)||1;
+  var COL={pour:{base:'#3E8FCE',on:'#74C0F5'},pause:{base:'#DC7E16',on:'#F7AC34'},action:{base:'#6C6C72',on:'#C3BFB8'},preinfusion:{base:'#6C6C72',on:'#C3BFB8'}};
+
+  // Donut
+  var cx=W/2,cy=460,R=220,sw=28,GAP=3;
+  var totGap=(steps.length>1?(steps.length-1)*GAP:0)+GAP;
+  var span=360-totGap;
+  var cur=GAP/2;
+  g.lineWidth=sw;g.lineCap='butt';
+  // track
+  g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.strokeStyle='#202225';g.stroke();
+  steps.forEach(function(st){
+    var dur=st.ph!=null?st.ph/1000:(st.dur||0);
+    var deg=dur/total*span;
+    var a0=(cur-90)*Math.PI/180,a1=(cur+deg-90)*Math.PI/180;
+    var c=(COL[st.type]||COL.action);
+    g.beginPath();g.arc(cx,cy,R,a0,a1);g.strokeStyle=c.base;g.stroke();
+    cur+=deg+GAP;
+  });
+
+  // Center
+  g.beginPath();g.arc(cx,cy,R-sw/2-6,0,Math.PI*2);
+  g.fillStyle='#1a1c1f';g.fill();
+  shText(g,b.totalTime||'—',cx,cy+22,{size:72,weight:'700',mono:true,color:SH.txt,align:'center'});
+  shText(g,'ВСЕГО',cx,cy+62,{size:22,mono:true,color:SH.txt3,align:'center'});
+
+  // Legend
+  var ly=730;
+  [['Влив','#74C0F5'],['Пауза','#F7AC34'],['Действие','#C3BFB8']].forEach(function(l,i){
+    var lx=P+i*320;
+    g.beginPath();g.arc(lx+14,ly+14,12,0,Math.PI*2);g.fillStyle=l[1];g.fill();
+    shText(g,l[0],lx+34,ly+20,{size:24,color:SH.txt2});
+  });
+
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,W-P*2,3);
+  return _.c;
+}
+
+/* ── CARD 4: Taste & Aroma ── */
+function shareCardTaste(b){
+  var H=700;
+  var _=shCanvas(H);var g=_.g;
+  var P=SH.pad,W=SH.W,cw=W-P*2;
+  shLogo(g,W-P,P+18);
+  shText(g,'Вкус и аромат',P,P+18,{size:44,weight:'700'});
+
+  var TCOL={ft_fruit:'#c84a6e',ft_sweet:'#d98b3a',ft_nut:'#8a6a44',ft_floral:'#b25b86',ft_roast:'#9c5a3c',ft_acid:'#c7a93e',ft_spice:'#b5453a',ft_green:'#5a9e57',ft_other:'#7d8893'};
+  function tagColor(f){var c=ftCls(f).replace('ft-','ft_').replace('-','_');return TCOL[c]||'#7d8893';}
+
+  function drawTags(tags,label,startY){
+    shText(g,label,P,startY,{size:26,color:SH.txt3});
+    var x=P,y=startY+14,rowH=60,maxW=cw;
+    tags.forEach(function(f){
+      var col=tagColor(f);
+      g.font='700 22px Helvetica,sans-serif';
+      var tw=g.measureText(f).width+40;
+      if(x+tw>P+maxW){x=P;y+=rowH;}
+      shRoundRect(g,x,y,tw,44,22,col,null);
+      // text shadow illusion
+      g.font='700 22px Helvetica,sans-serif';
+      g.fillStyle='rgba(0,0,0,.4)';g.textBaseline='middle';
+      g.fillText(f,x+20+1,y+23);
+      g.fillStyle='#fff';
+      g.fillText(f,x+20,y+22);
+      x+=tw+10;
+    });
+    return y+rowH+20;
+  }
+
+  var y=P+80;
+  if(b.flavors&&b.flavors.length)y=drawTags(b.flavors,'☕ Вкус',y);
+  if(b.aroma&&b.aroma.length)y=drawTags(b.aroma,'🌸 Аромат',y+10);
+
+  if(b.notes){
+    shRoundRect(g,P,y+10,cw,80,12,'#16171a',SH.line);
+    shText(g,'"'+b.notes+'"',P+20,y+58,{size:22,color:SH.txt2,maxW:cw-40});
+  }
+
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
+  return _.c;
 }
 
 /* ── SUPABASE SYNC ── */
