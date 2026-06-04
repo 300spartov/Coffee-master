@@ -2384,6 +2384,7 @@ function renderFeed(){
     <div class="bc-foot">
       <button class="expand-btn" id="ex-${bid}" onclick="toggleRec(${bid})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Деталі</button>
       <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${bid})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
+      <button class="like-btn" onclick="shareRecipe(${bid})" title="Поділитись"><i class="ti ti-share" aria-hidden="true"></i></button>
     </div>
     <div class="recipe-panel" id="rec-${bid}">
       <!-- ТАБЫ (3 шт) -->
@@ -4476,6 +4477,238 @@ function logBrewManual(){
 }
 
 /* ── SUPABASE SYNC ── */
+/* ══════════════════════════════════════════
+   SHARE — генерація карток і відправка
+══════════════════════════════════════════ */
+function shareRecipe(bid){
+  var b=S.brews.find(function(x){return x.id===bid;});
+  if(!b)return;
+  var cards=[];
+  try{
+    cards.push(shareCard1(b));
+    if(b.steps&&b.steps.length){
+      cards.push(shareCardLog(b));
+      cards.push(shareCardDiagram(b));
+    }
+    if((b.flavors&&b.flavors.length)||(b.aroma&&b.aroma.length)){
+      cards.push(shareCardTaste(b));
+    }
+  }catch(e){console.error('share render',e);toast('Помилка генерації');return;}
+
+  Promise.all(cards.map(function(c){return canvasToBlob(c);})).then(function(blobs){
+    var files=blobs.map(function(bl,i){return new File([bl],'recipe_'+(i+1)+'.png',{type:'image/png'});});
+    var title=(b.beanName||'Кава')+' · '+parseFloat(b.rating||0).toFixed(1);
+    var text='☕ '+title+'\n'+[b.method,b.dripper,b.grinder].filter(Boolean).join(' · ')+'\nCoffee Master';
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:files})){
+      navigator.share({title:title,text:text,files:files}).catch(function(){});
+    } else if(navigator.share){
+      navigator.share({title:title,text:text}).catch(function(){});
+    } else {
+      var url=URL.createObjectURL(blobs[0]);
+      var a=document.createElement('a');a.href=url;a.download='recipe.png';a.click();
+      setTimeout(function(){URL.revokeObjectURL(url);},2000);
+      toast('Картинку збережено');
+    }
+  });
+}
+
+function canvasToBlob(canvas){
+  return new Promise(function(res){canvas.toBlob(res,'image/png');});
+}
+
+var SH={W:1080,pad:64,bg:'#17181a',card:'#222428',line:'#282b2f',copper:'#D89858',copperDk:'#B87333',txt:'#ECE9E3',txt2:'#9a968f',txt3:'#6b6862'};
+
+function shCanvas(h){
+  var c=document.createElement('canvas');
+  c.width=SH.W;c.height=h;
+  var g=c.getContext('2d');
+  g.fillStyle=SH.bg;g.fillRect(0,0,SH.W,h);
+  return{c:c,g:g};
+}
+
+function shRoundRect(g,x,y,w,h,r,fill,stroke){
+  g.beginPath();g.roundRect(x,y,w,h,r);
+  if(fill){g.fillStyle=fill;g.fill();}
+  if(stroke){g.strokeStyle=stroke;g.lineWidth=1.5;g.stroke();}
+}
+
+function shText(g,txt,x,y,opts){
+  var o=opts||{};
+  g.font=(o.weight||'400')+' '+(o.size||28)+'px '+(o.mono?'"JetBrains Mono",monospace':'Helvetica,sans-serif');
+  g.fillStyle=o.color||SH.txt;
+  g.textAlign=o.align||'left';
+  g.textBaseline=o.base||'alphabetic';
+  g.fillText(txt,x,y,o.maxW||9999);
+}
+
+function shLogo(g,x,y){
+  g.font='500 22px Helvetica,sans-serif';
+  g.fillStyle='rgba(255,255,255,.18)';
+  g.textAlign='right';
+  g.textBaseline='middle';
+  g.fillText('COFFEE MASTER',x,y);
+  g.textAlign='left';
+}
+
+function shareCard1(b){
+  var H=1080;
+  var _=shCanvas(H);var g=_.g;
+  g.strokeStyle='rgba(255,255,255,.025)';g.lineWidth=1;
+  for(var i=0;i<SH.W;i+=4){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke();}
+  var grd=g.createRadialGradient(SH.W/2,0,0,SH.W/2,0,600);
+  grd.addColorStop(0,'rgba(184,115,51,.22)');grd.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=grd;g.fillRect(0,0,SH.W,H);
+  var P=SH.pad,W=SH.W,cw=W-P*2;
+  shLogo(g,W-P,P+18);
+  var rcx=W/2,rcy=260,rr=110;
+  g.beginPath();g.arc(rcx,rcy,rr,0,Math.PI*2);
+  g.fillStyle='#1a1c1f';g.fill();
+  g.strokeStyle=SH.copperDk;g.lineWidth=2.5;g.stroke();
+  var rating=parseFloat(b.rating||0),frac=rating/10;
+  g.beginPath();
+  g.arc(rcx,rcy,rr,-Math.PI/2,-Math.PI/2+Math.PI*2*frac);
+  g.strokeStyle=SH.copper;g.lineWidth=8;g.lineCap='round';g.stroke();
+  shText(g,rating.toFixed(1),rcx,rcy+22,{size:80,weight:'700',mono:true,color:SH.copper,align:'center'});
+  var nameSize=b.beanName&&b.beanName.length>18?52:62;
+  shText(g,b.beanName||'Без назви',W/2,430,{size:nameSize,weight:'700',color:SH.txt,align:'center'});
+  if(b.roaster){shText(g,b.roaster,W/2,480,{size:30,color:SH.txt2,align:'center'});}
+  var dateStr=b.ts?new Date(b.ts).toLocaleDateString('uk',{day:'numeric',month:'long',year:'numeric'}):'';
+  if(dateStr)shText(g,dateStr,W/2,520,{size:24,color:SH.txt3,align:'center'});
+  if(b.method){
+    var mw=240,mh=50,mx=W/2-mw/2,my=560;
+    shRoundRect(g,mx,my,mw,mh,25,'#111213',SH.line);
+    shText(g,(b.method||'').toUpperCase(),W/2,my+32,{size:20,weight:'700',mono:true,color:SH.txt2,align:'center',letter:2});
+  }
+  var sy=660,sh2=130,stats=[['Доза',b.dose?b.dose+'г':'—'],['Коеф.','1:'+(b.ratio||'—')],['Час',b.totalTime||'—'],['Оцінка',rating.toFixed(1)]];
+  var sw=cw/stats.length;
+  stats.forEach(function(s,i){
+    var sx=P+i*sw;
+    if(i>0){g.strokeStyle=SH.line;g.lineWidth=1;g.beginPath();g.moveTo(sx,sy+16);g.lineTo(sx,sy+sh2-16);g.stroke();}
+    shText(g,s[0].toUpperCase(),sx+sw/2,sy+36,{size:18,mono:true,color:SH.txt3,align:'center'});
+    shText(g,s[1],sx+sw/2,sy+96,{size:44,weight:'700',mono:true,color:SH.txt,align:'center'});
+  });
+  shRoundRect(g,P,sy,cw,sh2,16,null,SH.line);
+  var devs=[b.dripper,b.grinder,b.filter].filter(Boolean);
+  if(devs.length){
+    var dy=830;
+    shText(g,'Пристрої',P,dy,{size:22,color:SH.txt3});
+    devs.forEach(function(d,i){
+      shRoundRect(g,P+i*240,dy+30,220,52,12,'#1a1c1f',SH.line);
+      shText(g,d,P+i*240+16,dy+62,{size:22,color:SH.txt2,maxW:188});
+    });
+  }
+  if(b.notes){
+    var ny=960;
+    shRoundRect(g,P,ny,cw,80,12,'#16171a',SH.line);
+    shText(g,'"'+b.notes+'"',P+20,ny+48,{size:22,color:SH.txt2,maxW:cw-40});
+  }
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
+  return _.c;
+}
+
+function shareCardLog(b){
+  var steps=(b.steps||[]);
+  var rows=steps.length;
+  var H=Math.max(600,160+rows*72+100);
+  var _=shCanvas(H);var g=_.g;
+  var P=SH.pad,W=SH.W,cw=W-P*2;
+  shLogo(g,W-P,P+18);
+  shText(g,'Лог заваривания',P,P+18,{size:44,weight:'700'});
+  shText(g,(b.beanName||'Кава')+' · '+parseFloat(b.rating||0).toFixed(1),P,P+60,{size:24,color:SH.txt2});
+  var COL={pour:'#74C0F5',pause:'#F7AC34',action:'#C3BFB8'};
+  var ry=P+100;
+  steps.forEach(function(st,i){
+    var even=i%2===0;
+    shRoundRect(g,P,ry,cw,60,10,even?'#1d1f22':'#191b1d',null);
+    var bc=COL[st.type]||COL.action;
+    shRoundRect(g,P+12,ry+12,80,36,8,bc+'22',null);
+    shText(g,st.type==='pour'?'Влив':st.type==='pause'?'Пауза':'Дія',P+16,ry+37,{size:18,weight:'700',color:bc});
+    var ts=typeof st.t==='number'?fmt(st.t):'—';
+    shText(g,ts,P+120,ry+37,{size:22,mono:true,color:SH.txt2});
+    var ph=st.ph!=null?fmt(st.ph):(st.dur!=null?st.dur+'с':'—');
+    shText(g,ph,P+300,ry+37,{size:22,mono:true,color:SH.txt});
+    if(st.ml!=null)shText(g,st.ml.toFixed(1)+'мл',P+500,ry+37,{size:22,mono:true,color:SH.copper});
+    ry+=68;
+  });
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
+  return _.c;
+}
+
+function shareCardDiagram(b){
+  var H=900;
+  var _=shCanvas(H);var g=_.g;
+  var P=SH.pad,W=SH.W;
+  shLogo(g,W-P,P+18);
+  shText(g,'Діаграма этапов',P,P+18,{size:44,weight:'700'});
+  shText(g,(b.beanName||'Кава'),P,P+60,{size:24,color:SH.txt2});
+  var steps=(b.steps||[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action'||s.type==='preinfusion';});
+  var total=steps.reduce(function(s,x){return s+(x.ph!=null?x.ph/1000:(x.dur||0));},0)||1;
+  var COL={pour:{base:'#3E8FCE',on:'#74C0F5'},pause:{base:'#DC7E16',on:'#F7AC34'},action:{base:'#6C6C72',on:'#C3BFB8'},preinfusion:{base:'#6C6C72',on:'#C3BFB8'}};
+  var cx=W/2,cy=460,R=220,sw=28,GAP=3;
+  var totGap=(steps.length>1?(steps.length-1)*GAP:0)+GAP;
+  var span=360-totGap;
+  var cur=GAP/2;
+  g.lineWidth=sw;g.lineCap='butt';
+  g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.strokeStyle='#202225';g.stroke();
+  steps.forEach(function(st){
+    var dur=st.ph!=null?st.ph/1000:(st.dur||0);
+    var deg=dur/total*span;
+    var a0=(cur-90)*Math.PI/180,a1=(cur+deg-90)*Math.PI/180;
+    var c=(COL[st.type]||COL.action);
+    g.beginPath();g.arc(cx,cy,R,a0,a1);g.strokeStyle=c.base;g.stroke();
+    cur+=deg+GAP;
+  });
+  g.beginPath();g.arc(cx,cy,R-sw/2-6,0,Math.PI*2);
+  g.fillStyle='#1a1c1f';g.fill();
+  shText(g,b.totalTime||'—',cx,cy+22,{size:72,weight:'700',mono:true,color:SH.txt,align:'center'});
+  shText(g,'ВСЬОГО',cx,cy+62,{size:22,mono:true,color:SH.txt3,align:'center'});
+  var ly=730;
+  [['Влив','#74C0F5'],['Пауза','#F7AC34'],['Дія','#C3BFB8']].forEach(function(l,i){
+    var lx=P+i*320;
+    g.beginPath();g.arc(lx+14,ly+14,12,0,Math.PI*2);g.fillStyle=l[1];g.fill();
+    shText(g,l[0],lx+34,ly+20,{size:24,color:SH.txt2});
+  });
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,W-P*2,3);
+  return _.c;
+}
+
+function shareCardTaste(b){
+  var H=700;
+  var _=shCanvas(H);var g=_.g;
+  var P=SH.pad,W=SH.W,cw=W-P*2;
+  shLogo(g,W-P,P+18);
+  shText(g,'Смак і аромат',P,P+18,{size:44,weight:'700'});
+  var TCOL={ft_fruit:'#c84a6e',ft_sweet:'#d98b3a',ft_nut:'#8a6a44',ft_floral:'#b25b86',ft_roast:'#9c5a3c',ft_acid:'#c7a93e',ft_spice:'#b5453a',ft_green:'#5a9e57',ft_other:'#7d8893'};
+  function tagColor(f){var c=ftCls(f).replace('ft-','ft_').replace('-','_');return TCOL[c]||'#7d8893';}
+  function drawTags(tags,label,startY){
+    shText(g,label,P,startY,{size:26,color:SH.txt3});
+    var x=P,y=startY+14,rowH=60,maxW=cw;
+    tags.forEach(function(f){
+      var col=tagColor(f);
+      g.font='700 22px Helvetica,sans-serif';
+      var tw=g.measureText(f).width+40;
+      if(x+tw>P+maxW){x=P;y+=rowH;}
+      shRoundRect(g,x,y,tw,44,22,col,null);
+      g.font='700 22px Helvetica,sans-serif';
+      g.fillStyle='rgba(0,0,0,.4)';g.textBaseline='middle';
+      g.fillText(f,x+20+1,y+23);
+      g.fillStyle='#fff';
+      g.fillText(f,x+20,y+22);
+      x+=tw+10;
+    });
+    return y+rowH+20;
+  }
+  var y=P+80;
+  if(b.flavors&&b.flavors.length)y=drawTags(b.flavors,'☕ Смак',y);
+  if(b.aroma&&b.aroma.length)y=drawTags(b.aroma,'🌸 Аромат',y+10);
+  if(b.notes){
+    shRoundRect(g,P,y+10,cw,80,12,'#16171a',SH.line);
+    shText(g,'"'+b.notes+'"',P+20,y+58,{size:22,color:SH.txt2,maxW:cw-40});
+  }
+  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
+  return _.c;
+}
+
 const SUPABASE_URL='https://mhudtufaxjjvvxefeyrs.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odWR0dWZheGpqdnZ4ZWZleXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTU2NDEsImV4cCI6MjA5NTYzMTY0MX0.IKMFN_y4oOa_3dcxxLNLW2txPoKRyXjPaS05p_S3t8M';
 
