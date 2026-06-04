@@ -1255,8 +1255,8 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="field-lbl">Клики / деление помола</div>
       <div style="display:flex;align-items:center;gap:10px">
         <button class="click-btn" onclick="clicksAdj(-1)">−</button>
-        <div style="flex:1;text-align:center">
-          <div class="clicks-val" id="clicks-val">28</div>
+        <div style="flex:1;text-align:center" onclick="openNumPad('clicks-input','clicks')" style="cursor:pointer">
+          <div class="clicks-val" id="clicks-val" style="cursor:pointer;border-bottom:1px dashed var(--copper-dk);display:inline-block;padding-bottom:2px">28</div>
           <div class="clicks-unit">Кліків</div>
         </div>
         <button class="click-btn" onclick="clicksAdj(1)">+</button>
@@ -1276,7 +1276,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="card" style="margin-bottom:10px">
         <div class="lbl">Параметри</div>
         <div class="grid2" style="margin-bottom:8px">
-          <div><div class="field-lbl">Кава (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="100" class="fi" oninput="bCalc()"></div>
+          <div><div class="field-lbl">Кава (г)</div><input id="b-dose" type="number" inputmode="decimal" step="0.1" value="16" min="1" max="100" class="fi" oninput="bCalc()" onfocus="centerInput(this)"></div>
           <div><div class="field-lbl">Коефіцієнт</div>
             <select id="b-ratio" class="fi" onchange="bCalc()">
               <option value="12">1 : 12</option><option value="14">1 : 14</option><option value="15">1 : 15</option>
@@ -1293,13 +1293,13 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
           <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
             <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)">
               <div style="display:flex;align-items:center;gap:8px">
-                <input id="b-temp-sl" type="range" min="80" max="100" step="1" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-temp-out').textContent=this.value+'°C'">
-                <span id="b-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+                <input id="b-temp-sl" type="range" min="80" max="100" step="1" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="syncTempAlt(this.value)">
+                <span id="b-temp-out" onclick="openNumPad('b-temp-sl','alt-temp')" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right;cursor:pointer;border-bottom:1px dashed var(--copper-dk)">93°C</span>
               </div>
-              <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px">
-                <button class="click-btn" onclick="var s=document.getElementById('b-temp-sl');s.value=Math.max(80,+s.value-1);document.getElementById('b-temp-out').textContent=s.value+'°C'" style="width:36px;height:32px;font-size:18px">−</button>
+              <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px">
+                <button class="click-btn" onclick="altTempAdj(-1)" style="width:36px;height:32px;font-size:18px">−</button>
                 <span style="font-family:var(--mono);font-size:11px;color:var(--txt3)">°C</span>
-                <button class="click-btn" onclick="var s=document.getElementById('b-temp-sl');s.value=Math.min(100,+s.value+1);document.getElementById('b-temp-out').textContent=s.value+'°C'" style="width:36px;height:32px;font-size:18px">+</button>
+                <button class="click-btn" onclick="altTempAdj(1)" style="width:36px;height:32px;font-size:18px">+</button>
               </div>
             </div>
           </div>
@@ -1312,11 +1312,11 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="card" style="margin-bottom:10px">
         <div class="lbl">Параметри еспресо</div>
         <div class="grid2" style="margin-bottom:8px">
-          <div><div class="field-lbl">Доза (г)</div><input id="b-esp-dose" type="number" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()"></div>
+          <div><div class="field-lbl">Доза (г)</div><input id="b-esp-dose" type="number" inputmode="decimal" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()" onfocus="centerInput(this)"></div>
           <div><div class="field-lbl">Ретіо (1 : X)</div>
             <div style="display:flex;align-items:center;gap:5px">
               <button class="click-btn" onclick="espRatioAdj(-0.1)" style="width:32px;height:38px;font-size:16px">−</button>
-              <input id="b-esp-ratio-sel" type="number" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()">
+              <input id="b-esp-ratio-sel" type="number" inputmode="decimal" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()" onfocus="centerInput(this)">
               <button class="click-btn" onclick="espRatioAdj(0.1)" style="width:32px;height:38px;font-size:16px">+</button>
             </div>
           </div>
@@ -1324,8 +1324,8 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
           <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px">
             <div style="display:flex;align-items:center;gap:8px">
-              <input id="b-esp-temp-sl" type="range" min="88" max="96" step="0.5" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-temp-out').textContent=this.value+'°C'">
-              <span id="b-esp-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+              <input id="b-esp-temp-sl" type="range" min="88" max="96" step="0.5" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="syncTempEsp(this.value)">
+              <span id="b-esp-temp-out" onclick="openNumPad('b-esp-temp-sl','esp-temp')" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right;cursor:pointer;border-bottom:1px dashed var(--copper-dk)">93°C</span>
             </div>
           </div>
         </div>
@@ -2384,7 +2384,6 @@ function renderFeed(){
     <div class="bc-foot">
       <button class="expand-btn" id="ex-${bid}" onclick="toggleRec(${bid})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Деталі</button>
       <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${bid})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
-      <button class="like-btn" onclick="shareRecipe(${bid})" title="Поділитись"><i class="ti ti-share" aria-hidden="true"></i></button>
     </div>
     <div class="recipe-panel" id="rec-${bid}">
       <!-- ТАБЫ (3 шт) -->
@@ -4387,8 +4386,10 @@ function showScr(id){
   const el=document.getElementById(id);if(el)el.classList.add('on');
   const nbMap={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile'};
   const nb=nbMap[id];if(nb)document.getElementById(nb)?.classList.add('on');
-  const fn={'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf,'scr-market':mktRender,'scr-ach':renderAchievements};if(id==='scr-brew')showBV('bv-method-pick');
-  if(fn[id])fn[id]();
+  const fn={'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf,'scr-market':mktRender};
+  if(id==='scr-brew')showBV('bv-method-pick');
+  if(fn[id]) fn[id]();
+  else if(id==='scr-ach' && typeof window.renderAchievements==='function') window.renderAchievements();
 }
 
 
@@ -4477,238 +4478,6 @@ function logBrewManual(){
 }
 
 /* ── SUPABASE SYNC ── */
-/* ══════════════════════════════════════════
-   SHARE — генерація карток і відправка
-══════════════════════════════════════════ */
-function shareRecipe(bid){
-  var b=S.brews.find(function(x){return x.id===bid;});
-  if(!b)return;
-  var cards=[];
-  try{
-    cards.push(shareCard1(b));
-    if(b.steps&&b.steps.length){
-      cards.push(shareCardLog(b));
-      cards.push(shareCardDiagram(b));
-    }
-    if((b.flavors&&b.flavors.length)||(b.aroma&&b.aroma.length)){
-      cards.push(shareCardTaste(b));
-    }
-  }catch(e){console.error('share render',e);toast('Помилка генерації');return;}
-
-  Promise.all(cards.map(function(c){return canvasToBlob(c);})).then(function(blobs){
-    var files=blobs.map(function(bl,i){return new File([bl],'recipe_'+(i+1)+'.png',{type:'image/png'});});
-    var title=(b.beanName||'Кава')+' · '+parseFloat(b.rating||0).toFixed(1);
-    var text='☕ '+title+'\n'+[b.method,b.dripper,b.grinder].filter(Boolean).join(' · ')+'\nCoffee Master';
-    if(navigator.share&&navigator.canShare&&navigator.canShare({files:files})){
-      navigator.share({title:title,text:text,files:files}).catch(function(){});
-    } else if(navigator.share){
-      navigator.share({title:title,text:text}).catch(function(){});
-    } else {
-      var url=URL.createObjectURL(blobs[0]);
-      var a=document.createElement('a');a.href=url;a.download='recipe.png';a.click();
-      setTimeout(function(){URL.revokeObjectURL(url);},2000);
-      toast('Картинку збережено');
-    }
-  });
-}
-
-function canvasToBlob(canvas){
-  return new Promise(function(res){canvas.toBlob(res,'image/png');});
-}
-
-var SH={W:1080,pad:64,bg:'#17181a',card:'#222428',line:'#282b2f',copper:'#D89858',copperDk:'#B87333',txt:'#ECE9E3',txt2:'#9a968f',txt3:'#6b6862'};
-
-function shCanvas(h){
-  var c=document.createElement('canvas');
-  c.width=SH.W;c.height=h;
-  var g=c.getContext('2d');
-  g.fillStyle=SH.bg;g.fillRect(0,0,SH.W,h);
-  return{c:c,g:g};
-}
-
-function shRoundRect(g,x,y,w,h,r,fill,stroke){
-  g.beginPath();g.roundRect(x,y,w,h,r);
-  if(fill){g.fillStyle=fill;g.fill();}
-  if(stroke){g.strokeStyle=stroke;g.lineWidth=1.5;g.stroke();}
-}
-
-function shText(g,txt,x,y,opts){
-  var o=opts||{};
-  g.font=(o.weight||'400')+' '+(o.size||28)+'px '+(o.mono?'"JetBrains Mono",monospace':'Helvetica,sans-serif');
-  g.fillStyle=o.color||SH.txt;
-  g.textAlign=o.align||'left';
-  g.textBaseline=o.base||'alphabetic';
-  g.fillText(txt,x,y,o.maxW||9999);
-}
-
-function shLogo(g,x,y){
-  g.font='500 22px Helvetica,sans-serif';
-  g.fillStyle='rgba(255,255,255,.18)';
-  g.textAlign='right';
-  g.textBaseline='middle';
-  g.fillText('COFFEE MASTER',x,y);
-  g.textAlign='left';
-}
-
-function shareCard1(b){
-  var H=1080;
-  var _=shCanvas(H);var g=_.g;
-  g.strokeStyle='rgba(255,255,255,.025)';g.lineWidth=1;
-  for(var i=0;i<SH.W;i+=4){g.beginPath();g.moveTo(i,0);g.lineTo(i,H);g.stroke();}
-  var grd=g.createRadialGradient(SH.W/2,0,0,SH.W/2,0,600);
-  grd.addColorStop(0,'rgba(184,115,51,.22)');grd.addColorStop(1,'rgba(0,0,0,0)');
-  g.fillStyle=grd;g.fillRect(0,0,SH.W,H);
-  var P=SH.pad,W=SH.W,cw=W-P*2;
-  shLogo(g,W-P,P+18);
-  var rcx=W/2,rcy=260,rr=110;
-  g.beginPath();g.arc(rcx,rcy,rr,0,Math.PI*2);
-  g.fillStyle='#1a1c1f';g.fill();
-  g.strokeStyle=SH.copperDk;g.lineWidth=2.5;g.stroke();
-  var rating=parseFloat(b.rating||0),frac=rating/10;
-  g.beginPath();
-  g.arc(rcx,rcy,rr,-Math.PI/2,-Math.PI/2+Math.PI*2*frac);
-  g.strokeStyle=SH.copper;g.lineWidth=8;g.lineCap='round';g.stroke();
-  shText(g,rating.toFixed(1),rcx,rcy+22,{size:80,weight:'700',mono:true,color:SH.copper,align:'center'});
-  var nameSize=b.beanName&&b.beanName.length>18?52:62;
-  shText(g,b.beanName||'Без назви',W/2,430,{size:nameSize,weight:'700',color:SH.txt,align:'center'});
-  if(b.roaster){shText(g,b.roaster,W/2,480,{size:30,color:SH.txt2,align:'center'});}
-  var dateStr=b.ts?new Date(b.ts).toLocaleDateString('uk',{day:'numeric',month:'long',year:'numeric'}):'';
-  if(dateStr)shText(g,dateStr,W/2,520,{size:24,color:SH.txt3,align:'center'});
-  if(b.method){
-    var mw=240,mh=50,mx=W/2-mw/2,my=560;
-    shRoundRect(g,mx,my,mw,mh,25,'#111213',SH.line);
-    shText(g,(b.method||'').toUpperCase(),W/2,my+32,{size:20,weight:'700',mono:true,color:SH.txt2,align:'center',letter:2});
-  }
-  var sy=660,sh2=130,stats=[['Доза',b.dose?b.dose+'г':'—'],['Коеф.','1:'+(b.ratio||'—')],['Час',b.totalTime||'—'],['Оцінка',rating.toFixed(1)]];
-  var sw=cw/stats.length;
-  stats.forEach(function(s,i){
-    var sx=P+i*sw;
-    if(i>0){g.strokeStyle=SH.line;g.lineWidth=1;g.beginPath();g.moveTo(sx,sy+16);g.lineTo(sx,sy+sh2-16);g.stroke();}
-    shText(g,s[0].toUpperCase(),sx+sw/2,sy+36,{size:18,mono:true,color:SH.txt3,align:'center'});
-    shText(g,s[1],sx+sw/2,sy+96,{size:44,weight:'700',mono:true,color:SH.txt,align:'center'});
-  });
-  shRoundRect(g,P,sy,cw,sh2,16,null,SH.line);
-  var devs=[b.dripper,b.grinder,b.filter].filter(Boolean);
-  if(devs.length){
-    var dy=830;
-    shText(g,'Пристрої',P,dy,{size:22,color:SH.txt3});
-    devs.forEach(function(d,i){
-      shRoundRect(g,P+i*240,dy+30,220,52,12,'#1a1c1f',SH.line);
-      shText(g,d,P+i*240+16,dy+62,{size:22,color:SH.txt2,maxW:188});
-    });
-  }
-  if(b.notes){
-    var ny=960;
-    shRoundRect(g,P,ny,cw,80,12,'#16171a',SH.line);
-    shText(g,'"'+b.notes+'"',P+20,ny+48,{size:22,color:SH.txt2,maxW:cw-40});
-  }
-  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
-  return _.c;
-}
-
-function shareCardLog(b){
-  var steps=(b.steps||[]);
-  var rows=steps.length;
-  var H=Math.max(600,160+rows*72+100);
-  var _=shCanvas(H);var g=_.g;
-  var P=SH.pad,W=SH.W,cw=W-P*2;
-  shLogo(g,W-P,P+18);
-  shText(g,'Лог заваривания',P,P+18,{size:44,weight:'700'});
-  shText(g,(b.beanName||'Кава')+' · '+parseFloat(b.rating||0).toFixed(1),P,P+60,{size:24,color:SH.txt2});
-  var COL={pour:'#74C0F5',pause:'#F7AC34',action:'#C3BFB8'};
-  var ry=P+100;
-  steps.forEach(function(st,i){
-    var even=i%2===0;
-    shRoundRect(g,P,ry,cw,60,10,even?'#1d1f22':'#191b1d',null);
-    var bc=COL[st.type]||COL.action;
-    shRoundRect(g,P+12,ry+12,80,36,8,bc+'22',null);
-    shText(g,st.type==='pour'?'Влив':st.type==='pause'?'Пауза':'Дія',P+16,ry+37,{size:18,weight:'700',color:bc});
-    var ts=typeof st.t==='number'?fmt(st.t):'—';
-    shText(g,ts,P+120,ry+37,{size:22,mono:true,color:SH.txt2});
-    var ph=st.ph!=null?fmt(st.ph):(st.dur!=null?st.dur+'с':'—');
-    shText(g,ph,P+300,ry+37,{size:22,mono:true,color:SH.txt});
-    if(st.ml!=null)shText(g,st.ml.toFixed(1)+'мл',P+500,ry+37,{size:22,mono:true,color:SH.copper});
-    ry+=68;
-  });
-  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
-  return _.c;
-}
-
-function shareCardDiagram(b){
-  var H=900;
-  var _=shCanvas(H);var g=_.g;
-  var P=SH.pad,W=SH.W;
-  shLogo(g,W-P,P+18);
-  shText(g,'Діаграма этапов',P,P+18,{size:44,weight:'700'});
-  shText(g,(b.beanName||'Кава'),P,P+60,{size:24,color:SH.txt2});
-  var steps=(b.steps||[]).filter(function(s){return s.type==='pour'||s.type==='pause'||s.type==='action'||s.type==='preinfusion';});
-  var total=steps.reduce(function(s,x){return s+(x.ph!=null?x.ph/1000:(x.dur||0));},0)||1;
-  var COL={pour:{base:'#3E8FCE',on:'#74C0F5'},pause:{base:'#DC7E16',on:'#F7AC34'},action:{base:'#6C6C72',on:'#C3BFB8'},preinfusion:{base:'#6C6C72',on:'#C3BFB8'}};
-  var cx=W/2,cy=460,R=220,sw=28,GAP=3;
-  var totGap=(steps.length>1?(steps.length-1)*GAP:0)+GAP;
-  var span=360-totGap;
-  var cur=GAP/2;
-  g.lineWidth=sw;g.lineCap='butt';
-  g.beginPath();g.arc(cx,cy,R,0,Math.PI*2);g.strokeStyle='#202225';g.stroke();
-  steps.forEach(function(st){
-    var dur=st.ph!=null?st.ph/1000:(st.dur||0);
-    var deg=dur/total*span;
-    var a0=(cur-90)*Math.PI/180,a1=(cur+deg-90)*Math.PI/180;
-    var c=(COL[st.type]||COL.action);
-    g.beginPath();g.arc(cx,cy,R,a0,a1);g.strokeStyle=c.base;g.stroke();
-    cur+=deg+GAP;
-  });
-  g.beginPath();g.arc(cx,cy,R-sw/2-6,0,Math.PI*2);
-  g.fillStyle='#1a1c1f';g.fill();
-  shText(g,b.totalTime||'—',cx,cy+22,{size:72,weight:'700',mono:true,color:SH.txt,align:'center'});
-  shText(g,'ВСЬОГО',cx,cy+62,{size:22,mono:true,color:SH.txt3,align:'center'});
-  var ly=730;
-  [['Влив','#74C0F5'],['Пауза','#F7AC34'],['Дія','#C3BFB8']].forEach(function(l,i){
-    var lx=P+i*320;
-    g.beginPath();g.arc(lx+14,ly+14,12,0,Math.PI*2);g.fillStyle=l[1];g.fill();
-    shText(g,l[0],lx+34,ly+20,{size:24,color:SH.txt2});
-  });
-  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,W-P*2,3);
-  return _.c;
-}
-
-function shareCardTaste(b){
-  var H=700;
-  var _=shCanvas(H);var g=_.g;
-  var P=SH.pad,W=SH.W,cw=W-P*2;
-  shLogo(g,W-P,P+18);
-  shText(g,'Смак і аромат',P,P+18,{size:44,weight:'700'});
-  var TCOL={ft_fruit:'#c84a6e',ft_sweet:'#d98b3a',ft_nut:'#8a6a44',ft_floral:'#b25b86',ft_roast:'#9c5a3c',ft_acid:'#c7a93e',ft_spice:'#b5453a',ft_green:'#5a9e57',ft_other:'#7d8893'};
-  function tagColor(f){var c=ftCls(f).replace('ft-','ft_').replace('-','_');return TCOL[c]||'#7d8893';}
-  function drawTags(tags,label,startY){
-    shText(g,label,P,startY,{size:26,color:SH.txt3});
-    var x=P,y=startY+14,rowH=60,maxW=cw;
-    tags.forEach(function(f){
-      var col=tagColor(f);
-      g.font='700 22px Helvetica,sans-serif';
-      var tw=g.measureText(f).width+40;
-      if(x+tw>P+maxW){x=P;y+=rowH;}
-      shRoundRect(g,x,y,tw,44,22,col,null);
-      g.font='700 22px Helvetica,sans-serif';
-      g.fillStyle='rgba(0,0,0,.4)';g.textBaseline='middle';
-      g.fillText(f,x+20+1,y+23);
-      g.fillStyle='#fff';
-      g.fillText(f,x+20,y+22);
-      x+=tw+10;
-    });
-    return y+rowH+20;
-  }
-  var y=P+80;
-  if(b.flavors&&b.flavors.length)y=drawTags(b.flavors,'☕ Смак',y);
-  if(b.aroma&&b.aroma.length)y=drawTags(b.aroma,'🌸 Аромат',y+10);
-  if(b.notes){
-    shRoundRect(g,P,y+10,cw,80,12,'#16171a',SH.line);
-    shText(g,'"'+b.notes+'"',P+20,y+58,{size:22,color:SH.txt2,maxW:cw-40});
-  }
-  g.fillStyle=SH.copperDk;g.fillRect(P,H-8,cw,3);
-  return _.c;
-}
-
 const SUPABASE_URL='https://mhudtufaxjjvvxefeyrs.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odWR0dWZheGpqdnZ4ZWZleXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTU2NDEsImV4cCI6MjA5NTYzMTY0MX0.IKMFN_y4oOa_3dcxxLNLW2txPoKRyXjPaS05p_S3t8M';
 
@@ -4733,13 +4502,6 @@ async function sbLoad(){
       S=rows[0].data;
       if(!S.log)S.log=[];
       if(!S.record)S.record=0;
-      if(!S.trash)S.trash=[];
-      if(!S.xp)S.xp=0;
-      if(!S.achEarned)S.achEarned={};
-      // Якщо є рецепти але немає XP — нарахуємо базовий XP за існуючі записи
-      if(S.xp===0&&S.brews&&S.brews.length>0){
-        S.xp=Math.min(S.brews.length*15,2000);
-      }
       localStorage.setItem('cj_clean',JSON.stringify(S));
       return true;
     }
@@ -4796,9 +4558,151 @@ save=function(){
 })();
 
 /* ══════════════════════════════════════════
-   ПРОФІЛЬ v2 — XP, РІВНІ, АЧІВКИ, СТАТИСТИКА
+   NUMPAD — цифрова клавіатура
+   Центрує поле вводу над клавіатурою
 ══════════════════════════════════════════ */
 
+/* centerInput: прокручує поле у видиму зону над клавіатурою */
+function centerInput(el){
+  setTimeout(function(){
+    el.scrollIntoView({block:'center',behavior:'smooth'});
+  },300);
+}
+
+/* Глобальний обробник для всіх .fi інпутів */
+document.addEventListener('focusin',function(e){
+  var el=e.target;
+  if(el.classList&&el.classList.contains('fi')){
+    setTimeout(function(){
+      el.scrollIntoView({block:'center',behavior:'smooth'});
+    },300);
+  }
+});
+
+/* NumPad — кастомна цифрова клавіатура */
+var _npTarget=null; // id slider
+var _npMode=null;   // 'alt-temp'|'esp-temp'|'clicks'
+var _npVal='';
+
+function openNumPad(sliderId, mode){
+  _npTarget=sliderId;
+  _npMode=mode;
+  var sl=document.getElementById(sliderId)||{};
+  if(mode==='clicks') _npVal=String(document.getElementById('clicks-val').textContent||'28');
+  else if(mode==='alt-temp') _npVal=String((sl.value||93)).replace(/[^\d.]/g,'');
+  else if(mode==='esp-temp') _npVal=String((sl.value||93)).replace(/[^\d.]/g,'');
+  _npRefresh();
+  var ov=document.getElementById('ov-numpad');
+  ov.style.display='flex';
+  requestAnimationFrame(function(){ov.classList.add('open');});
+}
+
+function closeNumPad(){
+  var ov=document.getElementById('ov-numpad');
+  ov.classList.remove('open');
+  setTimeout(function(){ov.style.display='none';},220);
+}
+
+function _npRefresh(){
+  var d=document.getElementById('np-display');
+  if(!d)return;
+  var suffix = _npMode==='clicks' ? ' кл.' : ' °C';
+  d.textContent = (_npVal||'—') + suffix;
+}
+
+function npKey(k){
+  if(k==='del'){
+    _npVal=_npVal.slice(0,-1);
+  } else if(k==='.'){
+    if(_npMode==='clicks') return; // цілі числа
+    if(_npVal.indexOf('.')===-1) _npVal+='.';
+  } else {
+    if(_npVal.length>=5) return;
+    _npVal+=String(k);
+  }
+  _npRefresh();
+}
+
+function npConfirm(){
+  var v=parseFloat(_npVal);
+  if(isNaN(v)){closeNumPad();return;}
+  if(_npMode==='alt-temp'){
+    v=Math.max(80,Math.min(100,Math.round(v)));
+    var sl=document.getElementById('b-temp-sl');
+    if(sl){sl.value=v;syncTempAlt(v);}
+  } else if(_npMode==='esp-temp'){
+    v=Math.max(88,Math.min(96,v));
+    v=Math.round(v*2)/2; // крок 0.5
+    var sl2=document.getElementById('b-esp-temp-sl');
+    if(sl2){sl2.value=v;syncTempEsp(v);}
+  } else if(_npMode==='clicks'){
+    v=Math.max(1,Math.min(200,Math.round(v)));
+    BS.clicks=v;
+    var cv=document.getElementById('clicks-val');
+    if(cv)cv.textContent=v;
+  }
+  closeNumPad();
+}
+
+/* Синхронізація температури alt */
+function syncTempAlt(v){
+  document.getElementById('b-temp-out').textContent=v+'°C';
+}
+/* Синхронізація температури esp */
+function syncTempEsp(v){
+  document.getElementById('b-esp-temp-out').textContent=parseFloat(v).toFixed(1)+'°C';
+}
+/* Корекція температури кнопками +/- alt */
+function altTempAdj(delta){
+  var s=document.getElementById('b-temp-sl');
+  s.value=Math.max(80,Math.min(100,+s.value+delta));
+  syncTempAlt(s.value);
+}
+</script>
+
+<!-- ══ NUMPAD OVERLAY ══ -->
+<div id="ov-numpad" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;transition:opacity .2s" onclick="if(event.target===this)closeNumPad()">
+  <div style="width:100%;max-width:420px;background:#1a1c1e;border-radius:22px 22px 0 0;border-top:1px solid #2e3238;padding:16px 14px 28px;box-shadow:0 -8px 40px rgba(0,0,0,.6)">
+    <!-- Дисплей -->
+    <div id="np-display" style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;color:#D89858;text-align:center;margin-bottom:16px;min-height:52px;letter-spacing:-1px">—</div>
+    <!-- Кнопки 3×4 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+      <button onclick="npKey(7)" class="np-btn">7</button>
+      <button onclick="npKey(8)" class="np-btn">8</button>
+      <button onclick="npKey(9)" class="np-btn">9</button>
+      <button onclick="npKey(4)" class="np-btn">4</button>
+      <button onclick="npKey(5)" class="np-btn">5</button>
+      <button onclick="npKey(6)" class="np-btn">6</button>
+      <button onclick="npKey(1)" class="np-btn">1</button>
+      <button onclick="npKey(2)" class="np-btn">2</button>
+      <button onclick="npKey(3)" class="np-btn">3</button>
+      <button onclick="npKey('.')" class="np-btn" id="np-dot" style="font-size:24px">.</button>
+      <button onclick="npKey(0)" class="np-btn">0</button>
+      <button onclick="npKey('del')" class="np-btn" style="font-size:20px">⌫</button>
+    </div>
+    <!-- Готово -->
+    <button onclick="npConfirm()" style="width:100%;margin-top:12px;padding:16px;border-radius:14px;border:none;background:linear-gradient(160deg,#8c552a,#D89858);font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#1c130a;cursor:pointer;letter-spacing:.5px">Готово</button>
+  </div>
+</div>
+
+<style>
+.np-btn{
+  padding:18px 8px;
+  border-radius:12px;
+  border:1px solid #2e3238;
+  background:linear-gradient(160deg,#26282c,#1e2022);
+  font-family:'JetBrains Mono',monospace;
+  font-size:24px;font-weight:600;
+  color:#ECE9E3;cursor:pointer;
+  transition:transform .1s,background .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.np-btn:active{transform:scale(.9);background:#2a2d32;}
+#ov-numpad{opacity:0;pointer-events:none;}
+#ov-numpad.open{opacity:1;pointer-events:auto;}
+</style>
+
+<script>
 /* XP & РІВНІ */
 function calcXpForLevel(lvl){
   if(lvl<=1)return 0;
@@ -4947,7 +4851,7 @@ function toggleProfileV2(){
 }
 
 /* РЕНДЕР АЧІВОК */
-function renderAchievements(){
+window.renderAchievements=function renderAchievements(){
   if(!S.achEarned)S.achEarned={};
   var defs=buildAchievements();
   var earnedIds=Object.keys(S.achEarned);
@@ -5470,14 +5374,14 @@ function lbPickerRender(){
       </div>
       <div>
         <div class="field-lbl">Обʼєм (мл)</div>
-        <input class="fi" type="number" id="lb-vol" value="240" min="10" max="1000">
+        <input class="fi" type="number" inputmode="numeric" id="lb-vol" value="240" min="10" max="1000" onfocus="centerInput(this)">
       </div>
     </div>
     <div id="lb-home-params">
       <div class="grid2" style="margin-bottom:11px">
         <div>
           <div class="field-lbl">Доза (г)</div>
-          <input class="fi" type="number" id="lb-dose" value="16" step="0.1" min="1" max="100">
+          <input class="fi" type="number" inputmode="decimal" id="lb-dose" value="16" step="0.1" min="1" max="100" onfocus="centerInput(this)">
         </div>
         <div>
           <div class="field-lbl">Коеф.</div>
