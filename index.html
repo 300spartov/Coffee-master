@@ -5825,6 +5825,7 @@ const SUPABASE_URL='https://mhudtufaxjjvvxefeyrs.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odWR0dWZheGpqdnZ4ZWZleXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTU2NDEsImV4cCI6MjA5NTYzMTY0MX0.IKMFN_y4oOa_3dcxxLNLW2txPoKRyXjPaS05p_S3t8M';
 
 let TG_USER_ID=null;
+let _sbLoaded=false; // захист від запису до завантаження
 try{
   var tg=window.Telegram;
   if(tg&&tg.WebApp&&tg.WebApp.initDataUnsafe&&tg.WebApp.initDataUnsafe.user){
@@ -5837,25 +5838,36 @@ try{
 async function sbLoad(){
   if(!TG_USER_ID)return false;
   try{
+    console.log('[sbLoad] TG_USER_ID:', TG_USER_ID);
     var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
       headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
     });
+    console.log('[sbLoad] status:', res.status);
     var rows=await res.json();
+    console.log('[sbLoad] rows:', rows&&rows.length, rows&&rows[0]&&Object.keys(rows[0].data||{}).join(','));
     if(rows&&rows.length&&rows[0].data){
       S=rows[0].data;
-      _migrateS(); /* виконуємо міграції після завантаження з Supabase */
+      _migrateS();
       localStorage.setItem('cj_v7',JSON.stringify(S));
       localStorage.setItem('cj_clean',JSON.stringify(S));
+      console.log('[sbLoad] OK brews:', S.brews&&S.brews.length);
+      _sbLoaded=true;
       return true;
+    } else {
+      console.log('[sbLoad] no data in row — перший запуск');
     }
-  }catch(e){console.log('sb load err',e);}
-  /* Supabase недоступний — фоллбек на localStorage вже завантажений в S */
+  }catch(e){console.log('[sbLoad] ERROR:', e.message);}
+  _sbLoaded=true; // навіть при помилці — дозволяємо зберігати далі
   return false;
 }
 
 var sbSaveTimer=null;
 function sbSave(){
   if(!TG_USER_ID)return;
+  /* Не зберігаємо поки не завантажились з Supabase */
+  if(TG_USER_ID&&!_sbLoaded)return;
+  /* Не зберігаємо порожній SEED — захист від затирання реальних даних */
+  if(S.id===0&&S.xp===0&&(!S.log||S.log.length===0))return;
   clearTimeout(sbSaveTimer);
   sbSaveTimer=setTimeout(async function(){
     try{
