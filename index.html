@@ -4476,6 +4476,7 @@ function buildShareHTML(b){
   }
   var devs=devRow('ti-filter','Воронка',b.dripper||'','')
           +devRow('ti-layers-subtract','Фільтр',b.filter||'','')
+          +devRow('ti-coffee','Кавомашина',b.espMachine||'','')
           +devRow('ti-settings','Кавомолка',b.grinder||'',b.clicks?b.clicks+' кл.':'');
 
   /* Pill color fallback palette by category keyword */
@@ -4559,6 +4560,16 @@ function buildShareHTML(b){
         '<div class="sc-title sc-title-2">'+
           '<div class="sc-name sc-name-2">'+beanName+'</div>'+
           '<div class="sc-sub"><span class="sc-chip">'+dose+' г · '+(esp.actualYield||esp.targetYield||'?')+' мл · '+temp+'</span></div>'+
+        '</div>'+
+        '<div class="sc-ring">'+
+          '<svg viewBox="0 0 300 300">'+
+            '<circle cx="150" cy="150" r="118" fill="none" stroke="var(--sc-line)" stroke-width="24"></circle>'+
+            '<circle cx="150" cy="150" r="118" fill="none" stroke="#C08552" stroke-width="24" stroke-linecap="butt" stroke-dasharray="725 16.2" transform="rotate(-90 150 150)"></circle>'+
+          '</svg>'+
+          '<div class="sc-ring-c">'+
+            '<div class="sc-ring-t">'+time+'</div>'+
+            '<div class="sc-ring-l">'+t('brew_total')+'</div>'+
+          '</div>'+
         '</div>'+
         '<div class="sc-metrics" style="grid-template-columns:repeat(3,1fr);margin-top:24px">'+
           '<div class="sc-metric"><i class="ti ti-clock"></i><div class="sc-metric-v">'+time+'</div><div class="sc-metric-l">Час шоту</div></div>'+
