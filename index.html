@@ -840,8 +840,6 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 .lvl-foot b{color:var(--txt)}
 .mini-grid-v2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
 .mini-stat{background:#1a1d21;border:1px solid var(--line-soft);border-radius:11px;padding:10px 12px}
-#st-kg-card{transition:background .15s}
-#st-kg-card:active{background:rgba(255,255,255,.03)}
 #st-kg-month-card{transition:background .15s}
 #st-kg-month-card:active{background:rgba(255,255,255,.03)}
 .mini-v{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--txt)}
@@ -1262,7 +1260,6 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         </div>
         <div class="mini-grid-v2">
           <div class="mini-stat"><div class="mini-v" id="st-brews">0</div><div class="mini-l" data-i18n="profile_brews">Заварювань</div></div>
-          <div class="mini-stat" id="st-kg-card" onclick="openOv('ov-coffee-stats');cwSetPeriod('month')" style="cursor:pointer"><div class="mini-v" id="st-kg">0</div><div class="mini-l" data-i18n="profile_kg">Кг кави</div></div>
           <div class="mini-stat" id="st-kg-month-card" onclick="openOv('ov-coffee-stats');cwSetPeriod('month')" style="cursor:pointer"><div class="mini-v" id="st-kg-month">0</div><div class="mini-l" data-i18n="profile_kg_month">Кг кави/місяць</div></div>
           <div class="mini-stat"><div class="mini-v" id="st-ach">0</div><div class="mini-l" data-i18n="ach_title">Ачівок</div></div>
           <div class="mini-stat"><div class="mini-v" id="st-devs">0</div><div class="mini-l" data-i18n="profile_devs">Девайсів</div></div>
@@ -1378,8 +1375,8 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
         <button onclick="document.getElementById('bv-method-l1').style.display='';document.getElementById('bv-method-l2').style.display='none'" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;font-size:20px;line-height:1"><i class="ti ti-arrow-left"></i></button>
         <div>
-          <div class="method-pick-title" style="margin:0" data-i18n="method_alt">Альтернатива</div>
-          <div class="method-pick-sub" style="margin:0" data-i18n="method_alt_pick_sub">Вибери спосіб</div>
+          <div class="method-pick-title" style="margin:0" id="bv-l2-title" data-i18n="method_alt">Альтернатива</div>
+          <div class="method-pick-sub" style="margin:0" id="bv-l2-sub" data-i18n="method_alt_pick_sub">Вибери спосіб</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="bv-alt-subgrid"></div>
@@ -1577,7 +1574,10 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   </div>
 
   <!-- ACTIVE -->
-  <div id="bv-active" style="display:none;padding:14px 16px 32px">
+  <div id="bv-active" style="display:none;padding:14px 16px 32px;position:relative">
+    <button onclick="if(confirm(t('draft_reset_confirm')))resetBrewDraft()" style="position:absolute;top:14px;right:14px;background:none;border:1px solid var(--line-soft);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--txt3);cursor:pointer;z-index:5">
+      <i class="ti ti-refresh" aria-hidden="true"></i>
+    </button>
     <style>
     .station-wrap{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
     .station{display:block;animation:breathe 5s ease-in-out infinite;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}
@@ -1872,6 +1872,53 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     </div>
   </div>
 
+  <!-- ЕСПРЕСО — МОЛОКО/ЛІД (для напоїв з молоком чи льодом) -->
+  <div id="bv-esp-milk" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:700;color:var(--txt)" id="esp-milk-title">Додай молоко</div>
+    </div>
+    <div id="esp-milk-block" class="card" style="margin-bottom:10px">
+      <div class="lbl">Молоко</div>
+      <div class="ac-wrap" id="ac-em-milk-name-wrap">
+        <input class="sfi" id="em-milk-name" placeholder="Напр. Цільне 3.2%" autocomplete="off"
+          oninput="acSuggest('em-milk-name','milks')" onfocus="acSuggest('em-milk-name','milks')" style="margin-bottom:0">
+        <div class="ac-drop" id="ac-em-milk-name"></div>
+      </div>
+      <div class="grid2" style="gap:8px;margin-top:8px">
+        <div>
+          <div class="field-lbl">Температура (°C)</div>
+          <input class="fi" type="number" id="em-milk-temp" value="60" min="0" max="90" style="margin-bottom:0">
+        </div>
+        <div>
+          <div class="field-lbl">Об'єм (мл)</div>
+          <input class="fi" type="number" id="em-milk-vol" value="150" min="0" max="600" style="margin-bottom:0">
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="field-lbl" style="margin-bottom:4px">Спосіб збивання</div>
+        <select class="sfi" id="em-frother" style="margin-bottom:0"></select>
+      </div>
+    </div>
+    <div id="esp-ice-block" class="card" style="margin-bottom:10px;display:none">
+      <div class="lbl">Лід та сік/тонік</div>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="field-lbl">Кубики льоду</div>
+          <input class="fi" type="number" id="em-ice-amount" value="4" min="0" max="30" style="margin-bottom:0">
+        </div>
+        <div>
+          <div class="field-lbl">Сік / тонік</div>
+          <div class="ac-wrap" id="ac-em-mixer-name-wrap">
+            <input class="sfi" id="em-mixer-name" placeholder="Напр. Schweppes Tonic" autocomplete="off"
+              oninput="acSuggest('em-mixer-name','juices')" onfocus="acSuggest('em-mixer-name','juices')" style="margin-bottom:0">
+            <div class="ac-drop" id="ac-em-mixer-name"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button onclick="espMilkContinue()" style="width:100%;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Далі — оцінка напою</button>
+  </div>
+
   <!-- ЕСПРЕСО — РЕЗУЛЬТАТ (введення даних після стопу) -->
   <div id="bv-esp-result" style="display:none;padding:14px 16px 32px">
     <div style="text-align:center;margin-bottom:16px">
@@ -2007,7 +2054,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 </div>
 <div class="overlay" id="ov-bean" onclick="if(event.target===this)closeOv('ov-bean')">
   <div class="sheet">
-    <div class="sheet-title">Додати пачку</div>
+    <div class="sheet-title" id="bean-sheet-title">Додати пачку</div>
 
     <!-- Назва кофе з автодоповненням -->
     <div class="ac-wrap" id="ac-bn-name-wrap">
@@ -2043,6 +2090,16 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       </div>
     </div>
 
+    <div style="margin-top:8px">
+      <div class="field-lbl" style="margin-bottom:4px">Профіль обсмаження</div>
+      <select class="sfi" id="bn-roastprofile" style="margin-bottom:0">
+        <option value="">— визначати автоматично по методу —</option>
+        <option value="filter">Фільтр</option>
+        <option value="espresso">Еспресо</option>
+        <option value="omni">Омні</option>
+      </select>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
       <div>
         <div class="field-lbl" style="margin-bottom:4px">Ферма / регіон</div>
@@ -2064,7 +2121,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <input class="sfi" id="bn-weight" type="number" inputmode="numeric" pattern="[0-9]*" value="250" min="1" max="5000" placeholder="250" style="font-size:16px;font-weight:700">
     </div>
 
-    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-bean')">Скасувати</button><button class="btn-s" onclick="addBean()">Додати</button></div>
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-bean')">Скасувати</button><button class="btn-s" id="bean-save-btn" onclick="addBean()">Додати</button></div>
   </div>
 </div>
 <div class="overlay" id="ov-filter-add" onclick="if(event.target===this)closeOv('ov-filter-add')">
@@ -2081,10 +2138,10 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 </div>
 <div class="overlay" id="ov-custom-dev" onclick="if(event.target===this)closeOv('ov-custom-dev')">
   <div class="sheet">
-    <div class="sheet-title">Свой девайс</div>
+    <div class="sheet-title" id="cd-sheet-title">Свой девайс</div>
     <select class="sfi" id="cd-type"><option value="dripper" data-i18n="cd_type_dripper">Воронка / Альтернатива</option><option value="espresso" data-i18n="cd_type_espresso">Еспресо-машина</option><option value="grinder" data-i18n="cd_type_grinder">Кавомолка</option><option value="kettle" data-i18n="cd_type_kettle">Чайник</option><option value="acc" data-i18n="cd_type_acc">Аксесуар</option></select>
     <input class="sfi" id="cd-name" placeholder="Название">
-    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-custom-dev')">Скасувати</button><button class="btn-s" onclick="addCustomDev()">Додати</button></div>
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-custom-dev')">Скасувати</button><button class="btn-s" id="cd-save-btn" onclick="addCustomDev()">Додати</button></div>
   </div>
 </div>
 <div class="overlay" id="ov-settings" onclick="if(event.target===this)closeOv('ov-settings')">
@@ -2209,6 +2266,28 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   <div class="sheet">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
       <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_espmachine">Вибери кавомашину</div>
+      <button onclick="toggleInlineAdd('espresso')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-espresso" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова кавомашина</div>
+      <input class="sfi" id="iem-name" placeholder="Назва, напр. Rancilio Silvia" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <select class="sfi" id="iem-type" style="margin:0">
+          <option value="manual">Ручна</option>
+          <option value="semi">Напівавтомат</option>
+          <option value="auto">Автомат</option>
+          <option value="capsule">Капсульна</option>
+        </select>
+        <select class="sfi" id="iem-pump" style="margin:0">
+          <option value="">Тип помпи</option>
+          <option>Вібраційна</option><option>Роторна</option>
+        </select>
+      </div>
+      <input class="sfi" id="iem-notes" placeholder="Нотатки (необов'язково)" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('espresso')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('espresso')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
     </div>
     <div id="bespmachine-pick"></div>
   </div>
@@ -2217,6 +2296,15 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   <div class="sheet">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
       <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_acc">Аксесуари</div>
+      <button onclick="toggleInlineAdd('acc')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-acc" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Новий аксесуар</div>
+      <input class="sfi" id="iac-name" placeholder="Назва, напр. Темпер 58мм" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('acc')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('acc')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
     </div>
     <div id="bacc-pick"></div>
   </div>
@@ -2413,6 +2501,7 @@ const LANG = {
     devices_dripper: 'Воронка',
     devices_filter: 'Фільтр',
     devices_grinder: 'Кавомолка',
+    devices_espmachine: 'Кавомашина',
     devices_kettle: 'Чайники',
     devices_acc: 'Аксесуари',
     devices_filters_pl: 'Фільтри',
@@ -2430,6 +2519,10 @@ const LANG = {
     devices_choose_batch: 'Вибери пристрій',
     devices_choose_coldbrew: 'Вибери пристрій для Cold Brew',
     devices_choose_espmachine: 'Вибери кавомашину',
+    draft_banner_text: 'У вас є незавершений рецепт',
+    draft_close: 'Закрити',
+    draft_continue: 'Продовжити',
+    draft_reset_confirm: 'Скинути поточний рецепт?',
     devices_choose_filter: 'Вибери фільтр',
     devices_choose_grinder: 'Вибери кавомолку',
     devices_tap: 'натисни для вибору',
@@ -2509,6 +2602,10 @@ const LANG = {
     journal_not_set: 'Не вказано',
     journal_no_name: 'Без назви',
     journal_no_log: 'Немає даних журналу',
+    draft_banner_text: 'У вас є незавершений рецепт',
+    draft_close: 'Закрити',
+    draft_continue: 'Продовжити',
+    draft_reset_confirm: 'Скинути поточний рецепт?',
     // Профіль
     profile_title: 'Профіль',
     profile_language: 'Мова',
@@ -2724,6 +2821,7 @@ const LANG = {
     devices_dripper: 'Dripper',
     devices_filter: 'Filter',
     devices_grinder: 'Grinder',
+    devices_espmachine: 'Espresso machine',
     devices_kettle: 'Kettles',
     devices_acc: 'Accessories',
     devices_filters_pl: 'Filters',
@@ -2741,6 +2839,10 @@ const LANG = {
     devices_choose_batch: 'Choose device',
     devices_choose_coldbrew: 'Choose Cold Brew device',
     devices_choose_espmachine: 'Choose espresso machine',
+    draft_banner_text: 'You have an unfinished recipe',
+    draft_close: 'Close',
+    draft_continue: 'Continue',
+    draft_reset_confirm: 'Reset current recipe?',
     devices_choose_filter: 'Choose a filter',
     devices_choose_grinder: 'Choose a grinder',
     devices_tap: 'tap to select',
@@ -2820,6 +2922,10 @@ const LANG = {
     journal_not_set: 'Not set',
     journal_no_name: 'Unnamed',
     journal_no_log: 'No log data',
+    draft_banner_text: 'You have an unfinished recipe',
+    draft_close: 'Close',
+    draft_continue: 'Continue',
+    draft_reset_confirm: 'Reset current recipe?',
     // Профіль
     profile_title: 'Profile',
     profile_language: 'Language',
@@ -3089,13 +3195,14 @@ const DB={
     {name:'French Press 1L',sub:'Повне занурення · 4–5 чашок'},
     {name:'Hario Siphon 5-cup',sub:'Сифон / вакуум'},
     {name:'Hario Siphon Technica',sub:'Сифон / вакуум'},
-    {name:'Flair 58',sub:'Ручний еспресо · 58мм'},
-    {name:'Flair NEO Flex',sub:'Ручний еспресо'},
-    {name:'ROK Espresso',sub:'Ручний важільний еспресо'},
-    {name:'Wacaco Nanopresso',sub:'Портативний еспресо'},
-    {name:'Wacaco Picopresso',sub:'Портативний еспресо'},
-    {name:'Cafflano Kompresso',sub:'Портативний еспресо'},
-    {name:'Delter Coffee Press',sub:'Імерсія з тиском'}
+    {name:'Delter Coffee Press',sub:'Імерсія з тиском'},
+    {name:'Toddy Cold Brew System',sub:'Іммерсія · Cold Brew · 1.5л'},
+    {name:'Hario Mizudashi 1L',sub:'Іммерсія · Cold Brew · скло · 1л'},
+    {name:'Filtron Cold Brew',sub:'Іммерсія · Cold Brew'},
+    {name:'OXO Cold Brew Maker',sub:'Іммерсія · Cold Brew · 1л'},
+    {name:'Moccamaster KBGT-741',sub:'Крапельна · Batch Brewing · 1.25л'},
+    {name:'Bonavita BV1900TS',sub:'Крапельна · Batch Brewing · 1.4л'},
+    {name:'Fellow Aiden',sub:'Крапельна · Batch Brewing · програмована'}
   ],
   espresso:[
     {name:'DeLonghi Dedica EC685',sub:'Напівавтомат · термоблок'},
@@ -3124,6 +3231,11 @@ const DB={
     {name:'Profitec Pro 700',sub:'Напівавтомат · подвійний бойлер'},
     {name:'Slayer Single Group',sub:'Проф. · HX бойлер'},
     {name:'Flair 58',sub:'Ручной рычажный · 58мм'},
+    {name:'Flair NEO Flex',sub:'Ручний еспресо'},
+    {name:'ROK Espresso',sub:'Ручний важільний еспресо'},
+    {name:'Wacaco Nanopresso',sub:'Портативний еспресо'},
+    {name:'Wacaco Picopresso',sub:'Портативний еспресо'},
+    {name:'Cafflano Kompresso',sub:'Портативний еспресо'},
     {name:'Cafelat Robot',sub:'Ручной рычажный'}
   ],
   grinder:[
@@ -3239,7 +3351,9 @@ const SEED={
   achEarned:{},
   trash:[],
   roasters:[],
-  beanNames:[]
+  beanNames:[],
+  milks:[],
+  juices:[]
 };
 let S=JSON.parse(localStorage.getItem('cj_v7')||'null')||JSON.parse(JSON.stringify(SEED));
 
@@ -3248,6 +3362,8 @@ function _migrateS(){
   if(!S.record)S.record=0;
   if(!S.roasters)S.roasters=[];
   if(!S.beanNames)S.beanNames=[];
+  if(!S.milks)S.milks=[];
+  if(!S.juices)S.juices=[];
   /* ── MIGRATION: add new fields without breaking existing data ── */
   var changed=false;
   if(S.xp===undefined){ S.xp=0; changed=true; }
@@ -3270,6 +3386,12 @@ function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sc=s%60;return m
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
 
 function openOv(id){
+  if(id==='ov-custom-dev'){
+    const sel=document.getElementById('cd-type');
+    if(sel && typeof activeCat!=='undefined' && activeCat && activeCat!=='filter'){
+      sel.value=activeCat;
+    }
+  }
   if(id==='ov-settings'){
     document.getElementById('s-name').value=S.profile.name||'';
     document.getElementById('s-loc').value=S.profile.loc||'';
@@ -3295,26 +3417,63 @@ function openOv(id){
     const titleEl=document.getElementById('ov-bdripper-title');
     if(titleEl)titleEl.textContent=t(dripperLabelKey(BS.altMethod));
     const _methodToType={Aeropress:'aeropress',Chemex:'chemex','French Press':'frenchpress','Batch Brewing':'batch','Cold Brew':'coldbrew'};
+    const _EXCLUSIVE_TYPES=['aeropress','chemex','frenchpress','coldbrew','batch'];
     const _wantType=_methodToType[BS.altMethod];
-    const dr=S.equipment.filter(e=>e.type==='dripper'&&(!_wantType||dripperType(e.name)===_wantType));
-    document.getElementById('bdripper-pick').innerHTML=dr.length
-      ?dr.map(d=>{const sel=BS.dripper&&BS.dripper.id===d.id;
+    const dr=S.equipment.filter(e=>e.type==='dripper'&&(_wantType?dripperType(e.name)===_wantType:!_EXCLUSIVE_TYPES.includes(dripperType(e.name))));
+    if(dr.length===0){
+      /* юзер ще не додав свій пристрій цього типу — пропонуємо готові моделі з бази */
+      const suggested=_wantType
+        ?DB.dripper.filter(d=>dripperType(d.name)===_wantType)
+        :DB.dripper.filter(d=>!_EXCLUSIVE_TYPES.includes(dripperType(d.name)));
+      if(suggested.length){
+        document.getElementById('bdripper-pick').innerHTML=
+          `<div class="sec-lbl">Рекомендовані моделі</div>`+
+          suggested.map(d=>`<div class="pick-item" onclick="bAddAndSelectDripper('${d.name.replace(/'/g,"\\'")}')">
+            <div><div class="pick-main">${d.name}</div><div class="pick-sub">${d.sub}</div></div>
+            <i class="ti ti-plus" style="color:var(--copper-lt)" aria-hidden="true"></i>
+          </div>`).join('');
+      } else {
+        document.getElementById('bdripper-pick').innerHTML='<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Список порожній — натисни «Додати» вгорі</div>';
+        const fi=document.getElementById('inline-add-dripper');
+        if(fi) fi.style.display='block';
+      }
+    } else {
+      document.getElementById('bdripper-pick').innerHTML=dr.map(d=>{const sel=BS.dripper&&BS.dripper.id===d.id;
         return`<div class="pick-item" onclick="bSelDripper(${d.id})">
           <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;margin-right:10px"><span style="flex-shrink:0;display:flex;width:40px;height:32px;align-items:center;justify-content:center">${bMiniDripper(d.name)}</span><div><div class="pick-main">${d.name}</div><div class="pick-sub">${d.size?d.size+' · ':''}${d.material||DRIPPER_LABEL[dripperType(d.name)]||'Воронка'}</div></div></div>
-          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
-      :'<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Список порожній — натисни «Додати» вгорі</div>';
+          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('');
+    }
   }
   if(id==='ov-bespmachine'){
+    const f=document.getElementById('inline-add-espresso');if(f)f.style.display='none';
     const em=S.equipment.filter(e=>e.type==='espresso');
-    document.getElementById('bespmachine-pick').innerHTML=em.length
-      ?em.map(d=>{const sel=BS.espMachine&&BS.espMachine.id===d.id;
+    if(em.length===0){
+      if(DB.espresso.length){
+        document.getElementById('bespmachine-pick').innerHTML=
+          `<div class="sec-lbl">Рекомендовані моделі</div>`+
+          DB.espresso.map(d=>`<div class="pick-item" onclick="bAddAndSelectEspMachine('${d.name.replace(/'/g,"\\'")}')">
+            <div><div class="pick-main">${d.name}</div><div class="pick-sub">${d.sub}</div></div>
+            <i class="ti ti-plus" style="color:var(--copper-lt)" aria-hidden="true"></i>
+          </div>`).join('');
+      } else {
+        document.getElementById('bespmachine-pick').innerHTML='<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Список порожній — натисни «Додати» вгорі</div>';
+        const fi=document.getElementById('inline-add-espresso');
+        if(fi) fi.style.display='block';
+      }
+    } else {
+      document.getElementById('bespmachine-pick').innerHTML=em.map(d=>{const sel=BS.espMachine&&BS.espMachine.id===d.id;
         return`<div class="pick-item" onclick="bSelEspMachine(${d.id})">
           <div class="pick-main">${d.name}</div>
-          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
-      :'<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Список порожній — додай кавомашину в Девайси</div>';
+          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('');
+    }
   }
   if(id==='ov-bacc'){
     renderBaccPick();
+    const accs=S.equipment.filter(e=>e.type==='acc');
+    if(accs.length===0){
+      const fi=document.getElementById('inline-add-acc');
+      if(fi) fi.style.display='block';
+    }
   }
   if(id==='ov-bfilter'){
     const f=document.getElementById('inline-add-filter');if(f)f.style.display='none';
@@ -3328,12 +3487,26 @@ function openOv(id){
   if(id==='ov-bgrinder'){
     const f=document.getElementById('inline-add-grinder');if(f)f.style.display='none';
     const gr=S.equipment.filter(e=>e.type==='grinder');
-    document.getElementById('bgrinder-pick').innerHTML=gr.length
-      ?gr.map(g=>{const sel=BS.grinder&&BS.grinder.id===g.id;
+    if(gr.length===0){
+      /* юзер ще не додав свою кавомолку — пропонуємо готові моделі з бази */
+      if(DB.grinder.length){
+        document.getElementById('bgrinder-pick').innerHTML=
+          `<div class="sec-lbl">Рекомендовані моделі</div>`+
+          DB.grinder.map(d=>`<div class="pick-item" onclick="bAddAndSelectGrinder('${d.name.replace(/'/g,"\\'")}')">
+            <div><div class="pick-main">${d.name}</div><div class="pick-sub">${d.sub}</div></div>
+            <i class="ti ti-plus" style="color:var(--copper-lt)" aria-hidden="true"></i>
+          </div>`).join('');
+      } else {
+        document.getElementById('bgrinder-pick').innerHTML='<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Список порожній — натисни «Додати» вгорі</div>';
+        const fi=document.getElementById('inline-add-grinder');
+        if(fi) fi.style.display='block';
+      }
+    } else {
+      document.getElementById('bgrinder-pick').innerHTML=gr.map(g=>{const sel=BS.grinder&&BS.grinder.id===g.id;
         return`<div class="pick-item" onclick="bSelGrinder(${g.id})">
           <div style="flex:1;min-width:0;margin-right:10px"><div class="pick-main">${g.name}</div><div class="pick-sub">${g.gtype||'Кавомолка'}${g.burr?' · '+g.burr:''}</div></div>
-          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('')
-      :'<div style="padding:20px;text-align:center;color:var(--txt3);font-size:13px">Список порожній — натисни «Додати» вгорі</div>';
+          <i class="ti ${sel?'ti-check" style="color:var(--copper-lt)':'ti-chevron-right" style="color:#555'};font-size:16px" aria-hidden="true"></i></div>`;}).join('');
+    }
   }
   document.getElementById(id).classList.add('open');
 }
@@ -3353,7 +3526,7 @@ function methodCat(m){m=(m||'').toLowerCase();if(m.includes('еспрес')||m.i
 function getRoastType(method){
   if(!method)return'filter';
   var m=method.toLowerCase();
-  if(m.indexOf('espresso')>-1||m.indexOf('еспресо')>-1)return'espresso';
+  if(m.indexOf('espresso')>-1||m.indexOf('еспресо')>-1||m.indexOf('cappuccino')>-1||m.indexOf('капучино')>-1||m.indexOf('flat white')>-1||m.indexOf('latte')>-1||m.indexOf('латте')>-1||m.indexOf('bumble')>-1||m.indexOf('tonic')>-1||m.indexOf('тонік')>-1)return'espresso';
   if(m.indexOf('omni')>-1||m.indexOf('омні')>-1)return'omni';
   return'filter';
 }
@@ -3695,6 +3868,7 @@ el.innerHTML=S.brews.map(b=>{
   const devRows=[
     b.dripper?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-filter"></i></span><div><div class="dv-l">${t('devices_dripper')}</div><div class="dv-v">${b.dripper}</div></div></div>`:'',
     b.filter?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-copy"></i></span><div><div class="dv-l">${t('devices_filter')}</div><div class="dv-v">${b.filter}</div></div></div>`:'',
+    b.espMachine?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-coffee"></i></span><div><div class="dv-l">${t('devices_espmachine')}</div><div class="dv-v">${b.espMachine}</div></div></div>`:'',
     b.grinder?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-settings"></i></span><div><div class="dv-l">${t('devices_grinder')}</div><div class="dv-v">${b.grinder}</div></div>${b.clicks?`<span class="dv-clicks">${b.clicks} ${t('brew_clicks')}</span>`:''}</div>`:''
   ].join('');
   const summaryBlock=(sumMetrics||devRows)?`<div class="bc-summary">${sumMetrics?`<div class="bc-sum-metrics">${sumMetrics}</div>`:''}${devRows?`<div class="bc-sum-dev"><div class="bc-sum-dev-lbl"><i class="ti ti-tool"></i>${t('devices_title')}</div>${devRows}</div>`:''}</div>`:'';
@@ -3878,25 +4052,72 @@ function togglePostLike(i){commLikes[i]=!commLikes[i];renderFeed()}
 /* ── BEANS ── */
 function renderBeans(){
   const el=document.getElementById('bean-list');
-  const addTile=`<button class="bean-add" onclick="openOv('ov-bean')"><i class="ti ti-plus" aria-hidden="true"></i> Додати пачку</button>`;
+  const addTile=`<button class="bean-add" onclick="openAddBean()"><i class="ti ti-plus" aria-hidden="true"></i> Додати пачку</button>`;
   if(!S.beans.length){el.innerHTML=`<div class="empty" style="padding:34px 0 18px"><i class="ti ti-package" aria-hidden="true"></i><div class="empty-t">Немає зерна</div><div class="empty-s">Додай першу пачку</div></div>${addTile}`;return}
   el.innerHTML=S.beans.map(b=>{const pct=Math.round(b.current/b.total*100);return`<div class="bean-card">
     <div class="bean-icon"><i class="ti ti-coffee" aria-hidden="true"></i></div>
     <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div><div style="font-size:12px;color:#888;margin-top:2px">${b.roaster||'—'} · ${b.current}г / ${b.total}г</div><div style="height:2px;background:#222;border-radius:1px;margin-top:7px;overflow:hidden"><div style="height:100%;background:#4CAF50;border-radius:1px;width:${pct}%"></div></div></div>
+    <button class="del-btn" onclick="editBean(${b.id})" aria-label="Редагувати" style="background:rgba(184,115,51,.12);border-color:var(--copper-dk);color:var(--copper-lt)"><i class="ti ti-pencil" aria-hidden="true"></i></button>
     <button class="del-btn" onclick="delBean(${b.id})" aria-label="Удалить"><i class="ti ti-trash" aria-hidden="true"></i></button>
   </div>`;}).join('')+addTile;
+}
+let _editBeanId=null;
+function openAddBean(){
+  _editBeanId=null;
+  const st=document.getElementById('bean-sheet-title');if(st)st.textContent='Додати пачку';
+  const sb=document.getElementById('bean-save-btn');if(sb)sb.textContent='Додати';
+  ['bn-name','bn-roast','bn-country','bn-farm','bn-score','bn-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('bn-process').value='';
+  document.getElementById('bn-roastprofile').value='';
+  document.getElementById('bn-weight').value='250';
+  openOv('ov-bean');
+}
+function editBean(id){
+  const b=S.beans.find(x=>x.id===id);if(!b)return;
+  _editBeanId=id;
+  document.getElementById('bn-name').value=b.name||'';
+  document.getElementById('bn-roast').value=b.roaster||'';
+  document.getElementById('bn-country').value=b.country||'';
+  document.getElementById('bn-process').value=b.process||'';
+  document.getElementById('bn-farm').value=b.farm||'';
+  document.getElementById('bn-score').value=b.score||'';
+  document.getElementById('bn-desc').value=b.descriptors||'';
+  document.getElementById('bn-roastprofile').value=b.roastType||'';
+  document.getElementById('bn-weight').value=b.total||250;
+  const st=document.getElementById('bean-sheet-title');if(st)st.textContent='Редагувати пачку';
+  const sb=document.getElementById('bean-save-btn');if(sb)sb.textContent='Зберегти';
+  openOv('ov-bean');
 }
 function addBean(){
   const name=document.getElementById('bn-name').value.trim();if(!name)return;
   const w=parseInt(document.getElementById('bn-weight').value)||250;
   const roaster=document.getElementById('bn-roast').value.trim();
+  const roastType=document.getElementById('bn-roastprofile').value;
+  if(_editBeanId){
+    const b=S.beans.find(x=>x.id===_editBeanId);
+    if(b){
+      const diff=w-b.total;
+      b.name=name;b.roaster=roaster;b.total=w;b.current=Math.max(0,b.current+diff);
+      b.country=document.getElementById('bn-country').value.trim();
+      b.process=document.getElementById('bn-process').value;
+      b.farm=document.getElementById('bn-farm').value.trim();
+      b.score=parseFloat(document.getElementById('bn-score').value)||null;
+      b.descriptors=document.getElementById('bn-desc').value.trim();
+      b.roastType=roastType;
+    }
+    _editBeanId=null;
+    save();closeOv('ov-bean');acCloseAll();
+    renderBeans();toast('Пачку оновлено');
+    return;
+  }
   const bean={
     id:++S.id,name,roaster,total:w,current:w,
     country:document.getElementById('bn-country').value.trim(),
     process:document.getElementById('bn-process').value,
     farm:document.getElementById('bn-farm').value.trim(),
     score:parseFloat(document.getElementById('bn-score').value)||null,
-    descriptors:document.getElementById('bn-desc').value.trim()
+    descriptors:document.getElementById('bn-desc').value.trim(),
+    roastType:roastType
   };
   S.beans.unshift(bean);
   if(roaster&&!S.roasters.includes(roaster))S.roasters.push(roaster);
@@ -3904,6 +4125,7 @@ function addBean(){
   save();closeOv('ov-bean');acCloseAll();
   ['bn-name','bn-roast','bn-country','bn-farm','bn-score','bn-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('bn-process').value='';
+  document.getElementById('bn-roastprofile').value='';
   renderBeans();toast('Пачку додано');
 }
 function delBean(id){S.beans=S.beans.filter(b=>b.id!==id);save();renderBeans();toast('Видалено')}
@@ -3912,7 +4134,9 @@ function delBean(id){S.beans=S.beans.filter(b=>b.id!==id);save();renderBeans();t
 const AC_BUILTIN={
   roasters:['Gardelli','Onyx Coffee Lab','Square Mile','Tim Wendelboe','Fuglen','Manhattan Coffee Roasters','Coffee Collective','Nomad','Tandem','Prolog','Drop Coffee','Five Elephant','Barn','Bonanza','Black Cab','Mame','Kurasu','Leaves & Roots','Caffenation','Father Coffee','Rosso','Monogram','April','Koppi','Has Bean','Workshop','Intelligentsia','Stumptown','Counter Culture','Heart','Sightglass','Blue Bottle','Verve','Madcap','Coava','Equator','Ritual','Проліска','Фундамент','Кавові традиції','Чорна карта'],
   beanNames:['Ethiopia Yirgacheffe','Ethiopia Guji','Ethiopia Sidama','Ethiopia Harrar','Colombia Huila','Colombia Nariño','Colombia El Carmen','Kenya AA','Kenya AB','Kenya Kiambu','Guatemala Huehuetenango','Guatemala Antigua','Brazil Cerrado','Brazil Sul de Minas','Costa Rica Tarrazu','Peru Cajamarca','Rwanda Nyamasheke','Burundi Kayanza','Yemen Mokha','Panama Geisha','Honduras Santa Barbara','El Salvador Santa Ana','Nicaragua Jinotega','Papua New Guinea Highlands','Sumatra Mandheling','Java Preanger'],
-  countries:['Ефіопія','Колумбія','Кенія','Гватемала','Бразилія','Коста-Ріка','Перу','Руанда','Бурунді','Ємен','Панама','Гондурас','Сальвадор','Нікарагуа','Папуа Нова Гвінея','Суматра','Ява','Індія','Болівія','Еквадор','Мексика','Танзанія','Уганда','Конго']
+  countries:['Ефіопія','Колумбія','Кенія','Гватемала','Бразилія','Коста-Ріка','Перу','Руанда','Бурунді','Ємен','Панама','Гондурас','Сальвадор','Нікарагуа','Папуа Нова Гвінея','Суматра','Ява','Індія','Болівія','Еквадор','Мексика','Танзанія','Уганда','Конго'],
+  milks:['Цільне 3.2%','Овесняне','Мигдальне','Кокосове','Соєве','Безлактозне'],
+  juices:['Schweppes Tonic','Fever-Tree Tonic','Апельсиновий сік','Грейпфрутовий сік','Яблучний сік']
 };
 function acGetList(key){
   const learned=S[key]||[];
@@ -4010,12 +4234,21 @@ function addDeviceInline(type){
     name=(document.getElementById('id-name').value||'').trim();if(!name)return;
     extra={size:document.getElementById('id-size').value,material:document.getElementById('id-material').value};
     document.getElementById('id-name').value='';
+  } else if(type==='espresso'){
+    name=(document.getElementById('iem-name').value||'').trim();if(!name)return;
+    extra={etype:document.getElementById('iem-type').value,pump:document.getElementById('iem-pump').value,notes:(document.getElementById('iem-notes').value||'').trim()};
+    document.getElementById('iem-name').value='';document.getElementById('iem-notes').value='';
+  } else if(type==='acc'){
+    name=(document.getElementById('iac-name').value||'').trim();if(!name)return;
+    document.getElementById('iac-name').value='';
   }
   const dev={id:++S.id,name,type,...extra};
   S.equipment.unshift(dev);save();
   toggleInlineAdd(type);
   if(type==='grinder')bSelGrinder(dev.id);
   if(type==='dripper')bSelDripper(dev.id);
+  if(type==='espresso')bSelEspMachine(dev.id);
+  if(type==='acc'){bToggleAcc(dev.id);renderBaccPick();}
   renderCatGrid();
   toast(name+' додано та обрано ✓');
 }
@@ -4060,7 +4293,7 @@ function filterDevs(){renderDevList(document.getElementById('dev-search').value.
 function renderDevList(q){
   const body=document.getElementById('devlist-body');
   if(activeCat==='filter'){
-    body.innerHTML=`<div class="sec-lbl">Мої пачки фільтрів</div><div id="filter-list-cont" style="padding:0 16px"></div><div style="padding:10px 16px"><button onclick="openOv('ov-filter-add')" style="width:100%;background:#1a1a1a;border:0.5px dashed #333;border-radius:8px;padding:11px;font-size:12px;font-weight:500;color:#888;cursor:pointer;font-family:inherit">+ Додати пачку фільтрів</button></div>`;
+    body.innerHTML=`<div class="sec-lbl">Мої пачки фільтрів</div><div id="filter-list-cont" style="padding:0 16px"></div><div style="padding:10px 16px"><button onclick="openOv('ov-filter-add')" style="width:100%;background:rgba(216,152,88,.06);border:1px dashed var(--copper-dk);border-radius:8px;padding:11px;font-size:12px;font-weight:500;color:var(--copper-lt);cursor:pointer;font-family:inherit">+ Додати пачку фільтрів</button></div>`;
     renderFilterList(document.getElementById('filter-list-cont'));
     return;
   }
@@ -4071,7 +4304,7 @@ function renderDevList(q){
   let html='';
   if(myItems.length&&!q){
     html+=`<div class="sec-lbl">Мої пристрої</div>`;
-    html+=myItems.map(e=>`<div class="my-dev"><div class="my-dev-ico ${m.cls}"><i class="ti ${m.icon}" aria-hidden="true"></i></div><div style="flex:1;min-width:0"><div class="dev-item-name">${e.name}</div></div><button class="del-btn" onclick="delDev(${e.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></div>`).join('');
+    html+=myItems.map(e=>`<div class="my-dev"><div class="my-dev-ico ${m.cls}"><i class="ti ${m.icon}" aria-hidden="true"></i></div><div style="flex:1;min-width:0"><div class="dev-item-name">${e.name}</div></div><button class="del-btn" onclick="editDev(${e.id})" style="background:rgba(184,115,51,.12);border-color:var(--copper-dk);color:var(--copper-lt)"><i class="ti ti-pencil" aria-hidden="true"></i></button><button class="del-btn" onclick="delDev(${e.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></div>`).join('');
   }
   if(dbItems.length){
     html+=`<div class="sec-lbl">${q?'Результати пошуку':'База — '+dbItems.length+' пристроїв'}</div>`;
@@ -4092,7 +4325,7 @@ function renderDevList(q){
   } else if(!myItems.length){
     html+=`<div style="padding:24px;text-align:center;color:#555;font-size:13px">Немає пристроїв</div>`;
   }
-  html+=`<div style="padding:10px 16px"><button onclick="openOv('ov-custom-dev')" style="width:100%;background:#1a1a1a;border:0.5px dashed #333;border-radius:8px;padding:11px;font-size:12px;font-weight:500;color:#888;cursor:pointer;font-family:inherit">+ Додати свій девайс</button></div>`;
+  html+=`<div style="padding:10px 16px"><button onclick="openAddDev()" style="width:100%;background:rgba(216,152,88,.06);border:1px dashed var(--copper-dk);border-radius:8px;padding:11px;font-size:12px;font-weight:500;color:var(--copper-lt);cursor:pointer;font-family:inherit">+ Додати свій девайс</button></div>`;
   body.innerHTML=html;
 }
 function toggleDev(name,type){
@@ -4102,9 +4335,35 @@ function toggleDev(name,type){
   toast(idx>=0?'Видалено':'Додано');
 }
 function delDev(id){S.equipment=S.equipment.filter(e=>e.id!==id);save();renderDevList('');renderCatGrid();toast('Видалено')}
+let _editDevId=null;
+function openAddDev(){
+  _editDevId=null;
+  const st=document.getElementById('cd-sheet-title');if(st)st.textContent='Свій девайс';
+  const sb=document.getElementById('cd-save-btn');if(sb)sb.textContent='Додати';
+  document.getElementById('cd-name').value='';
+  openOv('ov-custom-dev');
+}
+function editDev(id){
+  const e=S.equipment.find(x=>x.id===id);if(!e)return;
+  _editDevId=id;
+  document.getElementById('cd-name').value=e.name;
+  document.getElementById('cd-type').value=e.type;
+  const st=document.getElementById('cd-sheet-title');if(st)st.textContent='Редагувати девайс';
+  const sb=document.getElementById('cd-save-btn');if(sb)sb.textContent='Зберегти';
+  openOv('ov-custom-dev');
+}
 function addCustomDev(){
   const name=document.getElementById('cd-name').value.trim();if(!name)return;
-  S.equipment.push({id:++S.id,name,type:document.getElementById('cd-type').value});
+  const type=document.getElementById('cd-type').value;
+  if(_editDevId){
+    const e=S.equipment.find(x=>x.id===_editDevId);
+    if(e){e.name=name;e.type=type;}
+    _editDevId=null;
+    save();closeOv('ov-custom-dev');document.getElementById('cd-name').value='';
+    renderDevList('');renderCatGrid();toast('Оновлено');
+    return;
+  }
+  S.equipment.push({id:++S.id,name,type});
   save();closeOv('ov-custom-dev');document.getElementById('cd-name').value='';
   renderDevList('');renderCatGrid();toast('Додано');
 }
@@ -4441,7 +4700,7 @@ function saveProf(){
 }
 
 /* ── BREW STATE ── */
-let BS={bean:null,filter:null,dripper:null,grinder:null,espMachine:null,accessories:[],clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,phaseStart:null,elapsed:0,phaseMs:0,steps:[],pourCnt:0,phase:'idle',pouredFixed:0,firstDone:false,_pauseStart:null,_pauseLiveInt:null};
+let BS={bean:null,filter:null,dripper:null,grinder:null,espMachine:null,accessories:[],clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,phaseStart:null,elapsed:0,phaseMs:0,steps:[],pourCnt:0,phase:'idle',pouredFixed:0,firstDone:false,_pauseStart:null,_pauseLiveInt:null,espMethod:null,espNeedsMilk:false,espNeedsIce:false,milk:null,ice:null};
 /* RATING STATE */
 let RS={rating:8.0,flavors:[],aroma:[],notes:''};
 
@@ -4459,7 +4718,7 @@ function setBrewMethod(m){
   if(_ao) _ao.style.display='none';
   // Показ/скрытие карточек
   document.getElementById('bcard-dripper').style.display=isEsp?'none':'block';
-  document.getElementById('bcard-filter').style.display=isEsp?'none':'block';
+  document.getElementById('bcard-filter').style.display=(isEsp||BS.altMethod==='Drip')?'none':'block';
   document.getElementById('bcard-acc').style.display=isEsp?'block':'none';
   document.getElementById('bcard-espmachine').style.display=isEsp?'block':'none';
   document.getElementById('bcard-pours-wrap').style.display=isEsp?'none':'block';
@@ -4541,6 +4800,27 @@ function espStopTimer(){
   clearInterval(espInt);espRunning=false;
   document.getElementById('esp-drop').setAttribute('opacity','0');
   document.getElementById('esp-phase-lbl').textContent='Готово — '+espSec+'с';
+  if(BS.espNeedsMilk||BS.espNeedsIce){
+    document.getElementById('em-milk-name').value='';
+    document.getElementById('em-milk-temp').value='60';
+    document.getElementById('em-milk-vol').value='150';
+    document.getElementById('em-ice-amount').value='4';
+    document.getElementById('em-mixer-name').value='';
+    document.getElementById('esp-milk-block').style.display=BS.espNeedsMilk?'block':'none';
+    document.getElementById('esp-ice-block').style.display=BS.espNeedsIce?'block':'none';
+    const emt=document.getElementById('esp-milk-title');if(emt)emt.textContent=BS.espNeedsIce?'Додай лід та мікс':'Додай молоко';
+    renderFrotherSelect();
+    showBV('bv-esp-milk');
+    return;
+  }
+  espFinishToResult();
+}
+function renderFrotherSelect(){
+  const sel=document.getElementById('em-frother');if(!sel)return;
+  const accs=S.equipment.filter(e=>e.type==='acc');
+  sel.innerHTML='<option value="steamer">Стимер</option>'+accs.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+}
+function espFinishToResult(){
   // Перехід на екран результату
   const dose=parseFloat(document.getElementById('b-esp-dose').value)||18;
   document.getElementById('esp-res-time-lbl').textContent='Час проливу: '+espSec+' секунд';
@@ -4556,13 +4836,28 @@ function espStopTimer(){
   const yieldInp=document.getElementById('esp-actual-yield');
   yieldInp.oninput=()=>{
     const y=parseFloat(yieldInp.value)||0;
-    const r=dose>0?(y/dose).toFixed(2):'—';
+    const r=dose>0?(y/dose).toFixed(1):'—';
     document.getElementById('esp-actual-ratio').textContent='1 : '+r;
   };
   if(window.nwResetAll) window.nwResetAll();
   showBV('bv-esp-result');
 }
 
+function espMilkContinue(){
+  BS.milk=BS.espNeedsMilk?{
+    name:document.getElementById('em-milk-name').value.trim(),
+    temp:document.getElementById('em-milk-temp').value,
+    vol:document.getElementById('em-milk-vol').value,
+    frother:(()=>{const v=document.getElementById('em-frother').value;if(v==='steamer')return'Стимер';const a=v?S.equipment.find(e=>e.id===parseInt(v)):null;return a?a.name:'';})()
+  }:null;
+  if(BS.milk&&BS.milk.name&&!S.milks.includes(BS.milk.name))S.milks.push(BS.milk.name);
+  BS.ice=BS.espNeedsIce?{
+    amount:document.getElementById('em-ice-amount').value,
+    mixer:document.getElementById('em-mixer-name').value.trim()
+  }:null;
+  if(BS.ice&&BS.ice.mixer&&!S.juices.includes(BS.ice.mixer))S.juices.push(BS.ice.mixer);
+  espFinishToResult();
+}
 function espAbandon(){
   clearInterval(espInt);espRunning=false;
   showBV('bv-setup');
@@ -4580,12 +4875,13 @@ function espSave(){
   const temp=document.getElementById('b-esp-temp-out').textContent;
   const bar=document.getElementById('b-esp-bar-out').textContent;
   const brew={
-    id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',
-    method:t('method_esp'),dose:dose.toString(),temp:temp.replace('°C',''),
+    id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',
+    method:BS.espMethod||t('method_esp'),dose:dose.toString(),temp:temp.replace('°C',''),
     grinder:BS.grinder?BS.grinder.name:'',clicks:BS.clicks,
     espMachine:BS.espMachine?BS.espMachine.name:'',accessories:BS.accessories||[],
     espresso:{dose,targetYield,actualYield,shotTime:espSec,tdsTarget,tdsActual,pressure:bar},
-    totalTime:espSec+'с',ratio:(actualYield>0?(actualYield/dose).toFixed(2):ratio.toFixed(2)),
+    milk:BS.milk||null,ice:BS.ice||null,
+    totalTime:espSec+'с',ratio:(actualYield>0?(actualYield/dose).toFixed(1):ratio.toFixed(1)),
     rating:Math.round(rating*10)/10,
     flavors:(window.nwGetFlavors?window.nwGetFlavors():[]),
     aroma:(window.nwGetAroma?window.nwGetAroma():[]),
@@ -4594,6 +4890,9 @@ function espSave(){
   if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean)bean.current=Math.max(0,bean.current-dose);}
   S.brews.unshift(brew);save();
   toast('Шот збережено!');
+  BS.espMethod=null;BS.espNeedsMilk=false;BS.espNeedsIce=false;BS.milk=null;BS.ice=null;
+  if(document.getElementById('bv-method-l1'))document.getElementById('bv-method-l1').style.display='';
+  if(document.getElementById('bv-method-l2'))document.getElementById('bv-method-l2').style.display='none';
   showScr('scr-home');
 }
 
@@ -4668,8 +4967,8 @@ function dripperType(name){
   if(n.includes('aeropress')||n.includes('aero'))return 'aeropress';
   if(n.includes('chemex'))return 'chemex';
   if(n.includes('french')||n.includes('френч'))return 'frenchpress';
-  if(n.includes('cold')||n.includes('колд'))return 'coldbrew';
-  if(n.includes('batch')||n.includes('бетч')||n.includes('бэтч')||n.includes('moccamaster'))return 'batch';
+  if(n.includes('cold')||n.includes('колд')||n.includes('toddy')||n.includes('mizudashi')||n.includes('filtron')||n.includes('oxo'))return 'coldbrew';
+  if(n.includes('batch')||n.includes('бетч')||n.includes('бэтч')||n.includes('moccamaster')||n.includes('bonavita')||n.includes('aiden'))return 'batch';
   return 'v60';
 }
 const DRIPPER_LABEL={origami:'Origami',flower:'Flower',aeropress:'Aeropress',v60:'V60',chemex:'Chemex',frenchpress:'French Press',coldbrew:'Cold Brew',batch:'Batch Brewing'};
@@ -4725,6 +5024,24 @@ function bSelDripper(id){
   document.getElementById('bsel-dripper-ico').innerHTML=bMiniDripper(BS.dripper.name);
   closeOv('ov-bdripper');
 }
+function bAddAndSelectDripper(name){
+  const id=++S.id;
+  S.equipment.push({id:id,name:name,type:'dripper'});
+  save();
+  bSelDripper(id);
+}
+function bAddAndSelectGrinder(name){
+  const id=++S.id;
+  S.equipment.push({id:id,name:name,type:'grinder'});
+  save();
+  bSelGrinder(id);
+}
+function bAddAndSelectEspMachine(name){
+  const id=++S.id;
+  S.equipment.push({id:id,name:name,type:'espresso'});
+  save();
+  bSelEspMachine(id);
+}
 function bSelEspMachine(id){
   BS.espMachine=S.equipment.find(e=>e.id===id&&e.type==='espresso');if(!BS.espMachine)return;
   document.getElementById('bsel-espmachine').textContent=BS.espMachine.name;
@@ -4766,6 +5083,8 @@ function pickBrewMethod(m){
       {id:'Cold Brew',icon:'ti-snowflake',color:'#74C0F5'},
       {id:'Batch Brewing',svg:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="9" height="6" rx="1"/><path d="M13 6h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-3"/><path d="M5 9v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9"/><line x1="5" y1="13" x2="15" y2="13"/></svg>',color:'#d89858'},
     ];
+    document.getElementById('bv-l2-title').textContent=t('method_alt');
+    document.getElementById('bv-l2-sub').textContent=t('method_alt_pick_sub');
     document.getElementById('bv-alt-subgrid').innerHTML=ALT_SUBS.map(s=>
       `<button onclick="pickAltSubmethod('${s.id}')" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:12px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .15s" onmouseover="this.style.borderColor='${s.color}'" onmouseout="this.style.borderColor=''">
         ${s.svg?`<span style="color:${s.color};display:flex;line-height:1">${s.svg}</span>`:`<i class="ti ${s.icon}" style="font-size:22px;color:${s.color}"></i>`}
@@ -4775,14 +5094,37 @@ function pickBrewMethod(m){
     document.getElementById('bv-method-l1').style.display='none';
     document.getElementById('bv-method-l2').style.display='';
   } else {
-    setBrewMethod('esp');
-    showBV('bv-setup');
+    const ESP_SUBS=[
+      {id:'Espresso',      icon:'ti-coffee',  color:'#C08552'},
+      {id:'Cappuccino',    icon:'ti-cup',     color:'#D9A45B'},
+      {id:'Flat White',    icon:'ti-milk',    color:'#E8C9A0'},
+      {id:'Latte',         icon:'ti-mug',color:'#C9986B'},
+      {id:'Bumble',        icon:'ti-droplet', color:'#7CC4A8'},
+      {id:'Espresso Tonic',icon:'ti-glass',   color:'#74C0F5'},
+    ];
+    document.getElementById('bv-l2-title').textContent=t('method_esp');
+    document.getElementById('bv-l2-sub').textContent='Вибери напій';
+    document.getElementById('bv-alt-subgrid').innerHTML=ESP_SUBS.map(s=>
+      `<button onclick="pickEspSubmethod('${s.id}')" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:12px;padding:14px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .15s" onmouseover="this.style.borderColor='${s.color}'" onmouseout="this.style.borderColor=''">
+        <i class="ti ${s.icon}" style="font-size:22px;color:${s.color}"></i>
+        <span style="font-size:12px;font-weight:700;color:var(--txt);font-family:inherit">${s.id}</span>
+      </button>`
+    ).join('');
+    document.getElementById('bv-method-l1').style.display='none';
+    document.getElementById('bv-method-l2').style.display='';
   }
+}
+function pickEspSubmethod(sub){
+  setBrewMethod('esp');
+  BS.espMethod=(sub==='Espresso')?null:sub;
+  BS.espNeedsMilk=['Cappuccino','Flat White','Latte'].includes(sub);
+  BS.espNeedsIce=['Bumble','Espresso Tonic'].includes(sub);
+  showBV('bv-setup');
 }
 
 function pickAltSubmethod(sub){
-  setBrewMethod('alt');
   BS.altMethod=sub;
+  setBrewMethod('alt');
   BS.inverted=false;
   document.getElementById('brew-title').textContent=sub;
   const lbl=document.getElementById('b-setup-method-lbl');
@@ -4794,6 +5136,12 @@ function pickAltSubmethod(sub){
   /* Для Aeropress підпис вибору "воронки" замінюється на "Вибери Aeropress" */
   const bselDripper=document.getElementById('bsel-dripper');
   if(bselDripper) bselDripper.textContent=t(dripperLabelKey(sub));
+  /* Пристрій попереднього методу несумісний з новим — скидаємо вибір повністю */
+  BS.dripper=null;
+  const bselDripperSub=document.getElementById('bsel-dripper-sub');
+  if(bselDripperSub) bselDripperSub.textContent=t('devices_tap');
+  const bselDripperIco=document.getElementById('bsel-dripper-ico');
+  if(bselDripperIco) bselDripperIco.innerHTML='';
   /* Drip не потребує вибору пристрою-воронки — картку повністю ховаємо */
   const dripperCard=document.getElementById('bcard-dripper');
   if(dripperCard) dripperCard.style.display=(sub==='Drip')?'none':'';
@@ -4852,7 +5200,96 @@ function brewGoBack(){
     document.getElementById('bv-method-l2').style.display='';
   }
 }
-function showBV(id){['bv-method-pick','bv-setup','bv-active','bv-rate','bv-result','bv-esp-active','bv-esp-result'].forEach(v=>{const el=document.getElementById(v);if(el)el.style.display=v===id?'block':'none';});
+function saveDraft(){
+  try{
+    /* Інтервали (mainInt/phaseInt/pauseInt) — це ID setInterval, нежиттєздатні
+       після перезавантаження сторінки; не зберігаємо їх, лише дані стану. */
+    const {mainInt,phaseInt,pauseInt,_pauseLiveInt,...BS_safe}=BS;
+    localStorage.setItem('cm_draft_recipe', JSON.stringify({BS:BS_safe, screen: currentBrewScreen, ts: Date.now()}));
+  }catch(e){}
+}
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden) saveDraft();
+});
+window.addEventListener('beforeunload', saveDraft);
+
+function tryRestoreDraft(){
+  try{
+    const raw=localStorage.getItem('cm_draft_recipe');
+    if(!raw)return;
+    const draft=JSON.parse(raw);
+    /* Чернетку має сенс пропонувати лише для екранів активного процесу —
+       не для bv-method-pick (там ще немає чого відновлювати) */
+    if(!draft.screen||draft.screen==='bv-method-pick'){
+      localStorage.removeItem('cm_draft_recipe');
+      return;
+    }
+    const elapsed=Date.now()-draft.ts;
+    if(elapsed>60*60*1000){ // більше 1 години — видалити
+      localStorage.removeItem('cm_draft_recipe');
+      return;
+    }
+    if(elapsed<30*1000){
+      // менше 30 сек — одразу відновити без питання
+      restoreDraftData(draft);
+    } else {
+      // 30 сек - 1 година — показати банер з питанням
+      showDraftBanner(draft);
+    }
+  }catch(e){}
+}
+function restoreDraftData(draft){
+  BS=draft.BS;
+  showBV(draft.screen);
+  /* Параметри рецепту — інпути не прив'язані до BS напряму (bCalc лише
+     читає з них в BS), тож після підміни BS їх треба заповнити вручну */
+  const doseEl=document.getElementById('b-dose');if(doseEl&&BS.dose!=null)doseEl.value=BS.dose;
+  const ratioEl=document.getElementById('b-ratio');if(ratioEl&&BS.ratio!=null)ratioEl.value=BS.ratio;
+  const poursEl=document.getElementById('b-pours');if(poursEl&&BS.pours!=null)poursEl.value=BS.pours;
+  const clicksEl=document.getElementById('clicks-val');if(clicksEl&&BS.clicks!=null)clicksEl.textContent=BS.clicks;
+  if(typeof setWet==='function'&&BS.wet!=null) setWet(BS.wet);
+  if(typeof bCalc==='function') bCalc();
+  /* Синхронізуємо UI вибраних пристроїв — bSel*-функції самі оновлюють
+     відповідні DOM-елементи і безпечні навіть без відкритого overlay
+     (closeOv просто знімає клас, якого вже й немає). */
+  if(BS.bean&&BS.bean.id!=null) bSelBean(BS.bean.id);
+  if(BS.dripper&&BS.dripper.id!=null) bSelDripper(BS.dripper.id);
+  if(BS.grinder&&BS.grinder.id!=null) bSelGrinder(BS.grinder.id);
+  if(BS.espMachine&&BS.espMachine.id!=null) bSelEspMachine(BS.espMachine.id);
+  if(BS.filter&&BS.filter.id!=null&&typeof bSelFilter==='function') bSelFilter(BS.filter.id);
+  if(typeof renderBaccList==='function') renderBaccList();
+  if(draft.screen==='bv-active') resumeBrewTimers();
+}
+function restoreDraft(){
+  const raw=localStorage.getItem('cm_draft_recipe');
+  if(!raw)return;
+  const draft=JSON.parse(raw);
+  restoreDraftData(draft);
+  const b=document.getElementById('draft-banner');if(b)b.remove();
+}
+function dismissDraft(){
+  localStorage.removeItem('cm_draft_recipe');
+  const b=document.getElementById('draft-banner');if(b)b.remove();
+}
+function showDraftBanner(draft){
+  const old=document.getElementById('draft-banner');if(old)old.remove();
+  const banner=document.createElement('div');
+  banner.id='draft-banner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:var(--card-hi);border-bottom:1px solid var(--line-soft);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px';
+  banner.innerHTML=`<span style="font-size:13px;color:var(--txt)" data-i18n="draft_banner_text">${t('draft_banner_text')}</span>
+    <div style="display:flex;gap:8px">
+      <button onclick="dismissDraft()" style="background:none;border:1px solid var(--line-soft);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--txt2);cursor:pointer" data-i18n="draft_close">${t('draft_close')}</button>
+      <button onclick="restoreDraft()" style="background:var(--copper);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#1c130a;cursor:pointer" data-i18n="draft_continue">${t('draft_continue')}</button>
+    </div>`;
+  document.body.appendChild(banner);
+}
+function resetBrewDraft(){
+  localStorage.removeItem('cm_draft_recipe');
+  brewReset();
+}
+
+let currentBrewScreen='bv-method-pick';
+function showBV(id){currentBrewScreen=id;['bv-method-pick','bv-setup','bv-active','bv-rate','bv-result','bv-esp-active','bv-esp-milk','bv-esp-result'].forEach(v=>{const el=document.getElementById(v);if(el)el.style.display=v===id?'block':'none';});
   /* переносимо єдиний блок колеса в активний екран (альтернатива / еспресо) */
   var _tb=document.getElementById('taste-block');
   if(_tb){
@@ -4950,6 +5387,58 @@ const actTimers={};    // {id: intervalId}
 const actStarted={};   // {id: Date}
 // Повертає кумулятивний startMs для наступного кроку (сума ph всіх поточних steps)
 function bCumOffset(){let ms=0;for(let i=0;i<BS.steps.length;i++){const s=BS.steps[i];ms+=(s.ph!=null?s.ph:(s.dur||0)*1000);}return ms;}
+/* Відновлення активних таймерів заварювання після відновлення чернетки —
+   setInterval-ідентифікатори не виживають перезавантаження сторінки,
+   тому перераховуємо абсолютні старти і запускаємо інтервали вручну
+   (без виклику bStartMain/bStartPhase, бо вони мають блокувальну умову
+   на BS.mainStart!==null). */
+function resumeBrewTimers(){
+  if(BS.mainStart!=null){
+    BS.mainStart=Date.now()-(BS.elapsed||0);
+    clearInterval(BS.mainInt);
+    BS.mainInt=setInterval(()=>{BS.elapsed=Date.now()-BS.mainStart;const el=document.getElementById('b-main-t');if(el)el.textContent=fmt(BS.elapsed);},100);
+  }
+  if(BS.phaseStart!=null){
+    BS.phaseStart=Date.now()-(BS.phaseMs||0);
+    clearInterval(BS.phaseInt);
+    const pt=document.getElementById('b-phase-t');
+    BS.phaseInt=setInterval(()=>{BS.phaseMs=Date.now()-BS.phaseStart;if(pt)pt.textContent=fmt(BS.phaseMs);},100);
+  }
+  if(BS._pauseStart!=null){
+    bStartLivePause();
+  }
+  rebuildBrewLogUI();
+}
+function rebuildBrewLogUI(){
+  /* Відтворює видимий лог кроків (b-log-box) із BS.steps після відновлення
+     чернетки — bAddLog лише ДОДАЄ рядки по одному при живому заварюванні
+     і не годиться для масового перемалювання, тож тут малюємо напряму. */
+  const box=document.getElementById('b-log-box');if(!box)return;
+  box.innerHTML='';
+  const fT=function(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),sc=s%60;return(m<10?'0':'')+m+':'+(sc<10?'0':'')+sc;};
+  let hasAny=false;
+  BS.steps.forEach(function(st,idx){
+    const startMs=st.t||0;
+    const phMs=(typeof st.ph==='number'&&st.ph>0)?st.ph:0;
+    const endMs=startMs+phMs;
+    const dur=Math.round(phMs/1000);
+    const rng=fT(startMs)+'–'+fT(endMs);
+    const d=document.createElement('div');d.className='step-row';d.id='lr-'+idx;
+    if(st.type==='pour'){
+      d.innerHTML=`<span class="sb sb-p">${t('brew_pour')}</span><span style="font-size:11px;font-weight:600;color:var(--txt);font-family:var(--mono);flex:1">${rng}</span><span style="font-size:11px;color:var(--txt3);padding:0 6px">${dur}с</span><input type="number" step="0.1" inputmode="decimal" class="edit-ml" id="em-${idx}" value="${st.ml!=null?st.ml.toFixed(1):''}" readonly onclick="openNumPad('em-${idx}','pour-ml')"><button class="edit-apply" onclick="bEditMl(${idx})"><i class="ti ti-check" aria-hidden="true"></i></button>`;
+    } else if(st.type==='action'){
+      const col=st.color||'#6C6C72';
+      d.innerHTML=`<span class="sb" style="background:${col}18;color:${col};border:1px solid ${col}40"><i class="ti ti-bolt" style="font-size:9px"></i></span><span style="font-size:11px;font-weight:600;color:${col};padding:0 6px;flex:1">${st.label||t('brew_action_lbl')}</span><span style="font-size:11px;color:var(--txt3);font-family:var(--mono)">${rng}</span><span style="font-size:11px;color:var(--txt3);padding-left:5px">${dur}с</span>`;
+    } else {
+      d.innerHTML=`<span class="sb sb-pa">${t('brew_pause')}</span><span style="font-size:11px;font-weight:600;color:var(--txt);font-family:var(--mono);flex:1">${rng}</span><span style="font-size:11px;color:var(--txt3);padding:0 6px">${dur}с</span><span style="font-size:11px;color:var(--txt3)">—</span>`;
+    }
+    box.appendChild(d);
+    hasAny=true;
+  });
+  const wrap=document.getElementById('b-log-wrap');if(wrap)wrap.style.display=hasAny?'block':'none';
+  /* Прогрес-бар і підказки наступного вливу теж мають синхронізуватись */
+  if(typeof bUpdateBar==='function') bUpdateBar(BS.pouredFixed||0);
+}
 function bStartLivePause(){
   clearInterval(BS._pauseLiveInt);BS._pauseLiveInt=null;
   const _pauseRowId='lr-live-pause';
@@ -5176,7 +5665,7 @@ function bAddLog(type,idx,tArg,ph,ml){
   const dur=Math.round(phMs/1000);
   const rng=fT(startMs)+'–'+fT(endMs);
   if(type==='pour'){
-    d.innerHTML=`<span class="sb sb-p">${t('brew_pour')}</span><span style="font-size:11px;font-weight:600;color:var(--txt);font-family:var(--mono);flex:1">${rng}</span><span style="font-size:11px;color:var(--txt3);padding:0 6px">${dur}с</span><input type="number" step="0.1" inputmode="decimal" class="edit-ml" id="em-${idx}" value="${ml!=null?ml.toFixed(1):''}"><button class="edit-apply" onclick="bEditMl(${idx})"><i class="ti ti-check" aria-hidden="true"></i></button>`;
+    d.innerHTML=`<span class="sb sb-p">${t('brew_pour')}</span><span style="font-size:11px;font-weight:600;color:var(--txt);font-family:var(--mono);flex:1">${rng}</span><span style="font-size:11px;color:var(--txt3);padding:0 6px">${dur}с</span><input type="number" step="0.1" inputmode="decimal" class="edit-ml" id="em-${idx}" value="${ml!=null?ml.toFixed(1):''}" readonly onclick="openNumPad('em-${idx}','pour-ml')"><button class="edit-apply" onclick="bEditMl(${idx})"><i class="ti ti-check" aria-hidden="true"></i></button>`;
   } else if(type==='action'){
     const icons={stir:'ti-rotate-clockwise',swirl:'ti-refresh',shake:'ti-activity'};
     const colors={stir:'#5fbf83',swirl:'#38C4B8',shake:'#B8A0E8'};
@@ -6322,7 +6811,7 @@ function saveEditBrew(){
   // Основні поля
   b.rating = Math.round(parseFloat(document.getElementById('edit-rate-slider').value||8)*10)/10;
   b.dose = document.getElementById('edit-dose').value;
-  b.ratio = parseFloat(document.getElementById('edit-ratio').value||16).toFixed(2);
+  b.ratio = parseFloat(document.getElementById('edit-ratio').value||16).toFixed(1);
   b.temp = document.getElementById('edit-temp').value;
   b.notes = document.getElementById('edit-notes').value.trim();
 
@@ -6360,7 +6849,7 @@ function saveBrew(){
   const dripName=BS.dripper?BS.dripper.name:'';
   const methodLbl=BS.altMethod||(BS.dripper?DRIPPER_LABEL[dripperType(BS.dripper.name)]:'Альтернатива');
   const grinderName=BS.grinder?BS.grinder.name:'';
-  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',method:methodLbl,inverted:BS.inverted||false,aeroFilters:BS.aeroFilters||1,dripper:dripName,grinder:grinderName,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,accessories:BS.accessories||[],likes:0,liked:false,ts:Date.now()};
+  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',method:methodLbl,inverted:BS.inverted||false,aeroFilters:BS.aeroFilters||1,dripper:dripName,grinder:grinderName,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,accessories:BS.accessories||[],likes:0,liked:false,ts:Date.now()};
   S.brews.unshift(brew);
   S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(BS.pouredFixed||(BS.dose*BS.ratio)),cat:methodCat(methodLbl),method:methodLbl,bean:brew.beanName,rating:brew.rating,dose:BS.dose});
   save();
@@ -6374,7 +6863,7 @@ function saveBrew(){
 function brewGoSetup(){clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);Object.assign(BS,{mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});showBV('bv-setup');bCalc();}
 function brewReset(){
   bFinalize();
-  Object.assign(BS,{bean:null,filter:null,dripper:null,grinder:null,espMachine:null,accessories:[],clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});
+  Object.assign(BS,{bean:null,filter:null,dripper:null,grinder:null,espMachine:null,accessories:[],clicks:28,wet:true,dose:16,ratio:16,pours:3,mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false,espMethod:null,espNeedsMilk:false,espNeedsIce:false,milk:null,ice:null});
   document.getElementById('bsel-bean').textContent=t('devices_choose_bean');
   document.getElementById('bsel-bean-sub').textContent=t('devices_tap');
   document.getElementById('bbean-bar').style.display='none';
@@ -6839,21 +7328,60 @@ async function sbLoad(){
     var rows=await res.json();
     console.log('[sbLoad] rows:', rows&&rows.length, rows&&rows[0]&&Object.keys(rows[0].data||{}).join(','));
     if(rows&&rows.length&&rows[0].data){
-      S=rows[0].data;
+      var remote=rows[0].data;
+      var localBefore=S;
+      S=_mergeS(localBefore, remote);
       _migrateS();
       localStorage.setItem('cj_v7',JSON.stringify(S));
       localStorage.setItem('cj_clean',JSON.stringify(S));
       console.log('[sbLoad] OK brews:', S.brews&&S.brews.length);
       _sbLoaded=true;
+      try{
+        await fetch(SUPABASE_URL+'/rest/v1/users',{
+          method:'POST',
+          headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+          body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
+        });
+      }catch(e){console.log('[sbLoad] merge-push err',e);}
       return true;
     } else {
       console.log('[sbLoad] no data in row — перший запуск');
     }
   }catch(e){console.log('[sbLoad] ERROR:', e.message);}
-  _sbLoaded=true; // навіть при помилці — дозволяємо зберігати далі
+  _sbLoaded=true;
   return false;
 }
 
+function _mergeS(local, remote){
+  if(!remote) return local;
+  var merged=JSON.parse(JSON.stringify(remote));
+  function mergeArrByKey(key, idKey){
+    var a=local[key]||[], b=merged[key]||[];
+    var map={};
+    b.forEach(function(item){ if(item&&item[idKey]!=null) map[item[idKey]]=item; });
+    a.forEach(function(item){
+      if(!item) return;
+      var k=(item[idKey]!=null)?item[idKey]:('_loc_'+Math.random());
+      if(!map[k]) map[k]=item;
+    });
+    merged[key]=Object.keys(map).map(function(k){return map[k];});
+  }
+  mergeArrByKey('brews','ts');
+  mergeArrByKey('log','ts');
+  mergeArrByKey('beans','id');
+  mergeArrByKey('equipment','id');
+  mergeArrByKey('filters','id');
+  ['roasters','beanNames','milks','juices'].forEach(function(key){
+    var set={};
+    (local[key]||[]).concat(merged[key]||[]).forEach(function(v){ if(v) set[v]=true; });
+    merged[key]=Object.keys(set);
+  });
+  merged.id=Math.max(local.id||0, merged.id||0);
+  merged.xp=Math.max(local.xp||0, merged.xp||0);
+  merged.record=Math.max(local.record||0, merged.record||0);
+  merged.achEarned=Object.assign({}, merged.achEarned||{}, local.achEarned||{});
+  return merged;
+}
 var sbSaveTimer=null;
 function sbSave(){
   if(!TG_USER_ID)return;
@@ -6864,6 +7392,15 @@ function sbSave(){
   clearTimeout(sbSaveTimer);
   sbSaveTimer=setTimeout(async function(){
     try{
+      var localSnapshot=S;
+      var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+      });
+      var rows=await res.json();
+      var remote=(rows&&rows.length)?rows[0].data:null;
+      var merged=_mergeS(localSnapshot, remote);
+      S=merged;
+      localStorage.setItem('cj_v7',JSON.stringify(S));
       await fetch(SUPABASE_URL+'/rest/v1/users',{
         method:'POST',
         headers:{
@@ -6892,6 +7429,7 @@ function sbSave(){
   }
   renderFeed();renderProf();bCalc();setWet(true);showBV('bv-setup');
   applyLangToDOM();
+  tryRestoreDraft();
 })();
 
 /* ══════════════════════════════════════════
@@ -7635,6 +8173,7 @@ function openNumPad(sliderId,mode){
   else if(mode==='dose')_npVal=String(document.getElementById('b-dose').value||'16');
   else if(mode==='ratio')_npVal=String(document.getElementById('b-ratio').value||'16');
   else if(mode==='vol')_npVal=String(document.getElementById('lb-vol').value||'240');
+  else if(mode==='pour-ml')_npVal=String(sl.value||'0');
   _npRefresh();
   var ov=document.getElementById('ov-numpad');
   ov.style.display='flex';
@@ -7647,7 +8186,7 @@ function closeNumPad(){
 }
 function _npRefresh(){
   var d=document.getElementById('np-display');if(!d)return;
-  var suffix=_npMode==='clicks'?' кл.':_npMode==='dose'?' г':_npMode==='ratio'?'':_npMode==='vol'?' мл':" °C";
+  var suffix=_npMode==='clicks'?' кл.':_npMode==='dose'?' г':_npMode==='ratio'?'':(_npMode==='vol'||_npMode==='pour-ml')?' мл':" °C";
   d.textContent=(_npVal||'—')+suffix;
 }
 function npKey(k){
@@ -7675,12 +8214,18 @@ function npConfirm(){
     document.getElementById('b-dose').value=v;
     bCalc();
   } else if(_npMode==='ratio'){
-    v=Math.max(1,Math.min(30,v));
+    v=Math.round(Math.max(1,Math.min(30,v))*10)/10;
     document.getElementById('b-ratio').value=v;
     bCalc();
   } else if(_npMode==='vol'){
     v=Math.max(10,Math.min(1000,Math.round(v)));
     document.getElementById('lb-vol').value=v;
+  } else if(_npMode==='pour-ml'){
+    v=Math.max(0,Math.round(v*10)/10);
+    var inp=document.getElementById(_npTarget);
+    if(inp)inp.value=v.toFixed(1);
+    var idx=parseInt(String(_npTarget).replace('em-',''),10);
+    if(!isNaN(idx))bEditMl(idx);
   }
   closeNumPad();
 }
