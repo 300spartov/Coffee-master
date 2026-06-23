@@ -3530,6 +3530,28 @@ function getRoastType(method){
   if(m.indexOf('omni')>-1||m.indexOf('омні')>-1)return'omni';
   return'filter';
 }
+/* ── Живі посилання: якщо назву змінили в Девайси/Зерно — старі рецепти підхоплюють нову ── */
+function liveDeviceName(id, fallbackName){
+  if(id!=null){
+    var item=S.equipment.find(function(x){return x.id===id;});
+    if(item)return item.name;
+  }
+  if(fallbackName){
+    var fb=(''+fallbackName).trim().toLowerCase();
+    var match=S.equipment.find(function(x){return (''+x.name).trim().toLowerCase()===fb;});
+    if(match)return match.name;
+  }
+  return fallbackName||'';
+}
+function liveBeanInfo(id, fallbackName, fallbackRoaster){
+  var item=null;
+  if(id!=null) item=(S.beans||[]).find(function(x){return x.id===id;});
+  if(!item&&fallbackName){
+    var fn=(''+fallbackName).trim().toLowerCase(), fr=(''+(fallbackRoaster||'')).trim().toLowerCase();
+    item=(S.beans||[]).find(function(x){return (''+x.name).trim().toLowerCase()===fn&&(''+(x.roaster||'')).trim().toLowerCase()===fr;});
+  }
+  return item?{name:item.name,roaster:item.roaster||'',roastType:item.roastType||''}:{name:fallbackName||'',roaster:fallbackRoaster||'',roastType:''};
+}
 function getCoffeeWeightStats(period){
   var brews=S.brews||[];
   var now=Date.now();
@@ -3544,7 +3566,8 @@ function getCoffeeWeightStats(period){
   filtered.forEach(function(b){
     var dose=parseFloat(b.dose);
     if(isNaN(dose))dose=16;
-    var type=b.roastType||getRoastType(b.method);
+    var liveBean=liveBeanInfo(b.beanId, b.beanName, b.roaster);
+    var type=liveBean.roastType||b.roastType||getRoastType(b.method);
     if(!byType.hasOwnProperty(type))type='filter';
     byType[type]+=dose;
     total+=dose;
@@ -3865,17 +3888,18 @@ el.innerHTML=S.brews.map(b=>{
     (b.temp&&!cafeOn)?`<div class="bc-sum-m"><i class="ti ti-temperature"></i><div class="v">${b.temp}<u>°</u></div><div class="l">${t('brew_temp_label')}</div></div>`:'',
     (b.totalTime&&b.totalTime!=='—')?`<div class="bc-sum-m"><i class="ti ti-clock"></i><div class="v">${b.totalTime}</div><div class="l">${t('brew_time_label')}</div></div>`:''
   ].join('');
+  const _liveBean=liveBeanInfo(b.beanId, b.beanName, b.roaster);
   const devRows=[
-    b.dripper?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-filter"></i></span><div><div class="dv-l">${t('devices_dripper')}</div><div class="dv-v">${b.dripper}</div></div></div>`:'',
-    b.filter?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-copy"></i></span><div><div class="dv-l">${t('devices_filter')}</div><div class="dv-v">${b.filter}</div></div></div>`:'',
-    b.espMachine?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-coffee"></i></span><div><div class="dv-l">${t('devices_espmachine')}</div><div class="dv-v">${b.espMachine}</div></div></div>`:'',
-    b.grinder?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-settings"></i></span><div><div class="dv-l">${t('devices_grinder')}</div><div class="dv-v">${b.grinder}</div></div>${b.clicks?`<span class="dv-clicks">${b.clicks} ${t('brew_clicks')}</span>`:''}</div>`:''
+    b.dripper?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-filter"></i></span><div><div class="dv-l">${t('devices_dripper')}</div><div class="dv-v">${liveDeviceName(b.dripperId,b.dripper)}</div></div></div>`:'',
+    b.filter?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-copy"></i></span><div><div class="dv-l">${t('devices_filter')}</div><div class="dv-v">${liveDeviceName(b.filterId,b.filter)}</div></div></div>`:'',
+    b.espMachine?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-coffee"></i></span><div><div class="dv-l">${t('devices_espmachine')}</div><div class="dv-v">${liveDeviceName(b.espMachineId,b.espMachine)}</div></div></div>`:'',
+    b.grinder?`<div class="bc-dev-row"><span class="ic"><i class="ti ti-settings"></i></span><div><div class="dv-l">${t('devices_grinder')}</div><div class="dv-v">${liveDeviceName(b.grinderId,b.grinder)}</div></div>${b.clicks?`<span class="dv-clicks">${b.clicks} ${t('brew_clicks')}</span>`:''}</div>`:''
   ].join('');
   const summaryBlock=(sumMetrics||devRows)?`<div class="bc-summary">${sumMetrics?`<div class="bc-sum-metrics">${sumMetrics}</div>`:''}${devRows?`<div class="bc-sum-dev"><div class="bc-sum-dev-lbl"><i class="ti ti-tool"></i>${t('devices_title')}</div>${devRows}</div>`:''}</div>`:'';
 
   return`<div class="swipe-outer" id="so-${bid}"><div class="swipe-delete-bg" onclick="softDeleteBrew(${bid})"><i class="ti ti-trash" aria-hidden="true"></i><span>Видалити</span></div><div class="brew-card" id="bc-${bid}" style="border-left:3px solid ${ratColor};background:linear-gradient(0deg,${ratColor}10,${ratColor}10),linear-gradient(165deg,var(--card-hi) 0%,var(--card) 45%,var(--card-lo) 100%)">
     <div class="bc-top${cafeOn?' bc-top-cafe':''}">
-      <div style="min-width:0"><div class="bc-name">${b.beanName||t('journal_no_name')}</div>${b.roaster?`<div class="bc-roaster">${b.roaster}</div>`:''}${cafeMarker}</div>
+      <div style="min-width:0"><div class="bc-name">${_liveBean.name||t('journal_no_name')}</div>${_liveBean.roaster?`<div class="bc-roaster">${_liveBean.roaster}</div>`:''}${cafeMarker}</div>
       <div class="bc-right"><div class="bc-method-grp"><span class="method-pill">${displayMethod}</span>${brewDevice?`<span class="bc-device">${brewDevice}</span>`:''}</div><span class="rating-num" style="color:${ratColor}">${parseFloat(b.rating||0).toFixed(1)}</span></div>
       ${cafeOn?`<span class="bc-cafe-badge" title="Кав'ярня"><i class="ti ti-building-store" aria-hidden="true"></i></span>`:''}
     </div>
@@ -4452,8 +4476,9 @@ function buildShareHTML(b){
   /* Slide 2 glow override (blue — steps diagram) */
   var glowSlide2='radial-gradient(56% 52% at 100% 0%,rgba(63,143,214,.32),transparent 66%)';
   var method=b.method||'Альтернатива';
-  var beanName=b.beanName||t('journal_no_name');
-  var roaster=b.roaster||'';
+  var _liveBean=liveBeanInfo(b.beanId, b.beanName, b.roaster);
+  var beanName=_liveBean.name||t('journal_no_name');
+  var roaster=_liveBean.roaster||'';
   var dose=b.dose||'—';
   var totalMl=b.steps?b.steps.reduce(function(s,st){return s+(st.ml||0);},0):0;
   if(!totalMl&&b.espresso)totalMl=b.espresso.actualYield||b.espresso.targetYield||0;
@@ -4474,10 +4499,10 @@ function buildShareHTML(b){
       (sub?'<span class="sc-dev-sub">'+sub+'</span>':'')+
     '</div>';
   }
-  var devs=devRow('ti-filter','Воронка',b.dripper||'','')
-          +devRow('ti-layers-subtract','Фільтр',b.filter||'','')
-          +devRow('ti-coffee','Кавомашина',b.espMachine||'','')
-          +devRow('ti-settings','Кавомолка',b.grinder||'',b.clicks?b.clicks+' кл.':'');
+  var devs=devRow('ti-filter','Воронка',liveDeviceName(b.dripperId,b.dripper),'')
+          +devRow('ti-layers-subtract','Фільтр',liveDeviceName(b.filterId,b.filter),'')
+          +devRow('ti-coffee','Кавомашина',liveDeviceName(b.espMachineId,b.espMachine),'')
+          +devRow('ti-settings','Кавомолка',liveDeviceName(b.grinderId,b.grinder),b.clicks?b.clicks+' кл.':'');
 
   /* Pill color fallback palette by category keyword */
   var PILL_FALLBACKS={'фрукт':'#c84a6e','ягід':'#b03060','цитрус':'#d4891a','солод':'#d98b3a','шоколад':'#8a6a44','горіх':'#9a7040','карамел':'#c8903a','ваніл':'#c8a050','квіт':'#b25b86','трав':'#5a9e57','спец':'#b5453a','кислин':'#c7a93e','тютюн':'#9c5a3c','земл':'#7a6040','дерев':'#7a6040','чорн':'#6d56a6','лакриц':'#7d4a8e','мигдал':'#9a7040','темн':'#7a5030'};
@@ -4886,10 +4911,10 @@ function espSave(){
   const temp=document.getElementById('b-esp-temp-out').textContent;
   const bar=document.getElementById('b-esp-bar-out').textContent;
   const brew={
-    id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',
+    id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',beanId:BS.bean?BS.bean.id:null,
     method:BS.espMethod||t('method_esp'),dose:dose.toString(),temp:temp.replace('°C',''),
-    grinder:BS.grinder?BS.grinder.name:'',clicks:BS.clicks,
-    espMachine:BS.espMachine?BS.espMachine.name:'',accessories:BS.accessories||[],
+    grinder:BS.grinder?BS.grinder.name:'',grinderId:BS.grinder?BS.grinder.id:null,clicks:BS.clicks,
+    espMachine:BS.espMachine?BS.espMachine.name:'',espMachineId:BS.espMachine?BS.espMachine.id:null,accessories:BS.accessories||[],
     espresso:{dose,targetYield,actualYield,shotTime:espSec,tdsTarget,tdsActual,pressure:bar},
     milk:BS.milk||null,ice:BS.ice||null,
     totalTime:espSec+'с',ratio:(actualYield>0?(actualYield/dose).toFixed(1):ratio.toFixed(1)),
@@ -6860,7 +6885,7 @@ function saveBrew(){
   const dripName=BS.dripper?BS.dripper.name:'';
   const methodLbl=BS.altMethod||(BS.dripper?DRIPPER_LABEL[dripperType(BS.dripper.name)]:'Альтернатива');
   const grinderName=BS.grinder?BS.grinder.name:'';
-  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',method:methodLbl,inverted:BS.inverted||false,aeroFilters:BS.aeroFilters||1,dripper:dripName,grinder:grinderName,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,accessories:BS.accessories||[],likes:0,liked:false,ts:Date.now()};
+  const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',beanId:BS.bean?BS.bean.id:null,method:methodLbl,inverted:BS.inverted||false,aeroFilters:BS.aeroFilters||1,dripper:dripName,dripperId:BS.dripper?BS.dripper.id:null,grinder:grinderName,grinderId:BS.grinder?BS.grinder.id:null,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterId:BS.filter?BS.filter.id:null,filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,accessories:BS.accessories||[],likes:0,liked:false,ts:Date.now()};
   S.brews.unshift(brew);
   S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(BS.pouredFixed||(BS.dose*BS.ratio)),cat:methodCat(methodLbl),method:methodLbl,bean:brew.beanName,rating:brew.rating,dose:BS.dose});
   save();
