@@ -4955,6 +4955,7 @@ function espSave(){
   S.brews.unshift(brew);save();
   toast('Шот збережено!');
   BS.espMethod=null;BS.espNeedsMilk=false;BS.espNeedsIce=false;BS.milk=null;BS.ice=null;
+  localStorage.removeItem('cm_draft_recipe');currentBrewScreen='bv-method-pick';
   if(document.getElementById('bv-method-l1'))document.getElementById('bv-method-l1').style.display='';
   if(document.getElementById('bv-method-l2'))document.getElementById('bv-method-l2').style.display='none';
   showScr('scr-home');
@@ -6925,6 +6926,7 @@ function saveBrew(){
   document.getElementById('b-res-flavors').textContent=(RS.flavors.length+RS.aroma.length);
   document.getElementById('b-res-info').textContent=(BS.bean?BS.bean.name+' · ':'')+brew.temp+'°C · 1:'+brew.ratio;
   addBrewXp('alt');showBV('bv-result');toast('Рецепт збережено!');
+  localStorage.removeItem('cm_draft_recipe');currentBrewScreen='bv-method-pick';
 }
 function brewGoSetup(){clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);Object.assign(BS,{mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});showBV('bv-setup');bCalc();}
 function brewReset(){
