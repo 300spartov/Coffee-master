@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </head>
 <body>
 <style>
@@ -4952,7 +4954,9 @@ function espSave(){
     notes,likes:0,liked:false,ts:Date.now()
   };
   if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-dose);bean._upd=Date.now();}}
-  S.brews.unshift(brew);save();
+  S.brews.unshift(brew);
+  S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(actualYield>0?actualYield:targetYield),cat:methodCat(brew.method),method:brew.method,bean:brew.beanName,rating:brew.rating,dose:dose});
+  save();
   addBrewXp('esp');
   toast('Шот збережено!');
   BS.espMethod=null;BS.espNeedsMilk=false;BS.espNeedsIce=false;BS.milk=null;BS.ice=null;
@@ -8543,5 +8547,3 @@ function npConfirm(){
     <ellipse cx="600" cy="250" rx="120" ry="24" fill="none" stroke="#aeb6bf" stroke-width="9"/>
     <path d="M540,250 L550,560 Q552,600 600,600 Q648,600 650,560 L660,250 Z" fill="none" stroke="#9aa3ad" stroke-width="9" stroke-linejoin="round"/>
     <path d="M545,440 L655,440 L650,560 Q650,584 600,584 Q550,584 550,560 Z" fil
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
