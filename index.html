@@ -5273,10 +5273,12 @@ function saveDraft(){
     localStorage.setItem('cm_draft_recipe', JSON.stringify({BS:BS_safe, screen: currentBrewScreen, ts: Date.now()}));
   }catch(e){}
 }
+/* ── ВІДКЛЮЧЕНО: функція "незавершений рецепт" викликала проблеми, прибрано до подальшого з'ясування ──
 document.addEventListener('visibilitychange', function(){
   if(document.hidden) saveDraft();
 });
 window.addEventListener('beforeunload', saveDraft);
+*/
 
 function tryRestoreDraft(){
   try{
@@ -7527,7 +7529,7 @@ function sbSave(){
   }
   renderFeed();renderProf();bCalc();setWet(true);showBV('bv-setup');
   applyLangToDOM();
-  tryRestoreDraft();
+  localStorage.removeItem('cm_draft_recipe'); /* функцію "незавершений рецепт" відключено */
 })();
 
 /* ══════════════════════════════════════════
