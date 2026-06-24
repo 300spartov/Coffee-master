@@ -7471,6 +7471,7 @@ function sbSave(){
       var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
         headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
       });
+      console.log('[sbSave] GET статус:', res.status);
       var rows=await res.json();
       var remote=(rows&&rows.length)?rows[0].data:null;
       console.log('[sbSave] на сервері рецептів зараз:', remote&&remote.brews?remote.brews.length:0);
@@ -7478,7 +7479,7 @@ function sbSave(){
       console.log('[sbSave] після злиття рецептів:', (merged.brews||[]).length);
       S=merged;
       localStorage.setItem('cj_v7',JSON.stringify(S));
-      await fetch(SUPABASE_URL+'/rest/v1/users',{
+      var postRes=await fetch(SUPABASE_URL+'/rest/v1/users',{
         method:'POST',
         headers:{
           'apikey':SUPABASE_KEY,
@@ -7488,8 +7489,8 @@ function sbSave(){
         },
         body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
       });
-      console.log('[sbSave] відправлено на сервер, рецептів:', (S.brews||[]).length);
-    }catch(e){console.log('sb save err',e);}
+      console.log('[sbSave] POST статус:', postRes.status, '— готово, рецептів відправлено:', (S.brews||[]).length);
+    }catch(e){console.log('[sbSave] ПОМИЛКА:', e.message);}
   },1200);
 }
 
@@ -8523,4 +8524,11 @@ function npConfirm(){
     <path d="M480,250 L557,475 Q600,490 643,475 L720,250 Z" fill="none" stroke="#aeb6bf" stroke-width="9" stroke-linejoin="round"/>
     <ellipse cx="600" cy="250" rx="120" ry="24" fill="none" stroke="#aeb6bf" stroke-width="9"/>
     <path d="M540,250 L550,560 Q552,600 600,600 Q648,600 650,560 L660,250 Z" fill="none" stroke="#9aa3ad" stroke-width="9" stroke-linejoin="round"/>
-    <path d="M545,440 L655,440 L650,560 Q650,584 600,584 Q550,584 550,560 Z" fil
+    <path d="M545,440 L655,440 L650,560 Q650,584 600,584 Q550,584 550,560 Z" fill="#B87333"/>
+    <text x="600" y="710" font-family="monospace" font-size="40" fill="#D89858" text-anchor="middle" letter-spacing="8">COFFEE MASTER</text>
+  </svg>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+</body>
+</html>
