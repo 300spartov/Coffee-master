@@ -7426,7 +7426,7 @@ function _mergeS(local, remote){
     a.forEach(function(item){
       if(!item) return;
       var k=(item[idKey]!=null)?item[idKey]:('_loc_'+Math.random());
-      /* локальна версія — щойно відредагована на цьому пристрої, тому вона завжди перекриває серверну при збігу id */
+      /* локальна версія — щойно відредагована/додана на цьому пристрої, тому вона завжди перекриває серверну при збігу id */
       map[k]=item;
     });
     merged[key]=Object.keys(map).map(function(k){return map[k];});
@@ -7445,6 +7445,15 @@ function _mergeS(local, remote){
   merged.xp=Math.max(local.xp||0, merged.xp||0);
   merged.record=Math.max(local.record||0, merged.record||0);
   merged.achEarned=Object.assign({}, merged.achEarned||{}, local.achEarned||{});
+  /* ── АВАРІЙНИЙ ЗАПОБІЖНИК: злиття ніколи не повинно зменшувати кількість рецептів/логу ── */
+  if((merged.brews||[]).length < (local.brews||[]).length){
+    console.log('[_mergeS] ЗАХИСТ: рецептів стало менше після злиття (',(local.brews||[]).length,'->',(merged.brews||[]).length,') — лишаю локальну версію brews');
+    merged.brews=local.brews;
+  }
+  if((merged.log||[]).length < (local.log||[]).length){
+    console.log('[_mergeS] ЗАХИСТ: лог став меншим після злиття — лишаю локальну версію log');
+    merged.log=local.log;
+  }
   return merged;
 }
 var sbSaveTimer=null;
@@ -7458,12 +7467,15 @@ function sbSave(){
   sbSaveTimer=setTimeout(async function(){
     try{
       var localSnapshot=S;
+      console.log('[sbSave] локально рецептів перед синхронізацією:', (localSnapshot.brews||[]).length);
       var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
         headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
       });
       var rows=await res.json();
       var remote=(rows&&rows.length)?rows[0].data:null;
+      console.log('[sbSave] на сервері рецептів зараз:', remote&&remote.brews?remote.brews.length:0);
       var merged=_mergeS(localSnapshot, remote);
+      console.log('[sbSave] після злиття рецептів:', (merged.brews||[]).length);
       S=merged;
       localStorage.setItem('cj_v7',JSON.stringify(S));
       await fetch(SUPABASE_URL+'/rest/v1/users',{
@@ -7476,6 +7488,7 @@ function sbSave(){
         },
         body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
       });
+      console.log('[sbSave] відправлено на сервер, рецептів:', (S.brews||[]).length);
     }catch(e){console.log('sb save err',e);}
   },1200);
 }
