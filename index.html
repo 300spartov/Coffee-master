@@ -3378,21 +3378,24 @@ function _migrateS(){
   if(S.brews&&S.brews.length){S.brews.forEach(function(br){if(br.cafeVisit===undefined){br.cafeVisit=(br.source==='place')||!!(br.place&&br.place.length);changed=true;}});}
   if(changed && S.xp===0 && S.brews && S.brews.length>0){
     S.xp=Math.min(S.brews.length*15, 2000);
+    S._xpUpd=Date.now();
   }
-  /* ── Відновлення повної історії ХР: тягнемо xpLog з усіх існуючих рецептів і кав'ярень ── */
-  if(S.brews&&S.brews.length){
+  /* ── Відновлення повної історії ХР: тягнемо xpLog з усіх існуючих рецептів і кав'ярень (ОДНОРАЗОВО, щоб видалені вручну записи не повертались) ── */
+  if(!S._xpBackfillDone && S.brews && S.brews.length){
     if(!S.xpLog)S.xpLog=[];
-    var _espLbl=t('method_esp'), _altLbl=t('brew_title');
-    var _brewReasons=[_espLbl,_altLbl,"Кав'ярня"];
-    var _nonBrewLog=S.xpLog.filter(function(e){return _brewReasons.indexOf(e.reason)===-1;});
-    var _brewCount=S.xpLog.length-_nonBrewLog.length;
-    if(_brewCount!==S.brews.length){
-      var _brewLog=S.brews.map(function(br){
-        return {amount:15,reason:br.cafeVisit?"Кав'ярня":(methodCat(br.method)==='espresso'?_espLbl:_altLbl),ts:br.ts};
-      });
-      S.xpLog=_nonBrewLog.concat(_brewLog);
+    var _altLbl=t('brew_title');
+    var _existingBrewIds={};
+    S.xpLog.forEach(function(e){ if(e.brewId!=null) _existingBrewIds[e.brewId]=true; });
+    var _brewLog=S.brews.filter(function(br){return !_existingBrewIds[br.id];}).map(function(br){
+      return {amount:15,reason:br.cafeVisit?"Кав'ярня":(br.method||_altLbl),ts:br.ts,brewId:br.id};
+    });
+    if(_brewLog.length){
+      S.xpLog=S.xpLog.concat(_brewLog);
+      S._xpUpd=Date.now();
       changed=true;
     }
+    S._xpBackfillDone=true;
+    changed=true;
   }
   if(changed){ S.record=0; }
   if(changed) localStorage.setItem('cj_v7',JSON.stringify(S));
@@ -4962,7 +4965,7 @@ function espSave(){
   S.brews.unshift(brew);
   S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(actualYield>0?actualYield:targetYield),cat:methodCat(brew.method),method:brew.method,bean:brew.beanName,rating:brew.rating,dose:dose});
   save();
-  var xpInfo=addBrewXp('esp');
+  var xpInfo=addBrewXp('esp', brew.method, brew.id);
   toast('Шот збережено!');
   BS.espMethod=null;BS.espNeedsMilk=false;BS.espNeedsIce=false;BS.milk=null;BS.ice=null;
   localStorage.removeItem('cm_draft_recipe');currentBrewScreen='bv-method-pick';
@@ -6936,7 +6939,7 @@ function saveBrew(){
   document.getElementById('b-res-rating').textContent=brew.rating.toFixed(1);
   document.getElementById('b-res-flavors').textContent=(RS.flavors.length+RS.aroma.length);
   document.getElementById('b-res-info').textContent=(BS.bean?BS.bean.name+' · ':'')+brew.temp+'°C · 1:'+brew.ratio;
-  var xpInfo=addBrewXp('alt');showBV('bv-result');toast('Рецепт збережено!');
+  var xpInfo=addBrewXp('alt', brew.method, brew.id);showBV('bv-result');toast('Рецепт збережено!');
   localStorage.removeItem('cm_draft_recipe');currentBrewScreen='bv-method-pick';
   showBrewResultModal(xpInfo);
 }
@@ -7375,7 +7378,7 @@ function logBrewManual(){
   for(var i=0;i<S.brews.length;i++){if(S.brews[i].ts<=ts){S.brews.splice(i,0,brewEntry);bInserted=true;break;}}
   if(!bInserted)S.brews.push(brewEntry);
 
-  addBrewXp('alt');
+  addBrewXp('alt', method, brewEntry.id);
   var streak=calcStreak();if(streak>(S.record||0))S.record=streak;
   save();closeOv('ov-log-brew');
   renderCalendar();renderStreak();renderFeed();
@@ -7474,9 +7477,17 @@ function _mergeS(local, remote){
     merged[key]=Object.keys(set);
   });
   merged.id=Math.max(local.id||0, merged.id||0);
-  merged.xp=Math.max(local.xp||0, merged.xp||0);
   merged.record=Math.max(local.record||0, merged.record||0);
   merged.achEarned=Object.assign({}, merged.achEarned||{}, local.achEarned||{});
+  merged._xpBackfillDone = local._xpBackfillDone || merged._xpBackfillDone || false;
+  /* xp/xpLog — порівнюємо за часом останньої зміни (_xpUpd), а не "хто більший":
+     якщо просто брати максимум — видалення запису ХР ніколи не зможе зменшити суму,
+     а сліпа довіра локальному могла би стерти реальний прогрес при першому заході з нового пристрою */
+  if((local._xpUpd||0) >= (merged._xpUpd||0)){
+    merged.xp = local.xp||0;
+    merged.xpLog = local.xpLog||[];
+    merged._xpUpd = local._xpUpd||0;
+  }
   if((merged.brews||[]).length < (local.brews||[]).length){
     console.log('[_mergeS] ЗАХИСТ: рецептів стало менше після злиття (',(local.brews||[]).length,'->',(merged.brews||[]).length,') — лишаю локальну версію brews');
     merged.brews=local.brews;
@@ -7531,18 +7542,21 @@ function sbSave(){
   clearTimeout(sbSaveTimer);
   sbSaveTimer=setTimeout(_doSbSaveNow,1200);
 }
-/* ── Мобільний Telegram WebView може призупинити/вбити вкладку при перемиканні швидше ніж встигне відпрацювати дебаунс (1.2с) — тому при втраті фокусу зберігаємо НЕГАЙНО, без очікування ── */
+/* ── Мобільний Telegram WebView може призупинити/вбити вкладку при перемиканні швидше ніж встигне відпрацювати дебаунс (1.2с) — тому при втраті фокусу зберігаємо НЕГАЙНО, без очікування.
+   Але Telegram WebView може слати visibility_changed дуже часто навіть від дрібних взаємодій — тому обмежуємо: не частіше ніж раз на 3с ── */
+var _lastImmediateFlush=0;
+function _flushSaveThrottled(){
+  var now=Date.now();
+  if(now-_lastImmediateFlush<3000)return;
+  _lastImmediateFlush=now;
+  clearTimeout(sbSaveTimer);
+  _doSbSaveNow();
+}
 document.addEventListener('visibilitychange', function(){
-  if(document.hidden && TG_USER_ID && _sbLoaded){
-    clearTimeout(sbSaveTimer);
-    _doSbSaveNow();
-  }
+  if(document.hidden && TG_USER_ID && _sbLoaded) _flushSaveThrottled();
 });
 window.addEventListener('pagehide', function(){
-  if(TG_USER_ID && _sbLoaded){
-    clearTimeout(sbSaveTimer);
-    _doSbSaveNow();
-  }
+  if(TG_USER_ID && _sbLoaded) _flushSaveThrottled();
 });
 
 // Ініціалізація з завантаженням даних
@@ -7642,7 +7656,7 @@ function checkAchievements(markOnly){
   defs.forEach(function(a){
     if(!S.achEarned[a.id]&&a.check()){
       S.achEarned[a.id]=Date.now();
-      if(!markOnly){if(!S.xp)S.xp=0;S.xp+=a.xp;S.xpLog.push({amount:a.xp,reason:a.name,ts:Date.now()});}
+      if(!markOnly){if(!S.xp)S.xp=0;S.xp+=a.xp;S.xpLog.push({amount:a.xp,reason:a.name,ts:Date.now()});S._xpUpd=Date.now();}
     }
   });
 }
@@ -7841,14 +7855,15 @@ function toggleStatsV2(){
 }
 
 /* XP нарахування при збереженні заварювання */
-function addBrewXp(mode){
+function addBrewXp(mode, methodName, brewId){
   if(!S.xp)S.xp=0;
   if(!S.xpLog)S.xpLog=[];
   var oldLvl=getLevelFromXp(S.xp);
   var gained=15;
   S.xp+=gained;
+  S._xpUpd=Date.now();
   var isEsp0=(mode==='esp');
-  S.xpLog.push({amount:gained,reason:isEsp0?t('method_esp'):t('brew_title'),ts:Date.now()});
+  S.xpLog.push({amount:gained,reason:methodName||(isEsp0?t('method_esp'):t('brew_title')),ts:Date.now(),brewId:brewId||null});
   checkAchievements(false);
   save();
   var newLvl=getLevelFromXp(S.xp);
@@ -8046,6 +8061,7 @@ function deleteXpEntry(ts){
   var removed=S.xpLog[idx];
   S.xpLog.splice(idx,1);
   S.xp=Math.max(0,(S.xp||0)-(removed.amount||0));
+  S._xpUpd=Date.now();
   save();
   renderXpHistoryList();
   renderProf();
