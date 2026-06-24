@@ -1496,7 +1496,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="card" style="margin-bottom:10px">
         <div class="lbl" data-i18n="param_section">Параметри</div>
         <div class="grid3">
-          <div><div class="field-lbl" data-i18n="param_dose">Кава (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="100" class="fi" oninput="bCalc()" readonly onclick="openNumPad('b-dose','dose')"></div>
+          <div><div class="field-lbl" data-i18n="param_dose">Кава (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="300" class="fi" oninput="bCalc()" readonly onclick="openNumPad('b-dose','dose')"></div>
           <div><div class="field-lbl" data-i18n="param_ratio">Коефіцієнт</div>
             <div style="position:relative">
               <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13px;color:var(--txt3);pointer-events:none">1 :</span>
@@ -3370,6 +3370,21 @@ function _migrateS(){
   if(!S.achEarned){ S.achEarned={}; changed=true; }
   if(!S.trash){ S.trash=[]; changed=true; }
   if(S.brews&&S.brews.length){S.brews.forEach(function(br){if(br.cafeVisit===undefined){br.cafeVisit=(br.source==='place')||!!(br.place&&br.place.length);changed=true;}});}
+  /* ── Відновлення повної історії ХР: тягнемо xpLog з усіх існуючих рецептів і кав'ярень ── */
+  if(S.brews&&S.brews.length){
+    if(!S.xpLog)S.xpLog=[];
+    var _espLbl=t('method_esp'), _altLbl=t('brew_title');
+    var _brewReasons=[_espLbl,_altLbl,"Кав'ярня"];
+    var _nonBrewLog=S.xpLog.filter(function(e){return _brewReasons.indexOf(e.reason)===-1;});
+    var _brewCount=S.xpLog.length-_nonBrewLog.length;
+    if(_brewCount!==S.brews.length){
+      var _brewLog=S.brews.map(function(br){
+        return {amount:15,reason:br.cafeVisit?"Кав'ярня":(methodCat(br.method)==='espresso'?_espLbl:_altLbl),ts:br.ts};
+      });
+      S.xpLog=_nonBrewLog.concat(_brewLog);
+      changed=true;
+    }
+  }
   if(changed && S.xp===0 && S.brews && S.brews.length>0){
     S.xp=Math.min(S.brews.length*15, 2000);
   }
@@ -3522,7 +3537,7 @@ function setFeedTab(tab){
   renderFeed();
 }
 /* ── СЕРИЯ + КАЛЕНДАРЬ ── */
-function methodCat(m){m=(m||'').toLowerCase();if(m.includes('еспрес')||m.includes('espres'))return 'espresso';if(m.includes('aero')||m.includes('аеро')||m.includes('френч')||m.includes('гейзер')||m.includes('турка')||m.includes('пресс'))return 'other';return 'filter';}
+function methodCat(m){m=(m||'').toLowerCase();if(m.includes('еспрес')||m.includes('espres')||m.includes('cappuccino')||m.includes('капучино')||m.includes('flat white')||m.includes('latte')||m.includes('латте')||m.includes('bumble')||m.includes('tonic')||m.includes('тонік'))return 'espresso';if(m.includes('aero')||m.includes('аеро')||m.includes('френч')||m.includes('гейзер')||m.includes('турка')||m.includes('пресс'))return 'other';return 'filter';}
 function getRoastType(method){
   if(!method)return'filter';
   var m=method.toLowerCase();
@@ -3730,6 +3745,7 @@ function renderFeed(){
   if(feedTab==='comm'){renderCommunity(el);return}
   if(!S.brews.length){el.innerHTML=`<div class="empty"><i class="ti ti-coffee" aria-hidden="true"></i><div class="empty-t">${t('journal_no_recipes')}</div><div class="empty-s">${t('journal_empty_hint')}</div></div>`;return}
 el.innerHTML=S.brews.map(b=>{
+  try{
   const bid=b.id;
   /* ── колір за оцінкою ── */
   const ratColor=(function(){var r=parseFloat(b.rating||0);return r>=8?'#5fbf83':r>=6.5?'#b9c64f':r>=5?'#e2c64c':r>=3.5?'#ea9b3c':'#ea6a52';})();
@@ -3953,6 +3969,10 @@ el.innerHTML=S.brews.map(b=>{
       </div>
     </div>
   </div></div></div>`;
+  }catch(e){
+    console.log('[renderFeed] помилка рендеру картки, brew id:', b.id, 'method:', b.method, 'помилка:', e.message);
+    return '';
+  }
 }).join('');
 // Init swipe for new cards
 setTimeout(function(){document.querySelectorAll('.swipe-outer').forEach(function(o){var c=o.querySelector('.brew-card');if(c&&!c._swipeReady)initBrewSwipe(c);});},0);
@@ -4422,7 +4442,13 @@ function shareRecipe(bid){
   /* Будуємо HTML двох карток і рендеримо через html2canvas */
   var wrap=document.createElement('div');
   wrap.style.cssText='position:fixed;left:-9999px;top:0;z-index:-1;display:flex;gap:0;background:transparent;border:none;outline:none;box-shadow:none';
-  wrap.innerHTML=buildShareHTML(b);
+  try{
+    wrap.innerHTML=buildShareHTML(b);
+  }catch(e){
+    console.log('[shareRecipe] buildShareHTML error:', e.message, 'brew id:', bid, 'method:', b.method, 'has steps:', !!(b.steps&&b.steps.length), 'has espresso:', !!b.espresso);
+    toast('Не вдалось підготувати картку — деталі в консолі');
+    return;
+  }
   document.body.appendChild(wrap);
 
   var slides=wrap.querySelectorAll('.sc');
@@ -5311,12 +5337,14 @@ function showDraftBanner(draft){
   const old=document.getElementById('draft-banner');if(old)old.remove();
   const banner=document.createElement('div');
   banner.id='draft-banner';
-  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:var(--card-hi);border-bottom:1px solid var(--line-soft);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px';
-  banner.innerHTML=`<span style="font-size:13px;color:var(--txt)" data-i18n="draft_banner_text">${t('draft_banner_text')}</span>
+  banner.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:24px';
+  banner.innerHTML=`<div style="background:var(--card-hi);border:1px solid var(--line-soft);border-radius:16px;padding:20px;max-width:320px;width:100%;box-shadow:0 12px 32px rgba(0,0,0,.5)">
+    <div style="font-size:14px;color:var(--txt);margin-bottom:16px;text-align:center" data-i18n="draft_banner_text">${t('draft_banner_text')}</div>
     <div style="display:flex;gap:8px">
-      <button onclick="dismissDraft()" style="background:none;border:1px solid var(--line-soft);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--txt2);cursor:pointer" data-i18n="draft_close">${t('draft_close')}</button>
-      <button onclick="restoreDraft()" style="background:var(--copper);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#1c130a;cursor:pointer" data-i18n="draft_continue">${t('draft_continue')}</button>
-    </div>`;
+      <button onclick="dismissDraft()" style="flex:1;background:none;border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--txt2);cursor:pointer" data-i18n="draft_close">${t('draft_close')}</button>
+      <button onclick="restoreDraft()" style="flex:1;background:var(--copper);border:none;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;color:#1c130a;cursor:pointer" data-i18n="draft_continue">${t('draft_continue')}</button>
+    </div>
+  </div>`;
   document.body.appendChild(banner);
 }
 function resetBrewDraft(){
@@ -7398,7 +7426,8 @@ function _mergeS(local, remote){
     a.forEach(function(item){
       if(!item) return;
       var k=(item[idKey]!=null)?item[idKey]:('_loc_'+Math.random());
-      if(!map[k]) map[k]=item;
+      /* локальна версія — щойно відредагована на цьому пристрої, тому вона завжди перекриває серверну при збігу id */
+      map[k]=item;
     });
     merged[key]=Object.keys(map).map(function(k){return map[k];});
   }
@@ -8246,7 +8275,7 @@ function npConfirm(){
     BS.clicks=v;
     var cv=document.getElementById('clicks-val');if(cv)cv.textContent=v;
   } else if(_npMode==='dose'){
-    v=Math.max(1,Math.min(100,v));
+    v=Math.max(1,Math.min(300,v));
     document.getElementById('b-dose').value=v;
     bCalc();
   } else if(_npMode==='ratio'){
