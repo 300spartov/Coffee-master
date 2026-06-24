@@ -1530,11 +1530,11 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="card" style="margin-bottom:10px">
         <div class="lbl" data-i18n="param_esp_section">Параметри еспресо</div>
         <div class="grid2" style="margin-bottom:8px">
-          <div><div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div><input id="b-esp-dose" type="number" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()"></div>
+          <div><div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div><input id="b-esp-dose" type="number" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()" readonly onclick="openNumPad('b-esp-dose','esp-dose')"></div>
           <div><div class="field-lbl" data-i18n="param_esp_ratio">Ретіо (1 : X)</div>
             <div style="display:flex;align-items:center;gap:5px">
               <button class="click-btn" onclick="espRatioAdj(-0.1)" style="width:32px;height:38px;font-size:16px">−</button>
-              <input id="b-esp-ratio-sel" type="number" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()">
+              <input id="b-esp-ratio-sel" type="number" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()" readonly onclick="openNumPad('b-esp-ratio-sel','esp-ratio')">
               <button class="click-btn" onclick="espRatioAdj(0.1)" style="width:32px;height:38px;font-size:16px">+</button>
             </div>
           </div>
@@ -1889,11 +1889,11 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="grid2" style="gap:8px;margin-top:8px">
         <div>
           <div class="field-lbl">Температура (°C)</div>
-          <input class="fi" type="number" id="em-milk-temp" value="60" min="0" max="90" style="margin-bottom:0">
+          <input class="fi" type="number" id="em-milk-temp" value="60" min="0" max="90" style="margin-bottom:0" readonly onclick="openNumPad('em-milk-temp','milk-temp')">
         </div>
         <div>
           <div class="field-lbl">Об'єм (мл)</div>
-          <input class="fi" type="number" id="em-milk-vol" value="150" min="0" max="600" style="margin-bottom:0">
+          <input class="fi" type="number" id="em-milk-vol" value="150" min="0" max="600" style="margin-bottom:0" readonly onclick="openNumPad('em-milk-vol','milk-vol')">
         </div>
       </div>
       <div style="margin-top:8px">
@@ -1906,7 +1906,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="grid2" style="gap:8px">
         <div>
           <div class="field-lbl">Кубики льоду</div>
-          <input class="fi" type="number" id="em-ice-amount" value="4" min="0" max="30" style="margin-bottom:0">
+          <input class="fi" type="number" id="em-ice-amount" value="4" min="0" max="30" style="margin-bottom:0" readonly onclick="openNumPad('em-ice-amount','ice-amt')">
         </div>
         <div>
           <div class="field-lbl">Сік / тонік</div>
@@ -1946,7 +1946,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
         </div>
       </div>
       <div class="field-lbl" data-i18n="brew_yield_full">Вихід — скільки мл вийшло фактично</div>
-      <input type="number" step="0.5" inputmode="decimal" class="fi" id="esp-actual-yield" placeholder="напр. 38" style="margin-bottom:10px">
+      <input type="number" step="0.5" inputmode="decimal" class="fi" id="esp-actual-yield" placeholder="напр. 38" style="margin-bottom:10px" readonly onclick="openNumPad('esp-actual-yield','esp-yield')">
     </div>
 
     <!-- Концентрация -->
@@ -1955,11 +1955,11 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="grid2" style="gap:8px">
         <div>
           <div class="field-lbl">Бажана (TDS %)</div>
-          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-target" value="9.0" placeholder="9.0">
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-target" value="9.0" placeholder="9.0" readonly onclick="openNumPad('esp-tds-target','esp-tds')">
         </div>
         <div>
           <div class="field-lbl">Фактична (TDS %)</div>
-          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-actual" placeholder="виміряй">
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-actual" placeholder="виміряй" readonly onclick="openNumPad('esp-tds-actual','esp-tds')">
         </div>
       </div>
       <div style="margin-top:10px;padding:10px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)">
@@ -3105,6 +3105,7 @@ function applyLangToDOM() {
 /* Зворотний переклад збережених смаків (старі рецепти — UA рядки) */
 function translateFlavor(str) {
   if (!str) return str;
+  if (typeof str === 'object') str = str.ua || str.en || String(str);
   if (currentLang === 'ua') return str; /* UA → UA, нічого робити */
   /* Шукаємо в FLAVORS: UA note → EN note */
   if (window.FLAT_NOTES) {
@@ -3366,6 +3367,9 @@ function _migrateS(){
   if(!S.beanNames)S.beanNames=[];
   if(!S.milks)S.milks=[];
   if(!S.juices)S.juices=[];
+  /* ── Примусово впорядковуємо рецепти/лог за часом (найновіше — першим), на випадок якщо попередні злиття переплутали порядок ── */
+  if(S.brews&&S.brews.length)S.brews.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  if(S.log&&S.log.length)S.log.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
   /* ── MIGRATION: add new fields without breaking existing data ── */
   var changed=false;
   if(S.xp===undefined){ S.xp=0; changed=true; }
@@ -4537,6 +4541,7 @@ function buildShareHTML(b){
   /* Pill color fallback palette by category keyword */
   var PILL_FALLBACKS={'фрукт':'#c84a6e','ягід':'#b03060','цитрус':'#d4891a','солод':'#d98b3a','шоколад':'#8a6a44','горіх':'#9a7040','карамел':'#c8903a','ваніл':'#c8a050','квіт':'#b25b86','трав':'#5a9e57','спец':'#b5453a','кислин':'#c7a93e','тютюн':'#9c5a3c','земл':'#7a6040','дерев':'#7a6040','чорн':'#6d56a6','лакриц':'#7d4a8e','мигдал':'#9a7040','темн':'#7a5030'};
   function pillColor(name){
+    name=String(name||'');
     var c=noteColorByName(name);
     if(c)return c;
     var low=name.toLowerCase();
@@ -4957,13 +4962,14 @@ function espSave(){
   S.brews.unshift(brew);
   S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(actualYield>0?actualYield:targetYield),cat:methodCat(brew.method),method:brew.method,bean:brew.beanName,rating:brew.rating,dose:dose});
   save();
-  addBrewXp('esp');
+  var xpInfo=addBrewXp('esp');
   toast('Шот збережено!');
   BS.espMethod=null;BS.espNeedsMilk=false;BS.espNeedsIce=false;BS.milk=null;BS.ice=null;
   localStorage.removeItem('cm_draft_recipe');currentBrewScreen='bv-method-pick';
   if(document.getElementById('bv-method-l1'))document.getElementById('bv-method-l1').style.display='';
   if(document.getElementById('bv-method-l2'))document.getElementById('bv-method-l2').style.display='none';
   showScr('scr-home');
+  showBrewResultModal(xpInfo);
 }
 
 function espRatioAdj(delta){
@@ -6930,8 +6936,9 @@ function saveBrew(){
   document.getElementById('b-res-rating').textContent=brew.rating.toFixed(1);
   document.getElementById('b-res-flavors').textContent=(RS.flavors.length+RS.aroma.length);
   document.getElementById('b-res-info').textContent=(BS.bean?BS.bean.name+' · ':'')+brew.temp+'°C · 1:'+brew.ratio;
-  addBrewXp('alt');showBV('bv-result');toast('Рецепт збережено!');
+  var xpInfo=addBrewXp('alt');showBV('bv-result');toast('Рецепт збережено!');
   localStorage.removeItem('cm_draft_recipe');currentBrewScreen='bv-method-pick';
+  showBrewResultModal(xpInfo);
 }
 function brewGoSetup(){clearInterval(BS.mainInt);clearInterval(BS.phaseInt);clearInterval(BS.pauseInt);Object.assign(BS,{mainInt:null,phaseInt:null,pauseInt:null,mainStart:null,steps:[],pourCnt:0,phase:'idle',elapsed:0,phaseMs:0,pouredFixed:0,firstDone:false});showBV('bv-setup');bCalc();}
 function brewReset(){
@@ -7437,7 +7444,9 @@ function _mergeS(local, remote){
       var k=(item[idKey]!=null)?item[idKey]:('_loc_'+Math.random());
       map[k]=item;
     });
-    merged[key]=Object.keys(map).map(function(k){return map[k];});
+    /* Object.keys() автоматично сортує числові ключі за зростанням (особливість JS) —
+       тому після злиття явно повертаємо порядок "найновіше — першим" */
+    merged[key]=Object.values(map).sort(function(x,y){return (y[idKey]||0)-(x[idKey]||0);});
   }
   /* Для редагованих сутностей (зерно/девайси/фільтри) — перемагає та версія, яку РЕАЛЬНО редагували останньою (за _upd), інакше пристрій що давно не синхронізувався затирає свіжі зміни іншого */
   function mergeArrByUpd(key, idKey){
@@ -7479,6 +7488,40 @@ function _mergeS(local, remote){
   return merged;
 }
 var sbSaveTimer=null;
+var _sbSaving=false;
+async function _doSbSaveNow(){
+  if(!TG_USER_ID)return;
+  if(S.id===0&&S.xp===0&&(!S.log||S.log.length===0))return;
+  if(_sbSaving){console.log('[sbSave] вже виконується — пропускаю повторний запуск');return;}
+  _sbSaving=true;
+  try{
+    var localSnapshot=S;
+    console.log('[sbSave] СТАРТ, локально рецептів:', (localSnapshot.brews||[]).length);
+    var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
+    });
+    console.log('[sbSave] GET статус:', res.status);
+    var rows=await res.json();
+    var remote=(rows&&rows.length)?rows[0].data:null;
+    console.log('[sbSave] на сервері зараз рецептів:', remote&&remote.brews?remote.brews.length:0);
+    var merged=_mergeS(localSnapshot, remote);
+    console.log('[sbSave] після злиття:', (merged.brews||[]).length);
+    S=merged;
+    localStorage.setItem('cj_v7',JSON.stringify(S));
+    var postRes=await fetch(SUPABASE_URL+'/rest/v1/users',{
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates'
+      },
+      body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
+    });
+    console.log('[sbSave] POST статус:', postRes.status, '— готово, рецептів відправлено:', (S.brews||[]).length);
+  }catch(e){console.log('[sbSave] ПОМИЛКА:', e.message);}
+  finally{_sbSaving=false;}
+}
 function sbSave(){
   if(!TG_USER_ID)return;
   /* Не зберігаємо поки не завантажились з Supabase */
@@ -7486,35 +7529,21 @@ function sbSave(){
   /* Не зберігаємо порожній SEED — захист від затирання реальних даних */
   if(S.id===0&&S.xp===0&&(!S.log||S.log.length===0))return;
   clearTimeout(sbSaveTimer);
-  sbSaveTimer=setTimeout(async function(){
-    try{
-      var localSnapshot=S;
-      console.log('[sbSave] СТАРТ, локально рецептів:', (localSnapshot.brews||[]).length);
-      var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
-        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-      });
-      console.log('[sbSave] GET статус:', res.status);
-      var rows=await res.json();
-      var remote=(rows&&rows.length)?rows[0].data:null;
-      console.log('[sbSave] на сервері зараз рецептів:', remote&&remote.brews?remote.brews.length:0);
-      var merged=_mergeS(localSnapshot, remote);
-      console.log('[sbSave] після злиття:', (merged.brews||[]).length);
-      S=merged;
-      localStorage.setItem('cj_v7',JSON.stringify(S));
-      var postRes=await fetch(SUPABASE_URL+'/rest/v1/users',{
-        method:'POST',
-        headers:{
-          'apikey':SUPABASE_KEY,
-          'Authorization':'Bearer '+SUPABASE_KEY,
-          'Content-Type':'application/json',
-          'Prefer':'resolution=merge-duplicates'
-        },
-        body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
-      });
-      console.log('[sbSave] POST статус:', postRes.status, '— готово, рецептів відправлено:', (S.brews||[]).length);
-    }catch(e){console.log('[sbSave] ПОМИЛКА:', e.message);}
-  },1200);
+  sbSaveTimer=setTimeout(_doSbSaveNow,1200);
 }
+/* ── Мобільний Telegram WebView може призупинити/вбити вкладку при перемиканні швидше ніж встигне відпрацювати дебаунс (1.2с) — тому при втраті фокусу зберігаємо НЕГАЙНО, без очікування ── */
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden && TG_USER_ID && _sbLoaded){
+    clearTimeout(sbSaveTimer);
+    _doSbSaveNow();
+  }
+});
+window.addEventListener('pagehide', function(){
+  if(TG_USER_ID && _sbLoaded){
+    clearTimeout(sbSaveTimer);
+    _doSbSaveNow();
+  }
+});
 
 // Ініціалізація з завантаженням даних
 (async function(){
@@ -7840,6 +7869,27 @@ function addBrewXp(mode){
     lvlBadge.classList.remove('show'); void lvlBadge.offsetWidth;
     setTimeout(function(){lvlBadge.classList.add('show');},200);
   } else if(lvlBadge){ lvlBadge.style.display='none'; lvlBadge.classList.remove('show'); }
+  return {gained:gained, leveledUp:(newLvl>oldLvl), newLevel:newLvl, tierName:(newLvl>oldLvl?getTier(newLvl).name:'')};
+}
+
+/* ── Екран-результат після збереження: ХР + вибір "заварити ще" / "до стрічки" ── */
+function showBrewResultModal(xpInfo){
+  if(!xpInfo)return;
+  var old=document.getElementById('brew-result-modal');if(old)old.remove();
+  var lvlText=xpInfo.leveledUp?('<div style="margin-top:8px;font-size:13px;color:var(--copper-lt);font-weight:700">🎉 Новий рівень '+xpInfo.newLevel+' — '+xpInfo.tierName+'!</div>'):'';
+  var modal=document.createElement('div');
+  modal.id='brew-result-modal';
+  modal.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:24px';
+  modal.innerHTML='<div style="background:var(--card-hi);border:1px solid var(--line-soft);border-radius:16px;padding:26px 20px;max-width:320px;width:100%;box-shadow:0 12px 32px rgba(0,0,0,.5);text-align:center">'
+    +'<div style="font-size:34px;margin-bottom:6px">☕</div>'
+    +'<div style="font-size:15px;color:var(--txt);margin-bottom:6px">Рецепт збережено!</div>'
+    +'<div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt)">+'+xpInfo.gained+' XP</div>'
+    +lvlText
+    +'<div style="display:flex;gap:8px;margin-top:20px">'
+    +'<button onclick="document.getElementById(\'brew-result-modal\').remove();showScr(\'scr-brew\');" style="flex:1;background:none;border:1px solid var(--line-soft);border-radius:10px;padding:11px 8px;font-size:13px;color:var(--txt2);cursor:pointer;font-family:inherit">Заварити ще</button>'
+    +'<button onclick="document.getElementById(\'brew-result-modal\').remove();showScr(\'scr-home\');" style="flex:1;background:var(--copper);border:none;border-radius:10px;padding:11px 8px;font-size:13px;font-weight:700;color:#1c130a;cursor:pointer;font-family:inherit">До стрічки</button>'
+    +'</div></div>';
+  document.body.appendChild(modal);
 }
 
 /* Роутинг для ачівок */
@@ -7858,6 +7908,21 @@ function softDeleteBrew(id){
   var idx = S.brews.findIndex(function(b){ return b.id===id; });
   if(idx===-1) return;
   var brew = S.brews.splice(idx, 1)[0];
+  /* ── Повертаємо списане зерно та фільтр назад на склад ── */
+  var doseNum=parseFloat(brew.dose);
+  if(!isNaN(doseNum)&&doseNum>0){
+    var bean=null;
+    if(brew.beanId!=null) bean=S.beans.find(function(x){return x.id===brew.beanId;});
+    if(!bean&&brew.beanName){
+      var bn=(''+brew.beanName).trim().toLowerCase(), br=(''+(brew.roaster||'')).trim().toLowerCase();
+      bean=S.beans.find(function(x){return (''+x.name).trim().toLowerCase()===bn&&(''+(x.roaster||'')).trim().toLowerCase()===br;});
+    }
+    if(bean){ bean.current=Math.min(bean.total,bean.current+doseNum); bean._upd=Date.now(); }
+  }
+  if(brew.filterId!=null){
+    var filt=S.filters.find(function(x){return x.id===brew.filterId;});
+    if(filt){ filt.current=Math.min(filt.total,filt.current+1); }
+  }
   brew._deletedAt = Date.now();
   S.trash.push(brew);
   var brewDay = dayKey(new Date(brew.ts));
@@ -7975,6 +8040,17 @@ function openXpHistory(){
   openOv('ov-xp-history');
 }
 
+function deleteXpEntry(ts){
+  var idx=(S.xpLog||[]).findIndex(function(e){return e.ts===ts;});
+  if(idx<0)return;
+  var removed=S.xpLog[idx];
+  S.xpLog.splice(idx,1);
+  S.xp=Math.max(0,(S.xp||0)-(removed.amount||0));
+  save();
+  renderXpHistoryList();
+  renderProf();
+  toast('Видалено');
+}
 function renderXpHistoryList(){
   var el = document.getElementById('xp-history-list');
   if(!el) return;
@@ -7992,6 +8068,7 @@ function renderXpHistoryList(){
       +'<div style="font-size:11px;color:var(--txt3);margin-top:2px">'+dateStr+(timeStr?' · '+timeStr:'')+'</div>'
       +'</div>'
       +'<div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);white-space:nowrap;flex-shrink:0">+'+e.amount+' XP</div>'
+      +'<button onclick="deleteXpEntry('+e.ts+')" style="background:none;border:none;color:var(--txt3);cursor:pointer;padding:4px;flex-shrink:0" aria-label="Видалити"><i class="ti ti-trash" style="font-size:16px" aria-hidden="true"></i></button>'
       +'</div>';
   }).join('');
 }
@@ -8081,6 +8158,21 @@ function restoreBrew(id){
   if(idx===-1) return;
   var brew = S.trash.splice(idx,1)[0];
   delete brew._deletedAt;
+  /* ── Списуємо зерно та фільтр знову, симетрично до softDeleteBrew ── */
+  var doseNum=parseFloat(brew.dose);
+  if(!isNaN(doseNum)&&doseNum>0){
+    var bean=null;
+    if(brew.beanId!=null) bean=S.beans.find(function(x){return x.id===brew.beanId;});
+    if(!bean&&brew.beanName){
+      var bn=(''+brew.beanName).trim().toLowerCase(), br=(''+(brew.roaster||'')).trim().toLowerCase();
+      bean=S.beans.find(function(x){return (''+x.name).trim().toLowerCase()===bn&&(''+(x.roaster||'')).trim().toLowerCase()===br;});
+    }
+    if(bean){ bean.current=Math.max(0,bean.current-doseNum); bean._upd=Date.now(); }
+  }
+  if(brew.filterId!=null){
+    var filt=S.filters.find(function(x){return x.id===brew.filterId;});
+    if(filt){ filt.current=Math.max(0,filt.current-1); }
+  }
   var inserted = false;
   for(var k=0; k<S.brews.length; k++){ if(S.brews[k].ts<=brew.ts){ S.brews.splice(k,0,brew); inserted=true; break; } }
   if(!inserted) S.brews.push(brew);
@@ -8275,6 +8367,13 @@ function openNumPad(sliderId,mode){
   else if(mode==='ratio')_npVal=String(document.getElementById('b-ratio').value||'16');
   else if(mode==='vol')_npVal=String(document.getElementById('lb-vol').value||'240');
   else if(mode==='pour-ml')_npVal=String(sl.value||'0');
+  else if(mode==='esp-dose')_npVal=String(document.getElementById('b-esp-dose').value||'18');
+  else if(mode==='esp-ratio')_npVal=String(document.getElementById('b-esp-ratio-sel').value||'2.0');
+  else if(mode==='esp-yield')_npVal=String(document.getElementById('esp-actual-yield').value||'0');
+  else if(mode==='esp-tds')_npVal=String(sl.value||'0');
+  else if(mode==='milk-temp')_npVal=String(document.getElementById('em-milk-temp').value||'60');
+  else if(mode==='milk-vol')_npVal=String(document.getElementById('em-milk-vol').value||'150');
+  else if(mode==='ice-amt')_npVal=String(document.getElementById('em-ice-amount').value||'4');
   _npRefresh();
   var ov=document.getElementById('ov-numpad');
   ov.style.display='flex';
@@ -8287,7 +8386,7 @@ function closeNumPad(){
 }
 function _npRefresh(){
   var d=document.getElementById('np-display');if(!d)return;
-  var suffix=_npMode==='clicks'?' кл.':_npMode==='dose'?' г':_npMode==='ratio'?'':(_npMode==='vol'||_npMode==='pour-ml')?' мл':" °C";
+  var suffix=_npMode==='clicks'?' кл.':_npMode==='dose'||_npMode==='esp-dose'?' г':_npMode==='ratio'||_npMode==='esp-ratio'?'':_npMode==='esp-tds'?'%':_npMode==='ice-amt'?' шт':(_npMode==='vol'||_npMode==='pour-ml'||_npMode==='esp-yield'||_npMode==='milk-vol')?' мл':" °C";
   d.textContent=(_npVal||'—')+suffix;
 }
 function npKey(k){
@@ -8327,6 +8426,32 @@ function npConfirm(){
     if(inp)inp.value=v.toFixed(1);
     var idx=parseInt(String(_npTarget).replace('em-',''),10);
     if(!isNaN(idx))bEditMl(idx);
+  } else if(_npMode==='esp-dose'){
+    v=Math.max(1,Math.min(30,v));
+    document.getElementById('b-esp-dose').value=v;
+    if(typeof bEspCalc==='function')bEspCalc();
+  } else if(_npMode==='esp-ratio'){
+    v=Math.round(Math.max(1,Math.min(5,v))*10)/10;
+    document.getElementById('b-esp-ratio-sel').value=v.toFixed(1);
+    if(typeof bEspCalc==='function')bEspCalc();
+  } else if(_npMode==='esp-yield'){
+    v=Math.max(0,Math.round(v*10)/10);
+    document.getElementById('esp-actual-yield').value=v;
+    var yieldInp=document.getElementById('esp-actual-yield');
+    if(yieldInp&&yieldInp.oninput)yieldInp.oninput();
+  } else if(_npMode==='esp-tds'){
+    v=Math.max(0,Math.min(20,Math.round(v*10)/10));
+    var tdsInp=document.getElementById(_npTarget);
+    if(tdsInp)tdsInp.value=v;
+  } else if(_npMode==='milk-temp'){
+    v=Math.max(0,Math.min(90,Math.round(v)));
+    document.getElementById('em-milk-temp').value=v;
+  } else if(_npMode==='milk-vol'){
+    v=Math.max(0,Math.min(600,Math.round(v)));
+    document.getElementById('em-milk-vol').value=v;
+  } else if(_npMode==='ice-amt'){
+    v=Math.max(0,Math.min(30,Math.round(v)));
+    document.getElementById('em-ice-amount').value=v;
   }
   closeNumPad();
 }
@@ -8338,9 +8463,9 @@ function npConfirm(){
   <div style="width:100%;max-width:420px;background:#1a1c1e;border-radius:22px 22px 0 0;border-top:1px solid #2e3238;padding:16px 14px 28px;box-shadow:0 -8px 40px rgba(0,0,0,.6)">
     <div id="np-display" style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;color:#D89858;text-align:center;margin-bottom:16px;min-height:52px;letter-spacing:-1px">—</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
-      <button onclick="npKey(7)" class="np-btn">7</button><button onclick="npKey(8)" class="np-btn">8</button><button onclick="npKey(9)" class="np-btn">9</button>
-      <button onclick="npKey(4)" class="np-btn">4</button><button onclick="npKey(5)" class="np-btn">5</button><button onclick="npKey(6)" class="np-btn">6</button>
       <button onclick="npKey(1)" class="np-btn">1</button><button onclick="npKey(2)" class="np-btn">2</button><button onclick="npKey(3)" class="np-btn">3</button>
+      <button onclick="npKey(4)" class="np-btn">4</button><button onclick="npKey(5)" class="np-btn">5</button><button onclick="npKey(6)" class="np-btn">6</button>
+      <button onclick="npKey(7)" class="np-btn">7</button><button onclick="npKey(8)" class="np-btn">8</button><button onclick="npKey(9)" class="np-btn">9</button>
       <button onclick="npKey('.')" class="np-btn" id="np-dot" style="font-size:24px">.</button>
       <button onclick="npKey(0)" class="np-btn">0</button>
       <button onclick="npKey('del')" class="np-btn" style="font-size:20px">⌫</button>
