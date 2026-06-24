@@ -4148,6 +4148,7 @@ function addBean(){
       b.score=parseFloat(document.getElementById('bn-score').value)||null;
       b.descriptors=document.getElementById('bn-desc').value.trim();
       b.roastType=roastType;
+      b._upd=Date.now();
     }
     _editBeanId=null;
     save();closeOv('ov-bean');acCloseAll();
@@ -4161,7 +4162,8 @@ function addBean(){
     farm:document.getElementById('bn-farm').value.trim(),
     score:parseFloat(document.getElementById('bn-score').value)||null,
     descriptors:document.getElementById('bn-desc').value.trim(),
-    roastType:roastType
+    roastType:roastType,
+    _upd:Date.now()
   };
   S.beans.unshift(bean);
   if(roaster&&!S.roasters.includes(roaster))S.roasters.push(roaster);
@@ -4374,7 +4376,7 @@ function renderDevList(q){
 }
 function toggleDev(name,type){
   const idx=S.equipment.findIndex(e=>e.name===name&&e.type===type);
-  if(idx>=0)S.equipment.splice(idx,1);else S.equipment.push({id:++S.id,name,type});
+  if(idx>=0)S.equipment.splice(idx,1);else S.equipment.push({id:++S.id,name,type,_upd:Date.now()});
   save();renderDevList(document.getElementById('dev-search').value.toLowerCase());renderCatGrid();
   toast(idx>=0?'Видалено':'Додано');
 }
@@ -4401,13 +4403,13 @@ function addCustomDev(){
   const type=document.getElementById('cd-type').value;
   if(_editDevId){
     const e=S.equipment.find(x=>x.id===_editDevId);
-    if(e){e.name=name;e.type=type;}
+    if(e){e.name=name;e.type=type;e._upd=Date.now();}
     _editDevId=null;
     save();closeOv('ov-custom-dev');document.getElementById('cd-name').value='';
     renderDevList('');renderCatGrid();toast('Оновлено');
     return;
   }
-  S.equipment.push({id:++S.id,name,type});
+  S.equipment.push({id:++S.id,name,type,_upd:Date.now()});
   save();closeOv('ov-custom-dev');document.getElementById('cd-name').value='';
   renderDevList('');renderCatGrid();toast('Додано');
 }
@@ -4427,7 +4429,7 @@ function quickAddDev(name,type,btn){
   }
   /* Confirm — actually add */
   if(S.equipment.some(e=>e.name===name&&e.type===type)){toast('Вже є в інвентарі');return;}
-  S.equipment.push({id:++S.id,name,type});
+  S.equipment.push({id:++S.id,name,type,_upd:Date.now()});
   save();
   document.getElementById('dev-search').value='';
   renderDevList('');renderCatGrid();
@@ -4949,7 +4951,7 @@ function espSave(){
     aroma:(window.nwGetAroma?window.nwGetAroma():[]),
     notes,likes:0,liked:false,ts:Date.now()
   };
-  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean)bean.current=Math.max(0,bean.current-dose);}
+  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-dose);bean._upd=Date.now();}}
   S.brews.unshift(brew);save();
   toast('Шот збережено!');
   BS.espMethod=null;BS.espNeedsMilk=false;BS.espNeedsIce=false;BS.milk=null;BS.ice=null;
@@ -5765,7 +5767,7 @@ function bFinalize(){
 /* Перехід на екран оцінки */
 function brewStop(){
   bFinalize();
-  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
+  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);bean._upd=Date.now();if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
   if(BS.filter){const filter=S.filters.find(f=>f.id===BS.filter.id);if(filter){filter.current=Math.max(0,filter.current-1);if(filter.current===0)toast('⚠️ Фильтры '+filter.name+' закончились!');else if(filter.current<=10)toast('⚠️ Мало фильтров: '+filter.current+' шт');}}
   save();
   RS={rating:8.0,flavors:[],aroma:[],notes:'',_fwSel:{_active:null,_activeSub:null},_awSel:{_active:null,_activeSub:null}};
@@ -7431,11 +7433,26 @@ function _mergeS(local, remote){
     });
     merged[key]=Object.keys(map).map(function(k){return map[k];});
   }
+  /* Для зерна/девайсів/фільтрів — перемагає та версія, яку РЕАЛЬНО редагували останньою (за _upd), інакше пристрій що давно не синхронізувався затирає свіжі зміни іншого */
+  function mergeArrByUpd(key, idKey){
+    var a=local[key]||[], b=merged[key]||[];
+    var map={};
+    b.forEach(function(item){ if(item&&item[idKey]!=null) map[item[idKey]]=item; });
+    a.forEach(function(item){
+      if(!item) return;
+      var k=(item[idKey]!=null)?item[idKey]:('_loc_'+Math.random());
+      var existing=map[k];
+      if(!existing || (item._upd||0)>=(existing._upd||0)){
+        map[k]=item;
+      }
+    });
+    merged[key]=Object.keys(map).map(function(k){return map[k];});
+  }
   mergeArrByKey('brews','ts');
   mergeArrByKey('log','ts');
-  mergeArrByKey('beans','id');
-  mergeArrByKey('equipment','id');
-  mergeArrByKey('filters','id');
+  mergeArrByUpd('beans','id');
+  mergeArrByUpd('equipment','id');
+  mergeArrByUpd('filters','id');
   ['roasters','beanNames','milks','juices'].forEach(function(key){
     var set={};
     (local[key]||[]).concat(merged[key]||[]).forEach(function(v){ if(v) set[v]=true; });
