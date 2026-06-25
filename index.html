@@ -1938,7 +1938,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="grid2" style="gap:8px;margin-bottom:10px">
         <div>
           <div class="field-lbl" data-i18n="param_esp_time">Час (сек)</div>
-          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)" id="esp-res-sec">—</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft);cursor:pointer" id="esp-res-sec" onclick="openNumPad('esp-res-sec','esp-res-time')">—</div>
         </div>
         <div>
           <div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div>
@@ -2018,6 +2018,12 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <div class="notes-block" style="margin-bottom:16px">
       <div class="lbl" style="margin-bottom:6px">Дата та час</div>
       <input type="datetime-local" id="edit-datetime" class="notes-inp" style="padding:10px;font-size:14px;font-family:var(--mono);font-weight:600">
+    </div>
+
+    <!-- Час проливу (тільки для еспресо-рецептів) -->
+    <div class="notes-block" id="edit-esp-time-block" style="margin-bottom:16px;display:none">
+      <div class="lbl" style="margin-bottom:6px">Час проливу (с)</div>
+      <input type="number" id="edit-esp-time" min="0" max="180" class="notes-inp" style="padding:10px;font-size:15px;font-family:var(--mono);font-weight:700;text-align:center" readonly onclick="openNumPad('edit-esp-time','edit-esp-time')">
     </div>
 
     <!-- Доза / Ratio / Темп -->
@@ -3382,6 +3388,22 @@ function _migrateS(){
   if(!S.achEarned){ S.achEarned={}; changed=true; }
   if(!S.trash){ S.trash=[]; changed=true; }
   if(S.brews&&S.brews.length){S.brews.forEach(function(br){if(br.cafeVisit===undefined){br.cafeVisit=(br.source==='place')||!!(br.place&&br.place.length);changed=true;}});}
+  /* ── Доповнюємо S.log для рецептів, у яких немає відповідного запису (звідси малюється календар) —
+     інакше деякі дні (зазвичай старі еспресо-рецепти) виглядають порожніми в календарі, хоч рецепти є ── */
+  if(S.brews&&S.brews.length){
+    var _logIds={};
+    (S.log||[]).forEach(function(e){ if(e.id!=null) _logIds[e.id]=true; });
+    var _missingLog=S.brews.filter(function(br){return !_logIds[br.id];}).map(function(br){
+      var _dose=parseFloat(br.dose)||16, _ratio=parseFloat(br.ratio)||(br.espresso?2:16);
+      var _vol = br.espresso ? Math.round(br.espresso.actualYield||br.espresso.targetYield||(_dose*_ratio)) : Math.round(_dose*_ratio);
+      return {id:br.id,ts:br.ts,vol:_vol,cat:methodCat(br.method||''),method:br.method||'',bean:br.beanName||'',rating:br.rating||8,dose:_dose};
+    });
+    if(_missingLog.length){
+      S.log=(S.log||[]).concat(_missingLog);
+      S.log.sort(function(x,y){return (y.ts||0)-(x.ts||0);});
+      changed=true;
+    }
+  }
   /* ХР більше не окреме поле — рахуємо наново з кількості рецептів + отриманих ачівок щоразу при завантаженні */
   var _recomputedXp = computeTotalXp();
   if(_recomputedXp !== S.xp){ S.xp = _recomputedXp; changed = true; }
@@ -3733,6 +3755,24 @@ function renderStat(){
   </div>`;
 }
 
+function _dayGroupLabel(ts){
+  var d=new Date(ts);
+  var now=new Date();
+  var d0=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  var n0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var diffDays=Math.round((n0-d0)/86400000);
+  var pad=function(n){return (n<10?'0':'')+n;};
+  var dateStr=pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear();
+  if(diffDays===0)return 'Сьогодні · '+dateStr;
+  if(diffDays===1)return 'Вчора · '+dateStr;
+  if(diffDays===2)return 'Позавчора · '+dateStr;
+  var weekdays=['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+  return dateStr+' · '+weekdays[d.getDay()];
+}
+function _dayKeyOf(ts){
+  var d=new Date(ts);
+  return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
+}
 function renderFeed(){
   const hs=document.getElementById('hdr-streak');
   if(hs)hs.classList.toggle('show',feedTab==='mine');
@@ -3741,6 +3781,7 @@ function renderFeed(){
   const el=document.getElementById('feed-list');
   if(feedTab==='comm'){renderCommunity(el);return}
   if(!S.brews.length){el.innerHTML=`<div class="empty"><i class="ti ti-coffee" aria-hidden="true"></i><div class="empty-t">${t('journal_no_recipes')}</div><div class="empty-s">${t('journal_empty_hint')}</div></div>`;return}
+var _lastDayKey=null;
 el.innerHTML=S.brews.map(b=>{
   try{
   const bid=b.id;
@@ -3785,7 +3826,7 @@ el.innerHTML=S.brews.map(b=>{
     _espRow(t('brew_shot_time'),b.totalTime||(e.shotTime?Math.floor(e.shotTime/60)+':'+(e.shotTime%60<10?'0':'')+(e.shotTime%60):'—')),
     _espRow(t('brew_yield'),`${e.actualYield||e.targetYield||'—'} мл`),
     _espRow('Ratio',`1:${b.ratio||'—'}`),
-    _espRow(t('brew_pressure'),`${e.pressure||'9'} бар`)
+    _espRow(t('brew_pressure'),`${String(e.pressure||'9').replace(/\s*бар\s*/gi,'').trim()} бар`)
   ];if(e.tdsActual)rows.push(_espRow(t('brew_tds_actual'),`${e.tdsActual}%`));if(e.tdsTarget)rows.push(_espRow(t('brew_tds_target'),`${e.tdsTarget}%`));return`<div class="bc-esp-table">${rows.join('')}</div>`;})();
   const logRows = cafeOn ? ''
     : _isEspLog ? _espTable
@@ -3878,7 +3919,7 @@ el.innerHTML=S.brews.map(b=>{
       ${espM('ti-scale',b.dose||'—','г',t('brew_dose_label'))}
       ${espM('ti-droplet',(_esp.actualYield||_esp.targetYield||'—'),'мл',t('brew_yield'))}
       ${espM('ti-arrows-right-left','1:'+(b.ratio||'—'),'','Ratio')}
-      ${espM('ti-gauge',(_esp.pressure||'9'),' бар',t('brew_pressure'))}
+      ${espM('ti-gauge',String(_esp.pressure||'9').replace(/\s*бар\s*/gi,'').trim(),' бар',t('brew_pressure'))}
     </div>
     ${(_esp&&_esp.tdsActual)?`<div class="bc-sum-metrics">
       ${espM('ti-droplet-half',_esp.tdsActual,'%',t('brew_tds_actual'))}
@@ -3910,9 +3951,17 @@ el.innerHTML=S.brews.map(b=>{
   ].join('');
   const summaryBlock=(sumMetrics||devRows)?`<div class="bc-summary">${sumMetrics?`<div class="bc-sum-metrics">${sumMetrics}</div>`:''}${devRows?`<div class="bc-sum-dev"><div class="bc-sum-dev-lbl"><i class="ti ti-tool"></i>${t('devices_title')}</div>${devRows}</div>`:''}</div>`:'';
 
-  return`<div class="swipe-outer" id="so-${bid}"><div class="swipe-delete-bg" onclick="softDeleteBrew(${bid})"><i class="ti ti-trash" aria-hidden="true"></i><span>Видалити</span></div><div class="brew-card" id="bc-${bid}" style="border-left:3px solid ${ratColor};background:linear-gradient(0deg,${ratColor}10,${ratColor}10),linear-gradient(165deg,var(--card-hi) 0%,var(--card) 45%,var(--card-lo) 100%)">
+  var _dayKey=_dayKeyOf(b.ts);
+  var _dayHeaderHtml='';
+  if(_dayKey!==_lastDayKey){
+    _dayHeaderHtml=`<div class="feed-day-header" style="padding:16px 4px 6px;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);font-weight:700">${_dayGroupLabel(b.ts)}</div>`;
+    _lastDayKey=_dayKey;
+  }
+  var _cardTimeStr=(function(){var dd=new Date(b.ts);var pad=function(n){return (n<10?'0':'')+n;};return pad(dd.getHours())+':'+pad(dd.getMinutes());})();
+
+  return _dayHeaderHtml+`<div class="swipe-outer" id="so-${bid}"><div class="swipe-delete-bg" onclick="softDeleteBrew(${bid})"><i class="ti ti-trash" aria-hidden="true"></i><span>Видалити</span></div><div class="brew-card" id="bc-${bid}" style="border-left:3px solid ${ratColor};background:linear-gradient(0deg,${ratColor}10,${ratColor}10),linear-gradient(165deg,var(--card-hi) 0%,var(--card) 45%,var(--card-lo) 100%)">
     <div class="bc-top${cafeOn?' bc-top-cafe':''}">
-      <div style="min-width:0"><div class="bc-name">${_liveBean.name||t('journal_no_name')}</div>${_liveBean.roaster?`<div class="bc-roaster">${_liveBean.roaster}</div>`:''}${cafeMarker}</div>
+      <div style="min-width:0"><div class="bc-name">${_liveBean.name||t('journal_no_name')}</div>${_liveBean.roaster?`<div class="bc-roaster">${_liveBean.roaster}</div>`:''}<div class="bc-date" style="font-size:10.5px;color:var(--txt3);margin-top:2px;font-family:var(--mono)">${_cardTimeStr}</div>${cafeMarker}</div>
       <div class="bc-right"><div class="bc-method-grp"><span class="method-pill">${displayMethod}</span>${brewDevice?`<span class="bc-device">${brewDevice}</span>`:''}</div><span class="rating-num" style="color:${ratColor}">${parseFloat(b.rating||0).toFixed(1)}</span></div>
       ${cafeOn?`<span class="bc-cafe-badge" title="Кав'ярня"><i class="ti ti-building-store" aria-hidden="true"></i></span>`:''}
     </div>
@@ -4625,7 +4674,7 @@ function buildShareHTML(b){
         '<div class="sc-metrics" style="grid-template-columns:repeat(3,1fr);margin-top:24px">'+
           '<div class="sc-metric"><i class="ti ti-clock"></i><div class="sc-metric-v">'+time+'</div><div class="sc-metric-l">Час шоту</div></div>'+
           '<div class="sc-metric"><i class="ti ti-arrows-right-left"></i><div class="sc-metric-v">1:'+b.ratio+'</div><div class="sc-metric-l">Ratio</div></div>'+
-          '<div class="sc-metric"><i class="ti ti-gauge"></i><div class="sc-metric-v">'+(esp.pressure||'9 бар')+'</div><div class="sc-metric-l">Тиск</div></div>'+
+          '<div class="sc-metric"><i class="ti ti-gauge"></i><div class="sc-metric-v">'+(String(esp.pressure||'9').replace(/\s*бар\s*/gi,'').trim()+' бар')+'</div><div class="sc-metric-l">Тиск</div></div>'+
         '</div>'+
         (esp.tdsActual?'<div class="sc-section" style="margin-top:24px"><div class="sc-sec-lbl"><i class="ti ti-droplet-half"></i>Екстракція</div>'+
           '<div class="sc-metrics" style="grid-template-columns:repeat(2,1fr)">'+
@@ -4935,7 +4984,7 @@ function espSave(){
   const rating=parseFloat(document.getElementById('esp-rate-slider').value)||8;
   const notes=document.getElementById('esp-notes').value.trim();
   const temp=document.getElementById('b-esp-temp-out').textContent;
-  const bar=document.getElementById('b-esp-bar-out').textContent;
+  const bar=document.getElementById('b-esp-bar-sl').value;
   const brew={
     id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',beanId:BS.bean?BS.bean.id:null,
     method:BS.espMethod||t('method_esp'),dose:dose.toString(),temp:temp.replace('°C',''),
@@ -6799,6 +6848,17 @@ function openEditBrew(bid){
   var _pad = function(n){return (n<10?'0':'')+n;};
   document.getElementById('edit-datetime').value = _dt.getFullYear()+'-'+_pad(_dt.getMonth()+1)+'-'+_pad(_dt.getDate())+'T'+_pad(_dt.getHours())+':'+_pad(_dt.getMinutes());
 
+  // Еспресо-рецепти редагують час проливу окремим полем замість кроків
+  var _isEspBrew = !!b.espresso;
+  var _espTimeBlock = document.getElementById('edit-esp-time-block');
+  var _stepsBlock = document.getElementById('edit-steps-block');
+  if(_espTimeBlock) _espTimeBlock.style.display = _isEspBrew ? 'block' : 'none';
+  if(_stepsBlock) _stepsBlock.style.display = _isEspBrew ? 'none' : 'block';
+  if(_isEspBrew){
+    var _curSec = parseInt(b.totalTime) || (b.espresso&&b.espresso.shotTime) || 0;
+    document.getElementById('edit-esp-time').value = _curSec;
+  }
+
   // Кроки
   editRenderSteps(b.steps||[]);
 
@@ -6899,14 +6959,20 @@ function saveEditBrew(){
   b.flavors = (window.nwGetFlavors?window.nwGetFlavors():[]);
   b.aroma = (window.nwGetAroma?window.nwGetAroma():[]);
 
-  // Перераховуємо totalTime зі steps
-  var steps = b.steps||[];
-  var totalMs = steps.reduce(function(s,st){return s+(st.ph!=null?st.ph:(st.dur||0)*1000);},0);
-  if(totalMs>0){
-    var tsec=Math.round(totalMs/1000), tm=Math.floor(tsec/60), ts=tsec%60;
-    b.totalTime=tm+':'+(ts<10?'0':'')+ts;
+  // Перераховуємо totalTime зі steps (Альтернатива) або зберігаємо ручний час проливу (Еспресо)
+  if(b.espresso){
+    var _newSec = parseInt(document.getElementById('edit-esp-time').value) || 0;
+    b.totalTime = _newSec+'с';
+    b.espresso.shotTime = _newSec;
+  } else {
+    var steps = b.steps||[];
+    var totalMs = steps.reduce(function(s,st){return s+(st.ph!=null?st.ph:(st.dur||0)*1000);},0);
+    if(totalMs>0){
+      var tsec=Math.round(totalMs/1000), tm=Math.floor(tsec/60), ts=tsec%60;
+      b.totalTime=tm+':'+(ts<10?'0':'')+ts;
+    }
+    b.totalMl = steps.filter(function(s){return s.type==='pour';}).reduce(function(s,st){return s+(st.ml||0);},0);
   }
-  b.totalMl = steps.filter(function(s){return s.type==='pour';}).reduce(function(s,st){return s+(st.ml||0);},0);
 
   // Оновлюємо log
   var logEntry = S.log.find(function(l){return l.id===b.id;});
@@ -7474,8 +7540,18 @@ function _mergeS(local, remote){
   mergeArrByKey('brews','ts');
   mergeArrByKey('log','ts');
   mergeArrByKey('trash','id');
-  /* Все що вже в кошику (з будь-якого пристрою) — навмисно видалено, прибираємо з рецептів незалежно від того,
-     що ще лежить на сервері (інакше старі версії з сервера постійно "повертають" видалені рецепти) */
+  /* Захист — перевіряємо СИРЕ об'єднання (до виключення кошика): воно ніколи не повинно бути меншим за локальне,
+     інакше це ознака помилки самого об'єднання, а не навмисного видалення */
+  if((merged.brews||[]).length < (local.brews||[]).length){
+    console.log('[_mergeS] ЗАХИСТ: рецептів стало менше ПІСЛЯ СИРОГО об\'єднання (',(local.brews||[]).length,'->',(merged.brews||[]).length,') — лишаю локальну версію brews');
+    merged.brews=local.brews;
+  }
+  if((merged.log||[]).length < (local.log||[]).length){
+    console.log('[_mergeS] ЗАХИСТ: лог став меншим після сирого об\'єднання — лишаю локальну версію log');
+    merged.log=local.log;
+  }
+  /* Тепер прибираємо з рецептів усе що вже в кошику (з будь-якого пристрою) — це навмисне видалення,
+     йому дозволено зменшувати список далі, на відміну від помилки об'єднання вище */
   var _trashedIds={};
   (merged.trash||[]).forEach(function(tItem){ if(tItem&&tItem.id!=null) _trashedIds[tItem.id]=true; });
   if(Object.keys(_trashedIds).length){
@@ -7493,14 +7569,6 @@ function _mergeS(local, remote){
   merged.id=Math.max(local.id||0, merged.id||0);
   merged.record=Math.max(local.record||0, merged.record||0);
   merged.achEarned=Object.assign({}, merged.achEarned||{}, local.achEarned||{});
-  if((merged.brews||[]).length < (local.brews||[]).length){
-    console.log('[_mergeS] ЗАХИСТ: рецептів стало менше після злиття (',(local.brews||[]).length,'->',(merged.brews||[]).length,') — лишаю локальну версію brews');
-    merged.brews=local.brews;
-  }
-  if((merged.log||[]).length < (local.log||[]).length){
-    console.log('[_mergeS] ЗАХИСТ: лог став меншим — лишаю локальну версію log');
-    merged.log=local.log;
-  }
   /* ХР більше не окреме поле що може розсинхронитись — рахуємо наново з готових brews+achEarned після злиття */
   merged.xp = computeTotalXp(merged);
   return merged;
@@ -8419,6 +8487,8 @@ function openNumPad(sliderId,mode){
   else if(mode==='esp-yield')_npVal=String(document.getElementById('esp-actual-yield').value||'0');
   else if(mode==='esp-tds')_npVal=String(sl.value||'0');
   else if(mode==='milk-temp')_npVal=String(document.getElementById('em-milk-temp').value||'60');
+  else if(mode==='esp-res-time')_npVal=String(espSec||0);
+  else if(mode==='edit-esp-time')_npVal=String(document.getElementById('edit-esp-time').value||'0');
   else if(mode==='milk-vol')_npVal=String(document.getElementById('em-milk-vol').value||'150');
   else if(mode==='ice-amt')_npVal=String(document.getElementById('em-ice-amount').value||'4');
   _npRefresh();
@@ -8433,7 +8503,7 @@ function closeNumPad(){
 }
 function _npRefresh(){
   var d=document.getElementById('np-display');if(!d)return;
-  var suffix=_npMode==='clicks'?' кл.':_npMode==='dose'||_npMode==='esp-dose'?' г':_npMode==='ratio'||_npMode==='esp-ratio'?'':_npMode==='esp-tds'?'%':_npMode==='ice-amt'?' шт':(_npMode==='vol'||_npMode==='pour-ml'||_npMode==='esp-yield'||_npMode==='milk-vol')?' мл':" °C";
+  var suffix=_npMode==='clicks'?' кл.':_npMode==='dose'||_npMode==='esp-dose'?' г':_npMode==='ratio'||_npMode==='esp-ratio'?'':_npMode==='esp-tds'?'%':_npMode==='ice-amt'?' шт':(_npMode==='esp-res-time'||_npMode==='edit-esp-time')?' с':(_npMode==='vol'||_npMode==='pour-ml'||_npMode==='esp-yield'||_npMode==='milk-vol')?' мл':" °C";
   d.textContent=(_npVal||'—')+suffix;
 }
 function npKey(k){
@@ -8499,6 +8569,16 @@ function npConfirm(){
   } else if(_npMode==='ice-amt'){
     v=Math.max(0,Math.min(30,Math.round(v)));
     document.getElementById('em-ice-amount').value=v;
+  } else if(_npMode==='esp-res-time'){
+    v=Math.max(0,Math.min(180,Math.round(v)));
+    espSec=v;
+    var secDiv=document.getElementById('esp-res-sec');
+    if(secDiv)secDiv.textContent=v+'с';
+    var lblDiv=document.getElementById('esp-res-time-lbl');
+    if(lblDiv)lblDiv.textContent='Час проливу: '+v+' секунд';
+  } else if(_npMode==='edit-esp-time'){
+    v=Math.max(0,Math.min(180,Math.round(v)));
+    document.getElementById('edit-esp-time').value=v;
   }
   closeNumPad();
 }
