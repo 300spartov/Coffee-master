@@ -2014,6 +2014,12 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       </div>
     </div>
 
+    <!-- Дата та час -->
+    <div class="notes-block" style="margin-bottom:16px">
+      <div class="lbl" style="margin-bottom:6px">Дата та час</div>
+      <input type="datetime-local" id="edit-datetime" class="notes-inp" style="padding:10px;font-size:14px;font-family:var(--mono);font-weight:600">
+    </div>
+
     <!-- Доза / Ratio / Темп -->
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
       <div class="notes-block" style="margin-bottom:0">
@@ -6789,6 +6795,10 @@ function openEditBrew(bid){
   document.getElementById('edit-temp').value = parseFloat(b.temp||93);
   document.getElementById('edit-notes').value = b.notes||'';
 
+  var _dt = new Date(b.ts||Date.now());
+  var _pad = function(n){return (n<10?'0':'')+n;};
+  document.getElementById('edit-datetime').value = _dt.getFullYear()+'-'+_pad(_dt.getMonth()+1)+'-'+_pad(_dt.getDate())+'T'+_pad(_dt.getHours())+':'+_pad(_dt.getMinutes());
+
   // Кроки
   editRenderSteps(b.steps||[]);
 
@@ -6878,6 +6888,13 @@ function saveEditBrew(){
   b.temp = document.getElementById('edit-temp').value;
   b.notes = document.getElementById('edit-notes').value.trim();
 
+  // Дата та час створення
+  var _dtVal = document.getElementById('edit-datetime').value;
+  if(_dtVal){
+    var _newTs = new Date(_dtVal).getTime();
+    if(!isNaN(_newTs)) b.ts = _newTs;
+  }
+
   // Смак/аромат — читаємо ДО закриття (поки колесо ще в оверлеї)
   b.flavors = (window.nwGetFlavors?window.nwGetFlavors():[]);
   b.aroma = (window.nwGetAroma?window.nwGetAroma():[]);
@@ -6893,11 +6910,17 @@ function saveEditBrew(){
 
   // Оновлюємо log
   var logEntry = S.log.find(function(l){return l.id===b.id;});
-  if(logEntry){ logEntry.rating=b.rating; }
+  if(logEntry){ logEntry.rating=b.rating; logEntry.ts=b.ts; }
+
+  // Дата могла змінитись — перевпорядковуємо і оновлюємо календар/стрік
+  S.brews.sort(function(x,y){return (y.ts||0)-(x.ts||0);});
+  S.log.sort(function(x,y){return (y.ts||0)-(x.ts||0);});
 
   save();
   closeEditBrew();
   renderFeed();
+  if(typeof renderCalendar==='function')renderCalendar();
+  if(typeof renderStreak==='function')renderStreak();
   toast('Рецепт оновлено!');
 }
 
