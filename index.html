@@ -3376,27 +3376,9 @@ function _migrateS(){
   if(!S.achEarned){ S.achEarned={}; changed=true; }
   if(!S.trash){ S.trash=[]; changed=true; }
   if(S.brews&&S.brews.length){S.brews.forEach(function(br){if(br.cafeVisit===undefined){br.cafeVisit=(br.source==='place')||!!(br.place&&br.place.length);changed=true;}});}
-  if(changed && S.xp===0 && S.brews && S.brews.length>0){
-    S.xp=Math.min(S.brews.length*15, 2000);
-    S._xpUpd=Date.now();
-  }
-  /* ── Відновлення повної історії ХР: тягнемо xpLog з усіх існуючих рецептів і кав'ярень (ОДНОРАЗОВО, щоб видалені вручну записи не повертались) ── */
-  if(!S._xpBackfillDone && S.brews && S.brews.length){
-    if(!S.xpLog)S.xpLog=[];
-    var _altLbl=t('brew_title');
-    var _existingBrewIds={};
-    S.xpLog.forEach(function(e){ if(e.brewId!=null) _existingBrewIds[e.brewId]=true; });
-    var _brewLog=S.brews.filter(function(br){return !_existingBrewIds[br.id];}).map(function(br){
-      return {amount:15,reason:br.cafeVisit?"Кав'ярня":(br.method||_altLbl),ts:br.ts,brewId:br.id};
-    });
-    if(_brewLog.length){
-      S.xpLog=S.xpLog.concat(_brewLog);
-      S._xpUpd=Date.now();
-      changed=true;
-    }
-    S._xpBackfillDone=true;
-    changed=true;
-  }
+  /* ХР більше не окреме поле — рахуємо наново з кількості рецептів + отриманих ачівок щоразу при завантаженні */
+  var _recomputedXp = computeTotalXp();
+  if(_recomputedXp !== S.xp){ S.xp = _recomputedXp; changed = true; }
   if(changed){ S.record=0; }
   if(changed) localStorage.setItem('cj_v7',JSON.stringify(S));
 }
@@ -7468,6 +7450,15 @@ function _mergeS(local, remote){
   }
   mergeArrByKey('brews','ts');
   mergeArrByKey('log','ts');
+  mergeArrByKey('trash','id');
+  /* Все що вже в кошику (з будь-якого пристрою) — навмисно видалено, прибираємо з рецептів незалежно від того,
+     що ще лежить на сервері (інакше старі версії з сервера постійно "повертають" видалені рецепти) */
+  var _trashedIds={};
+  (merged.trash||[]).forEach(function(tItem){ if(tItem&&tItem.id!=null) _trashedIds[tItem.id]=true; });
+  if(Object.keys(_trashedIds).length){
+    merged.brews=(merged.brews||[]).filter(function(b){ return !_trashedIds[b.id]; });
+    merged.log=(merged.log||[]).filter(function(l){ return !_trashedIds[l.id]; });
+  }
   mergeArrByUpd('beans','id');
   mergeArrByUpd('equipment','id');
   mergeArrByUpd('filters','id');
@@ -7479,15 +7470,6 @@ function _mergeS(local, remote){
   merged.id=Math.max(local.id||0, merged.id||0);
   merged.record=Math.max(local.record||0, merged.record||0);
   merged.achEarned=Object.assign({}, merged.achEarned||{}, local.achEarned||{});
-  merged._xpBackfillDone = local._xpBackfillDone || merged._xpBackfillDone || false;
-  /* xp/xpLog — порівнюємо за часом останньої зміни (_xpUpd), а не "хто більший":
-     якщо просто брати максимум — видалення запису ХР ніколи не зможе зменшити суму,
-     а сліпа довіра локальному могла би стерти реальний прогрес при першому заході з нового пристрою */
-  if((local._xpUpd||0) >= (merged._xpUpd||0)){
-    merged.xp = local.xp||0;
-    merged.xpLog = local.xpLog||[];
-    merged._xpUpd = local._xpUpd||0;
-  }
   if((merged.brews||[]).length < (local.brews||[]).length){
     console.log('[_mergeS] ЗАХИСТ: рецептів стало менше після злиття (',(local.brews||[]).length,'->',(merged.brews||[]).length,') — лишаю локальну версію brews');
     merged.brews=local.brews;
@@ -7496,6 +7478,8 @@ function _mergeS(local, remote){
     console.log('[_mergeS] ЗАХИСТ: лог став меншим — лишаю локальну версію log');
     merged.log=local.log;
   }
+  /* ХР більше не окреме поле що може розсинхронитись — рахуємо наново з готових brews+achEarned після злиття */
+  merged.xp = computeTotalXp(merged);
   return merged;
 }
 var sbSaveTimer=null;
@@ -7651,14 +7635,17 @@ function buildAchievements(){
 
 function checkAchievements(markOnly){
   if(!S.achEarned) S.achEarned={};
-  if(!S.xpLog) S.xpLog=[];
   var defs=buildAchievements();
+  var newlyEarned=false;
   defs.forEach(function(a){
     if(!S.achEarned[a.id]&&a.check()){
       S.achEarned[a.id]=Date.now();
-      if(!markOnly){if(!S.xp)S.xp=0;S.xp+=a.xp;S.xpLog.push({amount:a.xp,reason:a.name,ts:Date.now()});S._xpUpd=Date.now();}
+      newlyEarned=true;
     }
   });
+  if(newlyEarned && !markOnly){
+    S.xp=computeTotalXp();
+  }
 }
 
 /* РЕНДЕР ПРОФІЛЮ v2 */
@@ -7855,16 +7842,23 @@ function toggleStatsV2(){
 }
 
 /* XP нарахування при збереженні заварювання */
+function computeTotalXp(target){
+  target = target || S;
+  var brewXp = (target.brews||[]).length * 15;
+  var achXp = 0;
+  var defs = buildAchievements();
+  defs.forEach(function(a){
+    if(target.achEarned && target.achEarned[a.id]) achXp += (a.xp||0);
+  });
+  return brewXp + achXp;
+}
 function addBrewXp(mode, methodName, brewId){
   if(!S.xp)S.xp=0;
-  if(!S.xpLog)S.xpLog=[];
   var oldLvl=getLevelFromXp(S.xp);
-  var gained=15;
-  S.xp+=gained;
-  S._xpUpd=Date.now();
-  var isEsp0=(mode==='esp');
-  S.xpLog.push({amount:gained,reason:methodName||(isEsp0?t('method_esp'):t('brew_title')),ts:Date.now(),brewId:brewId||null});
-  checkAchievements(false);
+  var oldXp=S.xp;
+  checkAchievements(true); /* позначити нові ачівки, без перерахунку — самі XP перерахуємо одразу нижче разом з рецептом */
+  S.xp=computeTotalXp();
+  var gained=S.xp-oldXp;
   save();
   var newLvl=getLevelFromXp(S.xp);
   var isEsp=(mode==='esp');
@@ -8055,22 +8049,19 @@ function openXpHistory(){
   openOv('ov-xp-history');
 }
 
-function deleteXpEntry(ts){
-  var idx=(S.xpLog||[]).findIndex(function(e){return e.ts===ts;});
-  if(idx<0)return;
-  var removed=S.xpLog[idx];
-  S.xpLog.splice(idx,1);
-  S.xp=Math.max(0,(S.xp||0)-(removed.amount||0));
-  S._xpUpd=Date.now();
-  save();
-  renderXpHistoryList();
-  renderProf();
-  toast('Видалено');
-}
 function renderXpHistoryList(){
   var el = document.getElementById('xp-history-list');
   if(!el) return;
-  var items = (S.xpLog||[]).slice().sort(function(a,b){ return b.ts-a.ts; });
+  var items = [];
+  (S.brews||[]).forEach(function(b){
+    items.push({amount:15, reason:b.cafeVisit?"Кав'ярня":(b.method||t('brew_title')), ts:b.ts});
+  });
+  var defs = buildAchievements();
+  Object.keys(S.achEarned||{}).forEach(function(id){
+    var a = defs.find(function(d){return d.id===id;});
+    if(a) items.push({amount:a.xp, reason:a.name, ts:S.achEarned[id]});
+  });
+  items.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   if(!items.length){
     el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--txt3);font-size:13px"><i class="ti ti-bolt" style="font-size:32px;display:block;margin-bottom:10px;opacity:.3"></i>Поки немає нарахувань XP</div>';
     return;
@@ -8084,7 +8075,6 @@ function renderXpHistoryList(){
       +'<div style="font-size:11px;color:var(--txt3);margin-top:2px">'+dateStr+(timeStr?' · '+timeStr:'')+'</div>'
       +'</div>'
       +'<div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);white-space:nowrap;flex-shrink:0">+'+e.amount+' XP</div>'
-      +'<button onclick="deleteXpEntry('+e.ts+')" style="background:none;border:none;color:var(--txt3);cursor:pointer;padding:4px;flex-shrink:0" aria-label="Видалити"><i class="ti ti-trash" style="font-size:16px" aria-hidden="true"></i></button>'
       +'</div>';
   }).join('');
 }
