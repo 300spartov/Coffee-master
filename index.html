@@ -7507,24 +7507,42 @@ function _mergeS(local, remote){
 }
 var sbSaveTimer=null;
 var _sbSaving=false;
+/* ── Примусове перезаписування сервера поточною локальною версією, без злиття.
+   Використовувати коли впевнений, що ЦЕЙ пристрій має правильні дані (наприклад,
+   видалив рецепти тут, а на іншому пристрої вони ще старі) ── */
+async function forcePushToServer(){
+  if(!TG_USER_ID){toast('Немає підключення до Telegram');return;}
+  if(!confirm('Це перезапише дані на сервері поточною версією цього пристрою, без об\'єднання з тим що могло змінитись на інших пристроях. Продовжити?'))return;
+  try{
+    toast('Зберігаю на сервер...');
+    var postRes=await fetch(SUPABASE_URL+'/rest/v1/users',{
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates'
+      },
+      body:JSON.stringify({telegram_id:TG_USER_ID,data:S,updated_at:new Date().toISOString()})
+    });
+    console.log('[forcePushToServer] статус:', postRes.status, 'рецептів відправлено:', (S.brews||[]).length);
+    if(postRes.status>=200&&postRes.status<300){
+      toast('Готово! На сервері тепер '+(S.brews||[]).length+' рецептів');
+    } else {
+      toast('Помилка збереження — деталі в консолі');
+    }
+  }catch(e){
+    console.log('[forcePushToServer] ПОМИЛКА:', e.message);
+    toast('Помилка: '+e.message);
+  }
+}
 async function _doSbSaveNow(){
   if(!TG_USER_ID)return;
   if(S.id===0&&S.xp===0&&(!S.log||S.log.length===0))return;
   if(_sbSaving){console.log('[sbSave] вже виконується — пропускаю повторний запуск');return;}
   _sbSaving=true;
   try{
-    var localSnapshot=S;
-    console.log('[sbSave] СТАРТ, локально рецептів:', (localSnapshot.brews||[]).length);
-    var res=await fetch(SUPABASE_URL+'/rest/v1/users?telegram_id=eq.'+TG_USER_ID+'&select=data',{
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}
-    });
-    console.log('[sbSave] GET статус:', res.status);
-    var rows=await res.json();
-    var remote=(rows&&rows.length)?rows[0].data:null;
-    console.log('[sbSave] на сервері зараз рецептів:', remote&&remote.brews?remote.brews.length:0);
-    var merged=_mergeS(localSnapshot, remote);
-    console.log('[sbSave] після злиття:', (merged.brews||[]).length);
-    S=merged;
+    console.log('[sbSave] СТАРТ — пряме перезаписування, рецептів:', (S.brews||[]).length);
     localStorage.setItem('cj_v7',JSON.stringify(S));
     var postRes=await fetch(SUPABASE_URL+'/rest/v1/users',{
       method:'POST',
