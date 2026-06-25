@@ -8136,17 +8136,31 @@ function renderTrashList(){
   }
   el.innerHTML = items.map(function(b){
     var daysLeft = Math.ceil((TRASH_TTL-(now-b._deletedAt))/86400000);
-    var dateStr = b.ts ? new Date(b.ts).toLocaleDateString('uk',{day:'numeric',month:'short',year:'numeric'}) : '';
-    return '<div style="background:linear-gradient(165deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-radius:13px;padding:13px 14px;margin-bottom:9px">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'
+    var dateShort = b.ts ? (function(){var d=new Date(b.ts);var p=function(n){return(n<10?'0':'')+n;};return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+String(d.getFullYear()).slice(2);})() : '';
+    var ratColor=(function(){var r=parseFloat(b.rating||0);return r>=8?'#5fbf83':r>=6.5?'#b9c64f':r>=5?'#e2c64c':r>=3.5?'#ea9b3c':'#ea6a52';})();
+    var mlVal = b.espresso ? (b.espresso.actualYield||b.espresso.targetYield||'—') : (b.totalMl||Math.round((parseFloat(b.dose)||16)*(parseFloat(b.ratio)||16))||'—');
+    var timeVal = b.totalTime||'—';
+    return '<div style="background:linear-gradient(165deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-left:3px solid '+ratColor+';border-radius:13px;padding:13px 14px;margin-bottom:9px">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'
       +'<div style="min-width:0;flex:1">'
       +'<div style="font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(b.beanName||t('journal_no_name'))+'</div>'
-      +'<div style="font-size:11px;color:var(--txt2);margin-top:2px">'+(b.roaster||'')+(b.roaster&&dateStr?' · ':'')+dateStr+'</div>'
-      +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);margin-top:5px;letter-spacing:.5px">Видалиться через '+daysLeft+' дн.</div>'
+      +(b.roaster?'<div style="font-size:9.5px;color:var(--txt3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+b.roaster+'</div>':'')
       +'</div>'
-      +'<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">'
-      +'<button onclick="restoreBrew('+b.id+')" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);font-family:var(--mono);font-size:10px;font-weight:600;padding:7px 12px;cursor:pointer;letter-spacing:.5px;white-space:nowrap">'+t('trash_restore')+'</button>'
-      +'<button onclick="permanentDeleteBrew('+b.id+')" style="background:rgba(224,40,32,.08);border:1px solid #7a1a1a;border-radius:9px;color:#f5a0a0;font-family:var(--mono);font-size:10px;font-weight:600;padding:7px 12px;cursor:pointer;letter-spacing:.5px;white-space:nowrap">Видалити</button>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<span style="font-family:var(--mono);font-size:11px;font-weight:700;background:rgba(255,255,255,.06);border-radius:6px;padding:2px 7px;color:var(--txt2)">'+(b.method||'')+'</span>'
+      +'<div style="font-family:var(--mono);font-size:15px;font-weight:700;color:'+ratColor+';margin-top:3px">'+parseFloat(b.rating||0).toFixed(1)+'</div>'
+      +'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;margin-top:9px">'
+      +'<div style="flex:1;background:var(--card-lo);border-radius:8px;padding:6px 4px;text-align:center"><div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt)">'+(b.dose||'—')+'г</div><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;margin-top:1px">Доза</div></div>'
+      +'<div style="flex:1;background:var(--card-lo);border-radius:8px;padding:6px 4px;text-align:center"><div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt)">'+mlVal+'мл</div><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;margin-top:1px">Вихід</div></div>'
+      +'<div style="flex:1;background:var(--card-lo);border-radius:8px;padding:6px 4px;text-align:center"><div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt)">'+timeVal+'</div><div style="font-size:8px;color:var(--txt3);text-transform:uppercase;margin-top:1px">Час</div></div>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px">'
+      +'<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);white-space:nowrap">'+dateShort+' · '+daysLeft+' дн.</div>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0">'
+      +'<button onclick="restoreBrew('+b.id+')" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:8px;color:var(--copper-lt);font-family:var(--mono);font-size:9.5px;font-weight:600;padding:6px 10px;cursor:pointer;letter-spacing:.3px;white-space:nowrap">'+t('trash_restore')+'</button>'
+      +'<button onclick="permanentDeleteBrew('+b.id+')" style="background:rgba(224,40,32,.08);border:1px solid #7a1a1a;border-radius:8px;color:#f5a0a0;font-family:var(--mono);font-size:9.5px;font-weight:600;padding:6px 10px;cursor:pointer;letter-spacing:.3px;white-space:nowrap">Видалити</button>'
       +'</div>'
       +'</div>'
       +'</div>';
