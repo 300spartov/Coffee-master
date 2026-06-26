@@ -8055,7 +8055,10 @@ function softDeleteBrew(id){
   var _st = calcStreak();
   if(_st>(S.record||0)) S.record = _st;
   save();
+  clearTimeout(sbSaveTimer);
+  _doSbSaveNow();
   renderStreak();
+  if(typeof renderCalendar==='function')renderCalendar();
   var outer = document.getElementById('so-'+id);
   if(!outer) { renderFeed(); return; }
   var card = outer.querySelector('.brew-card');
@@ -8310,14 +8313,21 @@ function restoreBrew(id){
   for(var k=0;k<S.log.length;k++){ if(S.log[k].ts<=brew.ts){ S.log.splice(k,0,logEntry); logInserted=true; break; } }
   if(!logInserted) S.log.push(logEntry);
   var _st=calcStreak(); if(_st>(S.record||0)) S.record=_st;
-  save(); renderStreak(); renderTrashList(); renderFeed();
+  save();
+  clearTimeout(sbSaveTimer);
+  _doSbSaveNow();
+  renderStreak(); renderTrashList(); renderFeed();
+  if(typeof renderCalendar==='function')renderCalendar();
   toast('Рецепт відновлено');
 }
 
 function permanentDeleteBrew(id){
   if(!S.trash) return;
   S.trash = S.trash.filter(function(b){ return b.id!==id; });
-  save(); renderTrashList();
+  save();
+  clearTimeout(sbSaveTimer);
+  _doSbSaveNow();
+  renderTrashList();
 }
 
 var _profCalOpen = false;
