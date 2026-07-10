@@ -1750,6 +1750,15 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div class="sstat"><div class="sstat-v" id="rate-ml">—</div><div class="sstat-l" data-i18n="rate_water_poured">Вилито води</div></div>
     </div>
 
+    <!-- Редагування вливань після зупинки -->
+    <div id="rate-pours-section" style="margin-bottom:14px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="lbl">Кроки заварювання</div>
+        <button onclick="toggleRatePours()" id="rate-pours-toggle" style="background:none;border:none;color:var(--copper-lt);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;padding:0">▼ показати</button>
+      </div>
+      <div id="rate-pours-body" style="display:none"></div>
+    </div>
+
     <!-- Оцінка -->
     <div class="rating-block">
       <div class="rating-big" id="rate-num">8.0</div>
@@ -2005,10 +2014,10 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     <!-- Оцінка -->
     <div class="notes-block" style="margin-bottom:16px">
       <div class="lbl" style="margin-bottom:8px" data-i18n="rate_title">Оцінка</div>
-      <div class="rating-block" style="padding:14px">
+      <div class="rating-block" style="margin-bottom:0">
         <div class="rating-big" id="edit-rate-num" style="font-size:52px">8.0</div>
         <div class="rating-sub" data-i18n="rate_cup_sub">оцінка чашки</div>
-        <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="edit-rate-slider"
+        <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="edit-rate-slider" style="width:100%"
           oninput="var v=parseFloat(this.value);document.getElementById('edit-rate-num').textContent=v.toFixed(1);applyRatingColor('edit-rate-num','edit-rate-slider',v)">
         <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
       </div>
@@ -5436,7 +5445,7 @@ function brewStart(){
   document.getElementById('b-pause-lbl').textContent=t('brew_pause');document.getElementById('b-pause-sub').textContent=t('brew_pause_sub');
   document.getElementById('b-pause-icon').style.color='#4CAF50';document.getElementById('b-p-ring').style.strokeDashoffset='131.9';
   document.getElementById('b-log-box').innerHTML='';document.getElementById('b-log-wrap').style.display='none';
-  document.getElementById('b-bar-markers').innerHTML='';document.getElementById('b-bar-labels').innerHTML='';document.getElementById('b-hints').innerHTML='';
+  document.getElementById('b-bar-markers').innerHTML='';document.getElementById('b-bar-labels').innerHTML='';
   showPauseActions(false);resetPauseActions();
   document.getElementById('brew-sub').textContent='1:'+BS.ratio+' · '+document.getElementById('b-temp-sl').value+'°C';
   /* B1: замінюємо дефолтний лейбл методу на підгрупу або пусто */
@@ -5446,6 +5455,8 @@ function brewStart(){
   }
   bRenderDripper();bDrip(false);
   const liq0=document.getElementById('vessel-liquid');if(liq0)liq0.setAttribute('transform','translate(0,197)');
+  /* Початковий рендер підказок — всі вливи одразу видно до старту */
+  bRenderAllPourHints(-1);
   bUpdateBar(0,total);showBV('bv-active');
 }
 function bStartMain(){if(BS.mainStart!==null)return;BS.mainStart=Date.now();BS.mainInt=setInterval(()=>{BS.elapsed=Date.now()-BS.mainStart;document.getElementById('b-main-t').textContent=fmt(BS.elapsed);},100);}
@@ -5473,28 +5484,64 @@ function bUpdateBar(projected,totalOverride){
     }
   }
   const completedPours=BS.steps.filter(s=>s.type==='pour').length;
-  const poursLeft=BS.pours-completedPours-(BS.phase==='pour'?1:0);
-  if(!BS.firstDone){
-    document.getElementById('b-bar-markers').innerHTML='';document.getElementById('b-bar-labels').innerHTML='';
-    if(projected>0&&BS.pours>1){const pn=Math.round((total-projected)/(BS.pours-1));let h='<div style="display:flex;gap:6px">';for(let i=1;i<BS.pours;i++)h+=`<div class="hint-card"><div class="hint-lbl">Влив ${i+1}</div><div class="hint-val">${pn}<span class="hint-unit"> мл</span></div></div>`;h+='</div>';document.getElementById('b-hints').innerHTML=h;}
-    else document.getElementById('b-hints').innerHTML='';return;
-  }
   const remain=total-BS.pouredFixed,partsLeft=BS.pours-completedPours;
   let ml='',ll='';
-  if(partsLeft>0&&remain>0){const step=remain/partsLeft;for(let i=1;i<=partsLeft;i++){const atMl=BS.pouredFixed+step*i;if(atMl>=total)continue;const p=Math.min(atMl/total*100,100);const done=projected>=atMl;ml+=`<div style="position:absolute;top:0;bottom:0;left:${p.toFixed(1)}%;width:2px;background:${done?'rgba(255,255,255,.2)':'rgba(74,158,219,.5)'}"></div>`;const ls=p<8?'left:0':p>92?'right:0':`left:${p.toFixed(1)}%;transform:translateX(-50%)`;ll+=`<div style="position:absolute;${ls};top:0;text-align:center"><div style="width:5px;height:5px;border-radius:50%;background:${done?'#4CAF50':'#4A9EDB'};margin:0 auto 1px"></div><div style="font-size:12px;font-weight:700;color:${done?'#555':'#4A9EDB'};white-space:nowrap">${Math.round(atMl)}</div></div>`;}}
-  document.getElementById('b-bar-markers').innerHTML=ml;document.getElementById('b-bar-labels').innerHTML=ll;
-  const activePourIdx=BS.phase==='pour'?1:0,hintsLeft=partsLeft-activePourIdx;
-  /* Фіча 12: показуємо наступний влив навіть під час паузи */
-  if(hintsLeft>0&&remain>0){
-    const pn=Math.round(remain/partsLeft);
-    const nextIdx=completedPours+activePourIdx+1;
-    let h='<div style="display:flex;gap:6px">';
-    h+=`<div class="hint-card"><div class="hint-lbl">Влив ${nextIdx}</div><div class="hint-val">${pn}<span class="hint-unit"> мл</span></div></div>`;
-    h+='</div>';
-    document.getElementById('b-hints').innerHTML=h;
-  } else if(hintsLeft<=0){
-    document.getElementById('b-hints').innerHTML='';
+  /* Маркери показуємо тільки після того як Блум повністю завершено (зробили паузу після нього) */
+  const bloomDone=completedPours>=1;
+  if(bloomDone&&partsLeft>0&&remain>0){
+    /* Після Блуму: ділимо воду що залишилась рівномірно на залишок вливів */
+    const step=remain/partsLeft;
+    for(let i=1;i<partsLeft;i++){
+      /* Маркер тільки між наступними вливами, не в кінці */
+      const atMl=BS.pouredFixed+step*i;
+      if(atMl>=total)continue;
+      const p=Math.min(atMl/total*100,100);
+      const done=projected>=atMl;
+      ml+=`<div style="position:absolute;top:0;bottom:0;left:${p.toFixed(1)}%;width:2px;background:${done?'rgba(255,255,255,.15)':'rgba(74,158,219,.45)'}"></div>`;
+      const ls=p<10?'left:2px':p>90?'right:2px':`left:${p.toFixed(1)}%;transform:translateX(-50%)`;
+      ll+=`<div style="position:absolute;${ls};top:0;text-align:center"><div style="width:5px;height:5px;border-radius:50%;background:${done?'#4CAF50':'#4A9EDB'};margin:0 auto 1px"></div><div style="font-size:11px;font-weight:700;color:${done?'#555':'#4A9EDB'};white-space:nowrap">${Math.round(atMl)}</div></div>`;
+    }
   }
+  document.getElementById('b-bar-markers').innerHTML=ml;document.getElementById('b-bar-labels').innerHTML=ll;
+  bRenderAllPourHints(completedPours);
+}
+/* Рендер усіх вливів у єдиному стилі: завершені=сірі, активний=об'ємний синій, майбутні=читабельні */
+function bRenderAllPourHints(completedPours){
+  const total=Math.round(BS.dose*BS.ratio);
+  const partsLeft=BS.pours-Math.max(completedPours,0);
+  const remain=total-BS.pouredFixed;
+  const mlPerPour=partsLeft>0&&remain>0?Math.round(remain/partsLeft):Math.round(total/BS.pours);
+  const isPreStart=completedPours<0||(!BS.firstDone&&BS.phase!=='pour');
+  let h='<div style="display:flex;gap:6px;align-items:stretch">';
+  for(let i=1;i<=BS.pours;i++){
+    const isDone=!isPreStart&&i<=completedPours&&!(BS.phase==='pour'&&i===completedPours+1);
+    const isActive=(isPreStart&&i===1)||(BS.phase==='pour'&&i===completedPours+1);
+    const lblTxt=i===1?'Блум':`Влив ${i}`;
+    let dpour=null;
+    if(isDone){dpour=BS.steps.filter(s=>s.type==='pour')[i-1];}
+    const mlVal=isDone?(dpour?Math.round(dpour.ml||0):'—'):mlPerPour;
+    if(isActive){
+      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px;background:linear-gradient(160deg,#3a8fcf,#1a6aad);border:1.5px solid #4A9EDB;border-radius:14px;padding:10px 8px;text-align:center;min-width:0;box-shadow:0 3px 10px rgba(74,158,219,.3),inset 0 1px 0 rgba(255,255,255,.15)">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.6px;line-height:1">${lblTxt}</div>
+        <div style="font-size:18px;font-weight:800;color:#fff;line-height:1.2;margin-top:5px">${mlVal}</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.55);line-height:1;margin-top:2px">мл</div>
+      </div>`;
+    } else if(isDone){
+      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:10px 8px;text-align:center;min-width:0;opacity:.35">
+        <div style="font-size:10px;font-weight:600;color:#555;letter-spacing:.4px;line-height:1">${lblTxt}</div>
+        <div style="font-size:15px;font-weight:700;color:#555;line-height:1.2;margin-top:5px">${mlVal}</div>
+        <div style="font-size:9px;color:#444;line-height:1;margin-top:2px">мл</div>
+      </div>`;
+    } else {
+      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:14px;padding:10px 8px;text-align:center;min-width:0">
+        <div style="font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.4px;line-height:1">${lblTxt}</div>
+        <div style="font-size:15px;font-weight:700;color:var(--txt2);line-height:1.2;margin-top:5px">${mlVal}</div>
+        <div style="font-size:9px;color:var(--txt3);line-height:1;margin-top:2px">мл</div>
+      </div>`;
+    }
+  }
+  h+='</div>';
+  document.getElementById('b-hints').innerHTML=h;
 }
 function bOnMl(){const v=parseFloat(document.getElementById('b-ml-inp').value)||0;bUpdateBar(BS.pouredFixed+v);}
 
@@ -5819,8 +5866,6 @@ function bFinalize(){
 /* Перехід на екран оцінки */
 function brewStop(){
   bFinalize();
-  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);bean._upd=Date.now();if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
-  if(BS.filter){const filter=S.filters.find(f=>f.id===BS.filter.id);if(filter){filter.current=Math.max(0,filter.current-1);if(filter.current===0)toast('⚠️ Фильтры '+filter.name+' закончились!');else if(filter.current<=10)toast('⚠️ Мало фильтров: '+filter.current+' шт');}}
   save();
   RS={rating:8.0,flavors:[],aroma:[],notes:'',_fwSel:{_active:null,_activeSub:null},_awSel:{_active:null,_activeSub:null}};
   document.getElementById('rate-bean-name').textContent=BS.bean?BS.bean.name:t('journal_no_name');
@@ -5832,7 +5877,131 @@ function brewStop(){
   applyRatingColor('rate-num','rate-slider',8);
   document.getElementById('brew-notes').value='';
   if(window.nwResetAll)window.nwResetAll();
+  /* Показуємо секцію вливань якщо є pour-кроки */
+  var _pourSection=document.getElementById('rate-pours-section');
+  var _pourBody=document.getElementById('rate-pours-body');
+  var _pourToggle=document.getElementById('rate-pours-toggle');
+  if(_pourSection&&_pourBody){
+    var _pours=BS.steps.filter(function(s){return s.type==='pour';});
+    if(_pours.length){
+      _pourSection.style.display='block';
+      _pourBody.style.display='block';
+      _ratePoursOpen=true;
+      if(_pourToggle)_pourToggle.textContent='▲ сховати';
+      renderRatePours();
+    } else {
+      _pourSection.style.display='none';
+    }
+  }
   showBV('bv-rate');
+}
+var _ratePoursOpen=false;
+function toggleRatePours(){
+  _ratePoursOpen=!_ratePoursOpen;
+  var body=document.getElementById('rate-pours-body');
+  var btn=document.getElementById('rate-pours-toggle');
+  if(body)body.style.display=_ratePoursOpen?'block':'none';
+  if(btn)btn.textContent=_ratePoursOpen?'▲ сховати':'▼ показати';
+  if(_ratePoursOpen)renderRatePours();
+}
+function renderRatePours(){
+  var body=document.getElementById('rate-pours-body');
+  if(!body)return;
+  var pourIdx=0;
+  var totalSec=Math.round((BS.elapsed||0)/1000);
+  /* Спільний стиль колонок для рівного вирівнювання */
+  var colLbl='width:58px;flex-shrink:0;font-size:9px;font-weight:800;padding:3px 0;text-align:center;border-radius:6px;font-family:var(--mono)';
+  var colTime='width:108px;flex-shrink:0;font-size:10px;color:var(--txt3);font-family:var(--mono);white-space:nowrap';
+  var colDur='width:30px;flex-shrink:0;font-size:11px;color:var(--txt3);font-family:var(--mono);text-align:right;font-weight:600';
+  var colMl='width:80px;flex-shrink:0;display:flex;align-items:center;gap:4px;margin-left:auto';
+  var rows=BS.steps.map(function(s,si){
+    var tStr=function(ms){var sec=Math.floor((ms||0)/1000),m=Math.floor(sec/60),sc=sec%60;return(m<10?'0':'')+m+':'+(sc<10?'0':'')+sc;};
+    var t0=tStr(s.t);var t1=tStr((s.t||0)+(s.ph||0));
+    var dur=Math.round((s.ph||0)/1000);
+    if(s.type==='pour'){
+      var pi=pourIdx++;
+      var lbl=pi===0?'Блум':'Влив '+(pi+1);
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line-soft)">'
+        +'<span style="'+colLbl+';background:rgba(74,158,219,.18);color:#5aabdf;border:1px solid rgba(74,158,219,.3)">'+lbl+'</span>'
+        +'<span style="'+colTime+'">'+t0+'–'+t1+'</span>'
+        +'<div style="'+colMl+'">'
+        +'<input type="number" value="'+(s.ml!=null?s.ml.toFixed(1):'0')+'" min="0" max="600" step="0.5" '
+        +'style="width:70px;background:var(--card);border:1px solid rgba(74,158,219,.35);border-radius:7px;color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;text-align:center;padding:5px 4px" '
+        +'readonly id="rate-s-'+si+'" onclick="openNumPad(\'rate-s-'+si+'\',\'pour-ml\')" oninput="updateRateStep('+si+',this.value)">'
+        +'<span style="font-size:11px;color:var(--txt3)">мл</span>'
+        +'</div>'
+        +'<span style="'+colDur+'">'+dur+'с</span>'
+        +'</div>';
+    } else if(s.type==='pause'){
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line-soft);background:rgba(255,255,255,.012)">'
+        +'<span style="'+colLbl+';background:rgba(234,155,60,.15);color:var(--copper-lt);border:1px solid rgba(234,155,60,.25)">Пауза</span>'
+        +'<span style="'+colTime+'">'+t0+'–'+t1+'</span>'
+        +'<div style="width:80px;flex-shrink:0;margin-left:auto"></div>'
+        +'<span style="'+colDur+'">'+dur+'с</span>'
+        +'</div>';
+    } else if(s.type==='action'){
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line-soft)">'
+        +'<span style="'+colLbl+';background:rgba(95,191,131,.12);color:#5fbf83;border:1px solid rgba(95,191,131,.2)">'+(s.lbl||'Дія')+'</span>'
+        +'<span style="'+colTime+'">'+t0+'</span>'
+        +'</div>';
+    }
+    return '';
+  }).join('');
+  body.innerHTML='<div style="background:var(--card-lo);border-radius:10px;overflow:hidden;margin-bottom:6px">'
+    +rows
+    +'<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:rgba(255,255,255,.035);border-top:1px solid var(--line-soft)">'
+    +'<span style="width:58px;flex-shrink:0;font-size:12px;font-weight:700;color:var(--txt);font-family:inherit">Загалом</span>'
+    +'<span style="'+colTime+';color:transparent">——</span>'
+    +'<div style="'+colMl+'">'
+    +'<input type="number" value="'+BS.pouredFixed.toFixed(1)+'" min="0" max="2000" step="0.5" '
+    +'style="width:70px;background:var(--card);border:1px solid var(--copper-dk);border-radius:7px;color:var(--copper-lt);font-family:var(--mono);font-size:14px;font-weight:700;text-align:center;padding:5px 4px" '
+    +'id="rate-pour-total" readonly onclick="openNumPad(\'rate-pour-total\',\'pour-ml\')" oninput="updateRatePourTotal(this.value)">'
+    +'<span style="font-size:11px;color:var(--txt3)">мл</span>'
+    +'</div>'
+    +'<span style="'+colDur+'">'+totalSec+'с</span>'
+    +'</div>'
+    +'</div>';
+  /* Зареєструємо id нампаду для кожного step-поля */
+  BS.steps.forEach(function(s,si){
+    if(s.type==='pour'){
+      var inp=document.getElementById('rate-s-'+si);
+      if(inp)inp.setAttribute('data-step-idx',si);
+    }
+  });
+}
+function updateRateStep(stepIdx,val){
+  var s=BS.steps[stepIdx];
+  if(!s||s.type!=='pour')return;
+  s.ml=Math.max(0,parseFloat(val)||0);
+  BS.pouredFixed=BS.steps.filter(function(x){return x.type==='pour';}).reduce(function(acc,x){return acc+(x.ml||0);},0);
+  var tot=document.getElementById('rate-pour-total');
+  if(tot)tot.value=BS.pouredFixed.toFixed(1);
+  document.getElementById('rate-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
+}
+function updateRatePour(idx,val){
+  /* compat wrapper — idx = позиція серед пурів, знаходимо реальний step */
+  var pours=BS.steps.filter(function(s){return s.type==='pour';});
+  if(idx<0||idx>=pours.length)return;
+  pours[idx].ml=Math.max(0,parseFloat(val)||0);
+  BS.pouredFixed=pours.reduce(function(acc,p){return acc+(p.ml||0);},0);
+  var tot=document.getElementById('rate-pour-total');
+  if(tot)tot.value=BS.pouredFixed.toFixed(1);
+  document.getElementById('rate-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
+}
+function updateRatePourTotal(val){
+  var total=Math.max(0,parseFloat(val)||0);
+  var pours=BS.steps.filter(function(s){return s.type==='pour';});
+  if(!pours.length)return;
+  var avg=Math.round(total/pours.length*10)/10;
+  pours.forEach(function(p,i){
+    p.ml=avg;
+    /* оновлюємо step-input за step-idx */
+    var si=BS.steps.indexOf(p);
+    var inp=document.getElementById('rate-s-'+si);
+    if(inp)inp.value=avg.toFixed(1);
+  });
+  BS.pouredFixed=total;
+  document.getElementById('rate-ml').textContent=total.toFixed(1)+' мл';
 }
 
 
@@ -7004,6 +7173,8 @@ function saveBrew(){
   const brew={id:++S.id,beanName:BS.bean?BS.bean.name:'',roaster:BS.bean?BS.bean.roaster:'',roastType:BS.bean?BS.bean.roastType:'',beanId:BS.bean?BS.bean.id:null,method:methodLbl,inverted:BS.inverted||false,aeroFilters:BS.aeroFilters||1,dripper:dripName,dripperId:BS.dripper?BS.dripper.id:null,grinder:grinderName,grinderId:BS.grinder?BS.grinder.id:null,clicks:BS.clicks,temp:document.getElementById('b-temp-sl').value,ratio:BS.ratio,filter:BS.filter?BS.filter.name:'',filterId:BS.filter?BS.filter.id:null,filterWet:BS.wet,dose:BS.dose.toFixed(1),steps:BS.steps,totalTime:fmt(BS.elapsed),rating:Math.round(RS.rating*10)/10,flavors:RS.flavors,aroma:RS.aroma,notes:RS.notes,accessories:BS.accessories||[],likes:0,liked:false,ts:Date.now()};
   S.brews.unshift(brew);
   S.log.unshift({id:brew.id,ts:brew.ts,vol:Math.round(BS.pouredFixed||(BS.dose*BS.ratio)),cat:methodCat(methodLbl),method:methodLbl,bean:brew.beanName,rating:brew.rating,dose:BS.dose});
+  if(BS.bean){const bean=S.beans.find(b=>b.id===BS.bean.id);if(bean){bean.current=Math.max(0,bean.current-BS.dose);bean._upd=Date.now();if(bean.current===0)toast('⚠️ '+bean.name+' закончилось!');}}
+  if(BS.filter){const filter=S.filters.find(f=>f.id===BS.filter.id);if(filter){filter.current=Math.max(0,filter.current-1);if(filter.current===0)toast('⚠️ Фильтры '+filter.name+' закончились!');else if(filter.current<=10)toast('⚠️ Мало фильтров: '+filter.current+' шт');}}
   save();
   document.getElementById('b-res-t').textContent=fmt(BS.elapsed);
   document.getElementById('b-res-ml').textContent=BS.pouredFixed.toFixed(1)+' мл';
