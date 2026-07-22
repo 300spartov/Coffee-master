@@ -1287,10 +1287,11 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
     </button>
     <div class="collapse-body-v2" id="stats-collapse">
       <div class="coll-inner" style="padding-top:4px">
-        <div class="ptabs-v2">
+        <div class="ptabs-v2" style="display:flex;align-items:center;gap:6px">
           <button class="ptab on" onclick="goCarousel(0)" data-i18n="profile_week">Тиждень</button>
           <button class="ptab" onclick="goCarousel(1)" data-i18n="profile_month">Місяць</button>
           <button class="ptab" onclick="goCarousel(2)" data-i18n="profile_year">Рік</button>
+          <button onclick="statShareCarousel()" style="margin-left:auto;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:7px;color:var(--copper-lt);font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;flex-shrink:0"><i class="ti ti-share" style="font-size:12px"></i></button>
         </div>
         <div class="carousel" id="prof-carousel">
           <div class="carousel-track" id="carousel-track">
@@ -5508,18 +5509,26 @@ function bUpdateBar(projected,totalOverride){
 /* Рендер усіх вливів у єдиному стилі: завершені=сірі, активний=об'ємний синій, майбутні=читабельні */
 function bRenderAllPourHints(completedPours){
   const total=Math.round(BS.dose*BS.ratio);
-  const partsLeft=BS.pours-Math.max(completedPours,0);
-  const remain=total-BS.pouredFixed;
-  const mlPerPour=partsLeft>0&&remain>0?Math.round(remain/partsLeft):Math.round(total/BS.pours);
+  /* Блум ≈ 25% від загального об'єму (65/260 ≈ 25%), решта вливів рівно ділять залишок */
+  const BLOOM_PCT=0.25;
+  const bloomMl=Math.round(total*BLOOM_PCT);
+  const restMl=total-bloomMl;
+  const remainPours=BS.pours-1; /* вливів після блуму */
+  const perPour=remainPours>0?Math.round(restMl/remainPours):restMl;
+  function plannedMl(i){return i===1?bloomMl:perPour;}
+
   const isPreStart=completedPours<0||(!BS.firstDone&&BS.phase!=='pour');
+  /* Наступний влив підсвічується і під час паузи (після завершення попереднього) */
+  const nextPourNum=completedPours+1; /* 1-based, наступний що треба зробити */
   let h='<div style="display:flex;gap:6px;align-items:stretch">';
   for(let i=1;i<=BS.pours;i++){
-    const isDone=!isPreStart&&i<=completedPours&&!(BS.phase==='pour'&&i===completedPours+1);
-    const isActive=(isPreStart&&i===1)||(BS.phase==='pour'&&i===completedPours+1);
     const lblTxt=i===1?'Блум':`Влив ${i}`;
+    const isDone=!isPreStart&&i<nextPourNum&&!(BS.phase==='pour'&&i===nextPourNum);
+    /* Активний: або prestart=Блум, або активне вливання, або пауза перед наступним */
+    const isActive=(isPreStart&&i===1)||(BS.phase==='pour'&&i===nextPourNum)||(BS.phase!=='pour'&&!isPreStart&&i===nextPourNum&&i<=BS.pours);
     let dpour=null;
     if(isDone){dpour=BS.steps.filter(s=>s.type==='pour')[i-1];}
-    const mlVal=isDone?(dpour?Math.round(dpour.ml||0):'—'):mlPerPour;
+    const mlVal=isDone?(dpour?Math.round(dpour.ml||0):'—'):plannedMl(i);
     if(isActive){
       h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72px;background:linear-gradient(160deg,#3a8fcf,#1a6aad);border:1.5px solid #4A9EDB;border-radius:14px;padding:10px 8px;text-align:center;min-width:0;box-shadow:0 3px 10px rgba(74,158,219,.3),inset 0 1px 0 rgba(255,255,255,.15)">
         <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.6px;line-height:1">${lblTxt}</div>
@@ -5885,9 +5894,9 @@ function brewStop(){
     var _pours=BS.steps.filter(function(s){return s.type==='pour';});
     if(_pours.length){
       _pourSection.style.display='block';
-      _pourBody.style.display='block';
-      _ratePoursOpen=true;
-      if(_pourToggle)_pourToggle.textContent='▲ сховати';
+      _pourBody.style.display='none';
+      _ratePoursOpen=false;
+      if(_pourToggle)_pourToggle.textContent='▼ показати';
       renderRatePours();
     } else {
       _pourSection.style.display='none';
@@ -8043,16 +8052,23 @@ var _CIRCS=[358.1,263.9,169.6,75.4];
 var _RING_BG_R=[57,42,27,12],_RING_SW=[12,12,12,9];
 var _carIndex=0,_statsRendered=false,_statsOpen=false;
 
-function _buildStatsDrinks(period){
-  var brews=S.brews||[];
+function _buildStatsDrinks(period, fromTs, toTs){
   var now=Date.now();
-  var from=period==='week'?now-7*86400000:period==='month'?now-30*86400000:now-365*86400000;
-  var filtered=brews.filter(function(b){return b.ts>=from;});
+  var from, to;
+  if(fromTs!==undefined){ from=fromTs; to=toTs||now; }
+  else if(period==='week'){ var d=new Date(); d.setDate(d.getDate()-d.getDay()+1); from=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); to=now; }
+  else if(period==='month'){ var nd=new Date(); from=new Date(nd.getFullYear(),nd.getMonth(),1).getTime(); to=now; }
+  else { var nd=new Date(); from=new Date(nd.getFullYear(),0,1).getTime(); to=now; }
+  var log=(S.log||[]).filter(function(e){return e.ts>=from&&e.ts<=to;});
   var mc={};
-  filtered.forEach(function(b){var m=b.method||'Інше';mc[m]=(mc[m]||0)+(b.dose||16)*parseFloat(b.ratio||16);});
-  var drinks=Object.entries(mc).map(function(e){return{name:e[0],ml:Math.round(e[1]),cups:0};});
+  log.forEach(function(e){
+    var m=e.method||'Інше';
+    mc[m]=(mc[m]||0)+(e.vol||0);
+  });
+  var drinks=Object.keys(mc).map(function(m){return{name:m,ml:Math.round(mc[m]),cups:0};});
+  drinks.sort(function(a,b){return b.ml-a.ml;});
   if(!drinks.length) drinks=[{name:'Немає даних',ml:1,cups:0}];
-  return{cups:filtered.length,drinks:drinks};
+  return{cups:log.length,drinks:drinks};
 }
 function _fmtMl(v){return v>=1000?(v/1000).toFixed(v>=10000?0:1)+' л':v+' мл';}
 function _buildPeriodHTML(period){
@@ -8387,32 +8403,134 @@ function cwWeight(kg){ return kg<1 ? {v:String(Math.round(kg*1000)),u:'г'} : {v
 function cwHx(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')';}
 function cwNext(){cwi=(cwi+1)%CW_ROASTS.length;cwApply();}
 
+/* ─── Coffee stats: навігація по тижнях/місяцях ─── */
+var _cwNavOffset=0; /* 0=поточний, -1=попередній і т.д. */
+
 function cwSetPeriod(p){
   _cwPeriod=p;
+  _cwNavOffset=0;
   document.querySelectorAll('.cw-tabs .cw-tab').forEach(function(b){
     b.classList.toggle('on', b.getAttribute('data-period')===p);
   });
+  var nav=document.getElementById('cw-nav');
+  var customRange=document.getElementById('cw-custom-range');
+  if(p==='year'){nav.style.display='none';}else{nav.style.display='flex';}
+  if(p==='custom'){customRange.style.display='block';nav.style.display='none';}else{customRange.style.display='none';}
   cwi=0;
-  cwBuildData(p);
+  cwBuildData();
 }
 
-function cwBuildData(period){
-  var st=getCoffeeWeightStats(period);
-  var f=st.byType.filter/1000, e=st.byType.espresso/1000, o=st.byType.omni/1000, tot=st.total/1000;
+function cwNavPrev(){_cwNavOffset--;cwi=0;cwBuildData();}
+function cwNavNext(){
+  if(_cwNavOffset<0){_cwNavOffset++;cwi=0;cwBuildData();}
+}
+function cwUpdateCustom(){cwi=0;cwBuildData();}
+
+function cwGetRange(){
+  var now=new Date(),p=_cwPeriod;
+  var from,to;
+  if(p==='week'){
+    var d=new Date(now);
+    d.setDate(d.getDate()-d.getDay()+1+_cwNavOffset*7); /* Пн */
+    from=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    to=new Date(from); to.setDate(to.getDate()+6); to.setHours(23,59,59,999);
+  } else if(p==='month'){
+    var y=now.getFullYear(),m=now.getMonth()+_cwNavOffset;
+    while(m<0){m+=12;y--;}
+    while(m>11){m-=12;y++;}
+    from=new Date(y,m,1);
+    to=new Date(y,m+1,0,23,59,59,999);
+  } else if(p==='year'){
+    from=new Date(now.getFullYear(),0,1);
+    to=new Date(now.getFullYear(),11,31,23,59,59,999);
+  } else if(p==='custom'){
+    var f=document.getElementById('cw-date-from').value;
+    var t=document.getElementById('cw-date-to').value;
+    from=f?new Date(f):new Date(now.getFullYear(),now.getMonth(),1);
+    to=t?new Date(t+'T23:59:59'):now;
+  }
+  return {from:from,to:to};
+}
+
+function cwFromPicked(val){
+  /* Одразу відкриваємо "До" після вибору "Від" */
+  var toInp=document.getElementById('cw-date-to');
+  if(toInp&&val){
+    toInp.min=val;
+    toInp.showPicker?toInp.showPicker():toInp.focus();
+  }
+  cwUpdateCustom();
+}
+function cwNavLabel(){
+  var r=cwGetRange(),p=_cwPeriod;
+  var pad=function(n){return(n<10?'0':'')+n;};
+  if(p==='week'){
+    var f=r.from,t=r.to;
+    return pad(f.getDate())+'.'+pad(f.getMonth()+1)+' – '+pad(t.getDate())+'.'+pad(t.getMonth()+1)+'.'+t.getFullYear();
+  } else if(p==='month'){
+    var mn=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+    return mn[r.from.getMonth()]+' '+r.from.getFullYear();
+  } else if(p==='year'){
+    return String(r.from.getFullYear());
+  }
+  return '';
+}
+
+function cwBuildData(){
+  /* Навігаційний підпис */
+  var lbl=document.getElementById('cw-nav-label');if(lbl)lbl.textContent=cwNavLabel();
+  var nextBtn=document.getElementById('cw-nav-next');
+  if(nextBtn)nextBtn.style.opacity=_cwNavOffset<0?'1':'.3';
+
+  /* Фільтруємо варіння по вибраному діапазону */
+  var range=cwGetRange();
+  var brews=(S.brews||[]).filter(function(b){
+    var ts=b.ts||0;
+    return (!range||!range.from||ts>=range.from.getTime())&&(!range||!range.to||ts<=range.to.getTime());
+  });
+
+  /* Статистика по зерну */
+  var byType={filter:0,espresso:0,omni:0};
+  var total=0,brewCount=brews.length,totalDose=0;
+  var methodCounts={};
+  var cafeCount=0;
+  brews.forEach(function(b){
+    var dose=parseFloat(b.dose);if(isNaN(dose))dose=16;
+    totalDose+=dose;total+=dose;
+    var lb=liveBeanInfo(b.beanId,b.beanName,b.roaster);
+    var type=lb.roastType||b.roastType||getRoastType(b.method);
+    if(!byType.hasOwnProperty(type))type='filter';
+    byType[type]+=dose;
+    if(b.cafeVisit)cafeCount++;
+    var m=b.method||'Альтернатива';
+    methodCounts[m]=(methodCounts[m]||0)+1;
+  });
+  var avgDose=brewCount?Math.round(totalDose/brewCount):0;
+  /* Фаворит-метод */
+  var favMethod='—',favCount=0;
+  Object.keys(methodCounts).forEach(function(m){if(methodCounts[m]>favCount){favCount=methodCounts[m];favMethod=m;}});
+
+  /* Кіло */
+  var f=byType.filter/1000, e=byType.espresso/1000, o=byType.omni/1000, tot=total/1000;
   CW_ROASTS=[
     {label:'ВСЬОГО', kg:tot, color:'', seg:null},
-    {label:'ФІЛьТР', kg:f, color:'#E0A93B', seg:'filter'},
+    {label:'ФІЛЬТР', kg:f, color:'#E0A93B', seg:'filter'},
     {label:'ЕСПРЕСО',kg:e, color:'#A85A2E', seg:'espresso'},
     {label:'ОМНІ',   kg:o, color:'#8198AE', seg:'omni'}
   ];
+  /* Зберігаємо для шерингу */
+  window._cwShareData={
+    range:range,brews:brews,brewCount:brewCount,favMethod:favMethod,
+    cafeCount:cafeCount,avgDose:avgDose,
+    total:total,byType:byType,period:_cwPeriod,navLabel:cwNavLabel()
+  };
 
-  /* Перерахунок stroke-dasharray/stroke-dashoffset для трьох кіл прорірційно реальним f/e/o від tot */
   var parts=[
-    {id:'filter',  v:st.byType.filter,  color:'#E0A93B'},
-    {id:'espresso',v:st.byType.espresso,color:'#A85A2E'},
-    {id:'omni',    v:st.byType.omni,    color:'#8198AE'}
+    {id:'filter',  v:byType.filter,  color:'#E0A93B'},
+    {id:'espresso',v:byType.espresso,color:'#A85A2E'},
+    {id:'omni',    v:byType.omni,    color:'#8198AE'}
   ];
-  var totalG=st.total||1;
+  var totalG=total||1;
   var offset=0;
   parts.forEach(function(p){
     var seg=document.getElementById('cw-seg-'+p.id);
@@ -8423,21 +8541,99 @@ function cwBuildData(period){
     seg.setAttribute('stroke-dashoffset', (-offset).toFixed(2));
     offset+=segLen;
   });
-
-  /* Легенда: ваги в грамах/кг прямо з реальних даних */
   parts.forEach(function(p){
     var el=document.getElementById('cw-kg-'+p.id);
     if(!el)return;
     var w=cwWeight(p.v/1000);
     el.textContent=w.v+' '+w.u;
   });
-
-  /* Нижні тайли */
-  var bc=document.getElementById('cw-brewcount');if(bc)bc.textContent=st.brewCount;
-  var ad=document.getElementById('cw-avgdose');if(ad)ad.textContent=st.avgDose+' г';
-
+  var bc=document.getElementById('cw-brewcount');if(bc)bc.textContent=brewCount;
+  var ad=document.getElementById('cw-avgdose');if(ad)ad.textContent=avgDose+' г';
+  var cc=document.getElementById('cw-cafecnt');if(cc)cc.textContent=cafeCount;
+  var fm=document.getElementById('cw-favmethod');if(fm)fm.textContent=favMethod;
   cwApply();
 }
+
+function cwShareStats(){
+  var d=window._cwShareData;
+  if(!d){toast('Дані не завантажені');return;}
+  var pad=function(n){return(n<10?'0':'')+n;};
+  var fmtDate=function(dt){return pad(dt.getDate())+'.'+pad(dt.getMonth()+1)+'.'+String(dt.getFullYear()).slice(2);};
+  var dateLabel=d.navLabel||'';
+  if(d.period==='custom'&&d.range&&d.range.from&&d.range.to){
+    dateLabel=fmtDate(d.range.from)+' – '+fmtDate(d.range.to);
+  }
+  var totG=d.total,f=d.byType.filter,e=d.byType.espresso,o=d.byType.omni;
+  var totKgW=cwWeight(totG/1000),fW=cwWeight(f/1000),eW=cwWeight(e/1000),oW=cwWeight(o/1000);
+  var t2=totG||1;
+  /* Три ОКРЕМИХ концентричних кільця — Фільтр/Еспресо/Омні */
+  var TRACKS=[
+    {r:108,sw:14,v:f,col:'#E0A93B',label:'Фільтр'},
+    {r:84, sw:14,v:e,col:'#A85A2E',label:'Еспресо'},
+    {r:60, sw:14,v:o,col:'#8198AE',label:'Омні'}
+  ];
+  var ringHTML='';
+  TRACKS.forEach(function(tr){
+    var circ=2*Math.PI*tr.r;
+    var filled=tr.v>0?(tr.v/t2*circ):0;
+    ringHTML+='<circle cx="150" cy="150" r="'+tr.r+'" fill="none" stroke="#1c1e22" stroke-width="'+tr.sw+'"/>';
+    if(filled>2)ringHTML+='<circle cx="150" cy="150" r="'+tr.r+'" fill="none" stroke="'+tr.col+'" stroke-width="'+tr.sw+'" stroke-linecap="round" stroke-dasharray="'+filled.toFixed(2)+' '+(circ-filled).toFixed(2)+'" stroke-dashoffset="0" transform="rotate(-90 150 150)"/>';
+  });
+  var legendHTML=TRACKS.map(function(tr){
+    var pct=t2>0?Math.round(tr.v/t2*100):0;
+    var w=cwWeight(tr.v/1000);
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">'
+      +'<div style="width:10px;height:10px;border-radius:50%;background:'+tr.col+';flex-shrink:0"></div>'
+      +'<div style="flex:1;font-size:13px;font-weight:600;color:#c8c0b4">'+tr.label+'</div>'
+      +'<div style="font-size:12px;font-weight:700;color:'+tr.col+';font-family:monospace;min-width:36px;text-align:right">'+pct+'%</div>'
+      +'<div style="font-size:11px;color:#888;font-family:monospace;min-width:46px;text-align:right">'+w.v+' '+w.u+'</div>'
+      +'</div>';
+  }).join('');
+  var html='<div style="width:360px;background:#17181a;border-radius:22px;overflow:hidden;font-family:system-ui,sans-serif">'
+    +'<div style="background:linear-gradient(160deg,#1e2022 0%,#17181a 100%);padding:24px 22px 20px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">'
+    +'<div><div style="font-size:10px;letter-spacing:2.5px;color:#4a4540;margin-bottom:4px;text-transform:uppercase">Coffee Master</div>'
+    +'<div style="font-size:18px;font-weight:700;color:#f0ebe4">'+dateLabel+'</div></div>'
+    +'<div style="text-align:right">'
+    +'<div style="font-size:9px;color:#4a4540;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">Всього</div>'
+    +'<div style="font-size:28px;font-weight:800;color:#d89858;line-height:1">'+totKgW.v+'</div>'
+    +'<div style="font-size:10px;color:#8a6030;font-weight:600;margin-top:1px">'+totKgW.u+' зерна</div>'
+    +'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:18px">'
+    +'<div style="position:relative;width:156px;height:156px;flex-shrink:0">'
+    +'<svg viewBox="0 0 300 300" width="156" height="156">'+ringHTML+'</svg>'
+    +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">'
+    +'<div style="font-family:monospace;font-size:26px;font-weight:800;color:#f0ebe4;line-height:1">'+totKgW.v+'</div>'
+    +'<div style="font-size:10px;letter-spacing:2px;color:#5a5550;margin-top:4px;text-transform:uppercase">'+totKgW.u+'</div>'
+    +'</div></div>'
+    +'<div style="flex:1">'+legendHTML+'</div>'
+    +'</div></div>'
+    +'<div style="padding:16px 22px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid #202224">'
+    +'<div style="background:#1c1e22;border-radius:11px;padding:12px 14px"><div style="font-size:8px;color:#3a3835;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Заварювань</div><div style="font-size:24px;font-weight:700;color:#f0ebe4">'+d.brewCount+'</div></div>'
+    +'<div style="background:#1c1e22;border-radius:11px;padding:12px 14px"><div style="font-size:8px;color:#3a3835;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Фаворит</div><div style="font-size:14px;font-weight:700;color:#f0ebe4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+d.favMethod+'</div></div>'
+    +(d.cafeCount>0?'<div style="background:#1c1e22;border-radius:11px;padding:12px 14px"><div style="font-size:8px;color:#3a3835;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">В кав\u2019ярні</div><div style="font-size:24px;font-weight:700;color:#f0ebe4">'+d.cafeCount+'</div></div>':'')
+    +'<div style="background:#1c1e22;border-radius:11px;padding:12px 14px"><div style="font-size:8px;color:#3a3835;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Серед. доза</div><div style="font-size:22px;font-weight:700;color:#f0ebe4">'+d.avgDose+'<span style="font-size:11px;color:#444;font-weight:400"> г</span></div></div>'
+    +'</div>'
+    +'<div style="text-align:center;padding-bottom:14px;font-size:8px;color:#242220;letter-spacing:2.5px;text-transform:uppercase">Зварено в Coffee Master</div>'
+    +'</div>';
+  var wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;left:-9999px;top:0;z-index:-1';
+  wrap.innerHTML=html;
+  document.body.appendChild(wrap);
+  if(typeof html2canvas!=='function'){toast('Шеринг недоступний');wrap.remove();return;}
+  toast('Готуємо картку...');
+  html2canvas(wrap.firstChild,{scale:2,backgroundColor:'#17181a',logging:false}).then(function(canvas){
+    wrap.remove();
+    canvas.toBlob(function(blob){
+      var url=URL.createObjectURL(blob);
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([blob],'coffee-stats.png',{type:'image/png'})]})){
+        navigator.share({files:[new File([blob],'coffee-stats.png',{type:'image/png'})],title:'Coffee Stats'}).catch(function(){});
+      } else {var a=document.createElement('a');a.href=url;a.download='coffee-stats.png';a.click();}
+      setTimeout(function(){URL.revokeObjectURL(url);},5000);
+    },'image/png');
+  }).catch(function(e){wrap.remove();toast('Помилка шерингу');console.log(e);});
+}
+
 
 function cwApply(){
   var r=CW_ROASTS[cwi]; if(!r)return;
@@ -8461,7 +8657,6 @@ function restoreBrew(id){
   if(idx===-1) return;
   var brew = S.trash.splice(idx,1)[0];
   delete brew._deletedAt;
-  /* ── Списуємо зерно та фільтр знову, симетрично до softDeleteBrew ── */
   var doseNum=parseFloat(brew.dose);
   if(!isNaN(doseNum)&&doseNum>0){
     var bean=null;
@@ -8479,7 +8674,7 @@ function restoreBrew(id){
   var inserted = false;
   for(var k=0; k<S.brews.length; k++){ if(S.brews[k].ts<=brew.ts){ S.brews.splice(k,0,brew); inserted=true; break; } }
   if(!inserted) S.brews.push(brew);
-  var logEntry={id:brew.id,ts:brew.ts,vol:Math.round((brew.dose||16)*(brew.ratio||16)),cat:methodCat(brew.method||''),method:brew.method||'',bean:brew.beanName||'',rating:brew.rating||8};
+  var logEntry={id:brew.id,ts:brew.ts,vol:Math.round((parseFloat(brew.dose)||16)*(parseFloat(brew.ratio)||16)),cat:methodCat(brew.method||''),method:brew.method||'',bean:brew.beanName||'',rating:brew.rating||8,dose:parseFloat(brew.dose)||16};
   var logInserted=false;
   for(var k=0;k<S.log.length;k++){ if(S.log[k].ts<=brew.ts){ S.log.splice(k,0,logEntry); logInserted=true; break; } }
   if(!logInserted) S.log.push(logEntry);
@@ -8490,6 +8685,72 @@ function restoreBrew(id){
   renderStreak(); renderTrashList(); renderFeed();
   if(typeof renderCalendar==='function')renderCalendar();
   toast('Рецепт відновлено');
+}
+
+function statShareCarousel(){
+  /* Визначаємо діапазон по поточній вкладці */
+  var keys=['week','month','year'];
+  var p=keys[_carIndex]||'month';
+  var periodNames={week:'Тиждень',month:'Місяць',year:'Рік'};
+  var d=_buildStatsDrinks(p);
+  var slices=[].concat(d.drinks).sort(function(a,b){return b.ml-a.ml;});
+  var top3=slices.slice(0,3),rest=slices.slice(3);
+  var restMl=rest.reduce(function(s,x){return s+x.ml;},0);
+  if(restMl>0)top3.push({name:'Інше',ml:restMl});
+  var totalMl=top3.reduce(function(s,x){return s+x.ml;},0)||1;
+  var COLORS=['#c8a050','#7b6cc8','#5fbf83','#8198AE'];
+  var CIRC2=2*Math.PI*118;
+  var rHTML='<circle cx="150" cy="150" r="118" fill="none" stroke="#1c1e22" stroke-width="28"/>';
+  var off2=0;
+  top3.forEach(function(sl,i){
+    var len=sl.ml/totalMl*CIRC2;
+    if(len<2)return;
+    rHTML+='<circle cx="150" cy="150" r="118" fill="none" stroke="'+COLORS[i%4]+'" stroke-width="28" stroke-linecap="butt" stroke-dasharray="'+len.toFixed(2)+' '+(CIRC2-len).toFixed(2)+'" stroke-dashoffset="'+(-off2).toFixed(2)+'" transform="rotate(-90 150 150)"/>';
+    off2+=len+CIRC2*0.008;
+  });
+  var fmtMl2=function(ml){return ml>=1000?(ml/1000).toFixed(1)+' л':Math.round(ml)+' мл';};
+  var legHTML=top3.map(function(sl,i){
+    var pct=Math.round(sl.ml/totalMl*100);
+    return'<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">'
+      +'<div style="width:9px;height:9px;border-radius:50%;background:'+COLORS[i%4]+';flex-shrink:0"></div>'
+      +'<div style="flex:1;font-size:12px;font-weight:600;color:#c8c0b4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+sl.name+'</div>'
+      +'<div style="font-size:11px;color:'+COLORS[i%4]+';font-weight:700;font-family:monospace">'+pct+'%</div>'
+      +'<div style="font-size:11px;color:#888;font-family:monospace;min-width:48px;text-align:right">'+fmtMl2(sl.ml)+'</div>'
+      +'</div>';
+  }).join('');
+  var html='<div style="width:340px;background:#17181a;border-radius:20px;overflow:hidden;font-family:system-ui,sans-serif">'
+    +'<div style="background:linear-gradient(160deg,#1e2022 0%,#17181a 100%);padding:22px 20px 16px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">'
+    +'<div><div style="font-size:10px;letter-spacing:2px;color:#5a5550;margin-bottom:2px">COFFEE MASTER</div>'
+    +'<div style="font-size:16px;font-weight:700;color:#f0ebe4">'+periodNames[p]+'</div></div>'
+    +'<div style="text-align:right"><div style="font-size:9px;color:#5a5550;letter-spacing:1px">ВСЬОГО</div>'
+    +'<div style="font-size:24px;font-weight:800;color:#c8a050;line-height:1">'+fmtMl2(totalMl)+'</div>'
+    +'<div style="font-size:9px;color:#9a7040;font-weight:600">напою</div></div>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:14px">'
+    +'<div style="position:relative;width:130px;height:130px;flex-shrink:0"><svg viewBox="0 0 300 300" width="130" height="130">'+rHTML+'</svg>'
+    +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">'
+    +'<div style="font-family:monospace;font-size:18px;font-weight:700;color:#f0ebe4;line-height:1">'+d.cups+'</div>'
+    +'<div style="font-size:9px;letter-spacing:1.5px;color:#6b6560;margin-top:2px">ЧАШОК</div>'
+    +'</div></div>'
+    +'<div style="flex:1">'+legHTML+'</div>'
+    +'</div></div>'
+    +'<div style="padding:12px 20px 18px;border-top:1px solid #222426;text-align:center;font-size:8px;color:#2e2c2a;letter-spacing:2px">ЗВАРЕНО В COFFEE MASTER</div>'
+    +'</div>';
+  var wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-9999px;top:0;z-index:-1';
+  wrap.innerHTML=html;document.body.appendChild(wrap);
+  if(typeof html2canvas!=='function'){toast('Шеринг недоступний');wrap.remove();return;}
+  toast('Готуємо картку...');
+  html2canvas(wrap.firstChild,{scale:2,backgroundColor:'#17181a',logging:false}).then(function(canvas){
+    wrap.remove();
+    canvas.toBlob(function(blob){
+      var url=URL.createObjectURL(blob);
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[new File([blob],'stats.png',{type:'image/png'})]})){
+        navigator.share({files:[new File([blob],'stats.png',{type:'image/png'})],title:'Coffee Stats'}).catch(function(){});
+      } else {var a=document.createElement('a');a.href=url;a.download='stats.png';a.click();}
+      setTimeout(function(){URL.revokeObjectURL(url);},5000);
+    },'image/png');
+  }).catch(function(e){wrap.remove();toast('Помилка шерингу');console.log(e);});
 }
 
 function permanentDeleteBrew(id){
@@ -8932,14 +9193,33 @@ function npConfirm(){
   <div class="cw-sheet">
     <div class="cw-top">
       <div class="cw-title"><i class="ti ti-coffee" aria-hidden="true"></i> Випито кави</div>
-      <div class="cw-x" onclick="closeOv('ov-coffee-stats')"><i class="ti ti-x" aria-hidden="true"></i></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="cwShareStats()" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:8px;color:var(--copper-lt);font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-share" style="font-size:13px"></i> Поділитись</button>
+        <div class="cw-x" onclick="closeOv('ov-coffee-stats')"><i class="ti ti-x" aria-hidden="true"></i></div>
+      </div>
     </div>
 
     <div class="cw-tabs">
-      <button class="cw-tab" onclick="cwSetPeriod('day')" data-period="day">День</button>
       <button class="cw-tab" onclick="cwSetPeriod('week')" data-period="week">Тиждень</button>
       <button class="cw-tab on" onclick="cwSetPeriod('month')" data-period="month">Місяць</button>
       <button class="cw-tab" onclick="cwSetPeriod('year')" data-period="year">Рік</button>
+      <button class="cw-tab" onclick="cwSetPeriod('custom')" data-period="custom">Свій</button>
+    </div>
+
+    <!-- Навігатор тижня/місяця -->
+    <div id="cw-nav" style="display:flex;align-items:center;justify-content:space-between;margin:8px 0;gap:8px">
+      <button onclick="cwNavPrev()" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt2);width:32px;height:32px;cursor:pointer;font-size:16px;flex-shrink:0"><i class="ti ti-chevron-left"></i></button>
+      <div id="cw-nav-label" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt2);text-align:center;flex:1"></div>
+      <button onclick="cwNavNext()" id="cw-nav-next" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt2);width:32px;height:32px;cursor:pointer;font-size:16px;flex-shrink:0"><i class="ti ti-chevron-right"></i></button>
+    </div>
+
+    <!-- Довільний діапазон -->
+    <div id="cw-custom-range" style="display:none;margin-bottom:10px;display:none">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1"><div style="font-size:10px;color:var(--txt3);margin-bottom:4px">Від</div><input type="date" id="cw-date-from" oninput="cwFromPicked(this.value)" style="width:100%;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:7px;box-sizing:border-box"></div>
+        <div style="color:var(--txt3);padding-top:18px">—</div>
+        <div style="flex:1"><div style="font-size:10px;color:var(--txt3);margin-bottom:4px">До</div><input type="date" id="cw-date-to" onchange="cwUpdateCustom()" style="width:100%;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:7px;box-sizing:border-box"></div>
+      </div>
     </div>
 
     <div class="cw-card">
@@ -8967,6 +9247,8 @@ function npConfirm(){
     <div class="cw-grid">
       <div class="cw-tile"><div class="v" id="cw-brewcount">0</div><div class="l">Заварювань</div></div>
       <div class="cw-tile"><div class="v" id="cw-avgdose">0 г</div><div class="l">Середня доза</div></div>
+      <div class="cw-tile"><div class="v" id="cw-cafecnt">0</div><div class="l">Кав'ярень</div></div>
+      <div class="cw-tile"><div class="v" id="cw-favmethod">—</div><div class="l">Фаворит</div></div>
     </div>
   </div>
 </div>
