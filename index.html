@@ -9,6 +9,42 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
+
+<style id="cp-css">
+.cp-screen,#scr-compare,#scr-stats{height:100%;flex-direction:column;padding:24px 18px;overflow-y:auto;color:#EDE7DD;font-family:'Manrope',system-ui,sans-serif}
+#scr-compare.on,#scr-stats.on{display:flex!important}
+.cp-mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.cp-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cp-h-title{font-size:21px;font-weight:800;letter-spacing:-.5px}
+.cp-h-sub{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-top:3px;color:#877a6a}
+.cp-card{background:linear-gradient(165deg,#211d18,#181512);border:1px solid #2c2721;border-top-color:#3a3226;border-radius:16px;box-shadow:0 6px 16px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)}
+.cp-lbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:1.5px;color:#877a6a}
+.cp-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:16px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;background:#181512;border:1px solid #2c2721;color:#c2b4a2}
+.cp-row{display:flex;align-items:center;gap:10px}
+.cp-rname{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700}
+.cp-dot{width:9px;height:9px;border-radius:3px;flex:none}
+.cp-rmeta{font-family:'JetBrains Mono',monospace;font-size:10px;color:#877a6a;margin-left:auto}
+.cp-grade{font-family:'JetBrains Mono',monospace;font-weight:700;margin-left:8px}
+.cp-seg{display:flex;gap:4px;background:#12100d;border-radius:12px;padding:4px;margin-bottom:14px;box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+.cp-seg button{flex:1;padding:9px;border-radius:9px;border:none;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;background:none;color:#877a6a;cursor:pointer}
+.cp-seg button.on{background:linear-gradient(180deg,#2f2921,#241f18);color:#EFA23F;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 5px rgba(0,0,0,.4)}
+.cp-tl{position:relative;height:24px;border-radius:7px;overflow:hidden;background:#12100d;box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+.cp-tl i{position:absolute;top:0;bottom:0;font-style:normal;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700}
+.cp-tl .pour{color:#0e2438;background:linear-gradient(180deg,#7cbcf0,#4f93cf);box-shadow:inset 0 1px 1px rgba(255,255,255,.4),inset 0 -2px 4px rgba(20,60,100,.4)}
+.cp-tl .pause{color:#3a2508;background:linear-gradient(180deg,#f6b356,#e08e2b);box-shadow:inset 0 1px 1px rgba(255,255,255,.4),inset 0 -2px 4px rgba(120,60,10,.4)}
+.cp-tl i.mlq{opacity:.5}
+.cp-axis{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:#5d5347;margin-top:4px}
+.cp-card[data-r]{cursor:pointer}
+[data-r]{transition:opacity .18s}
+.cp-faded{opacity:.4}
+.cp-card.cp-sel{border-color:#EFA23F;box-shadow:0 6px 16px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05),0 0 0 1px rgba(239,162,63,.5)}
+.cp-view{display:none}.cp-view.on{display:block}
+.st-leg{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700}
+.st-leg b{font-family:'JetBrains Mono',monospace;font-weight:700}
+.st-sw{display:inline-block;width:8px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+.st-mbar{flex:1;height:7px;border-radius:4px;background:#12100d;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.5)}
+.st-mbar>span{display:block;height:100%;border-radius:4px}
+</style>
 </head>
 <body>
 <style>
@@ -1277,32 +1313,14 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 
 
   <div class="stats-card">
-    <button class="stats-cta" onclick="toggleStatsV2()" id="stats-toggle-btn" aria-expanded="false">
+    <button class="stats-cta" onclick="showScr('scr-stats');renderStats()" id="stats-toggle-btn">
       <div class="stats-cta-ic"><i class="ti ti-chart-donut-3" aria-hidden="true"></i></div>
       <div class="stats-cta-body">
         <div class="stats-cta-t" data-i18n="profile_stats">Статистика</div>
         <div class="stats-cta-s" data-i18n="profile_stats_sub">Напої, об'єм, заварювання</div>
       </div>
-      <i class="ti ti-chevron-down stats-cta-chev" id="stats-chev" aria-hidden="true"></i>
+      <i class="ti ti-chevron-right stats-cta-chev" aria-hidden="true"></i>
     </button>
-    <div class="collapse-body-v2" id="stats-collapse">
-      <div class="coll-inner" style="padding-top:4px">
-        <div class="ptabs-v2" style="display:flex;align-items:center;gap:6px">
-          <button class="ptab on" onclick="goCarousel(0)" data-i18n="profile_week">Тиждень</button>
-          <button class="ptab" onclick="goCarousel(1)" data-i18n="profile_month">Місяць</button>
-          <button class="ptab" onclick="goCarousel(2)" data-i18n="profile_year">Рік</button>
-          <button onclick="statShareCarousel()" style="margin-left:auto;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:7px;color:var(--copper-lt);font-size:11px;font-weight:700;padding:5px 10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;flex-shrink:0"><i class="ti ti-share" style="font-size:12px"></i></button>
-        </div>
-        <div class="carousel" id="prof-carousel">
-          <div class="carousel-track" id="carousel-track">
-            <div class="carousel-slide"></div>
-            <div class="carousel-slide"></div>
-            <div class="carousel-slide"></div>
-          </div>
-        </div>
-        <div class="carousel-dots" id="carousel-dots"></div>
-      </div>
-    </div>
   </div>
 
   <div style="margin-top:4px;padding-bottom:8px">
@@ -2427,6 +2445,111 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 
 
 
+
+<!-- COMPARE SCREEN -->
+<div class="scr" id="scr-compare">
+  <div class="cp-hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="showScr('scr-home')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="cp-h-title">Порівняння</div><div class="cp-h-sub" id="cp-count">3 рецепти · V60</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cpResetSelection()" title="Скинути вибір" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--txt2);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-refresh"></i></button>
+      <span class="cp-chip"><i class="ti ti-scale"></i> <span id="cp-n">0/5</span></span>
+    </div>
+  </div>
+  <div class="cp-seg" id="cp-view-seg">
+    <button class="on" onclick="cpView('tl',this)">Таймлайн</button>
+    <button onclick="cpView('rg',this)">Кільця</button>
+    <button onclick="cpView('cv',this)">Крива</button>
+  </div>
+
+  <!-- Таймлайн -->
+  <div class="cp-view on" id="cp-view-tl">
+    <div class="cp-seg" id="cp-unit-seg" style="margin-bottom:12px">
+      <button class="on" onclick="cpUnit('sec',this)">Секунди</button>
+      <button onclick="cpUnit('ml',this)">Мілілітри</button>
+    </div>
+    <div id="cp-tl-list"></div>
+    <div class="cp-axis" id="cp-tl-axis" style="margin:0 4px 14px"></div>
+    <div class="cp-card" style="padding:14px">
+      <div class="cp-lbl" style="margin-bottom:10px">Параметри</div>
+      <div id="cp-params" style="font-size:11.5px"></div>
+    </div>
+    <div class="cp-lbl" style="margin-top:10px;text-align:center;color:#6b5f50">помаранчеве = відрізняється від решти</div>
+  </div>
+
+  <!-- Кільця -->
+  <div class="cp-view" id="cp-view-rg">
+    <div class="cp-card" style="padding:18px;display:flex;justify-content:center;margin-bottom:12px">
+      <svg id="cp-rings" width="280" height="280" viewBox="0 0 280 280"></svg>
+    </div>
+    <div id="cp-rg-list"></div>
+  </div>
+
+  <!-- Крива -->
+  <div class="cp-view" id="cp-view-cv">
+    <div class="cp-card" style="padding:16px 12px 10px;margin-bottom:12px">
+      <svg id="cp-curve" width="100%" height="240" viewBox="0 0 340 240"></svg>
+    </div>
+    <div id="cp-cv-list"></div>
+    <div class="cp-lbl" style="margin-top:12px;text-align:center;color:#6b5f50">полиця = пауза · крутизна = темп вливу</div>
+  </div>
+</div>
+
+<!-- STATS SCREEN -->
+<div class="scr" id="scr-stats">
+  <!-- Шапка з кнопкою назад -->
+  <div class="cp-hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="showScr('scr-profile')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="cp-h-title">Статистика</div><div class="cp-h-sub" id="st-period-lbl">Місяць</div></div>
+    </div>
+  </div>
+
+  <!-- Таби + шеринг -->
+  <div class="cp-seg" id="st-seg">
+    <button onclick="stSetPeriod('week',this);goCarousel(0)">Тиждень</button>
+    <button class="on" onclick="stSetPeriod('month',this);goCarousel(1)">Місяць</button>
+    <button onclick="stSetPeriod('year',this);goCarousel(2)">Рік</button>
+    <button onclick="statShareCarousel()" style="margin-left:auto;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:8px;color:var(--copper-lt);padding:0 12px;cursor:pointer"><i class="ti ti-share" style="font-size:13px"></i></button>
+  </div>
+
+  <!-- Карусель напоїв (та сама що в профілі) -->
+  <div class="carousel" id="prof-carousel" style="margin-bottom:4px">
+    <div class="carousel-track" id="carousel-track">
+      <div class="carousel-slide"></div>
+      <div class="carousel-slide"></div>
+      <div class="carousel-slide"></div>
+    </div>
+  </div>
+  <div class="carousel-dots" id="carousel-dots" style="margin-bottom:14px"></div>
+
+  <!-- Донат зерна по типу -->
+  <div class="cp-card" style="padding:16px;margin-bottom:12px">
+    <div class="cp-lbl" style="margin-bottom:12px">Зерно по обсмаженню</div>
+    <div class="cp-row" style="gap:14px;align-items:center">
+      <svg id="st-donut" width="108" height="108" viewBox="0 0 120 120"></svg>
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px" id="st-donut-leg"></div>
+    </div>
+  </div>
+
+  <!-- Смаковий профіль -->
+  <div class="cp-card" style="padding:16px;margin-bottom:12px">
+    <div class="cp-lbl" style="margin-bottom:10px">Смаковий профіль</div>
+    <div class="cp-row" style="gap:14px">
+      <svg id="st-radar" width="130" height="120" viewBox="0 0 130 120"></svg>
+      <div style="flex:1;display:flex;flex-direction:column;gap:7px" id="st-radar-leg"></div>
+    </div>
+    <div style="font-size:12px;color:#a3927f;margin-top:10px" id="st-radar-hint"></div>
+  </div>
+
+  <!-- Рейтинг методів -->
+  <div class="cp-card" style="padding:16px">
+    <div class="cp-lbl" style="margin-bottom:12px">Оцінка за методом</div>
+    <div id="st-methods"></div>
+  </div>
+</div>
 </div><!-- /screens -->
 
 <nav class="nav">
@@ -2436,6 +2559,14 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
   <button class="nb" id="nb-eq" onclick="showScr('scr-eq')" aria-label="Девайси"><i class="ti ti-tools" aria-hidden="true"></i></button>
   <button class="nb" id="nb-profile" onclick="showScr('scr-profile')" aria-label="Профіль"><i class="ti ti-user" aria-hidden="true"></i></button>
 </nav>
+<!-- Compare FAB -->
+<div id="cp-fab" style="display:none;position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:200">
+  <div style="display:flex;align-items:stretch;background:linear-gradient(160deg,var(--copper-lt),var(--copper));border-radius:20px;box-shadow:0 4px 18px rgba(184,115,51,.45);overflow:hidden">
+    <button onclick="showScr('scr-compare');renderCompare()" style="background:none;border:none;color:#1c130a;padding:11px 18px 11px 20px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px;flex:1"><i class="ti ti-scale" style="font-size:16px"></i> Порівняти (<span id="cp-fab-count">0</span>)</button>
+    <div style="width:1px;background:rgba(0,0,0,.2);margin:8px 0"></div>
+    <button onclick="cpResetSelection()" title="Скинути" style="background:none;border:none;color:#1c130a;padding:11px 14px;font-size:17px;cursor:pointer;display:flex;align-items:center;opacity:.75" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.75'"><i class="ti ti-refresh"></i></button>
+  </div>
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -3984,6 +4115,7 @@ el.innerHTML=S.brews.map(b=>{
       <button class="expand-btn" id="ex-${bid}" onclick="toggleRec(${bid})"><i class="ti ti-chevron-down" aria-hidden="true"></i> Деталі</button>
       <div style="display:flex;gap:6px">
         <button class="like-btn" onclick="openEditBrew(${bid})" title="Редагувати"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+        <button class="like-btn" onclick="cpToggleBrew(${bid})" id="cp-btn-${bid}" title="Порівняти"><i class="ti ti-scale" aria-hidden="true"></i></button>
         <button class="like-btn" onclick="shareRecipe(${bid})" title="Поділитись"><i class="ti ti-share" aria-hidden="true"></i></button>
         <button class="like-btn ${b.liked?'liked':''}" onclick="toggleLike(${bid})"><i class="ti ti-heart" aria-hidden="true"></i> ${b.likes}</button>
       </div>
@@ -7545,10 +7677,13 @@ function showScr(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   const el=document.getElementById(id);if(el)el.classList.add('on');
-  const nbMap={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile'};
+  const nbMap={'scr-home':'nb-home','scr-coffee':'nb-coffee','scr-eq':'nb-eq','scr-devlist':'nb-eq','scr-profile':'nb-profile','scr-stats':'nb-profile','scr-compare':'nb-home'};
   const nb=nbMap[id];if(nb)document.getElementById(nb)?.classList.add('on');
   const fn={'scr-home':renderFeed,'scr-coffee':renderBeans,'scr-eq':renderCatGrid,'scr-profile':renderProf,'scr-market':mktRender,'scr-ach':renderAchievements};if(id==='scr-brew')showBV('bv-method-pick');
   if(fn[id])fn[id]();
+  /* FAB порівняння — показуємо тільки в журналі */
+  var fab=document.getElementById('cp-fab');
+  if(fab)fab.style.display=(id==='scr-home'&&CP_SELECTED.length>=2)?'block':'none';
 }
 
 
@@ -8125,6 +8260,13 @@ function _updateCarousel(animate){
   _setCarouselHeight();
 }
 function goCarousel(i){_carIndex=Math.max(0,Math.min(2,i));_updateCarousel(true);}
+function _updateCarouselStats(){
+  var track=document.getElementById('carousel-track');if(!track)return;
+  track.style.transition='none';
+  track.style.transform='translateX('+(-_carIndex*100)+'%)';
+  document.querySelectorAll('#carousel-dots .cdot').forEach(function(dt,i){dt.classList.toggle('on',i===_carIndex);});
+  _setCarouselHeight();
+}
 function toggleStatsV2(){
   _statsOpen=!_statsOpen;
   var c=document.getElementById('stats-collapse');if(c)c.classList.toggle('open',_statsOpen);
@@ -9267,6 +9409,321 @@ function npConfirm(){
     <div class="av-color-row" id="av-color-row"></div>
     <button class="av-close-btn" onclick="closeAvPicker()">Готово</button>
   </div>
+
+<script id="cp-js">
+/* ── COMPARE: toggle brew selection ── */
+var CP_SELECTED=[];
+function cpToggleBrew(id){
+  var b=S.brews.find(function(x){return x.id===id;});
+  if(!b)return;
+  var idx=CP_SELECTED.findIndex(function(x){return x.id===id;});
+  var btn=document.getElementById('cp-btn-'+id);
+  if(idx>=0){
+    CP_SELECTED.splice(idx,1);
+    if(btn)btn.style.color='';
+  } else {
+    if(CP_SELECTED.length>=4){toast('Максимум 4 рецепти');return;}
+    CP_SELECTED.push(b);
+    if(btn)btn.style.color='var(--copper-lt)';
+  }
+  var fab=document.getElementById('cp-fab');
+  var cnt=document.getElementById('cp-fab-count');
+  if(fab)fab.style.display=CP_SELECTED.length>=2?'block':'none';
+  if(cnt)cnt.textContent=CP_SELECTED.length;
+}
+function cpResetSelection(){
+  CP_SELECTED=[];
+  document.querySelectorAll('[id^="cp-btn-"]').forEach(function(b){b.style.color='';});
+  var fab=document.getElementById('cp-fab');
+  if(fab)fab.style.display='none';
+  var cnt=document.getElementById('cp-fab-count');
+  if(cnt)cnt.textContent='0';
+  /* Якщо вже в екрані порівняння — повертаємо в журнал і скидаємо */
+  var activeScr=document.querySelector('.scr.on');
+  if(activeScr&&activeScr.id==='scr-compare'){
+    renderCompare();
+    showScr('scr-home');
+  }
+}
+
+/* ─────────── ПОРІВНЯННЯ ─────────── */
+/* демо-дані — заміни на обрані рецепти */
+var CP_RECIPES=[];
+var BLUE='#5da3dd',ORANGE='#EFA23F';
+var cpUnitMode='sec',cpSel=null;
+function cpTotal(r){return r.steps.reduce(function(s,x){return s+x.sec},0)}
+function cpMaxTotal(){return Math.max.apply(null,CP_RECIPES.map(cpTotal))}
+function cpFmtTime(s){return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2)}
+var CP_COLORS=['#E8955C','#7fb08a','#c9a86a','#8198AE'];
+
+/* Converts a real brew from S.brews into the CP format */
+function cpBrewToRecipe(b,idx){
+  var d=new Date(b.ts||Date.now());
+  var pad=function(n){return(n<10?'0':'')+n;};
+  var dateStr=pad(d.getDate())+'.'+pad(d.getMonth()+1);
+  var dose=parseFloat(b.dose)||16;
+  var ratio=parseFloat(b.ratio)||16;
+  var gradeColor=b.rating>=8?'#5fbf83':b.rating>=6.5?'#b9c64f':b.rating>=5?'#e2c64c':'#ea6a52';
+  /* Convert steps array */
+  var steps=(b.steps||[]).map(function(s){
+    if(s.type==='pour')return{type:'pour',sec:Math.round((s.ph||0)/1000),ml:Math.round(s.ml||0)};
+    if(s.type==='pause')return{type:'pause',sec:Math.round((s.ph||0)/1000)};
+    return null;
+  }).filter(Boolean);
+  /* Fallback for espresso (no steps) */
+  if(!steps.length && b.espresso){
+    steps=[{type:'pour',sec:b.espresso.shotTime||25,ml:Math.round(b.espresso.actualYield||b.espresso.targetYield||36)}];
+  }
+  return{
+    name:b.beanName||'Без назви',
+    date:dateStr,
+    color:CP_COLORS[idx%4],
+    grade:parseFloat(b.rating)||0,
+    gradeColor:gradeColor,
+    dose:dose,
+    ratioStr:'1:'+ratio,
+    temp:parseFloat(b.temp)||93,
+    grind:b.clicks||0,
+    water:Math.round(dose*ratio),
+    method:b.method||'',
+    steps:steps
+  };
+}
+
+function renderCompare(){
+  /* Build CP_RECIPES from user-selected brews */
+  CP_RECIPES=CP_SELECTED.map(function(b,i){return cpBrewToRecipe(b,i);});
+  var n=CP_RECIPES.length;
+  var nEl=document.getElementById('cp-n');
+  var cntEl=document.getElementById('cp-count');
+  if(nEl)nEl.textContent=n+'/5';
+  if(cntEl)cntEl.textContent=n>0?(n+' рецепт'+(n===1?'':'и')):'оберіть рецепти ⚖';
+  if(n===0){
+    /* Empty state */
+    ['cp-tl-list','cp-param-grid','cp-rg-list','cp-cv-list'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el)el.innerHTML='<div style="text-align:center;padding:24px;color:#555;font-size:13px">Оберіть рецепти в журналі за допомогою ⚖</div>';
+    });
+    return;
+  }
+  cpRenderTimelines();cpRenderParams();cpRenderRings();cpRenderCurve();cpRenderLists();cpApplySel();
+}
+function cpShort(r){return r.date}
+/* — таймлайни — */
+function cpRenderTimelines(){
+  var max=cpMaxTotal(),html='';
+  CP_RECIPES.forEach(function(r,i){
+    var total=cpTotal(r),acc=0,bars='';
+    r.steps.forEach(function(st){
+      var left=acc/max*100,w=st.sec/max*100;acc+=st.sec;
+      var cls=st.type==='pour'?'pour':'pause';
+      var txt=cpUnitMode==='ml'?(st.type==='pour'?st.ml:''):st.sec;
+      var mlq=(cpUnitMode==='ml'&&st.type==='pause')?' mlq':'';
+      bars+='<i class="'+cls+mlq+'" style="left:'+left.toFixed(1)+'%;width:'+w.toFixed(1)+'%">'+txt+'</i>';
+    });
+    html+='<div class="cp-card" data-r="'+i+'" onclick="cpPick('+i+')" style="padding:14px 14px 10px;margin-bottom:10px">'
+      +'<div class="cp-rname" style="margin-bottom:8px"><span class="cp-dot" style="background:'+r.color+'"></span>'+r.name+' · '+r.date
+      +'<span class="cp-rmeta">'+r.dose+'г · '+r.ratioStr+' · '+r.temp+'°</span>'
+      +'<span class="cp-grade" style="color:'+r.gradeColor+'">'+r.grade.toFixed(1)+'</span></div>'
+      +'<div class="cp-tl">'+bars+'</div></div>';
+  });
+  document.getElementById('cp-tl-list').innerHTML=html;
+  var ax='',max2=cpMaxTotal();for(var t=0;t<=max2;t+=60)ax+='<span>'+cpFmtTime(t)+'</span>';
+  document.getElementById('cp-tl-axis').innerHTML=ax;
+}
+function cpRenderParams(){
+  var rows=[['Доза',function(r){return r.dose}],['Вода',function(r){return r.water}],
+    ['Темп.',function(r){return r.temp+'°'}],['Помел',function(r){return r.grind}],
+    ['Час',function(r){return cpFmtTime(cpTotal(r))}],['1-й влив',function(r){return r.steps[0].ml}]];
+  var cols=CP_RECIPES.length;
+  var h='<div style="display:grid;grid-template-columns:1fr repeat('+cols+',1fr);gap:7px 6px">';
+  h+='<span class="cp-lbl"></span>'+CP_RECIPES.map(function(r){return '<span class="cp-lbl" style="text-align:right;color:'+r.color+'">'+r.date+'</span>'}).join('');
+  rows.forEach(function(row){
+    var vals=CP_RECIPES.map(row[1]),same=vals.every(function(v){return v===vals[0]});
+    h+='<span style="color:#a3927f">'+row[0]+'</span>';
+    CP_RECIPES.forEach(function(r,i){
+      var diff=!same&&vals.filter(function(v){return v===vals[i]}).length===1;
+      h+='<b class="cp-mono" style="text-align:right'+(diff?';color:#EFA23F':'')+'">'+vals[i]+'</b>';
+    });
+  });
+  h+='</div>';document.getElementById('cp-params').innerHTML=h;
+}
+/* — кільця — */
+function cpRenderRings(){
+  var radii=[118,96,74],cx=140,svg='';
+  CP_RECIPES.slice(0,3).forEach(function(r,i){
+    var R=radii[i],total=cpTotal(r),acc=0;
+    svg+='<g data-r="'+i+'"><circle cx="140" cy="140" r="'+R+'" stroke="#181512"/>';
+    r.steps.forEach(function(st){
+      var col=st.type==='pour'?BLUE:ORANGE,gap=total-st.sec;
+      svg+='<circle cx="140" cy="140" r="'+R+'" pathLength="'+total+'" stroke="'+col+'" stroke-dasharray="'+st.sec+' '+gap+'" stroke-dashoffset="'+(-acc)+'"/>';
+      acc+=st.sec;
+    });
+    svg+='</g>';
+  });
+  var maxT=cpMaxTotal();
+  var full='<g transform="rotate(-90 140 140)" fill="none" stroke-width="17">'+svg+'</g>'
+    +'<text x="140" y="135" text-anchor="middle" fill="#EDE7DD" font-family="JetBrains Mono" font-size="20" font-weight="700">'+cpFmtTime(maxT)+'</text>'
+    +'<text x="140" y="152" text-anchor="middle" fill="#877a6a" font-family="JetBrains Mono" font-size="9">MAX ЧАС</text>';
+  document.getElementById('cp-rings').innerHTML=full;
+}
+/* — крива води — */
+function cpRenderCurve(){
+  var maxT=cpMaxTotal(),maxMl=Math.max.apply(null,CP_RECIPES.map(function(r){return r.water}));
+  var X0=34,X1=332,Y0=210,Y1=10;
+  function px(t){return X0+(t/maxT)*(X1-X0)}
+  function py(ml){return Y0-(ml/maxMl)*(Y0-Y1)}
+  var g='<line x1="34" y1="10" x2="34" y2="210" stroke="#2c2721"/><line x1="34" y1="210" x2="332" y2="210" stroke="#2c2721"/>';
+  g+='<line x1="34" y1="'+py(maxMl).toFixed(0)+'" x2="332" y2="'+py(maxMl).toFixed(0)+'" stroke="#221e19" stroke-dasharray="3 4"/>';
+  g+='<line x1="34" y1="'+py(maxMl/2).toFixed(0)+'" x2="332" y2="'+py(maxMl/2).toFixed(0)+'" stroke="#221e19" stroke-dasharray="3 4"/>';
+  g+='<text x="28" y="'+(py(maxMl)+4).toFixed(0)+'" text-anchor="end" fill="#5d5347" font-family="JetBrains Mono" font-size="8">'+Math.round(maxMl)+'</text>';
+  g+='<text x="28" y="214" text-anchor="end" fill="#5d5347" font-family="JetBrains Mono" font-size="8">0</text>';
+  g+='<text x="34" y="228" fill="#5d5347" font-family="JetBrains Mono" font-size="8">0:00</text><text x="'+px(maxT).toFixed(0)+'" y="228" text-anchor="end" fill="#5d5347" font-family="JetBrains Mono" font-size="8">'+cpFmtTime(maxT)+'</text>';
+  var caps='';
+  CP_RECIPES.forEach(function(r,i){
+    var t=0,ml=0,d='M'+px(0)+' '+py(0);
+    r.steps.forEach(function(st){
+      if(st.type==='pour'){var t2=t+st.sec;ml+=st.ml;d+=' L'+px(t2).toFixed(1)+' '+py(ml).toFixed(1);t=t2;}
+      else{var t3=t+st.sec;d+=' L'+px(t3).toFixed(1)+' '+py(ml).toFixed(1);t=t3;}
+    });
+    g+='<path data-r="'+i+'" d="'+d+'" fill="none" stroke="'+r.color+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    caps+='<circle data-r="'+i+'" cx="'+px(t).toFixed(1)+'" cy="'+py(ml).toFixed(1)+'" r="4" fill="'+r.color+'"/>';
+  });
+  document.getElementById('cp-curve').innerHTML=g+caps;
+}
+/* — списки-легенди під графіками — */
+function cpRenderLists(){
+  var ring=['зовнішнє кільце','середнє кільце','внутрішнє кільце'];
+  function card(r,i,meta){return '<div class="cp-card" data-r="'+i+'" onclick="cpPick('+i+')" style="padding:12px 14px;margin-bottom:8px">'
+    +'<div class="cp-rname"><span class="cp-dot" style="background:'+r.color+'"></span>'+r.name.split(' ').slice(0,2).join(' ')+' · '+r.date
+    +'<span class="cp-rmeta">'+meta+'</span><span class="cp-grade" style="color:'+r.gradeColor+'">'+r.grade.toFixed(1)+'</span></div></div>'}
+  document.getElementById('cp-rg-list').innerHTML=CP_RECIPES.map(function(r,i){return card(r,i,ring[i]||'')}).join('');
+  document.getElementById('cp-cv-list').innerHTML=CP_RECIPES.map(function(r,i){return card(r,i,r.water+' мл · '+cpFmtTime(cpTotal(r)))}).join('');
+}
+/* — перемикачі — */
+function cpView(v,btn){document.querySelectorAll('#cp-view-seg button').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');
+  ['tl','rg','cv'].forEach(function(k){document.getElementById('cp-view-'+k).classList.toggle('on',k===v)})}
+function cpUnit(m,btn){cpUnitMode=m;document.querySelectorAll('#cp-unit-seg button').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');cpRenderTimelines();cpApplySel()}
+function cpPick(idx){cpSel=cpSel===idx?null:idx;cpApplySel()}
+function cpApplySel(){
+  document.querySelectorAll('#scr-compare [data-r]').forEach(function(el){
+    var r=el.getAttribute('data-r'),on=cpSel===null||String(cpSel)===r;
+    el.classList.toggle('cp-faded',!on);
+    if(el.classList.contains('cp-card'))el.classList.toggle('cp-sel',cpSel!==null&&String(cpSel)===r);
+  });
+}
+
+/* ─────────── СТАТИСТИКА ─────────── */
+var ST_GRADES=[[8,'#5fbf83'],[6.5,'#b9c64f'],[5,'#e2c64c'],[3.5,'#ea9b3c'],[0,'#ea6a52']];
+function stInk(r){for(var i=0;i<ST_GRADES.length;i++)if(r>=ST_GRADES[i][0])return ST_GRADES[i][1];return '#ea6a52'}
+var FLAV_AXES={'фрукти':[1,.4,.5,0,0],'ягоди':[1,.5,.4,0,0],'цитрус':[.9,.2,.9,0,0],'сухофрукти':[.8,.7,.1,.3,0],'солодке':[0,1,0,.2,0],'карамель':[0,1,0,.4,.1],'мед':[.2,1,.1,.2,0],'ваніль':[0,.9,0,.3,0],'шоколад':[0,.7,0,.6,.3],'квіти':[.6,.4,.3,0,0],'горіхи':[0,.5,0,.6,.2],'спеції':[.1,.3,.1,.5,.3],'смажене':[0,.1,0,.6,.9],'кисле':[.3,0,1,0,.1]};
+var stPeriod='month';
+/* ДЕМО: заміни на агрегати з S.brews у renderStats() */
+var ST_DEMO={
+  donut:[{k:'Фільтр',g:540,c:'#E8955C'},{k:'Еспресо',g:420,c:'#A4C287'},{k:'Омні',g:220,c:'#c2b4a2'}],
+  radar:[0.85,0.8,0.55,0.35,0.15],
+  methods:[{k:'V60',v:8.9},{k:'Еспресо',v:7.8},{k:'Аеропрес',v:7.2}]
+};
+function stSetPeriod(p,btn){stPeriod=p;document.querySelectorAll('#st-seg button').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');
+  document.getElementById('st-period-lbl').textContent=p==='week'?'Тиждень':p==='month'?'Місяць':'Рік';renderStats()}
+function renderStats(){
+  /* Ініціалізуємо карусель напоїв */
+  if(!_statsRendered){
+    _renderCarousel();
+    _statsRendered=true;
+  }
+  setTimeout(function(){_updateCarouselStats();},40);
+  /* ── Фільтр по обраному пеіоду ── */
+  var now=Date.now();
+  var fromTs=stPeriod==='week'?(function(){var d=new Date();d.setDate(d.getDate()-d.getDay()+1);return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();}()):
+             stPeriod==='month'?(function(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),1).getTime();}()):
+             new Date(new Date().getFullYear(),0,1).getTime();
+  var brews=(S.brews||[]).filter(function(b){return (b.ts||0)>=fromTs;});
+
+  /* ── Донат по типу обсмаження ── */
+  var byType={filter:0,espresso:0,omni:0};
+  brews.forEach(function(b){
+    var dose=parseFloat(b.dose)||16;
+    var lb=typeof liveBeanInfo==="function"?liveBeanInfo(b.beanId,b.beanName,b.roaster):{roastType:""};
+    var type=lb.roastType||b.roastType||(typeof getRoastType==="function"?getRoastType(b.method):"filter");
+    if(!byType.hasOwnProperty(type))type="filter";
+    byType[type]+=dose;
+  });
+  var donutData=[
+    {k:"Фільтр",g:Math.round(byType.filter),c:"#E0A93B"},
+    {k:"Еспресо",g:Math.round(byType.espresso),c:"#A85A2E"},
+    {k:"Омні",g:Math.round(byType.omni),c:"#8198AE"}
+  ].filter(function(x){return x.g>0;});
+  if(!donutData.length) donutData=[{k:"Немає даних",g:1,c:"#333"}];
+  var total=donutData.reduce(function(s,x){return s+x.g;},0),C=289,off=0;
+  var svg="<circle cx=\"60\" cy=\"60\" r=\"46\" fill=\"none\" stroke=\"#12100d\" stroke-width=\"15\"/>",leg="";
+  donutData.forEach(function(x){
+    var seg=x.g/total*C;
+    if(seg>1)svg+="<circle cx=\"60\" cy=\"60\" r=\"46\" fill=\"none\" stroke=\""+x.c+"\" stroke-width=\"15\" stroke-dasharray=\""+(seg-5)+" "+C+"\" stroke-dashoffset=\""+(- off)+"\" stroke-linecap=\"round\" transform=\"rotate(-90 60 60)\"/>";
+    off+=seg;
+    var val=x.g>=1000?(x.g/1000).toFixed(2)+" кг":x.g+" г";
+    leg+="<div class=\"st-leg\"><span><span class=\"st-sw\" style=\"background:"+x.c+"\"></span>"+x.k+"</span><b>"+val+"</b></div>";
+  });
+  var tv=total>=1000?(total/1000).toFixed(2):total;
+  svg+="<text x=\"60\" y=\"57\" text-anchor=\"middle\" fill=\"#EDE7DD\" font-family=\"JetBrains Mono\" font-size=\"18\" font-weight=\"700\">"+tv+"</text><text x=\"60\" y=\"73\" text-anchor=\"middle\" fill=\"#877a6a\" font-family=\"JetBrains Mono\" font-size=\"9\">"+( total>=1000?"КГ":"Г")+"</text>";
+  document.getElementById("st-donut").innerHTML=svg;
+  document.getElementById("st-donut-leg").innerHTML=leg;
+
+  /* ── Радар смакового профілю ── */
+  var axes=[0,0,0,0,0];
+  var axisW=0;
+  brews.forEach(function(b){
+    var w=parseFloat(b.rating)||5;
+    var notes=(b.flavors||[]).concat(b.aroma||[]);
+    notes.forEach(function(note){
+      var n=(typeof note==="string"?note:(note&&note.ua?note.ua:String(note))).toLowerCase();
+      var found=null;
+      Object.keys(FLAV_AXES).forEach(function(k){if(n.includes(k)||k.includes(n.split(" ")[0]))found=k;});
+      if(found){var v=FLAV_AXES[found];for(var i=0;i<5;i++)axes[i]+=v[i]*w;}
+    });
+    if(notes.length)axisW+=w;
+  });
+  var norm=axisW>0?axes.map(function(v){return Math.min(1,v/axisW/3);}):[0,0,0,0,0];
+  var hasProfile=norm.some(function(v){return v>0.05;});
+
+  var names=["фруктовість","солодкість","кислотність","тіло","гіркота"];
+  var cx=65,cy=62,R=52;
+  function pt(v,i){var a=-Math.PI/2+i*2*Math.PI/5,r=8+v*(R-8);return [(cx+Math.cos(a)*r).toFixed(1),(cy+Math.sin(a)*r).toFixed(1)];}
+  function grid(f){return [0,1,2,3,4].map(function(i){var a=-Math.PI/2+i*2*Math.PI/5;return (cx+Math.cos(a)*R*f).toFixed(1)+","+(cy+Math.sin(a)*R*f).toFixed(1);}).join(" ");}
+  var pts=norm.map(pt);
+  var rs="<polygon points=\""+grid(1)+"\" fill=\"none\" stroke=\"#2c2721\"/><polygon points=\""+grid(.55)+"\" fill=\"none\" stroke=\"#2c2721\"/>";
+  if(hasProfile){
+    rs+="<polygon points=\""+pts.map(function(p){return p.join(",");}).join(" ")+"\" fill=\"rgba(232,149,92,.2)\" stroke=\"#E8955C\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/>";
+    pts.forEach(function(p){rs+="<circle cx=\""+p[0]+"\" cy=\""+p[1]+"\" r=\"4\" fill=\"#F2B285\"/>";});
+  } else {
+    rs+="<text x=\"65\" y=\"68\" text-anchor=\"middle\" fill=\"#555\" font-size=\"10\">немає нот</text>";
+  }
+  document.getElementById("st-radar").innerHTML=rs;
+  document.getElementById("st-radar-leg").innerHTML=names.map(function(n,i){
+    var dots=Math.round(norm[i]*5);
+    return "<div class=\"cp-lbl\" style=\"margin:0"+(i===0?";color:#E8955C":"")+"\">"+n+" "+"●".repeat(dots)+"○".repeat(5-dots)+"</div>";
+  }).join("");
+  var top=hasProfile?names[norm.indexOf(Math.max.apply(null,norm))]:"—";
+  document.getElementById("st-radar-hint").textContent=hasProfile?"Домінує "+top+". Профіль зважений на оцінки чашок.":"Вибери ноти смаку в рецептах щоб побачити профіль.";
+
+  /* ── Рейтинг методів ── */
+  var methodMap={};
+  brews.forEach(function(b){
+    var m=b.method||"Інше";
+    if(!methodMap[m])methodMap[m]={sum:0,cnt:0};
+    methodMap[m].sum+=parseFloat(b.rating)||0;
+    methodMap[m].cnt++;
+  });
+  var methods=Object.keys(methodMap).map(function(k){return{k:k,v:methodMap[k].cnt>0?methodMap[k].sum/methodMap[k].cnt:0};}).sort(function(a,b){return b.v-a.v;}).slice(0,5);
+  document.getElementById("st-methods").innerHTML=methods.length?methods.map(function(m){
+    var c=m.v>=8?"#5fbf83":m.v>=6.5?"#b9c64f":m.v>=5?"#e2c64c":"#ea6a52";
+    return "<div class=\"cp-row\" style=\"margin-bottom:8px\"><span style=\"width:74px;font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">"+m.k+"</span><div class=\"st-mbar\"><span style=\"width:"+(m.v*10)+"%%;background:"+c+"\"></span></div><b class=\"cp-mono\" style=\"font-size:12px;color:"+c+"\">"+m.v.toFixed(1)+"</b></div>";
+  }).join(""):"<div style=\"color:#555;font-size:12px\">Немає даних за цей період</div>";
+}
+/* автозапуск демо */
+/* Compare/Stats screens render on demand — triggered by user navigation */
+
+</script>
 </div>
 
 <template id="__bundler_thumbnail" data-bg-color="#17181a">
