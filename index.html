@@ -2499,57 +2499,57 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
 
 <!-- STATS SCREEN -->
 <div class="scr" id="scr-stats">
-  <!-- Шапка з кнопкою назад -->
-  <div class="cp-hdr">
-    <div style="display:flex;align-items:center;gap:10px">
-      <button onclick="showScr('scr-profile')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px"><i class="ti ti-arrow-left"></i></button>
-      <div><div class="cp-h-title">Статистика</div><div class="cp-h-sub" id="st-period-lbl">Місяць</div></div>
+  <div style="padding:14px 16px 28px">
+    <!-- Шапка -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <button onclick="showScr('scr-profile')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:17px;font-weight:700;color:var(--txt)">Статистика</div>
+        <div style="font-size:11px;color:var(--txt3)" id="st-period-lbl">Місяць</div>
+      </div>
+      <button onclick="statShareCarousel()" style="background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);padding:8px 12px;cursor:pointer;font-size:14px"><i class="ti ti-share"></i></button>
     </div>
-  </div>
 
-  <!-- Таби + шеринг -->
-  <div class="cp-seg" id="st-seg">
-    <button onclick="stSetPeriod('week',this);goCarousel(0)">Тиждень</button>
-    <button class="on" onclick="stSetPeriod('month',this);goCarousel(1)">Місяць</button>
-    <button onclick="stSetPeriod('year',this);goCarousel(2)">Рік</button>
-    <button onclick="statShareCarousel()" style="margin-left:auto;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:8px;color:var(--copper-lt);padding:0 12px;cursor:pointer"><i class="ti ti-share" style="font-size:13px"></i></button>
-  </div>
-
-  <!-- Карусель напоїв (та сама що в профілі) -->
-  <div class="carousel" id="prof-carousel" style="margin-bottom:4px">
-    <div class="carousel-track" id="carousel-track">
-      <div class="carousel-slide"></div>
-      <div class="carousel-slide"></div>
-      <div class="carousel-slide"></div>
+    <!-- Таби -->
+    <div class="cp-seg" id="st-seg" style="margin-bottom:16px">
+      <button onclick="stSetPeriod('week',this);renderStats()">Тиждень</button>
+      <button class="on" onclick="stSetPeriod('month',this);renderStats()">Місяць</button>
+      <button onclick="stSetPeriod('year',this);renderStats()">Рік</button>
     </div>
-  </div>
-  <div class="carousel-dots" id="carousel-dots" style="margin-bottom:14px"></div>
 
-  <!-- Донат зерна по типу -->
-  <div class="cp-card" style="padding:16px;margin-bottom:12px">
-    <div class="cp-lbl" style="margin-bottom:12px">Зерно по обсмаженню</div>
-    <div class="cp-row" style="gap:14px;align-items:center">
-      <svg id="st-donut" width="108" height="108" viewBox="0 0 120 120"></svg>
-      <div style="flex:1;display:flex;flex-direction:column;gap:8px" id="st-donut-leg"></div>
+    <!-- Напої по методах — компактні плитки -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px">Напої за методом</div>
+      <div id="st-drinks-list" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
-  </div>
 
-  <!-- Смаковий профіль -->
-  <div class="cp-card" style="padding:16px;margin-bottom:12px">
-    <div class="cp-lbl" style="margin-bottom:10px">Смаковий профіль</div>
-    <div class="cp-row" style="gap:14px">
-      <svg id="st-radar" width="130" height="120" viewBox="0 0 130 120"></svg>
-      <div style="flex:1;display:flex;flex-direction:column;gap:7px" id="st-radar-leg"></div>
+    <!-- Донат зерна -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Зерно по обсмаженню</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <svg id="st-donut" width="90" height="90" viewBox="0 0 120 120" style="flex-shrink:0"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px" id="st-donut-leg"></div>
+      </div>
     </div>
-    <div style="font-size:12px;color:#a3927f;margin-top:10px" id="st-radar-hint"></div>
-  </div>
 
-  <!-- Рейтинг методів -->
-  <div class="cp-card" style="padding:16px">
-    <div class="cp-lbl" style="margin-bottom:12px">Оцінка за методом</div>
-    <div id="st-methods"></div>
+    <!-- Смаковий профіль -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Смаковий профіль</div>
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <svg id="st-radar" width="120" height="110" viewBox="0 0 130 120" style="flex-shrink:0"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px;padding-top:4px" id="st-radar-leg"></div>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-top:10px;line-height:1.4" id="st-radar-hint"></div>
+    </div>
+
+    <!-- Рейтинг методів -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Оцінка за методом</div>
+      <div id="st-methods"></div>
+    </div>
   </div>
 </div>
+  <div class="cp-card" style="padding:16px;margin-bottom:12px">
 </div><!-- /screens -->
 
 <nav class="nav">
@@ -9627,18 +9627,37 @@ var ST_DEMO={
 function stSetPeriod(p,btn){stPeriod=p;document.querySelectorAll('#st-seg button').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');
   document.getElementById('st-period-lbl').textContent=p==='week'?'Тиждень':p==='month'?'Місяць':'Рік';renderStats()}
 function renderStats(){
-  /* Ініціалізуємо карусель напоїв */
-  if(!_statsRendered){
-    _renderCarousel();
-    _statsRendered=true;
-  }
-  setTimeout(function(){_updateCarouselStats();},40);
+  /* Оновлюємо підпис поточного табу */
+  var periodNames={week:'Тиждень',month:'Місяць',year:'Рік'};
+  var pl=document.getElementById('st-period-lbl');
+  if(pl)pl.textContent=periodNames[stPeriod]||stPeriod;
+
   /* ── Фільтр по обраному пеіоду ── */
   var now=Date.now();
   var fromTs=stPeriod==='week'?(function(){var d=new Date();d.setDate(d.getDate()-d.getDay()+1);return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();}()):
              stPeriod==='month'?(function(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),1).getTime();}()):
              new Date(new Date().getFullYear(),0,1).getTime();
   var brews=(S.brews||[]).filter(function(b){return (b.ts||0)>=fromTs;});
+  var log=(S.log||[]).filter(function(e){return (e.ts||0)>=fromTs;});
+
+  /* ── Напої по методах ── */
+  var methodVol={};
+  log.forEach(function(e){var m=e.method||'Інше';methodVol[m]=(methodVol[m]||0)+(e.vol||0);});
+  var drinks=Object.keys(methodVol).map(function(m){return{name:m,ml:Math.round(methodVol[m])};}).sort(function(a,b){return b.ml-a.ml;});
+  var totalMl=drinks.reduce(function(s,x){return s+x.ml;},0)||1;
+  var DCOLS=['#E0A93B','#7b6cc8','#5fbf83','#8198AE','#c9a86a'];
+  var drinkHTML=drinks.slice(0,5).map(function(d,i){
+    var pct=Math.round(d.ml/totalMl*100);
+    var fmtMl=d.ml>=1000?(d.ml/1000).toFixed(1)+' л':d.ml+' мл';
+    return '<div style="display:flex;align-items:center;gap:8px">'
+      +'<div style="width:8px;height:8px;border-radius:50%;background:'+DCOLS[i%5]+';flex-shrink:0"></div>'
+      +'<div style="flex:1;font-size:13px;font-weight:600;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+d.name+'</div>'
+      +'<div style="font-size:11px;color:'+DCOLS[i%5]+';font-weight:700;font-family:var(--mono);min-width:32px;text-align:right">'+pct+'%</div>'
+      +'<div style="font-size:11px;color:var(--txt3);font-family:var(--mono);min-width:48px;text-align:right">'+fmtMl+'</div>'
+      +'</div>';
+  }).join('');
+  var dl=document.getElementById('st-drinks-list');
+  if(dl)dl.innerHTML=drinkHTML||'<div style="color:var(--txt3);font-size:13px">Немає даних за цей період</div>';
 
   /* ── Донат по типу обсмаження ── */
   var byType={filter:0,espresso:0,omni:0};
