@@ -9682,6 +9682,19 @@ function cpApplySel(){
    Клонуємо вже відрендерені view (renderCompare рендерить усі три одразу), тому вкладки
    на екрані лишаються без змін. Замороженi shareRecipe/buildShareHTML не чіпаємо. */
 /* Клон однієї вкладки порівняння з прибраними рамками/фокусом (спільний для 3-картинкового і об'єднаного режимів) */
+/* Реальний максимум сторони canvas у пристрої (у сучасних iPhone 8192, старіші 4096).
+   Визначаємо один раз: малюємо білий піксель у найнижчому рядку і перевіряємо, чи він відрендерився. */
+var _cpMaxEdge=0;
+function cpMaxCanvasEdge(){
+  if(_cpMaxEdge)return _cpMaxEdge;
+  var cands=[16384,8192,4096,2048],edge=2048;
+  for(var i=0;i<cands.length;i++){var s=cands[i];try{
+    var c=document.createElement('canvas');c.width=4;c.height=s;var x=c.getContext('2d');if(!x)continue;
+    x.fillStyle='#fff';x.fillRect(0,s-3,4,3);var d=x.getImageData(1,s-1,1,1).data;
+    if(d[0]>200){edge=s;break;}
+  }catch(e){}}
+  _cpMaxEdge=edge;return edge;
+}
 function _cpClone(k){
   var src=document.getElementById('cp-view-'+k);if(!src)return null;
   var clone=src.cloneNode(true);
@@ -9725,7 +9738,9 @@ function cpShare(){
   /* послідовний рендер (паралельний html2canvas ненадійний на мобільних).
      scale підвищено для чіткості (мутність у Telegram = замалий рендер), але висоту*scale тримаємо <= ~4000px,
      інакше iOS/Safari дає порожнє полотно (ліміт розміру canvas). */
-  function renderSeq(nodes,maxScale){var out=[];var p=Promise.resolve();nodes.forEach(function(el){p=p.then(function(){var hpx=(el.getBoundingClientRect().height)||el.offsetHeight||600;var sc=Math.min(maxScale,4000/Math.max(1,hpx));if(sc<1)sc=1;return html2canvas(el,{scale:sc,backgroundColor:'#17181a',logging:false});}).then(function(cv){out.push(cv);});});return p.then(function(){return out;});}
+  /* Максимальна чіткість у межах ліміту canvas пристрою (обидві сторони).
+     cap — стеля scale (щоб не роздувати пам'ять); реальний scale тягнемо якомога вище → щонайменше ~2K по ширині. */
+  function renderSeq(nodes,cap){var edge=cpMaxCanvasEdge(),lim=edge-96;var out=[];var p=Promise.resolve();nodes.forEach(function(el){p=p.then(function(){var r=el.getBoundingClientRect(),wcss=r.width||360,hcss=(r.height||el.offsetHeight||600);var sc=Math.min(cap,lim/Math.max(1,wcss),lim/Math.max(1,hcss));if(sc<1)sc=1;return html2canvas(el,{scale:sc,backgroundColor:'#17181a',logging:false});}).then(function(cv){out.push(cv);});});return p.then(function(){return out;});}
 
   if(canMulti){
     /* ── 3 окремі картинки ── */
@@ -9738,7 +9753,7 @@ function cpShare(){
       card.insertAdjacentHTML('beforeend',footHTML);wrap.appendChild(card);
       return {card:card,k:k};
     }).filter(Boolean);
-    renderSeq(metaCards.map(function(x){return x.card;}),3).then(function(cvs){
+    renderSeq(metaCards.map(function(x){return x.card;}),6).then(function(cvs){
       return Promise.all(cvs.map(function(cv,i){return toFile(cv,'compare_'+(i+1)+'_'+metaCards[i].k+'.png');}));
     }).then(function(files){
       wrap.remove();
@@ -9756,7 +9771,7 @@ function cpShare(){
       sec.appendChild(cl);card.appendChild(sec);
     });
     card.insertAdjacentHTML('beforeend',footHTML);wrap.appendChild(card);
-    renderSeq([card],2).then(function(cvs){return toFile(cvs[0],'comparison.png');}).then(function(file){
+    renderSeq([card],5).then(function(cvs){return toFile(cvs[0],'comparison.png');}).then(function(file){
       wrap.remove();
       if(canShareApi&&navigator.canShare({files:[file]})){
         navigator.share({files:[file],title:'Порівняння · Coffee Master'}).catch(function(err){console.log('[cpShare] share cancelled/err',err&&err.name);});
