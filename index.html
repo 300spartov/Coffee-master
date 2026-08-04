@@ -2458,6 +2458,7 @@ input[type=range].rslider::-webkit-slider-thumb{appearance:none;width:24px;heigh
       <div><div class="cp-h-title">Порівняння</div><div class="cp-h-sub" id="cp-count">3 рецепти · V60</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cpShare()" title="Поділитись порівнянням" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-share"></i></button>
       <button onclick="cpResetSelection()" title="Скинути вибір" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--txt2);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-refresh"></i></button>
       <span class="cp-chip"><i class="ti ti-scale"></i> <span id="cp-n">0/5</span></span>
     </div>
@@ -5554,6 +5555,9 @@ function resetBrewDraft(){
 
 let currentBrewScreen='bv-method-pick';
 function showBV(id){currentBrewScreen=id;['bv-method-pick','bv-setup','bv-active','bv-rate','bv-result','bv-esp-active','bv-esp-milk','bv-esp-result'].forEach(v=>{const el=document.getElementById(v);if(el)el.style.display=v===id?'block':'none';});
+  /* Скидаємо «залиплу» рамку вибору (hover-обведення лишається на тач-екрані після тапу).
+     Без цього при поверненні на вибір методу картки лишаються «обраними» і накопичуються — і для альтернативи, і для еспресо. */
+  if(id==='bv-method-pick'){var _sg=document.getElementById('bv-alt-subgrid');if(_sg)_sg.querySelectorAll('button').forEach(function(b){b.style.borderColor='var(--line-soft)';});}
   /* переносимо єдиний блок колеса в активний екран (альтернатива / еспресо) */
   var _tb=document.getElementById('taste-block');
   if(_tb){
@@ -9615,6 +9619,95 @@ function cpApplySel(){
     el.classList.toggle('cp-faded',!on);
     if(el.classList.contains('cp-card'))el.classList.toggle('cp-sel',cpSel!==null&&String(cpSel)===r);
   });
+}
+
+/* ── Поділитись порівнянням: одна картка з усіма 3 вкладками (Таймлайн / Кільця / Крива) ──
+   Клонуємо вже відрендерені view (renderCompare рендерить усі три одразу), тому вкладки
+   на екрані лишаються без змін. Замороженi shareRecipe/buildShareHTML не чіпаємо. */
+/* Клон однієї вкладки порівняння з прибраними рамками/фокусом (спільний для 3-картинкового і об'єднаного режимів) */
+function _cpClone(k){
+  var src=document.getElementById('cp-view-'+k);if(!src)return null;
+  var clone=src.cloneNode(true);
+  var us=clone.querySelector('#cp-unit-seg');if(us)us.remove();
+  clone.classList.add('on');clone.style.display='block';
+  clone.querySelectorAll('.cp-faded').forEach(function(el){el.classList.remove('cp-faded');});
+  clone.querySelectorAll('.cp-sel').forEach(function(el){el.classList.remove('cp-sel');});
+  clone.querySelectorAll('.cp-card').forEach(function(el){el.style.border='none';el.style.boxShadow='none';});
+  /* html2canvas спотворює inset-тіні барів (біла inset-підсвітка розтікається і вибілює колір).
+     Прибираємо тіні й задаємо трохи глибші градієнти, щоб у шерингу кольори були насичені, як у застосунку. */
+  clone.querySelectorAll('.cp-tl').forEach(function(el){el.style.boxShadow='none';});
+  clone.querySelectorAll('.cp-tl .pour').forEach(function(el){el.style.boxShadow='none';el.style.background='linear-gradient(180deg,#6db0ea,#3a7dbd)';});
+  clone.querySelectorAll('.cp-tl .pause').forEach(function(el){el.style.boxShadow='none';el.style.background='linear-gradient(180deg,#f2a740,#cf7a1b)';});
+  clone.querySelectorAll('[id]').forEach(function(el){el.removeAttribute('id');});clone.removeAttribute('id');
+  return clone;
+}
+function cpShare(){
+  if(!CP_RECIPES||!CP_RECIPES.length){toast('Оберіть рецепти для порівняння');return;}
+  if(typeof html2canvas!=='function'){toast('Шеринг недоступний');return;}
+  var titles={tl:'Таймлайн',rg:'Кільця',cv:'Крива'};
+  var order=['tl','rg','cv'];
+  var n=CP_RECIPES.length;
+  var method=(CP_RECIPES[0]&&CP_RECIPES[0].method)||'';
+  var meta=n+' рецепт'+(n===1?'':'и')+(method?' · '+method:'');
+  function headHTML(sub){return '<div style="background:linear-gradient(160deg,#1e2022 0%,#17181a 100%);padding:20px 18px 16px">'
+    +'<div style="font-size:10px;letter-spacing:2px;color:#5a5550;margin-bottom:4px">COFFEE MASTER</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline">'
+    +'<div style="font-size:18px;font-weight:700;color:#f0ebe4">'+sub+'</div>'
+    +'<div style="font-size:11px;color:#c8a050;font-weight:700;white-space:nowrap">'+meta+'</div></div></div>';}
+  var footHTML='<div style="padding:10px 18px 4px;text-align:center;font-size:8px;color:#2e2c2a;letter-spacing:2px">ЗВАРЕНО В COFFEE MASTER</div>';
+  var cardCss='width:360px;background:#17181a;font-family:system-ui,sans-serif;color:#EDE7DD;box-sizing:border-box;padding-bottom:6px';
+
+  /* Чи вміє платформа шерити КІЛЬКА файлів (Telegram-webview часто — ні). Пробуємо на порожніх файлах. */
+  function dummy(nm){return new File([new Blob(['x'],{type:'image/png'})],nm,{type:'image/png'});}
+  var canShareApi=!!(navigator.share&&navigator.canShare);
+  var canMulti=false;try{canMulti=canShareApi&&navigator.canShare({files:[dummy('a.png'),dummy('b.png'),dummy('c.png')]});}catch(e){canMulti=false;}
+
+  var wrap=document.createElement('div');wrap.style.cssText='position:fixed;left:-9999px;top:0;z-index:-1';document.body.appendChild(wrap);
+  function toFile(cv,nm){return new Promise(function(res){cv.toBlob(function(bl){res(new File([bl],nm,{type:'image/png'}));},'image/png');});}
+  /* послідовний рендер (паралельний html2canvas ненадійний на мобільних).
+     scale підвищено для чіткості (мутність у Telegram = замалий рендер), але висоту*scale тримаємо <= ~4000px,
+     інакше iOS/Safari дає порожнє полотно (ліміт розміру canvas). */
+  function renderSeq(nodes,maxScale){var out=[];var p=Promise.resolve();nodes.forEach(function(el){p=p.then(function(){var hpx=(el.getBoundingClientRect().height)||el.offsetHeight||600;var sc=Math.min(maxScale,4000/Math.max(1,hpx));if(sc<1)sc=1;return html2canvas(el,{scale:sc,backgroundColor:'#17181a',logging:false});}).then(function(cv){out.push(cv);});});return p.then(function(){return out;});}
+
+  if(canMulti){
+    /* ── 3 окремі картинки ── */
+    toast('Готуємо 3 картки...');
+    var metaCards=order.map(function(k){
+      var cl=_cpClone(k);if(!cl)return null;
+      var card=document.createElement('div');card.style.cssText=cardCss;
+      card.innerHTML=headHTML('Порівняння · '+titles[k]);
+      var body=document.createElement('div');body.style.cssText='padding:16px 18px 0';body.appendChild(cl);card.appendChild(body);
+      card.insertAdjacentHTML('beforeend',footHTML);wrap.appendChild(card);
+      return {card:card,k:k};
+    }).filter(Boolean);
+    renderSeq(metaCards.map(function(x){return x.card;}),3).then(function(cvs){
+      return Promise.all(cvs.map(function(cv,i){return toFile(cv,'compare_'+(i+1)+'_'+metaCards[i].k+'.png');}));
+    }).then(function(files){
+      wrap.remove();
+      navigator.share({files:files,title:'Порівняння · Coffee Master'}).catch(function(err){console.log('[cpShare] share cancelled/err',err&&err.name);});
+    }).catch(function(e){wrap.remove();toast('Помилка шерингу');console.log('[cpShare multi]',e);});
+  } else {
+    /* ── одна картинка з усіма 3 вкладками (мультифайл недоступний / нема Web Share) ── */
+    toast('Готуємо картку...');
+    var card=document.createElement('div');card.style.cssText=cardCss;
+    card.innerHTML=headHTML('Порівняння');
+    order.forEach(function(k){
+      var cl=_cpClone(k);if(!cl)return;
+      var sec=document.createElement('div');sec.style.cssText='padding:14px 18px 0';
+      sec.innerHTML='<div style="font-size:10px;letter-spacing:1.5px;color:#8a7e6e;text-transform:uppercase;margin-bottom:10px">'+titles[k]+'</div>';
+      sec.appendChild(cl);card.appendChild(sec);
+    });
+    card.insertAdjacentHTML('beforeend',footHTML);wrap.appendChild(card);
+    renderSeq([card],2).then(function(cvs){return toFile(cvs[0],'comparison.png');}).then(function(file){
+      wrap.remove();
+      if(canShareApi&&navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:'Порівняння · Coffee Master'}).catch(function(err){console.log('[cpShare] share cancelled/err',err&&err.name);});
+      } else {
+        var url=URL.createObjectURL(file);var a=document.createElement('a');a.href=url;a.download='comparison.png';a.click();
+        setTimeout(function(){URL.revokeObjectURL(url);},4000);toast('Картинку збережено');
+      }
+    }).catch(function(e){wrap.remove();toast('Помилка шерингу');console.log('[cpShare single]',e);});
+  }
 }
 
 /* ─────────── СТАТИСТИКА ─────────── */
