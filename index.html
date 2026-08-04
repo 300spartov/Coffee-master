@@ -9515,6 +9515,7 @@ function cpBrewToRecipe(b,idx){
     grind:b.clicks||0,
     water:Math.round(dose*ratio),
     method:b.method||'',
+    device:((typeof liveDeviceName==='function'?liveDeviceName(b.dripperId,b.dripper):'')||b.dripper||b.device||''),
     steps:steps
   };
 }
@@ -9591,17 +9592,18 @@ function cpRenderTimelines(){
 }
 function cpRenderParams(){
   var rows=[['Доза',function(r){return r.dose}],['Коефіцієнт',function(r){return r.ratioStr}],['Вода',function(r){return r.water}],
-    ['Темп.',function(r){return r.temp+'°'}],['Помел',function(r){return r.grind}],
+    ['Темп.',function(r){return r.temp+'°'}],['Метод',function(r){return r.method||'—'},'text'],['Девайс',function(r){return r.device||'—'},'text'],['Помел',function(r){return r.grind}],
     ['Час',function(r){return cpFmtTime(cpTotal(r))}],['1-й влив',function(r){var p=r.steps.filter(function(s){return s.type==='pour'})[0];return p?p.ml:'—'}]];
   var cols=CP_RECIPES.length;
   var h='<div style="display:grid;grid-template-columns:1fr repeat('+cols+',1fr);gap:7px 6px">';
   h+='<span class="cp-lbl"></span>'+CP_RECIPES.map(function(r){return '<span class="cp-lbl" style="text-align:right;color:'+r.color+'">'+r.date+'</span>'}).join('');
   rows.forEach(function(row){
-    var vals=CP_RECIPES.map(row[1]),same=vals.every(function(v){return v===vals[0]});
+    var vals=CP_RECIPES.map(row[1]),same=vals.every(function(v){return v===vals[0]}),isText=row[2]==='text';
     h+='<span style="color:#a3927f">'+row[0]+'</span>';
     CP_RECIPES.forEach(function(r,i){
       var diff=!same&&vals.filter(function(v){return v===vals[i]}).length===1;
-      h+='<b class="cp-mono" style="text-align:right'+(diff?';color:#EFA23F':'')+'">'+vals[i]+'</b>';
+      var st='text-align:right'+(diff?';color:#EFA23F':'')+(isText?';font-size:10px;font-weight:600;white-space:normal;word-break:break-word;line-height:1.25':'');
+      h+='<b class="cp-mono" style="'+st+'">'+vals[i]+'</b>';
     });
   });
   h+='</div>';document.getElementById('cp-params').innerHTML=h;
@@ -9702,7 +9704,8 @@ function cpShare(){
   var titles={tl:'Таймлайн',rg:'Кільця',cv:'Крива'};
   var order=['tl','rg','cv'];
   var n=CP_RECIPES.length;
-  var method=(CP_RECIPES[0]&&CP_RECIPES[0].method)||'';
+  var _ms=CP_RECIPES.map(function(r){return r.method;});
+  var method=_ms.every(function(m){return m===_ms[0];})?(_ms[0]||''):'';
   var meta=n+' рецепт'+(n===1?'':'и')+(method?' · '+method:'');
   function headHTML(sub){return '<div style="background:linear-gradient(160deg,#1e2022 0%,#17181a 100%);padding:20px 18px 16px">'
     +'<div style="font-size:10px;letter-spacing:2px;color:#5a5550;margin-bottom:4px">COFFEE MASTER</div>'
