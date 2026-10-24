@@ -1,0 +1,146 @@
+  <!-- ACTIVE -->
+  <div id="bv-active" style="display:none;padding:14px 16px 32px;position:relative">
+    <button onclick="if(confirm(t('draft_reset_confirm')))resetBrewDraft()" style="position:absolute;top:14px;right:14px;background:none;border:1px solid var(--line-soft);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--txt3);cursor:pointer;z-index:5">
+      <i class="ti ti-refresh" aria-hidden="true"></i>
+    </button>
+    <div class="brew-hero">
+      <div class="station-wrap">
+        <div class="station-dev" id="b-dev-name"><i class="ti ti-filter" aria-hidden="true"></i> Воронка</div>
+        <svg class="station" width="116" height="190" viewBox="0 0 130 212" fill="none">
+          <defs>
+            <linearGradient id="cuGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#E6AC72"/><stop offset="0.5" stop-color="#B87333"/><stop offset="1" stop-color="#794a26"/>
+            </linearGradient>
+            <clipPath id="vesselClip"><path d="M37,95 Q62,101 87,95 L90.5,194 Q90.5,201 84,201 L40,201 Q33.5,201 33.5,194 Z"/></clipPath>
+          </defs>
+          <g id="brew-dripper"></g>
+          <line id="drip-stream" x1="62" y1="90" x2="62" y2="97" stroke="#E0A064" stroke-width="2" stroke-linecap="round" stroke-dasharray="2.5 5" opacity="0"></line>
+          <path d="M35,92 L31,196 Q31,204 39,204 L85,204 Q93,204 93,196 L89,92" fill="rgba(255,255,255,0.02)"></path>
+          <g clip-path="url(#vesselClip)">
+            <g id="vessel-liquid" transform="translate(0,197)" style="transition:transform .6s cubic-bezier(.4,.6,.3,1)">
+              <g id="liquid-sway">
+                <rect x="6" y="3" width="120" height="170" fill="url(#cuGrad)"></rect>
+                <path class="wave wave-back" d="M-30,3 q15,-4 30,0 t30,0 t30,0 t30,0 t30,0 t30,0 L150,22 L-30,22 Z" fill="#C8854A" opacity="0.5"></path>
+                <path class="wave wave-front" d="M-30,3 q15,4 30,0 t30,0 t30,0 t30,0 t30,0 t30,0 L150,22 L-30,22 Z" fill="#E0A064" opacity="0.92"></path>
+                <ellipse cx="62" cy="3" rx="60" ry="2.6" fill="#F2BC7E" opacity="0.55"></ellipse>
+              </g>
+            </g>
+          </g>
+          <path d="M35,92 L31,196 Q31,204 39,204 L85,204 Q93,204 93,196 L89,92" stroke="#9aa3ad" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+          <ellipse cx="62" cy="92" rx="27" ry="6" stroke="#9aa3ad" stroke-width="1.6"></ellipse>
+          <path d="M36,93 Q27,90 29,84 Q34,89 40,91" stroke="#9aa3ad" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M88,98 L115,123 L90,150" stroke="#9aa3ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+          <g stroke="rgba(255,255,255,0.10)" stroke-width="1.4" stroke-linecap="round" fill="none">
+            <path d="M44,96 L42,200"></path><path d="M53,98 L52,202"></path><path d="M62,99 L62,202"></path><path d="M71,98 L72,202"></path><path d="M80,96 L82,200"></path>
+          </g>
+          <path d="M40,98 L37,196" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round"></path>
+        </svg>
+        <div class="vessel-cap" id="b-vessel-pct">0%</div>
+      </div>
+      <div class="timer-stack">
+        <div class="t-lbl" data-i18n="param_time">Загальний час</div>
+        <div class="t-val" id="b-main-t">0:00</div>
+        <div class="timer-meta">
+          <div><div class="t-lbl" id="b-phase-lbl">Фаза</div><div class="phase-t" id="b-phase-t">—</div></div>
+          <div><div class="t-lbl" data-i18n="brew_pour">Влив</div><div class="pour-meta"><span id="b-pour-cnt">0</span><span class="sep">/</span><span id="b-pour-tot">3</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="water-block">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px">
+        <div><div class="w-lbl" data-i18n="brew_pour">Влито</div><div class="w-big" style="color:#4A9EDB" id="b-poured-lbl">0 <span class="w-unit">мл</span></div></div>
+        <div style="text-align:right"><div class="w-lbl" data-i18n="brew_remain">Залишилось</div><div class="w-big" style="font-size:20px;color:#fff" id="b-remain-lbl">256 <span class="w-unit">мл</span></div></div>
+      </div>
+      <div style="position:relative;margin-bottom:20px">
+        <div class="bar-track"><div class="bar-fill" id="b-bar-fill"></div><div class="bar-markers" id="b-bar-markers"></div></div>
+        <div class="bar-labels" id="b-bar-labels"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px">
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt);text-shadow:0 0 8px var(--copper-glow)" id="b-bar-pct">0%</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--txt3)" id="b-live-ratio"></span>
+          <span style="font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt)" id="b-bar-tot">256 мл</span>
+        </div>
+      </div>
+      <div id="b-hints" style="display:flex;gap:6px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;max-width:400px;margin-left:auto;margin-right:auto;width:100%">
+      <button class="action-btn btn-pour" id="b-pour-btn" onclick="bHandlePour()">
+        <i class="ti ti-droplet bi" aria-hidden="true"></i>
+        <div class="bl" id="b-pour-lbl" data-i18n="brew_pour">Влив</div>
+        <div class="bs" id="b-pour-sub">натисни для старту</div>
+        <div class="ml-wrap" id="b-ml-wrap" style="display:none">
+          <input type="number" step="0.1" inputmode="decimal" pattern="[0-9]*" class="ml-inp" id="b-ml-inp" placeholder="0" onclick="event.stopPropagation()" oninput="bOnMl()">
+          <span class="ml-unit-lbl">мл</span>
+        </div>
+      </button>
+      <button class="action-btn btn-pause" id="b-pause-btn" onclick="bHandlePause()">
+        <div style="position:relative;width:50px;height:50px">
+          <svg width="50" height="50" viewBox="0 0 50 50" style="transform:rotate(-90deg)">
+            <circle cx="25" cy="25" r="21" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+            <circle cx="25" cy="25" r="21" fill="none" stroke="#4CAF50" stroke-width="3" stroke-dasharray="131.9" id="b-p-ring" stroke-dashoffset="131.9" style="transition:stroke-dashoffset .12s linear"/>
+          </svg>
+          <i class="ti ti-player-pause bi" id="b-pause-icon" aria-hidden="true" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;font-size:20px;color:#4CAF50"></i>
+        </div>
+        <div class="bl" id="b-pause-lbl" data-i18n="brew_pause">Пауза</div>
+        <div class="bs" id="b-pause-sub">пролив фільтра</div>
+      </button>
+    </div>
+
+    <!-- ДЕЙСТВИЯ В ПАУЗЕ -->
+    <div class="pause-actions-wrap" id="pause-actions-wrap">
+      <div class="pause-actions-label" data-i18n="brew_pause_action">Дія в паузі</div>
+      <div class="pause-actions-grid">
+        <button class="act-btn act-btn--stir" id="act-stir" onclick="brewDoAction('stir',this)" aria-label="Перемішування">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-stir"/>
+            </svg>
+            <i class="ti ti-rotate-clockwise act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name" data-i18n="act_stir_short">Перемеш.</span>
+          <span class="act-timer" id="timer-stir"></span>
+        </button>
+        <button class="act-btn act-btn--swirl" id="act-swirl" onclick="brewDoAction('swirl',this)" aria-label="Свьорл">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-swirl"/>
+            </svg>
+            <i class="ti ti-refresh act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name" data-i18n="act_swirl">Свьорл</span>
+          <span class="act-timer" id="timer-swirl"></span>
+        </button>
+        <button class="act-btn act-btn--shake" id="act-shake" onclick="brewDoAction('shake',this)" aria-label="Взбалтування">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-shake"/>
+            </svg>
+            <i class="ti ti-activity act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name" data-i18n="act_shake_short">Взбалтыв.</span>
+          <span class="act-timer" id="timer-shake"></span>
+        </button>
+      </div>
+    </div>
+    <!-- Чавимо — тільки для Aeropress, поза блоком "Дія в паузі", перед Стоп -->
+    <div id="aero-actions-wrap" style="display:none;margin-bottom:10px">
+      <button id="b-aero-press" onclick="aeroDoPress()"
+        style="width:100%;padding:16px 12px;border-radius:14px;border:1px solid rgba(124,92,191,.5);background:rgba(124,92,191,.12);color:#c4b0ff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+        <i class="ti ti-arrow-down-circle" style="font-size:26px;color:#7c5cbf"></i>
+        <span id="b-aero-press-label">Чавимо</span>
+        <span id="aero-press-timer" style="font-family:var(--mono);font-size:12px;color:#c4b0ff"></span>
+      </button>
+    </div>
+
+    <button class="stop-btn" onclick="brewStop()" style="background:linear-gradient(160deg,#2a0a0a,#1c0808);border-color:#7a1a1a;color:#f5a0a0"><i class="ti ti-square" aria-hidden="true"></i> Стоп</button>
+    <div id="b-log-wrap" style="display:none;margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:5px;padding:0">Лог шагов</div>
+      <div style="border:0.5px solid #2a2a2a;border-radius:12px;overflow:hidden" id="b-log-box"></div>
+    </div>
+  </div>
+

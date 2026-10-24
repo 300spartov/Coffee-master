@@ -1,0 +1,23 @@
+/* Swipe-to-delete */
+.swipe-outer{position:relative;border-radius:15px;margin:0 16px 12px}
+.swipe-delete-bg{
+  position:absolute;top:0;right:0;bottom:0;width:84px;
+  background:linear-gradient(160deg,#e02820,#c01c16 55%,#8c1510);
+  border-radius:0 15px 15px 0;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer;
+  z-index:1;
+}
+.swipe-delete-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.12) 0%,transparent 50%);pointer-events:none;border-radius:0 15px 15px 0}
+.swipe-delete-bg i{font-size:22px;color:#fff}
+.swipe-delete-bg span{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.85);letter-spacing:1.2px;text-transform:uppercase}
+.swipe-outer .brew-card{
+  margin:0;border-radius:15px;
+  position:relative;z-index:2;
+  overflow:hidden;
+  will-change:transform;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 20px rgba(0,0,0,.34);
+}
+.brew-card.bc-swiping{transition:none;cursor:grabbing}
+.brew-card.bc-snapping{transition:transform .3s cubic-bezier(.25,.9,.3,1)}
+.brew-card.bc-deleting{transition:transform .35s cubic-bezier(.4,0,1,1),opacity .3s;opacity:0}
+#brew-del-toast.show{transform:translateX(-50%) translateY(0)!important;opacity:1!important}

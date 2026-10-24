@@ -1,0 +1,20 @@
+<div class="overlay" id="ov-filter-add" onclick="if(event.target===this)closeOv('ov-filter-add')">
+  <div class="sheet">
+    <div class="sheet-title">Додати фільтри</div>
+    <input class="sfi" id="fl-name" placeholder="Название, напр. Hario V60 белый">
+    <div class="field-lbl" style="margin-bottom:5px">Количество в пачке</div>
+    <select class="sfi" id="fl-count">
+      <option value="25">25 шт</option><option value="40">40 шт</option><option value="50">50 шт</option>
+      <option value="80">80 шт</option><option value="100" selected>100 шт</option><option value="200">200 шт</option><option value="350">350 шт</option>
+    </select>
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-filter-add')">Скасувати</button><button class="btn-s" onclick="addFilter()">Додати</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-custom-dev" onclick="if(event.target===this)closeOv('ov-custom-dev')">
+  <div class="sheet">
+    <div class="sheet-title" id="cd-sheet-title">Свой девайс</div>
+    <select class="sfi" id="cd-type"><option value="dripper" data-i18n="cd_type_dripper">Воронка / Альтернатива</option><option value="espresso" data-i18n="cd_type_espresso">Еспресо-машина</option><option value="grinder" data-i18n="cd_type_grinder">Кавомолка</option><option value="kettle" data-i18n="cd_type_kettle">Чайник</option><option value="acc" data-i18n="cd_type_acc">Аксесуар</option></select>
+    <input class="sfi" id="cd-name" placeholder="Название">
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-custom-dev')">Скасувати</button><button class="btn-s" id="cd-save-btn" onclick="addCustomDev()">Додати</button></div>
+  </div>
+</div>

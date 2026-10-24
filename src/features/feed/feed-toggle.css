@@ -1,0 +1,2 @@
+/* FEED TOGGLE */
+.feed-toggle{display:flex;gap:4px;margin:0 16px 14px;padding:4px;background:#121315;border:1px solid var(--line-soft);border-radius:13px;box-shadow:inset 0 2px 5px rgba(0,0,0,.45)}

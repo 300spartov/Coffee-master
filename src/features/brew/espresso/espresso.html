@@ -1,0 +1,165 @@
+  <!-- ЕСПРЕСО — АКТИВНИЙ -->
+  <div id="bv-esp-active" style="display:none;padding:14px 16px 32px">
+    <div class="timer-bar" style="margin-bottom:16px">
+      <div><div class="t-lbl">Час проливу</div><div class="t-val" id="esp-timer">0:00</div></div>
+      <div style="text-align:center"><div class="t-lbl">Доза</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt)" id="esp-dose-disp">18 г</div></div>
+      <div style="text-align:right"><div class="t-lbl">Ціль</div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt)" id="esp-yield-disp">36 г</div></div>
+    </div>
+
+    <!-- Анимация пролива -->
+    <div style="background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:20px;text-align:center;margin-bottom:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--copper-lt);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px" id="esp-phase-lbl">Готовий до старту</div>
+      <!-- Простая визуализация: чашка + капля -->
+      <div style="position:relative;display:inline-block;margin-bottom:10px">
+        <svg width="100" height="80" viewBox="0 0 100 80" fill="none">
+          <!-- Чашка -->
+          <path d="M20 30 L25 70 Q50 78 75 70 L80 30 Z" fill="rgba(184,115,51,0.12)" stroke="var(--copper)" stroke-width="1.5"/>
+          <ellipse cx="50" cy="30" rx="30" ry="6" fill="rgba(184,115,51,0.08)" stroke="var(--copper)" stroke-width="1.5"/>
+          <!-- Ручка -->
+          <path d="M80 35 Q92 35 92 50 Q92 65 80 65" fill="none" stroke="var(--copper)" stroke-width="1.5"/>
+          <!-- Еспресо в чашке (динамически растёт) -->
+          <clipPath id="cup-clip"><path d="M20 30 L25 70 Q50 78 75 70 L80 30 Z"/></clipPath>
+          <rect id="esp-fill" x="20" y="70" width="60" height="0" fill="rgba(139,80,43,0.6)" clip-path="url(#cup-clip)" style="transition:all .5s ease"/>
+          <!-- Капля -->
+          <ellipse id="esp-drop" cx="50" cy="22" rx="3" ry="4" fill="var(--copper-lt)" opacity="0" style="transition:opacity .3s"/>
+        </svg>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--copper-lt);margin-top:6px;text-shadow:0 0 14px var(--copper-glow)" id="esp-seconds">0</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:.5px">секунд</div>
+      </div>
+      <!-- Целевая полоска -->
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--txt3);margin-bottom:4px">
+          <span>0</span><span id="esp-target-s">27с ціль</span>
+        </div>
+        <div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+          <div id="esp-time-bar" style="height:100%;background:var(--copper-lt);border-radius:2px;width:0%;transition:width .5s linear"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Кнопки Старт/Стоп -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button id="esp-start-btn" onclick="espStartTimer()" style="padding:14px;border-radius:14px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s">
+        <i class="ti ti-player-play" aria-hidden="true" style="font-size:18px"></i> Старт
+      </button>
+      <button id="esp-stop-btn" onclick="espStopTimer()" disabled style="padding:14px;border-radius:14px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.5;transition:all .15s">
+        <i class="ti ti-player-stop" aria-hidden="true" style="font-size:18px"></i> Стоп
+      </button>
+    </div>
+  </div>
+
+  <!-- ЕСПРЕСО — МОЛОКО/ЛІД (для напоїв з молоком чи льодом) -->
+  <div id="bv-esp-milk" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:700;color:var(--txt)" id="esp-milk-title">Додай молоко</div>
+    </div>
+    <div id="esp-milk-block" class="card" style="margin-bottom:10px">
+      <div class="lbl">Молоко</div>
+      <div class="ac-wrap" id="ac-em-milk-name-wrap">
+        <input class="sfi" id="em-milk-name" placeholder="Напр. Цільне 3.2%" autocomplete="off"
+          oninput="acSuggest('em-milk-name','milks')" onfocus="acSuggest('em-milk-name','milks')" style="margin-bottom:0">
+        <div class="ac-drop" id="ac-em-milk-name"></div>
+      </div>
+      <div class="grid2" style="gap:8px;margin-top:8px">
+        <div>
+          <div class="field-lbl">Температура (°C)</div>
+          <input class="fi" type="number" id="em-milk-temp" value="60" min="0" max="90" style="margin-bottom:0" readonly onclick="openNumPad('em-milk-temp','milk-temp')">
+        </div>
+        <div>
+          <div class="field-lbl">Об'єм (мл)</div>
+          <input class="fi" type="number" id="em-milk-vol" value="150" min="0" max="600" style="margin-bottom:0" readonly onclick="openNumPad('em-milk-vol','milk-vol')">
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="field-lbl" style="margin-bottom:4px">Спосіб збивання</div>
+        <select class="sfi" id="em-frother" style="margin-bottom:0"></select>
+      </div>
+    </div>
+    <div id="esp-ice-block" class="card" style="margin-bottom:10px;display:none">
+      <div class="lbl">Лід та сік/тонік</div>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="field-lbl">Кубики льоду</div>
+          <input class="fi" type="number" id="em-ice-amount" value="4" min="0" max="30" style="margin-bottom:0" readonly onclick="openNumPad('em-ice-amount','ice-amt')">
+        </div>
+        <div>
+          <div class="field-lbl">Сік / тонік</div>
+          <div class="ac-wrap" id="ac-em-mixer-name-wrap">
+            <input class="sfi" id="em-mixer-name" placeholder="Напр. Schweppes Tonic" autocomplete="off"
+              oninput="acSuggest('em-mixer-name','juices')" onfocus="acSuggest('em-mixer-name','juices')" style="margin-bottom:0">
+            <div class="ac-drop" id="ac-em-mixer-name"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button onclick="espMilkContinue()" style="width:100%;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Далі — оцінка напою</button>
+  </div>
+
+  <!-- ЕСПРЕСО — РЕЗУЛЬТАТ (введення даних після стопу) -->
+  <div id="bv-esp-result" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:700;color:var(--txt)">Результат шота</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--copper-lt);margin-top:4px" id="esp-res-time-lbl">Час проливу: —</div>
+      <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+        <div class="xp-gain" id="esp-xp-badge"><i class="ti ti-bolt" aria-hidden="true"></i><span id="esp-xp-val">+15 XP</span></div>
+        <div class="xp-lvlup" id="esp-lvlup-badge"><i class="ti ti-arrow-up" aria-hidden="true"></i><span id="esp-lvlup-val">Рівень 2</span></div>
+      </div>
+    </div>
+
+    <!-- Фактические данные -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="lbl">Фактичні дані</div>
+      <div class="grid2" style="gap:8px;margin-bottom:10px">
+        <div>
+          <div class="field-lbl" data-i18n="param_esp_time">Час (сек)</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft);cursor:pointer" id="esp-res-sec" onclick="openNumPad('esp-res-sec','esp-res-time')">—</div>
+        </div>
+        <div>
+          <div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)" id="esp-res-dose-disp">—</div>
+        </div>
+      </div>
+      <div class="field-lbl" data-i18n="brew_yield_full">Вихід — скільки мл вийшло фактично</div>
+      <input type="number" step="0.5" inputmode="decimal" class="fi" id="esp-actual-yield" placeholder="напр. 38" style="margin-bottom:10px" readonly onclick="openNumPad('esp-actual-yield','esp-yield')">
+    </div>
+
+    <!-- Концентрация -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="lbl">Концентрація</div>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="field-lbl">Бажана (TDS %)</div>
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-target" value="9.0" placeholder="9.0" readonly onclick="openNumPad('esp-tds-target','esp-tds')">
+        </div>
+        <div>
+          <div class="field-lbl">Фактична (TDS %)</div>
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-actual" placeholder="виміряй" readonly onclick="openNumPad('esp-tds-actual','esp-tds')">
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)">
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Фактичний коефіцієнт</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt)" id="esp-actual-ratio">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Оцінка -->
+    <div class="rating-block" style="margin-bottom:14px">
+      <div class="rating-big" id="esp-rate-num">8.0</div>
+      <div class="rating-sub">оцінка шота</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="esp-rate-slider" style="width:100%" oninput="var _v=parseFloat(this.value);document.getElementById('esp-rate-num').textContent=_v.toFixed(1);applyRatingColor('esp-rate-num','esp-rate-slider',_v)">
+      <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+    </div>
+
+    <!-- Колесо смаків -->
+    <div id="esp-taste-mount"></div>
+
+    <div class="notes-block" style="margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:8px">Нотатки</div>
+      <textarea class="notes-inp" id="esp-notes" placeholder="Враження: тіло, гіркота, солодкість, баланс..."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="espSave()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> Зберегти шот</button>
+  </div>
+

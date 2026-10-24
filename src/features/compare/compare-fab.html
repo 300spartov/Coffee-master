@@ -1,0 +1,8 @@
+<!-- Compare FAB -->
+<div id="cp-fab" style="display:none;position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:200">
+  <div style="display:flex;align-items:stretch;background:linear-gradient(160deg,var(--copper-lt),var(--copper));border-radius:20px;box-shadow:0 4px 18px rgba(184,115,51,.45);overflow:hidden">
+    <button onclick="showScr('scr-compare');renderCompare()" style="background:none;border:none;color:#1c130a;padding:11px 18px 11px 20px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px;flex:1"><i class="ti ti-scale" style="font-size:16px"></i> Порівняти (<span id="cp-fab-count">0</span>)</button>
+    <div style="width:1px;background:rgba(0,0,0,.2);margin:8px 0"></div>
+    <button onclick="cpResetSelection()" title="Скинути" style="background:none;border:none;color:#1c130a;padding:11px 14px;font-size:17px;cursor:pointer;display:flex;align-items:center;opacity:.75" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.75'"><i class="ti ti-refresh"></i></button>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+/* Avatar picker */
+.av-inner{cursor:pointer;transition:opacity .15s}
+.av-inner:active{opacity:.75}
+.av-picker-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:flex-end;backdrop-filter:blur(3px)}
+.av-picker-overlay.open{display:flex;animation:ovIn .2s ease}
+.av-picker-sheet{background:linear-gradient(180deg,#222428,#1a1c1e);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:18px 16px 32px;width:100%;max-width:390px;margin:0 auto;animation:sheetIn .28s cubic-bezier(.2,.9,.3,1)}
+.av-picker-title{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:14px;text-align:center}
+.av-emoji-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+.av-emoji-btn{font-size:26px;background:#1a1d21;border:1.5px solid var(--line);border-radius:12px;padding:10px 4px;cursor:pointer;text-align:center;transition:transform .12s,border-color .15s}
+.av-emoji-btn:active{transform:scale(.9)}
+.av-emoji-btn.selected{border-color:var(--copper-lt)}
+.av-color-row{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.av-color-btn{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s,border-color .15s;flex-shrink:0}
+.av-color-btn:active{transform:scale(.9)}
+.av-color-btn.selected{border-color:#fff}
+.av-close-btn{width:100%;background:#1a1d21;border:1px solid var(--line);border-radius:12px;padding:13px;font-family:inherit;font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer}

@@ -1,0 +1,40 @@
+<!-- ЛЕНТА -->
+<div class="scr on" id="scr-home">
+  <div class="hdr hdr-feed" style="margin-bottom:14px">
+    <div class="hdr-left"><div class="hdr-title" data-i18n="journal_feed">Стрічка</div><div class="hdr-sub" id="feed-sub" data-i18n="journal_my_recipes">Мої рецепти</div></div>
+    <button class="hdr-streak" id="hdr-streak" onclick="toggleStreak()" aria-label="Серія заварювань"><span id="hdr-streak-num">0</span><svg class="cup-ic hs-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></button>
+    <div class="icon-btn" id="hdr-av" onclick="showScr('scr-profile')"><i class="ti ti-user" aria-hidden="true"></i></div>
+  </div>
+  <div class="streak-panel" id="streak-panel">
+    <div class="streak-full">
+      <div class="se-title">Ваша серія заварювань</div>
+      <div class="se-ring">
+        <svg viewBox="0 0 130 130" width="140" height="140">
+          <circle cx="65" cy="65" r="54" fill="none" stroke="#262017" stroke-width="9"></circle>
+          <circle id="se-arc" cx="65" cy="65" r="54" fill="none" stroke="url(#seGrad)" stroke-width="9" stroke-linecap="round" transform="rotate(-90 65 65)" stroke-dasharray="339.3" stroke-dashoffset="339.3"></circle>
+          <defs><linearGradient id="seGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8c552a"></stop><stop offset="1" stop-color="#E8A860"></stop></linearGradient></defs>
+        </svg>
+        <div class="se-center"><span class="se-num" id="se-num">0</span><svg class="cup-ic se-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></div>
+      </div>
+      <div class="se-record"><span data-i18n="streak_record_prefix">Ваш рекорд:</span> <b id="se-rec">0</b> <span data-i18n="streak_record_days">днів</span></div>
+      <div class="se-week" id="se-week"></div>
+      <button onclick="openLogBrew()" class="bean-add" style="margin:12px 0 4px"><i class="ti ti-plus" aria-hidden="true"></i> <span data-i18n="profile_add_drink">Додати випите</span></button>
+      <div class="cal-card">
+        <div class="cal-top">
+          <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперед"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+          <div class="cal-modes"><button class="cal-mode cm-vol on" onclick="calMode('vol')" data-i18n="profile_cal_vol">Об'єм</button><button class="cal-mode cm-ind" onclick="calMode('ind')" data-i18n="profile_cal_ind">Індикатори</button></div>
+        </div>
+        <div class="cal-wh"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="cal-grid"></div>
+        <div class="cal-legend"><span><i class="d filter"></i><span data-i18n="profile_filter_leg">Фільтр</span></span><span><i class="d espresso"></i><span data-i18n="profile_esp_leg">Еспресо</span></span><span><i class="d other"></i><span data-i18n="profile_other_leg">Інше</span></span></div>
+        <div class="cal-detail"></div>
+      </div>
+      <button class="se-collapse" onclick="toggleStreak()"><i class="ti ti-chevron-up" aria-hidden="true"></i> <span data-i18n="profile_collapse">згорнути</span></button>
+    </div>
+  </div>
+  <div class="feed-toggle">
+    <button class="ft-tab on" id="ft-mine" onclick="setFeedTab('mine')"><i class="ti ti-bookmark" aria-hidden="true"></i> <span data-i18n="journal_my">Моя</span></button>
+    <button class="ft-tab" id="ft-comm" onclick="setFeedTab('comm')"><i class="ti ti-messages" aria-hidden="true"></i> <span data-i18n="journal_community">Ком'юніті</span></button>
+  </div>
+  <div id="feed-list"></div>
+</div>

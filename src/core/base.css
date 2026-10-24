@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#17181a;--bg-deep:#101113;
+  --card:#222428;--card-hi:#2a2d31;--card-lo:#1b1d1f;
+  --line:#34383d;--line-soft:#282b2f;
+  --copper:#B87333;--copper-lt:#D89858;--copper-dk:#8c552a;
+  --copper-glow:rgba(216,152,88,.42);
+  --steel:#8198AE;--steel-dk:#46556a;
+  --neutral:#7d7a74;
+  --txt:#ECE9E3;--txt2:#9a968f;--txt3:#6b6862;
+  --green:#3DDC84;--blue:#378ADD;--flame:#D85A30;
+  --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',monospace;
+  --sans:'Helvetica Neue',Helvetica,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;padding:0}body{font-family:var(--sans);background:radial-gradient(120% 80% at 50% -10%,#202225 0%,#101113 60%,#0b0c0d 100%);color:var(--txt);font-size:14px;line-height:1.45;letter-spacing:.1px}
+.app{max-width:390px;margin:0 auto;background:
+  repeating-linear-gradient(90deg,rgba(255,255,255,.010) 0 1px,transparent 1px 4px),
+  linear-gradient(165deg,#1c1e21 0%,#171819 55%,#141517 100%);
+  min-height:100dvh;height:100dvh;display:flex;flex-direction:column;position:relative;
+  box-shadow:0 0 0 1px #000,0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.03)}

@@ -1,0 +1,187 @@
+<div class="overlay" id="ov-bbean" onclick="if(event.target===this)closeOv('ov-bbean')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none">Вибери зерно</div>
+      <button onclick="toggleInlineAdd('bean')" id="btn-add-bean" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <!-- Inline add form (hidden by default) -->
+    <div id="inline-add-bean" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова пачка</div>
+      <div class="ac-wrap" style="margin-bottom:8px">
+        <input class="sfi" id="ib-name" placeholder="Назва кави" autocomplete="off" style="margin:0" oninput="acSuggest('ib-name','beanNames')" onfocus="acSuggest('ib-name','beanNames')">
+        <div class="ac-drop" id="ac-ib-name"></div>
+      </div>
+      <div class="ac-wrap" style="margin-bottom:8px">
+        <input class="sfi" id="ib-roast" placeholder="Обсмажувач" autocomplete="off" style="margin:0" oninput="acSuggest('ib-roast','roasters')" onfocus="acSuggest('ib-roast','roasters')">
+        <div class="ac-drop" id="ac-ib-roast"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div class="ac-wrap">
+          <input class="sfi" id="ib-country" placeholder="Країна" autocomplete="off" style="margin:0" oninput="acSuggest('ib-country','countries')" onfocus="acSuggest('ib-country','countries')">
+          <div class="ac-drop" id="ac-ib-country"></div>
+        </div>
+        <select class="sfi" id="ib-process" style="margin:0">
+          <option value="">Обробка</option>
+          <option>Washed</option><option>Natural</option><option>Honey</option><option>Anaerobic</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:10px">
+        <input class="sfi" id="ib-desc" placeholder="Дескриптори" style="margin:0">
+        <input class="sfi" id="ib-weight" type="number" value="250" placeholder="г" style="margin:0;font-weight:700">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('bean')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addBeanInline()" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bbean-pick"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-bgrinder" onclick="if(event.target===this)closeOv('ov-bgrinder')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none">Вибери кавомолку</div>
+      <button onclick="toggleInlineAdd('grinder')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-grinder" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова кавомолка</div>
+      <input class="sfi" id="ig-name" placeholder="Назва, напр. Comandante C40" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <select class="sfi" id="ig-type" style="margin:0">
+          <option value="manual">Ручна</option>
+          <option value="electric">Електрична</option>
+        </select>
+        <select class="sfi" id="ig-burr" style="margin:0">
+          <option value="">Тип жорна</option>
+          <option>Конічне</option><option>Плоске</option><option>Вальцьове</option>
+        </select>
+      </div>
+      <input class="sfi" id="ig-notes" placeholder="Нотатки (необов'язково)" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('grinder')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('grinder')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bgrinder-pick"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-bdripper" onclick="if(event.target===this)closeOv('ov-bdripper')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" id="ov-bdripper-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_dripper">Вибери воронку</div>
+      <button onclick="toggleInlineAdd('dripper')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-dripper" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова воронка</div>
+      <input class="sfi" id="id-name" placeholder="Назва, напр. Hario V60" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Розмір</div>
+          <select class="sfi" id="id-size" style="margin:0">
+            <option value="">—</option>
+            <option value="S">S / 1-2 порції</option>
+            <option value="M">M / 3-4 порції</option>
+            <option value="L">L / 4+ порції</option>
+          </select>
+        </div>
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Матеріал</div>
+          <select class="sfi" id="id-material" style="margin:0">
+            <option value="">—</option>
+            <option>Пластик</option>
+            <option>Тритан</option>
+            <option>Метал</option>
+            <option>Скло</option>
+            <option>Кераміка</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('dripper')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('dripper')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bdripper-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bespmachine" onclick="if(event.target===this)closeOv('ov-bespmachine')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_espmachine">Вибери кавомашину</div>
+      <button onclick="toggleInlineAdd('espresso')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-espresso" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова кавомашина</div>
+      <input class="sfi" id="iem-name" placeholder="Назва, напр. Rancilio Silvia" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <select class="sfi" id="iem-type" style="margin:0">
+          <option value="manual">Ручна</option>
+          <option value="semi">Напівавтомат</option>
+          <option value="auto">Автомат</option>
+          <option value="capsule">Капсульна</option>
+        </select>
+        <select class="sfi" id="iem-pump" style="margin:0">
+          <option value="">Тип помпи</option>
+          <option>Вібраційна</option><option>Роторна</option>
+        </select>
+      </div>
+      <input class="sfi" id="iem-notes" placeholder="Нотатки (необов'язково)" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('espresso')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('espresso')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bespmachine-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bacc" onclick="if(event.target===this)closeOv('ov-bacc')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_acc">Аксесуари</div>
+      <button onclick="toggleInlineAdd('acc')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-acc" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Новий аксесуар</div>
+      <input class="sfi" id="iac-name" placeholder="Назва, напр. Темпер 58мм" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('acc')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('acc')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bacc-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bfilter" onclick="if(event.target===this)closeOv('ov-bfilter')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_filter">Вибери фільтр</div>
+      <button onclick="toggleInlineAdd('filter')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-filter" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова пачка фільтрів</div>
+      <input class="sfi" id="if-name" placeholder="Назва, напр. Hario V60 білі" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Кількість (шт)</div>
+          <input class="sfi" id="if-count" type="number" inputmode="numeric" value="100" min="1" max="1000" style="margin:0;font-weight:700">
+        </div>
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Тип</div>
+          <select class="sfi" id="if-type" style="margin:0">
+            <option value="">—</option>
+            <option>Паперовий</option>
+            <option>Металевий</option>
+            <option>Тканинний</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('filter')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addFilterInline()" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bfilter-pick"></div>
+  </div>
+</div>

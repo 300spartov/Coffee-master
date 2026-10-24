@@ -1,0 +1,20 @@
+  <!-- РЕЗУЛЬТАТ (после сохранения) -->
+  <div id="bv-result" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;padding:16px 0 12px">
+      <i class="ti ti-check" aria-hidden="true" style="font-size:30px;color:#4CAF50;display:block;margin-bottom:6px"></i>
+      <div style="font-size:18px;font-weight:700;color:#fff">Збережено!</div>
+      <div style="font-size:12px;color:#888;margin-top:2px" id="b-res-info"></div>
+      <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:4px">
+        <div class="xp-gain" id="brew-xp-badge"><i class="ti ti-bolt" aria-hidden="true"></i><span id="brew-xp-val">+15 XP</span></div>
+        <div class="xp-lvlup" id="brew-lvlup-badge"><i class="ti ti-arrow-up" aria-hidden="true"></i><span id="brew-lvlup-val">Рівень 2</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sstat"><div class="sstat-v" id="b-res-t">—</div><div class="sstat-l">Час</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-ml">—</div><div class="sstat-l">Вилито води</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-rating">—</div><div class="sstat-l" data-i18n="rate_title">Оцінка</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-flavors">—</div><div class="sstat-l" data-i18n="journal_desc_count">Дескрипторів</div></div>
+    </div>
+    <button onclick="showScr('scr-home')" style="width:100%;background:#4CAF50;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:8px">Перейти до Стрічки</button>
+    <button onclick="brewGoSetup()" style="width:100%;background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit">Нове заварювання</button>
+  </div>

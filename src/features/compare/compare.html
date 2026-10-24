@@ -1,0 +1,52 @@
+<!-- COMPARE SCREEN -->
+<div class="scr" id="scr-compare">
+  <div class="cp-hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="showScr('scr-home')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="cp-h-title">Порівняння</div><div class="cp-h-sub" id="cp-count">3 рецепти · V60</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cpShare()" title="Поділитись порівнянням" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-share"></i></button>
+      <button onclick="cpResetSelection()" title="Скинути вибір" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--txt2);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-refresh"></i></button>
+      <span class="cp-chip"><i class="ti ti-scale"></i> <span id="cp-n">0/5</span></span>
+    </div>
+  </div>
+  <div class="cp-seg" id="cp-view-seg">
+    <button class="on" onclick="cpView('tl',this)">Таймлайн</button>
+    <button onclick="cpView('rg',this)">Кільця</button>
+    <button onclick="cpView('cv',this)">Крива</button>
+  </div>
+
+  <!-- Таймлайн -->
+  <div class="cp-view on" id="cp-view-tl">
+    <div class="cp-seg" id="cp-unit-seg" style="margin-bottom:12px">
+      <button class="on" onclick="cpUnit('sec',this)">Секунди</button>
+      <button onclick="cpUnit('ml',this)">Мілілітри</button>
+    </div>
+    <div id="cp-tl-list"></div>
+    <div class="cp-axis" id="cp-tl-axis" style="margin:0 4px 14px"></div>
+    <div class="cp-card" style="padding:14px">
+      <div class="cp-lbl" style="margin-bottom:10px">Параметри</div>
+      <div id="cp-params" style="font-size:11.5px"></div>
+    </div>
+    <div class="cp-lbl" style="margin-top:10px;text-align:center;color:#6b5f50">помаранчеве = відрізняється від решти</div>
+  </div>
+
+  <!-- Кільця -->
+  <div class="cp-view" id="cp-view-rg">
+    <div class="cp-card" style="padding:18px;display:flex;justify-content:center;margin-bottom:12px">
+      <svg id="cp-rings" width="280" height="280" viewBox="0 0 280 280"></svg>
+    </div>
+    <div id="cp-rg-list"></div>
+  </div>
+
+  <!-- Крива -->
+  <div class="cp-view" id="cp-view-cv">
+    <div class="cp-card" style="padding:16px 12px 10px;margin-bottom:12px">
+      <svg id="cp-curve" width="100%" height="240" viewBox="0 0 340 240"></svg>
+    </div>
+    <div id="cp-cv-list"></div>
+    <div class="cp-lbl" style="margin-top:12px;text-align:center;color:#6b5f50">полиця = пауза · крапка = дія · крутизна = темп вливу</div>
+  </div>
+</div>
+

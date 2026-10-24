@@ -1,0 +1,12 @@
+.station-wrap{position:relative;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+.station{display:block;animation:breathe 5s ease-in-out infinite;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}
+.station-dev{font-family:var(--mono);font-size:8.5px;letter-spacing:1px;text-transform:uppercase;color:var(--copper-lt);display:flex;align-items:center;gap:4px;margin-bottom:1px;text-shadow:0 0 7px var(--copper-glow);max-width:118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.station-dev i{font-size:11px}
+.vessel-cap{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.5px;color:#fff;text-shadow:0 0 7px rgba(0,0,0,.7),0 0 10px var(--copper-glow)}
+.wave-back{animation:waveX 3.1s linear infinite}
+.wave-front{animation:waveX 2.2s linear infinite reverse}
+@keyframes waveX{from{transform:translateX(0)}to{transform:translateX(-60px)}}
+#liquid-sway{animation:liquidSway 3.4s ease-in-out infinite;transform-origin:62px 3px;transform-box:view-box}
+@keyframes liquidSway{0%,100%{transform:rotate(-1.3deg)}50%{transform:rotate(1.3deg)}}
+#drip-stream.on{opacity:.9;animation:dripFlow .45s linear infinite}
+@keyframes dripFlow{from{stroke-dashoffset:0}to{stroke-dashoffset:-15}}

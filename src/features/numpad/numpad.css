@@ -1,0 +1,4 @@
+.np-btn{padding:18px 8px;border-radius:12px;border:1px solid #2e3238;background:linear-gradient(160deg,#26282c,#1e2022);font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;color:#ECE9E3;cursor:pointer;transition:transform .1s,background .1s;-webkit-tap-highlight-color:transparent}
+.np-btn:active{transform:scale(.9);background:#2a2d32}
+#ov-numpad{opacity:0;pointer-events:none}
+#ov-numpad.open{opacity:1;pointer-events:auto}

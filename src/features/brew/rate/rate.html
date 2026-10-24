@@ -1,0 +1,78 @@
+  <!-- ОЦІНКА І СМАК (новий екран) -->
+  <div id="bv-rate" style="display:none;padding:14px 16px 32px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#fff" id="rate-bean-name">—</div>
+        <div style="font-size:12px;color:#888;margin-top:2px" id="rate-info">—</div>
+      </div>
+    </div>
+
+    <!-- Статистика заварювання -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sstat"><div class="sstat-v" id="rate-time">—</div><div class="sstat-l" data-i18n="rate_time">Час</div></div>
+      <div class="sstat"><div class="sstat-v" id="rate-ml">—</div><div class="sstat-l" data-i18n="rate_water_poured">Вилито води</div></div>
+    </div>
+
+    <!-- Редагування вливань після зупинки -->
+    <div id="rate-pours-section" style="margin-bottom:14px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="lbl">Кроки заварювання</div>
+        <button onclick="toggleRatePours()" id="rate-pours-toggle" style="background:none;border:none;color:var(--copper-lt);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;padding:0">▼ показати</button>
+      </div>
+      <div id="rate-pours-body" style="display:none"></div>
+    </div>
+
+    <!-- Оцінка -->
+    <div class="rating-block">
+      <div class="rating-big" id="rate-num">8.0</div>
+      <div class="rating-sub" data-i18n="rate_cup_sub">оцінка чашки</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="rate-slider" style="width:100%" oninput="var _v=parseFloat(this.value);document.getElementById('rate-num').textContent=_v.toFixed(1);applyRatingColor('rate-num','rate-slider',_v)">
+      <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+    </div>
+
+    <!-- Колеса смаків та аромату -->
+    <div id="alt-taste-mount"><div id="taste-block">
+    <div class="wheel-wrap" style="margin:0 0 12px">
+      <!-- Tab switcher -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#0f1011;border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:12px">
+        <button id="nw-tab-flavor" onclick="nwSwitchTab('flavor')" style="border-radius:8px;border:none;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(160deg,#6bb8f0,#3a8fd6);color:#0a1a2e"><span data-i18n="rate_flavor">Смак</span></button>
+        <button id="nw-tab-aroma" onclick="nwSwitchTab('aroma')" style="border-radius:8px;border:none;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:none;color:var(--txt3)"><span data-i18n="rate_aroma">Аромат</span></button>
+      </div>
+      <div class="wheel-wrap">
+        <div class="wheel-label" id="wheel-label" data-i18n="wheel_label_taste">Смакові ноти</div>
+        <div class="mode-switch">
+          <button class="mode-btn" data-mode="drill"><span class="mi">◎</span><span data-i18n="wheel_mode_wheel">Колесо</span></button>
+          <button class="mode-btn" data-mode="cascade"><span class="mi">☰</span><span data-i18n="wheel_mode_search">Пошук</span></button>
+        </div>
+        <div class="search">
+          <span class="si-ic">⌕</span>
+          <input id="search-inp" type="text" placeholder="Знайти ноту: манго, вишня, тютюн…" autocomplete="off" data-i18n-ph="wheel_search_ph">
+          <button class="search-clear" id="search-clear">×</button>
+        </div>
+        <div class="wheel-hint" id="fw-hint"></div>
+        <div class="wheel-stage" id="wheel-stage">
+          <svg id="wheel-svg" viewBox="-190 -190 380 380"></svg>
+          <div id="cascade-box"></div>
+        </div>
+        <div class="action-bar" id="action-bar"><span class="ab-txt"></span></div>
+        <button class="reset-btn" id="reset-btn" data-i18n="wheel_reset">Відмінити вибір</button>
+      </div>
+    </div>
+    <div class="log-wrap">
+      <div class="log-head">
+        <span class="log-lbl" id="log-lbl">Дескриптори смаку</span>
+        <span id="log-count"></span>
+      </div>
+      <div id="log-box"></div>
+    </div>
+    </div></div>
+
+    <!-- Нотатки -->
+    <div class="notes-block">
+      <div class="lbl" style="margin-bottom:8px" data-i18n="notes_section">Опис та нотатки</div>
+      <textarea class="notes-inp" id="brew-notes" placeholder="Запиши враження: тіло, післясмак, кислотність..." data-i18n-ph="notes_ph"></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveBrew()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> <span data-i18n="rate_save">Зберегти рецепт</span></button>
+  </div>
+

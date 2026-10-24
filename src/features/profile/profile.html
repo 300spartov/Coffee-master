@@ -1,0 +1,113 @@
+<!-- ПРОФИЛЬ -->
+<div class="scr" id="scr-profile">
+  <div class="hdr hdr-feed">
+    <div class="hdr-left"><div class="hdr-title" data-i18n="profile_title">Профіль</div><div class="hdr-sub">Coffee Journal</div></div>
+    <button class="hdr-streak show" id="pdate-btn" onclick="toggleProfCal()" aria-label="Календар заварювань" style="display:flex!important"><span id="pdate-num">0</span><span class="hs-mon" id="pdate-mon">дн.</span></button>
+    <button class="icon-btn-trophy" onclick="showScr('scr-ach')" aria-label="Ачівки">
+      <i class="ti ti-trophy" aria-hidden="true"></i>
+      <span class="badge-dot" id="trophy-count">0</span>
+    </button>
+  </div>
+
+  <!-- Календар заварювань (з Coffee Master) -->
+  <div class="streak-panel" id="prof-cal-panel">
+    <div class="streak-full">
+      <div class="se-title" data-i18n="profile_cal">Календар заварювань</div>
+      <button onclick="openLogBrew()" class="bean-add" style="margin:12px 0 4px"><i class="ti ti-plus" aria-hidden="true"></i> <span data-i18n="profile_add_drink">Додати випите</span></button>
+      <div class="cal-card" style="margin-top:10px">
+        <div class="cal-top">
+          <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперед"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+          <div class="cal-modes"><button class="cal-mode cm-vol on" onclick="calMode('vol')" data-i18n="profile_cal_vol">Об'єм</button><button class="cal-mode cm-ind" onclick="calMode('ind')" data-i18n="profile_cal_ind">Індикатори</button></div>
+        </div>
+        <div class="cal-wh"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="cal-grid"></div>
+        <div class="cal-legend"><span><i class="d filter"></i><span data-i18n="profile_filter_leg">Фільтр</span></span><span><i class="d espresso"></i><span data-i18n="profile_esp_leg">Еспресо</span></span><span><i class="d other"></i><span data-i18n="profile_other_leg">Інше</span></span></div>
+        <div class="cal-detail"></div>
+      </div>
+      <button class="se-collapse" onclick="toggleProfCal()"><i class="ti ti-chevron-up" aria-hidden="true"></i> <span data-i18n="profile_collapse">згорнути</span></button>
+    </div>
+  </div>
+
+  <div class="pr-card">
+    <div class="pr-top">
+      <div class="av-wrap">
+        <svg class="av-svg" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#1e2326" stroke-width="3.5"/>
+          <circle id="av-ring" cx="32" cy="32" r="28" fill="none" stroke="#3DDC84" stroke-width="3.5"
+            stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+        </svg>
+        <div class="av-inner" id="pr-av" onclick="openAvPicker()" title="Змінити аватар">?</div>
+        <div class="av-lvl" id="pr-lvl">1</div>
+      </div>
+      <div class="pr-meta">
+        <div class="pr-name-v2" id="pr-name">Налаштуй профіль</div>
+        <div class="pr-era" id="pr-era">Зернятко</div>
+        <div class="xp-badge"><i class="ti ti-bolt" style="font-size:11px" aria-hidden="true"></i><span id="pr-xp">0 XP</span></div>
+      </div>
+      <div class="streak-top">
+        <div class="streak-num"><span id="pr-streak-top">0</span><i class="ti ti-flame" aria-hidden="true"></i></div>
+        <div class="streak-cap" data-i18n="profile_streak_lbl">стрік</div>
+      </div>
+    </div>
+
+    <button class="toggle-btn" onclick="toggleProfileV2()" id="pr-toggle-btn" aria-expanded="true">
+      <div class="divider-line"></div>
+      <i class="ti ti-chevron-down chev-v2 open" id="pr-chev" aria-hidden="true"></i>
+      <div class="divider-line"></div>
+    </button>
+
+    <div class="collapse-body-v2 open" id="pr-collapse">
+      <div class="coll-inner">
+        <div class="lvl-card" onclick="openXpHistory()" style="cursor:pointer">
+          <div class="lvl-top">
+            <span class="lvl-lbl">До рівня <span id="pr-nextlvl">2</span></span>
+            <span class="lvl-xp" id="pr-xp-detail">0 / 80 XP</span>
+          </div>
+          <div class="lvl-track"><div class="lvl-fill" id="pr-xp-bar" style="width:0%"></div></div>
+          <div class="lvl-foot">
+            <span>Ще <b id="pr-xp-left">80 XP</b></span>
+            <span style="color:var(--txt3)" id="pr-xp-days">~16 днів</span>
+          </div>
+        </div>
+        <div class="mini-grid-v2">
+          <div class="mini-stat"><div class="mini-v" id="st-brews">0</div><div class="mini-l" data-i18n="profile_brews">Заварювань</div></div>
+          <div class="mini-stat" id="st-kg-month-card" onclick="openOv('ov-coffee-stats');cwSetPeriod('month')" style="cursor:pointer"><div class="mini-v" id="st-kg-month">0</div><div class="mini-l" data-i18n="profile_kg_month">Кг кави/місяць</div></div>
+          <div class="mini-stat"><div class="mini-v" id="st-ach">0</div><div class="mini-l" data-i18n="ach_title">Ачівок</div></div>
+          <div class="mini-stat"><div class="mini-v" id="st-devs">0</div><div class="mini-l" data-i18n="profile_devs">Девайсів</div></div>
+        </div>
+        <div class="sec-row">
+          <div class="sec-lbl" data-i18n="profile_recent_ach">Нещодавні ачівки</div>
+          <button class="sec-link" onclick="showScr('scr-ach')">Всі <i class="ti ti-chevron-right" style="font-size:10px" aria-hidden="true"></i></button>
+        </div>
+        <div class="ach-row" id="pr-ach-row"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="stats-card">
+    <button class="stats-cta" onclick="showScr('scr-stats');renderStats()" id="stats-toggle-btn">
+      <div class="stats-cta-ic"><i class="ti ti-chart-donut-3" aria-hidden="true"></i></div>
+      <div class="stats-cta-body">
+        <div class="stats-cta-t" data-i18n="profile_stats">Статистика</div>
+        <div class="stats-cta-s" data-i18n="profile_stats_sub">Напої, об'єм, заварювання</div>
+      </div>
+      <i class="ti ti-chevron-right stats-cta-chev" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div style="margin-top:4px;padding-bottom:8px">
+    <div class="srow" onclick="showScr('scr-market')"><i class="ti ti-building-store gear-ic" aria-hidden="true" style="color:var(--copper-lt)"></i><span class="srow-lbl" data-i18n="profile_shop">Магазин зерна та девайсів</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="openOv('ov-settings')"><i class="ti ti-user-edit gear-ic" aria-hidden="true"></i><span class="srow-lbl" data-i18n="profile_edit">Редагувати профіль</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="openDeletedTrash()"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A" data-i18n="profile_trash">Видалені рецепти</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+  </div>
+
+  <!-- Перемикач мови -->
+  <div style="display:flex;align-items:center;justify-content:center;width:100%;gap:8px;margin:14px 0 6px">
+    <span style="font-size:15px;line-height:1;display:inline-flex;align-items:center">🌐</span>
+    <div class="feed-toggle" style="margin:0;display:inline-flex;width:auto;flex:0 0 auto">
+      <button id="lang-ua-btn" class="ft-tab on" onclick="setLang('ua')" style="flex:0 0 auto;padding:7px 16px">UA</button>
+      <button id="lang-en-btn" class="ft-tab" onclick="setLang('en')" style="flex:0 0 auto;padding:7px 16px">EN</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+/* trophy icon-btn */
+.icon-btn-trophy{width:38px;height:38px;border-radius:11px;flex-shrink:0;background:#2a1e10;border:1px solid var(--copper-dk);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--copper-lt);font-size:19px;transition:background .15s,transform .1s;position:relative}
+.icon-btn-trophy:active{transform:scale(.93)}
+.badge-dot{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--copper);border:2px solid var(--bg);font-family:var(--mono);font-size:8px;font-weight:700;color:#1c130a;display:flex;align-items:center;justify-content:center}
+
+/* XP gain badge */
+.xp-gain{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(160deg,#2a1e10,#1d1610);border:1px solid var(--copper-dk);border-radius:20px;padding:5px 13px;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--copper-lt);margin-top:6px;opacity:0;transform:translateY(4px);transition:opacity .4s ease,transform .4s ease}
+.xp-gain.show{opacity:1;transform:translateY(0)}
+.xp-gain i{font-size:12px}
+.xp-lvlup{display:none;align-items:center;gap:6px;background:linear-gradient(160deg,#0d1f1a,#081510);border:1px solid #3DDC84;border-radius:20px;padding:5px 13px;font-family:var(--mono);font-size:11px;font-weight:700;color:#3DDC84;margin-top:6px;opacity:0;transform:translateY(4px);transition:opacity .4s ease .2s,transform .4s ease .2s}
+.xp-lvlup.show{opacity:1;transform:translateY(0)}

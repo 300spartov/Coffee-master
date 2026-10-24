@@ -1,0 +1,52 @@
+<!-- STATS SCREEN -->
+<div class="scr" id="scr-stats">
+  <div style="padding:14px 16px 28px">
+    <!-- Шапка -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <button onclick="showScr('scr-profile')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:17px;font-weight:700;color:var(--txt)">Статистика</div>
+        <div style="font-size:11px;color:var(--txt3)" id="st-period-lbl">Місяць</div>
+      </div>
+      <button onclick="statShareCarousel()" style="background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);padding:8px 12px;cursor:pointer;font-size:14px"><i class="ti ti-share"></i></button>
+    </div>
+
+    <!-- Таби -->
+    <div class="cp-seg" id="st-seg" style="margin-bottom:16px">
+      <button onclick="stSetPeriod('week',this);renderStats()">Тиждень</button>
+      <button class="on" onclick="stSetPeriod('month',this);renderStats()">Місяць</button>
+      <button onclick="stSetPeriod('year',this);renderStats()">Рік</button>
+    </div>
+
+    <!-- Напої по методах — компактні плитки -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px">Напої за методом</div>
+      <div id="st-drinks-list" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+
+    <!-- Донат зерна -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Зерно по обсмаженню</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <svg id="st-donut" width="90" height="90" viewBox="0 0 120 120" style="flex-shrink:0"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px" id="st-donut-leg"></div>
+      </div>
+    </div>
+
+    <!-- Смаковий профіль -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Смаковий профіль</div>
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <svg id="st-radar" width="120" height="110" viewBox="0 0 130 120" style="flex-shrink:0"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px;padding-top:4px" id="st-radar-leg"></div>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-top:10px;line-height:1.4" id="st-radar-hint"></div>
+    </div>
+
+    <!-- Рейтинг методів -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Оцінка за методом</div>
+      <div id="st-methods"></div>
+    </div>
+  </div>
+</div>
