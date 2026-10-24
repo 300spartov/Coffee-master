@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Кореневий index.html генерується з src/index.html: python3 build.py. Правте файли в src/. -->
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -62,29 +63,1388 @@
 </defs></svg>
 <div class="screens">
 
-<div data-include="src/features/feed/feed.html"></div>
+<!-- ЛЕНТА -->
+<div class="scr on" id="scr-home">
+  <div class="hdr hdr-feed" style="margin-bottom:14px">
+    <div class="hdr-left"><div class="hdr-title" data-i18n="journal_feed">Стрічка</div><div class="hdr-sub" id="feed-sub" data-i18n="journal_my_recipes">Мої рецепти</div></div>
+    <button class="hdr-streak" id="hdr-streak" onclick="toggleStreak()" aria-label="Серія заварювань"><span id="hdr-streak-num">0</span><svg class="cup-ic hs-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></button>
+    <div class="icon-btn" id="hdr-av" onclick="showScr('scr-profile')"><i class="ti ti-user" aria-hidden="true"></i></div>
+  </div>
+  <div class="streak-panel" id="streak-panel">
+    <div class="streak-full">
+      <div class="se-title">Ваша серія заварювань</div>
+      <div class="se-ring">
+        <svg viewBox="0 0 130 130" width="140" height="140">
+          <circle cx="65" cy="65" r="54" fill="none" stroke="#262017" stroke-width="9"></circle>
+          <circle id="se-arc" cx="65" cy="65" r="54" fill="none" stroke="url(#seGrad)" stroke-width="9" stroke-linecap="round" transform="rotate(-90 65 65)" stroke-dasharray="339.3" stroke-dashoffset="339.3"></circle>
+          <defs><linearGradient id="seGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8c552a"></stop><stop offset="1" stop-color="#E8A860"></stop></linearGradient></defs>
+        </svg>
+        <div class="se-center"><span class="se-num" id="se-num">0</span><svg class="cup-ic se-cup" viewBox="0 0 48 44"><use href="#cupIcon"></use></svg></div>
+      </div>
+      <div class="se-record"><span data-i18n="streak_record_prefix">Ваш рекорд:</span> <b id="se-rec">0</b> <span data-i18n="streak_record_days">днів</span></div>
+      <div class="se-week" id="se-week"></div>
+      <button onclick="openLogBrew()" class="bean-add" style="margin:12px 0 4px"><i class="ti ti-plus" aria-hidden="true"></i> <span data-i18n="profile_add_drink">Додати випите</span></button>
+      <div class="cal-card">
+        <div class="cal-top">
+          <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперед"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+          <div class="cal-modes"><button class="cal-mode cm-vol on" onclick="calMode('vol')" data-i18n="profile_cal_vol">Об'єм</button><button class="cal-mode cm-ind" onclick="calMode('ind')" data-i18n="profile_cal_ind">Індикатори</button></div>
+        </div>
+        <div class="cal-wh"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="cal-grid"></div>
+        <div class="cal-legend"><span><i class="d filter"></i><span data-i18n="profile_filter_leg">Фільтр</span></span><span><i class="d espresso"></i><span data-i18n="profile_esp_leg">Еспресо</span></span><span><i class="d other"></i><span data-i18n="profile_other_leg">Інше</span></span></div>
+        <div class="cal-detail"></div>
+      </div>
+      <button class="se-collapse" onclick="toggleStreak()"><i class="ti ti-chevron-up" aria-hidden="true"></i> <span data-i18n="profile_collapse">згорнути</span></button>
+    </div>
+  </div>
+  <div class="feed-toggle">
+    <button class="ft-tab on" id="ft-mine" onclick="setFeedTab('mine')"><i class="ti ti-bookmark" aria-hidden="true"></i> <span data-i18n="journal_my">Моя</span></button>
+    <button class="ft-tab" id="ft-comm" onclick="setFeedTab('comm')"><i class="ti ti-messages" aria-hidden="true"></i> <span data-i18n="journal_community">Ком'юніті</span></button>
+  </div>
+  <div id="feed-list"></div>
+</div>
 
-<div data-include="src/features/beans/beans.html"></div>
+<!-- ЗЕРНО -->
+<div class="scr" id="scr-coffee">
+  <div class="hdr" style="margin-bottom:10px">
+    <div><div class="hdr-title">Зерно</div><div class="hdr-sub">Інвентар</div></div>
+    <div style="display:flex;gap:8px">
+      <div class="icon-btn" onclick="showScr('scr-market')" aria-label="Магазин"><i class="ti ti-building-store" aria-hidden="true"></i></div>
+      <div class="icon-btn" onclick="openOv('ov-bean')" aria-label="Додати"><i class="ti ti-plus" aria-hidden="true"></i></div>
+    </div>
+  </div>
+  <div style="padding:0 16px" id="bean-list"></div>
+  <div style="padding:4px 16px 0" style="display:none">
+    <!-- shop-cta hidden until ready -->
+    <!-- <button class="shop-cta" onclick="showScr('scr-market')"><i class="ti ti-shopping-bag" aria-hidden="true"></i><div><div class="shop-cta-t">Купити свіже зерно</div><div class="shop-cta-s">Обсмажувачі · підписка · доставка</div></div><i class="ti ti-arrow-right" aria-hidden="true" style="margin-left:auto;opacity:.6"></i></button> -->
+  </div>
+</div>
 
-<div data-include="src/features/devices/devices.html"></div>
+<!-- ДЕВАЙСЫ -->
+<div class="scr" id="scr-eq">
+  <div class="hdr" style="margin-bottom:0"><div><div class="hdr-title" data-i18n="devices_title">Девайсы</div><div class="hdr-sub" data-i18n="devices_equipment">Оборудование</div></div></div>
+  <div class="cat-grid" id="cat-grid"></div>
+</div>
+<div class="scr" id="scr-devlist">
+  <div class="dev-hdr">
+    <button class="back-btn" onclick="showScr('scr-eq')"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <div class="dev-hdr-title" id="devlist-title">—</div>
+  </div>
+  <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="dev-search" placeholder="Пошук..." oninput="filterDevs()"></div>
+  <div id="devlist-body"></div>
+</div>
 
-<div data-include="src/features/profile/profile.html"></div>
+<!-- ПРОФИЛЬ -->
+<div class="scr" id="scr-profile">
+  <div class="hdr hdr-feed">
+    <div class="hdr-left"><div class="hdr-title" data-i18n="profile_title">Профіль</div><div class="hdr-sub">Coffee Journal</div></div>
+    <button class="hdr-streak show" id="pdate-btn" onclick="toggleProfCal()" aria-label="Календар заварювань" style="display:flex!important"><span id="pdate-num">0</span><span class="hs-mon" id="pdate-mon">дн.</span></button>
+    <button class="icon-btn-trophy" onclick="showScr('scr-ach')" aria-label="Ачівки">
+      <i class="ti ti-trophy" aria-hidden="true"></i>
+      <span class="badge-dot" id="trophy-count">0</span>
+    </button>
+  </div>
 
-<div data-include="src/features/achievements/achievements.html"></div>
+  <!-- Календар заварювань (з Coffee Master) -->
+  <div class="streak-panel" id="prof-cal-panel">
+    <div class="streak-full">
+      <div class="se-title" data-i18n="profile_cal">Календар заварювань</div>
+      <button onclick="openLogBrew()" class="bean-add" style="margin:12px 0 4px"><i class="ti ti-plus" aria-hidden="true"></i> <span data-i18n="profile_add_drink">Додати випите</span></button>
+      <div class="cal-card" style="margin-top:10px">
+        <div class="cal-top">
+          <div class="cal-monthnav"><button onclick="calNav(-1)" aria-label="Назад"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><span class="cal-month-lbl">—</span><button onclick="calNav(1)" aria-label="Вперед"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+          <div class="cal-modes"><button class="cal-mode cm-vol on" onclick="calMode('vol')" data-i18n="profile_cal_vol">Об'єм</button><button class="cal-mode cm-ind" onclick="calMode('ind')" data-i18n="profile_cal_ind">Індикатори</button></div>
+        </div>
+        <div class="cal-wh"><span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span></div>
+        <div class="cal-grid"></div>
+        <div class="cal-legend"><span><i class="d filter"></i><span data-i18n="profile_filter_leg">Фільтр</span></span><span><i class="d espresso"></i><span data-i18n="profile_esp_leg">Еспресо</span></span><span><i class="d other"></i><span data-i18n="profile_other_leg">Інше</span></span></div>
+        <div class="cal-detail"></div>
+      </div>
+      <button class="se-collapse" onclick="toggleProfCal()"><i class="ti ti-chevron-up" aria-hidden="true"></i> <span data-i18n="profile_collapse">згорнути</span></button>
+    </div>
+  </div>
 
-<div data-include="src/features/brew/brew.html"></div>
+  <div class="pr-card">
+    <div class="pr-top">
+      <div class="av-wrap">
+        <svg class="av-svg" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#1e2326" stroke-width="3.5"/>
+          <circle id="av-ring" cx="32" cy="32" r="28" fill="none" stroke="#3DDC84" stroke-width="3.5"
+            stroke-linecap="round" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+        </svg>
+        <div class="av-inner" id="pr-av" onclick="openAvPicker()" title="Змінити аватар">?</div>
+        <div class="av-lvl" id="pr-lvl">1</div>
+      </div>
+      <div class="pr-meta">
+        <div class="pr-name-v2" id="pr-name">Налаштуй профіль</div>
+        <div class="pr-era" id="pr-era">Зернятко</div>
+        <div class="xp-badge"><i class="ti ti-bolt" style="font-size:11px" aria-hidden="true"></i><span id="pr-xp">0 XP</span></div>
+      </div>
+      <div class="streak-top">
+        <div class="streak-num"><span id="pr-streak-top">0</span><i class="ti ti-flame" aria-hidden="true"></i></div>
+        <div class="streak-cap" data-i18n="profile_streak_lbl">стрік</div>
+      </div>
+    </div>
+
+    <button class="toggle-btn" onclick="toggleProfileV2()" id="pr-toggle-btn" aria-expanded="true">
+      <div class="divider-line"></div>
+      <i class="ti ti-chevron-down chev-v2 open" id="pr-chev" aria-hidden="true"></i>
+      <div class="divider-line"></div>
+    </button>
+
+    <div class="collapse-body-v2 open" id="pr-collapse">
+      <div class="coll-inner">
+        <div class="lvl-card" onclick="openXpHistory()" style="cursor:pointer">
+          <div class="lvl-top">
+            <span class="lvl-lbl">До рівня <span id="pr-nextlvl">2</span></span>
+            <span class="lvl-xp" id="pr-xp-detail">0 / 80 XP</span>
+          </div>
+          <div class="lvl-track"><div class="lvl-fill" id="pr-xp-bar" style="width:0%"></div></div>
+          <div class="lvl-foot">
+            <span>Ще <b id="pr-xp-left">80 XP</b></span>
+            <span style="color:var(--txt3)" id="pr-xp-days">~16 днів</span>
+          </div>
+        </div>
+        <div class="mini-grid-v2">
+          <div class="mini-stat"><div class="mini-v" id="st-brews">0</div><div class="mini-l" data-i18n="profile_brews">Заварювань</div></div>
+          <div class="mini-stat" id="st-kg-month-card" onclick="openOv('ov-coffee-stats');cwSetPeriod('month')" style="cursor:pointer"><div class="mini-v" id="st-kg-month">0</div><div class="mini-l" data-i18n="profile_kg_month">Кг кави/місяць</div></div>
+          <div class="mini-stat"><div class="mini-v" id="st-ach">0</div><div class="mini-l" data-i18n="ach_title">Ачівок</div></div>
+          <div class="mini-stat"><div class="mini-v" id="st-devs">0</div><div class="mini-l" data-i18n="profile_devs">Девайсів</div></div>
+        </div>
+        <div class="sec-row">
+          <div class="sec-lbl" data-i18n="profile_recent_ach">Нещодавні ачівки</div>
+          <button class="sec-link" onclick="showScr('scr-ach')">Всі <i class="ti ti-chevron-right" style="font-size:10px" aria-hidden="true"></i></button>
+        </div>
+        <div class="ach-row" id="pr-ach-row"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="stats-card">
+    <button class="stats-cta" onclick="showScr('scr-stats');renderStats()" id="stats-toggle-btn">
+      <div class="stats-cta-ic"><i class="ti ti-chart-donut-3" aria-hidden="true"></i></div>
+      <div class="stats-cta-body">
+        <div class="stats-cta-t" data-i18n="profile_stats">Статистика</div>
+        <div class="stats-cta-s" data-i18n="profile_stats_sub">Напої, об'єм, заварювання</div>
+      </div>
+      <i class="ti ti-chevron-right stats-cta-chev" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div style="margin-top:4px;padding-bottom:8px">
+    <div class="srow" onclick="showScr('scr-market')"><i class="ti ti-building-store gear-ic" aria-hidden="true" style="color:var(--copper-lt)"></i><span class="srow-lbl" data-i18n="profile_shop">Магазин зерна та девайсів</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="openOv('ov-settings')"><i class="ti ti-user-edit gear-ic" aria-hidden="true"></i><span class="srow-lbl" data-i18n="profile_edit">Редагувати профіль</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="openDeletedTrash()"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A" data-i18n="profile_trash">Видалені рецепти</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+  </div>
+
+  <!-- Перемикач мови -->
+  <div style="display:flex;align-items:center;justify-content:center;width:100%;gap:8px;margin:14px 0 6px">
+    <span style="font-size:15px;line-height:1;display:inline-flex;align-items:center">🌐</span>
+    <div class="feed-toggle" style="margin:0;display:inline-flex;width:auto;flex:0 0 auto">
+      <button id="lang-ua-btn" class="ft-tab on" onclick="setLang('ua')" style="flex:0 0 auto;padding:7px 16px">UA</button>
+      <button id="lang-en-btn" class="ft-tab" onclick="setLang('en')" style="flex:0 0 auto;padding:7px 16px">EN</button>
+    </div>
+  </div>
+</div>
+
+<!-- АЧІВКИ -->
+<div class="scr" id="scr-ach">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="back-btn" onclick="showScr('scr-profile')" style="width:36px;height:36px;border-radius:10px;background:#1a1d21;border:1px solid var(--line-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--txt2);font-size:18px;flex-shrink:0"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+      <div><div class="hdr-title" data-i18n="ach_title">Ачівки</div><div class="hdr-sub"><span id="ach-earned-count">0</span> / <span id="ach-total-count">0</span> <span data-i18n="ach_received">отримано</span></div></div>
+    </div>
+    <i class="ti ti-trophy" style="font-size:20px;color:var(--copper-lt)" aria-hidden="true"></i>
+  </div>
+  <div class="ach-hero">
+    <div class="ach-hero-ic"><i class="ti ti-trophy" aria-hidden="true"></i></div>
+    <div class="ach-hero-body">
+      <div class="ach-hero-v"><span id="hero-earned">0</span><small> / <span id="hero-total">0</span></small></div>
+      <div class="ach-hero-l">ачівок зібрано</div>
+      <div class="ach-hero-track"><div class="ach-hero-fill" id="hero-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div id="ach-scr" style="padding-bottom:20px"></div>
+</div>
+
+<!-- ЗАВАРИВАНИЕ -->
+<div class="scr" id="scr-brew">
+  <div class="hdr" style="margin-bottom:0">
+    <div><div class="hdr-title" id="brew-title" data-i18n="brew_title">Заварювання</div><div class="hdr-sub" id="brew-sub" data-i18n="brew_subtitle">Налаштування</div></div>
+    <div class="icon-btn" onclick="brewReset()"><i class="ti ti-refresh" aria-hidden="true"></i></div>
+  </div>
+
+  <!-- ВЫБОР МЕТОДА -->
+  <div id="bv-method-pick" style="padding:14px 16px 32px">
+    <!-- Рівень 1 -->
+    <div class="method-pick-screen" id="bv-method-l1">
+      <div>
+        <div class="method-pick-title" data-i18n="method_pick_title">Що сьогодні?</div>
+        <div class="method-pick-sub" data-i18n="brew_choose">Обери метод</div>
+      </div>
+      <button class="method-big-btn alt" onclick="pickBrewMethod('alt')">
+        <div class="mbtn-ico alt"><i class="ti ti-filter" aria-hidden="true"></i></div>
+        <div>
+          <div class="mbtn-name" data-i18n="method_alt">Альтернатива</div>
+          <div class="mbtn-sub" data-i18n="method_alt_sub">V60 · Aeropress · Chemex · French Press та ін.</div>
+        </div>
+        <i class="ti ti-chevron-right" style="margin-left:auto;font-size:18px;color:var(--copper-dk)" aria-hidden="true"></i>
+      </button>
+      <button class="method-big-btn esp" onclick="pickBrewMethod('esp')">
+        <div class="mbtn-ico esp"><i class="ti ti-coffee" aria-hidden="true"></i></div>
+        <div>
+          <div class="mbtn-name" data-i18n="method_esp">Еспресо</div>
+          <div class="mbtn-sub" data-i18n="method_esp_sub">Шот · Таймер · Коефіцієнт · TDS</div>
+        </div>
+        <i class="ti ti-chevron-right" style="margin-left:auto;font-size:18px;color:var(--steel-dk)" aria-hidden="true"></i>
+      </button>
+    </div>
+    <!-- Рівень 2: підгрупи Альтернативи -->
+    <div id="bv-method-l2" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <button onclick="document.getElementById('bv-method-l1').style.display='';document.getElementById('bv-method-l2').style.display='none'" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;font-size:20px;line-height:1"><i class="ti ti-arrow-left"></i></button>
+        <div>
+          <div class="method-pick-title" style="margin:0" id="bv-l2-title" data-i18n="method_alt">Альтернатива</div>
+          <div class="method-pick-sub" style="margin:0" id="bv-l2-sub" data-i18n="method_alt_pick_sub">Вибери спосіб</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="bv-alt-subgrid"></div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div id="bv-setup" style="padding:14px 16px 32px">
+    <!-- Фіча 4: кнопка ← назад -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <button onclick="brewGoBack()" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;font-size:20px;line-height:1;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+      <div style="font-size:13px;font-weight:600;color:var(--txt2)" id="b-setup-method-lbl">Налаштування</div>
+    </div>
+
+    <!-- Фіча 4: Normal / Inverted тільки для Aeropress -->
+    <div id="b-aeropress-opts" style="display:none;margin-bottom:12px">
+      <div class="field-lbl" style="margin-bottom:6px">Позиція</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button id="b-aero-normal" onclick="setAeroInverted(false)"
+          style="padding:10px;border-radius:10px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          <i class="ti ti-arrow-up"></i> Normal
+        </button>
+        <button id="b-aero-inverted" onclick="setAeroInverted(true)"
+          style="padding:10px;border-radius:10px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          <i class="ti ti-arrow-down"></i> Inverted
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Зерно</div>
+      <button class="sel-btn" onclick="openOv('ov-bbean')">
+        <div><div class="sel-main" id="bsel-bean" data-i18n="devices_choose_bean">Вибери пачку</div><div class="sel-sub" id="bsel-bean-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="wbar" id="bbean-bar" style="display:none"><div class="wfill-g" id="bbean-fill" style="width:0%"></div></div>
+    </div>
+    <div class="card" id="bcard-dripper">
+      <button class="sel-btn" onclick="openOv('ov-bdripper')">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span id="bsel-dripper-ico" style="flex-shrink:0;display:flex;width:34px;height:34px;align-items:center;justify-content:center"></span>
+          <div><div class="sel-main" id="bsel-dripper" data-i18n="devices_choose_dripper">Вибери воронку</div><div class="sel-sub" id="bsel-dripper-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        </div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="card" id="bcard-filter">
+      <div class="lbl">Фільтр</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="sel-btn" onclick="openOv('ov-bfilter')" style="flex:1;min-width:0">
+          <div><div class="sel-main" id="bsel-filter" data-i18n="devices_choose_filter">Вибери фільтр</div><div class="sel-sub" id="bsel-filter-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+          <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+        </button>
+        <!-- Фіча 6: кількість фільтрів — тільки для Aeropress -->
+        <div id="b-filter-count-wrap" style="display:none;position:relative;flex-shrink:0">
+          <button onclick="toggleFilterDropdown()" id="b-filter-count-btn"
+            style="width:42px;height:42px;border-radius:10px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt);font-family:var(--mono);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center">
+            <span id="b-aero-filters">1</span>
+          </button>
+          <div id="b-filter-dropdown" style="display:none;position:absolute;right:0;top:48px;background:var(--card-hi);border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;z-index:20;min-width:52px;box-shadow:0 8px 24px rgba(0,0,0,.5)">
+            <button onclick="setAeroFilters(1)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;border-bottom:1px solid var(--line-soft);color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">1</button>
+            <button onclick="setAeroFilters(2)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;border-bottom:1px solid var(--line-soft);color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">2</button>
+            <button onclick="setAeroFilters(3)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;border-bottom:1px solid var(--line-soft);color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">3</button>
+            <button onclick="setAeroFilters(4)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">4</button>
+          </div>
+        </div>
+      </div>
+      <div class="wbar" id="bfilter-bar" style="display:none"><div class="wfill-b" id="bfilter-fill" style="width:0%"></div></div>
+      <div class="wd-grid">
+        <button class="wd-btn" id="wet-btn" onclick="setWet(true)" style="border:2px solid #1a4a8a;background:#0d1f35;color:#4A9EDB" data-i18n="brew_wet">Змочений</button>
+        <button class="wd-btn" id="dry-btn" onclick="setWet(false)" style="border:0.5px solid #333;background:#1a1a1a;color:#888" data-i18n="brew_dry">Сухий</button>
+      </div>
+    </div>
+
+    <!-- КАВОМАШИНА (лише для еспресо) -->
+    <div class="card" id="bcard-espmachine" style="display:none">
+      <button class="sel-btn" onclick="openOv('ov-bespmachine')">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span id="bsel-espmachine-ico" style="flex-shrink:0;display:flex;width:34px;height:34px;align-items:center;justify-content:center"></span>
+          <div><div class="sel-main" id="bsel-espmachine" data-i18n="devices_choose_espmachine">Вибери кавомашину</div><div class="sel-sub" id="bsel-espmachine-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        </div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <!-- КОФЕМОЛКА + КЛИКИ -->
+    <div class="card">
+      <div class="lbl">Кавомолка і помол</div>
+      <button class="sel-btn" onclick="openOv('ov-bgrinder')" style="margin-bottom:10px">
+        <div><div class="sel-main" id="bsel-grinder" data-i18n="devices_choose_grinder">Вибери кавомолку</div><div class="sel-sub" id="bsel-grinder-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="field-lbl">Клики / ділення помолу</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="click-btn" onclick="clicksAdj(-1)">−</button>
+        <div style="flex:1;text-align:center" onclick="openNumPad('clicks-input','clicks')" style="cursor:pointer">
+          <div class="clicks-val" id="clicks-val" style="cursor:pointer;border-bottom:1px dashed var(--copper-dk);display:inline-block;padding-bottom:2px">28</div>
+          <div class="clicks-unit">Кліків</div>
+        </div>
+        <button class="click-btn" onclick="clicksAdj(1)">+</button>
+      </div>
+    </div>
+
+    <!-- АКСЕСУАРИ (лише для еспресо) -->
+    <div class="card" id="bcard-acc" style="display:none">
+      <div class="lbl" data-i18n="devices_acc">Аксесуари</div>
+      <div id="bacc-list" style="display:flex;flex-wrap:wrap;gap:6px">
+        <div style="font-size:12px;color:var(--txt3)" data-i18n="devices_no_acc">Додай аксесуари в Девайси → Аксесуари</div>
+      </div>
+      <button class="sel-btn" onclick="openOv('ov-bacc')" style="margin-top:8px">
+        <div><div class="sel-main"><i class="ti ti-plus" aria-hidden="true"></i> <span data-i18n="devices_add_acc">Додати аксесуар</span></div></div>
+      </button>
+    </div>
+
+    <!-- Параметри альтернативы (вливания) -->
+    <div id="bcard-pours-wrap" style="max-width:480px;margin-left:auto;margin-right:auto;width:100%">
+      <div class="card" style="margin-bottom:10px">
+        <div class="lbl" data-i18n="param_section">Параметри</div>
+        <div class="grid3">
+          <div><div class="field-lbl" data-i18n="param_dose">Кава (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="300" class="fi" oninput="bCalc()" readonly onclick="openNumPad('b-dose','dose')"></div>
+          <div><div class="field-lbl" data-i18n="param_ratio">Коефіцієнт</div>
+            <div style="position:relative">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13px;color:var(--txt3);pointer-events:none">1 :</span>
+              <input id="b-ratio" type="number" step="0.1" value="16" min="1" max="30" class="fi" style="padding-left:36px" oninput="bCalc()" onblur="bRatioValidate()" readonly onclick="openNumPad('b-ratio','ratio')">
+            </div>
+          </div>
+          <div><div class="field-lbl" data-i18n="param_pours">Вливань</div>
+            <select id="b-pours" class="fi" onchange="bCalc()">
+              <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:8px">
+          <div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> <span data-i18n="param_temp">Температура</span></div>
+            <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)">
+              <div style="display:flex;align-items:center;gap:8px;width:100%;min-width:0">
+                <button class="click-btn" onclick="var s=document.getElementById('b-temp-sl');s.value=Math.max(+s.min,+s.value-1);document.getElementById('b-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">−</button>
+                <input id="b-temp-sl" type="range" min="84" max="100" step="1" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-temp-out').textContent=this.value+'°C'">
+                <button class="click-btn" onclick="var s=document.getElementById('b-temp-sl');s.value=Math.min(+s.max,+s.value+1);document.getElementById('b-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">+</button>
+                <span id="b-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Параметри еспресо -->
+    <div id="bcard-esp-params" style="display:none">
+      <div class="card" style="margin-bottom:10px">
+        <div class="lbl" data-i18n="param_esp_section">Параметри еспресо</div>
+        <div class="grid2" style="margin-bottom:8px">
+          <div><div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div><input id="b-esp-dose" type="number" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()" readonly onclick="openNumPad('b-esp-dose','esp-dose')"></div>
+          <div><div class="field-lbl" data-i18n="param_esp_ratio">Ретіо (1 : X)</div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <button class="click-btn" onclick="espRatioAdj(-0.1)" style="width:32px;height:38px;font-size:16px">−</button>
+              <input id="b-esp-ratio-sel" type="number" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()" readonly onclick="openNumPad('b-esp-ratio-sel','esp-ratio')">
+              <button class="click-btn" onclick="espRatioAdj(0.1)" style="width:32px;height:38px;font-size:16px">+</button>
+            </div>
+          </div>
+        </div>
+        <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
+          <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="click-btn" onclick="var s=document.getElementById('b-esp-temp-sl');s.value=Math.max(84,+s.value-0.5);document.getElementById('b-esp-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">−</button>
+              <input id="b-esp-temp-sl" type="range" min="84" max="100" step="0.5" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-temp-out').textContent=this.value+'°C'">
+              <button class="click-btn" onclick="var s=document.getElementById('b-esp-temp-sl');s.value=Math.min(100,+s.value+0.5);document.getElementById('b-esp-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">+</button>
+              <span id="b-esp-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="field-lbl">Тиск (бар)</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+            <input id="b-esp-bar-sl" type="range" min="6" max="12" step="0.5" value="9" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-bar-out').textContent=this.value+' бар'">
+            <span id="b-esp-bar-out" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt);min-width:52px;text-align:right">9 бар</span>
+          </div>
+        </div>
+      </div>
+      <div class="calc-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div><div style="font-size:11px;color:var(--txt3);margin-bottom:3px">Доза / Вихід</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);line-height:1"><span id="b-esp-dose-lbl">18</span> / <span id="b-esp-yield-lbl">36</span> г</div></div>
+          <div style="text-align:right"><div style="font-size:11px;color:var(--txt3);margin-bottom:3px">Коефіцієнт</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);line-height:1">1 : <span id="b-esp-ratio-lbl">2.0</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-box" id="bcard-altcalc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><div style="font-size:11px;color:#888;margin-bottom:3px" data-i18n="param_total_water">Всього води</div><div style="font-size:24px;font-weight:700;color:#4A9EDB;line-height:1" id="b-total-lbl">256 мл</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:#888;margin-bottom:3px">Bloom ~</div><div style="font-size:20px;font-weight:700;color:#fff;line-height:1" id="b-bloom-lbl">48 мл</div></div>
+      </div>
+      <div style="font-size:12px;color:#555;margin-top:8px">Перший злив вільний — інші перераховуються</div>
+    </div>
+    <button class="start-btn" onclick="brewStart()"><i class="ti ti-player-play" aria-hidden="true" style="font-size:17px"></i> <span data-i18n="brew_start">Почати заварювання</span></button>
+  </div>
+
+  <!-- ACTIVE -->
+  <div id="bv-active" style="display:none;padding:14px 16px 32px;position:relative">
+    <button onclick="if(confirm(t('draft_reset_confirm')))resetBrewDraft()" style="position:absolute;top:14px;right:14px;background:none;border:1px solid var(--line-soft);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--txt3);cursor:pointer;z-index:5">
+      <i class="ti ti-refresh" aria-hidden="true"></i>
+    </button>
+    <div class="brew-hero">
+      <div class="station-wrap">
+        <div class="station-dev" id="b-dev-name"><i class="ti ti-filter" aria-hidden="true"></i> Воронка</div>
+        <svg class="station" width="116" height="190" viewBox="0 0 130 212" fill="none">
+          <defs>
+            <linearGradient id="cuGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#E6AC72"/><stop offset="0.5" stop-color="#B87333"/><stop offset="1" stop-color="#794a26"/>
+            </linearGradient>
+            <clipPath id="vesselClip"><path d="M37,95 Q62,101 87,95 L90.5,194 Q90.5,201 84,201 L40,201 Q33.5,201 33.5,194 Z"/></clipPath>
+          </defs>
+          <g id="brew-dripper"></g>
+          <line id="drip-stream" x1="62" y1="90" x2="62" y2="97" stroke="#E0A064" stroke-width="2" stroke-linecap="round" stroke-dasharray="2.5 5" opacity="0"></line>
+          <path d="M35,92 L31,196 Q31,204 39,204 L85,204 Q93,204 93,196 L89,92" fill="rgba(255,255,255,0.02)"></path>
+          <g clip-path="url(#vesselClip)">
+            <g id="vessel-liquid" transform="translate(0,197)" style="transition:transform .6s cubic-bezier(.4,.6,.3,1)">
+              <g id="liquid-sway">
+                <rect x="6" y="3" width="120" height="170" fill="url(#cuGrad)"></rect>
+                <path class="wave wave-back" d="M-30,3 q15,-4 30,0 t30,0 t30,0 t30,0 t30,0 t30,0 L150,22 L-30,22 Z" fill="#C8854A" opacity="0.5"></path>
+                <path class="wave wave-front" d="M-30,3 q15,4 30,0 t30,0 t30,0 t30,0 t30,0 t30,0 L150,22 L-30,22 Z" fill="#E0A064" opacity="0.92"></path>
+                <ellipse cx="62" cy="3" rx="60" ry="2.6" fill="#F2BC7E" opacity="0.55"></ellipse>
+              </g>
+            </g>
+          </g>
+          <path d="M35,92 L31,196 Q31,204 39,204 L85,204 Q93,204 93,196 L89,92" stroke="#9aa3ad" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+          <ellipse cx="62" cy="92" rx="27" ry="6" stroke="#9aa3ad" stroke-width="1.6"></ellipse>
+          <path d="M36,93 Q27,90 29,84 Q34,89 40,91" stroke="#9aa3ad" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M88,98 L115,123 L90,150" stroke="#9aa3ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+          <g stroke="rgba(255,255,255,0.10)" stroke-width="1.4" stroke-linecap="round" fill="none">
+            <path d="M44,96 L42,200"></path><path d="M53,98 L52,202"></path><path d="M62,99 L62,202"></path><path d="M71,98 L72,202"></path><path d="M80,96 L82,200"></path>
+          </g>
+          <path d="M40,98 L37,196" stroke="rgba(255,255,255,0.18)" stroke-width="2.5" stroke-linecap="round"></path>
+        </svg>
+        <div class="vessel-cap" id="b-vessel-pct">0%</div>
+      </div>
+      <div class="timer-stack">
+        <div class="t-lbl" data-i18n="param_time">Загальний час</div>
+        <div class="t-val" id="b-main-t">0:00</div>
+        <div class="timer-meta">
+          <div><div class="t-lbl" id="b-phase-lbl">Фаза</div><div class="phase-t" id="b-phase-t">—</div></div>
+          <div><div class="t-lbl" data-i18n="brew_pour">Влив</div><div class="pour-meta"><span id="b-pour-cnt">0</span><span class="sep">/</span><span id="b-pour-tot">3</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="water-block">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px">
+        <div><div class="w-lbl" data-i18n="brew_pour">Влито</div><div class="w-big" style="color:#4A9EDB" id="b-poured-lbl">0 <span class="w-unit">мл</span></div></div>
+        <div style="text-align:right"><div class="w-lbl" data-i18n="brew_remain">Залишилось</div><div class="w-big" style="font-size:20px;color:#fff" id="b-remain-lbl">256 <span class="w-unit">мл</span></div></div>
+      </div>
+      <div style="position:relative;margin-bottom:20px">
+        <div class="bar-track"><div class="bar-fill" id="b-bar-fill"></div><div class="bar-markers" id="b-bar-markers"></div></div>
+        <div class="bar-labels" id="b-bar-labels"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px">
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt);text-shadow:0 0 8px var(--copper-glow)" id="b-bar-pct">0%</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--txt3)" id="b-live-ratio"></span>
+          <span style="font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt)" id="b-bar-tot">256 мл</span>
+        </div>
+      </div>
+      <div id="b-hints" style="display:flex;gap:6px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;max-width:400px;margin-left:auto;margin-right:auto;width:100%">
+      <button class="action-btn btn-pour" id="b-pour-btn" onclick="bHandlePour()">
+        <i class="ti ti-droplet bi" aria-hidden="true"></i>
+        <div class="bl" id="b-pour-lbl" data-i18n="brew_pour">Влив</div>
+        <div class="bs" id="b-pour-sub">натисни для старту</div>
+        <div class="ml-wrap" id="b-ml-wrap" style="display:none">
+          <input type="number" step="0.1" inputmode="decimal" pattern="[0-9]*" class="ml-inp" id="b-ml-inp" placeholder="0" onclick="event.stopPropagation()" oninput="bOnMl()">
+          <span class="ml-unit-lbl">мл</span>
+        </div>
+      </button>
+      <button class="action-btn btn-pause" id="b-pause-btn" onclick="bHandlePause()">
+        <div style="position:relative;width:50px;height:50px">
+          <svg width="50" height="50" viewBox="0 0 50 50" style="transform:rotate(-90deg)">
+            <circle cx="25" cy="25" r="21" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+            <circle cx="25" cy="25" r="21" fill="none" stroke="#4CAF50" stroke-width="3" stroke-dasharray="131.9" id="b-p-ring" stroke-dashoffset="131.9" style="transition:stroke-dashoffset .12s linear"/>
+          </svg>
+          <i class="ti ti-player-pause bi" id="b-pause-icon" aria-hidden="true" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);margin:0;font-size:20px;color:#4CAF50"></i>
+        </div>
+        <div class="bl" id="b-pause-lbl" data-i18n="brew_pause">Пауза</div>
+        <div class="bs" id="b-pause-sub">пролив фільтра</div>
+      </button>
+    </div>
+
+    <!-- ДЕЙСТВИЯ В ПАУЗЕ -->
+    <div class="pause-actions-wrap" id="pause-actions-wrap">
+      <div class="pause-actions-label" data-i18n="brew_pause_action">Дія в паузі</div>
+      <div class="pause-actions-grid">
+        <button class="act-btn act-btn--stir" id="act-stir" onclick="brewDoAction('stir',this)" aria-label="Перемішування">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-stir"/>
+            </svg>
+            <i class="ti ti-rotate-clockwise act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name" data-i18n="act_stir_short">Перемеш.</span>
+          <span class="act-timer" id="timer-stir"></span>
+        </button>
+        <button class="act-btn act-btn--swirl" id="act-swirl" onclick="brewDoAction('swirl',this)" aria-label="Свьорл">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-swirl"/>
+            </svg>
+            <i class="ti ti-refresh act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name" data-i18n="act_swirl">Свьорл</span>
+          <span class="act-timer" id="timer-swirl"></span>
+        </button>
+        <button class="act-btn act-btn--shake" id="act-shake" onclick="brewDoAction('shake',this)" aria-label="Взбалтування">
+          <div class="act-tick"><i class="ti ti-check" aria-hidden="true"></i></div>
+          <div class="act-ring-wrap">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle class="act-ring-bg" cx="20" cy="20" r="16"/>
+              <circle class="act-ring-fill" cx="20" cy="20" r="16" id="ring-shake"/>
+            </svg>
+            <i class="ti ti-activity act-icon-center" aria-hidden="true"></i>
+          </div>
+          <span class="act-name" data-i18n="act_shake_short">Взбалтыв.</span>
+          <span class="act-timer" id="timer-shake"></span>
+        </button>
+      </div>
+    </div>
+    <!-- Чавимо — тільки для Aeropress, поза блоком "Дія в паузі", перед Стоп -->
+    <div id="aero-actions-wrap" style="display:none;margin-bottom:10px">
+      <button id="b-aero-press" onclick="aeroDoPress()"
+        style="width:100%;padding:16px 12px;border-radius:14px;border:1px solid rgba(124,92,191,.5);background:rgba(124,92,191,.12);color:#c4b0ff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+        <i class="ti ti-arrow-down-circle" style="font-size:26px;color:#7c5cbf"></i>
+        <span id="b-aero-press-label">Чавимо</span>
+        <span id="aero-press-timer" style="font-family:var(--mono);font-size:12px;color:#c4b0ff"></span>
+      </button>
+    </div>
+
+    <button class="stop-btn" onclick="brewStop()" style="background:linear-gradient(160deg,#2a0a0a,#1c0808);border-color:#7a1a1a;color:#f5a0a0"><i class="ti ti-square" aria-hidden="true"></i> Стоп</button>
+    <div id="b-log-wrap" style="display:none;margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:5px;padding:0">Лог шагов</div>
+      <div style="border:0.5px solid #2a2a2a;border-radius:12px;overflow:hidden" id="b-log-box"></div>
+    </div>
+  </div>
+
+  <!-- ОЦІНКА І СМАК (новий екран) -->
+  <div id="bv-rate" style="display:none;padding:14px 16px 32px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#fff" id="rate-bean-name">—</div>
+        <div style="font-size:12px;color:#888;margin-top:2px" id="rate-info">—</div>
+      </div>
+    </div>
+
+    <!-- Статистика заварювання -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sstat"><div class="sstat-v" id="rate-time">—</div><div class="sstat-l" data-i18n="rate_time">Час</div></div>
+      <div class="sstat"><div class="sstat-v" id="rate-ml">—</div><div class="sstat-l" data-i18n="rate_water_poured">Вилито води</div></div>
+    </div>
+
+    <!-- Редагування вливань після зупинки -->
+    <div id="rate-pours-section" style="margin-bottom:14px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="lbl">Кроки заварювання</div>
+        <button onclick="toggleRatePours()" id="rate-pours-toggle" style="background:none;border:none;color:var(--copper-lt);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;padding:0">▼ показати</button>
+      </div>
+      <div id="rate-pours-body" style="display:none"></div>
+    </div>
+
+    <!-- Оцінка -->
+    <div class="rating-block">
+      <div class="rating-big" id="rate-num">8.0</div>
+      <div class="rating-sub" data-i18n="rate_cup_sub">оцінка чашки</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="rate-slider" style="width:100%" oninput="var _v=parseFloat(this.value);document.getElementById('rate-num').textContent=_v.toFixed(1);applyRatingColor('rate-num','rate-slider',_v)">
+      <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+    </div>
+
+    <!-- Колеса смаків та аромату -->
+    <div id="alt-taste-mount"><div id="taste-block">
+    <div class="wheel-wrap" style="margin:0 0 12px">
+      <!-- Tab switcher -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#0f1011;border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:12px">
+        <button id="nw-tab-flavor" onclick="nwSwitchTab('flavor')" style="border-radius:8px;border:none;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(160deg,#6bb8f0,#3a8fd6);color:#0a1a2e"><span data-i18n="rate_flavor">Смак</span></button>
+        <button id="nw-tab-aroma" onclick="nwSwitchTab('aroma')" style="border-radius:8px;border:none;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:none;color:var(--txt3)"><span data-i18n="rate_aroma">Аромат</span></button>
+      </div>
+      <div class="wheel-wrap">
+        <div class="wheel-label" id="wheel-label" data-i18n="wheel_label_taste">Смакові ноти</div>
+        <div class="mode-switch">
+          <button class="mode-btn" data-mode="drill"><span class="mi">◎</span><span data-i18n="wheel_mode_wheel">Колесо</span></button>
+          <button class="mode-btn" data-mode="cascade"><span class="mi">☰</span><span data-i18n="wheel_mode_search">Пошук</span></button>
+        </div>
+        <div class="search">
+          <span class="si-ic">⌕</span>
+          <input id="search-inp" type="text" placeholder="Знайти ноту: манго, вишня, тютюн…" autocomplete="off" data-i18n-ph="wheel_search_ph">
+          <button class="search-clear" id="search-clear">×</button>
+        </div>
+        <div class="wheel-hint" id="fw-hint"></div>
+        <div class="wheel-stage" id="wheel-stage">
+          <svg id="wheel-svg" viewBox="-190 -190 380 380"></svg>
+          <div id="cascade-box"></div>
+        </div>
+        <div class="action-bar" id="action-bar"><span class="ab-txt"></span></div>
+        <button class="reset-btn" id="reset-btn" data-i18n="wheel_reset">Відмінити вибір</button>
+      </div>
+    </div>
+    <div class="log-wrap">
+      <div class="log-head">
+        <span class="log-lbl" id="log-lbl">Дескриптори смаку</span>
+        <span id="log-count"></span>
+      </div>
+      <div id="log-box"></div>
+    </div>
+    </div></div>
+
+    <!-- Нотатки -->
+    <div class="notes-block">
+      <div class="lbl" style="margin-bottom:8px" data-i18n="notes_section">Опис та нотатки</div>
+      <textarea class="notes-inp" id="brew-notes" placeholder="Запиши враження: тіло, післясмак, кислотність..." data-i18n-ph="notes_ph"></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveBrew()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> <span data-i18n="rate_save">Зберегти рецепт</span></button>
+  </div>
+
+  <!-- РЕЗУЛЬТАТ (после сохранения) -->
+  <div id="bv-result" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;padding:16px 0 12px">
+      <i class="ti ti-check" aria-hidden="true" style="font-size:30px;color:#4CAF50;display:block;margin-bottom:6px"></i>
+      <div style="font-size:18px;font-weight:700;color:#fff">Збережено!</div>
+      <div style="font-size:12px;color:#888;margin-top:2px" id="b-res-info"></div>
+      <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:4px">
+        <div class="xp-gain" id="brew-xp-badge"><i class="ti ti-bolt" aria-hidden="true"></i><span id="brew-xp-val">+15 XP</span></div>
+        <div class="xp-lvlup" id="brew-lvlup-badge"><i class="ti ti-arrow-up" aria-hidden="true"></i><span id="brew-lvlup-val">Рівень 2</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sstat"><div class="sstat-v" id="b-res-t">—</div><div class="sstat-l">Час</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-ml">—</div><div class="sstat-l">Вилито води</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-rating">—</div><div class="sstat-l" data-i18n="rate_title">Оцінка</div></div>
+      <div class="sstat"><div class="sstat-v" id="b-res-flavors">—</div><div class="sstat-l" data-i18n="journal_desc_count">Дескрипторів</div></div>
+    </div>
+    <button onclick="showScr('scr-home')" style="width:100%;background:#4CAF50;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:8px">Перейти до Стрічки</button>
+    <button onclick="brewGoSetup()" style="width:100%;background:#1a1a1a;border:0.5px solid #333;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit">Нове заварювання</button>
+  </div>
+  <!-- ЕСПРЕСО — АКТИВНИЙ -->
+  <div id="bv-esp-active" style="display:none;padding:14px 16px 32px">
+    <div class="timer-bar" style="margin-bottom:16px">
+      <div><div class="t-lbl">Час проливу</div><div class="t-val" id="esp-timer">0:00</div></div>
+      <div style="text-align:center"><div class="t-lbl">Доза</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt)" id="esp-dose-disp">18 г</div></div>
+      <div style="text-align:right"><div class="t-lbl">Ціль</div><div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--txt)" id="esp-yield-disp">36 г</div></div>
+    </div>
+
+    <!-- Анимация пролива -->
+    <div style="background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:20px;text-align:center;margin-bottom:14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--copper-lt);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px" id="esp-phase-lbl">Готовий до старту</div>
+      <!-- Простая визуализация: чашка + капля -->
+      <div style="position:relative;display:inline-block;margin-bottom:10px">
+        <svg width="100" height="80" viewBox="0 0 100 80" fill="none">
+          <!-- Чашка -->
+          <path d="M20 30 L25 70 Q50 78 75 70 L80 30 Z" fill="rgba(184,115,51,0.12)" stroke="var(--copper)" stroke-width="1.5"/>
+          <ellipse cx="50" cy="30" rx="30" ry="6" fill="rgba(184,115,51,0.08)" stroke="var(--copper)" stroke-width="1.5"/>
+          <!-- Ручка -->
+          <path d="M80 35 Q92 35 92 50 Q92 65 80 65" fill="none" stroke="var(--copper)" stroke-width="1.5"/>
+          <!-- Еспресо в чашке (динамически растёт) -->
+          <clipPath id="cup-clip"><path d="M20 30 L25 70 Q50 78 75 70 L80 30 Z"/></clipPath>
+          <rect id="esp-fill" x="20" y="70" width="60" height="0" fill="rgba(139,80,43,0.6)" clip-path="url(#cup-clip)" style="transition:all .5s ease"/>
+          <!-- Капля -->
+          <ellipse id="esp-drop" cx="50" cy="22" rx="3" ry="4" fill="var(--copper-lt)" opacity="0" style="transition:opacity .3s"/>
+        </svg>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--copper-lt);margin-top:6px;text-shadow:0 0 14px var(--copper-glow)" id="esp-seconds">0</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:.5px">секунд</div>
+      </div>
+      <!-- Целевая полоска -->
+      <div style="margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--txt3);margin-bottom:4px">
+          <span>0</span><span id="esp-target-s">27с ціль</span>
+        </div>
+        <div style="height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden">
+          <div id="esp-time-bar" style="height:100%;background:var(--copper-lt);border-radius:2px;width:0%;transition:width .5s linear"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Кнопки Старт/Стоп -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <button id="esp-start-btn" onclick="espStartTimer()" style="padding:14px;border-radius:14px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s">
+        <i class="ti ti-player-play" aria-hidden="true" style="font-size:18px"></i> Старт
+      </button>
+      <button id="esp-stop-btn" onclick="espStopTimer()" disabled style="padding:14px;border-radius:14px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;opacity:.5;transition:all .15s">
+        <i class="ti ti-player-stop" aria-hidden="true" style="font-size:18px"></i> Стоп
+      </button>
+    </div>
+  </div>
+
+  <!-- ЕСПРЕСО — МОЛОКО/ЛІД (для напоїв з молоком чи льодом) -->
+  <div id="bv-esp-milk" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:700;color:var(--txt)" id="esp-milk-title">Додай молоко</div>
+    </div>
+    <div id="esp-milk-block" class="card" style="margin-bottom:10px">
+      <div class="lbl">Молоко</div>
+      <div class="ac-wrap" id="ac-em-milk-name-wrap">
+        <input class="sfi" id="em-milk-name" placeholder="Напр. Цільне 3.2%" autocomplete="off"
+          oninput="acSuggest('em-milk-name','milks')" onfocus="acSuggest('em-milk-name','milks')" style="margin-bottom:0">
+        <div class="ac-drop" id="ac-em-milk-name"></div>
+      </div>
+      <div class="grid2" style="gap:8px;margin-top:8px">
+        <div>
+          <div class="field-lbl">Температура (°C)</div>
+          <input class="fi" type="number" id="em-milk-temp" value="60" min="0" max="90" style="margin-bottom:0" readonly onclick="openNumPad('em-milk-temp','milk-temp')">
+        </div>
+        <div>
+          <div class="field-lbl">Об'єм (мл)</div>
+          <input class="fi" type="number" id="em-milk-vol" value="150" min="0" max="600" style="margin-bottom:0" readonly onclick="openNumPad('em-milk-vol','milk-vol')">
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="field-lbl" style="margin-bottom:4px">Спосіб збивання</div>
+        <select class="sfi" id="em-frother" style="margin-bottom:0"></select>
+      </div>
+    </div>
+    <div id="esp-ice-block" class="card" style="margin-bottom:10px;display:none">
+      <div class="lbl">Лід та сік/тонік</div>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="field-lbl">Кубики льоду</div>
+          <input class="fi" type="number" id="em-ice-amount" value="4" min="0" max="30" style="margin-bottom:0" readonly onclick="openNumPad('em-ice-amount','ice-amt')">
+        </div>
+        <div>
+          <div class="field-lbl">Сік / тонік</div>
+          <div class="ac-wrap" id="ac-em-mixer-name-wrap">
+            <input class="sfi" id="em-mixer-name" placeholder="Напр. Schweppes Tonic" autocomplete="off"
+              oninput="acSuggest('em-mixer-name','juices')" onfocus="acSuggest('em-mixer-name','juices')" style="margin-bottom:0">
+            <div class="ac-drop" id="ac-em-mixer-name"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button onclick="espMilkContinue()" style="width:100%;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">Далі — оцінка напою</button>
+  </div>
+
+  <!-- ЕСПРЕСО — РЕЗУЛЬТАТ (введення даних після стопу) -->
+  <div id="bv-esp-result" style="display:none;padding:14px 16px 32px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:18px;font-weight:700;color:var(--txt)">Результат шота</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--copper-lt);margin-top:4px" id="esp-res-time-lbl">Час проливу: —</div>
+      <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+        <div class="xp-gain" id="esp-xp-badge"><i class="ti ti-bolt" aria-hidden="true"></i><span id="esp-xp-val">+15 XP</span></div>
+        <div class="xp-lvlup" id="esp-lvlup-badge"><i class="ti ti-arrow-up" aria-hidden="true"></i><span id="esp-lvlup-val">Рівень 2</span></div>
+      </div>
+    </div>
+
+    <!-- Фактические данные -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="lbl">Фактичні дані</div>
+      <div class="grid2" style="gap:8px;margin-bottom:10px">
+        <div>
+          <div class="field-lbl" data-i18n="param_esp_time">Час (сек)</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft);cursor:pointer" id="esp-res-sec" onclick="openNumPad('esp-res-sec','esp-res-time')">—</div>
+        </div>
+        <div>
+          <div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);text-align:center;padding:8px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)" id="esp-res-dose-disp">—</div>
+        </div>
+      </div>
+      <div class="field-lbl" data-i18n="brew_yield_full">Вихід — скільки мл вийшло фактично</div>
+      <input type="number" step="0.5" inputmode="decimal" class="fi" id="esp-actual-yield" placeholder="напр. 38" style="margin-bottom:10px" readonly onclick="openNumPad('esp-actual-yield','esp-yield')">
+    </div>
+
+    <!-- Концентрация -->
+    <div class="card" style="margin-bottom:10px">
+      <div class="lbl">Концентрація</div>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="field-lbl">Бажана (TDS %)</div>
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-target" value="9.0" placeholder="9.0" readonly onclick="openNumPad('esp-tds-target','esp-tds')">
+        </div>
+        <div>
+          <div class="field-lbl">Фактична (TDS %)</div>
+          <input type="number" step="0.1" inputmode="decimal" class="fi" id="esp-tds-actual" placeholder="виміряй" readonly onclick="openNumPad('esp-tds-actual','esp-tds')">
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:var(--card-lo);border-radius:8px;border:1px solid var(--line-soft)">
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">Фактичний коефіцієнт</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt)" id="esp-actual-ratio">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Оцінка -->
+    <div class="rating-block" style="margin-bottom:14px">
+      <div class="rating-big" id="esp-rate-num">8.0</div>
+      <div class="rating-sub">оцінка шота</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="esp-rate-slider" style="width:100%" oninput="var _v=parseFloat(this.value);document.getElementById('esp-rate-num').textContent=_v.toFixed(1);applyRatingColor('esp-rate-num','esp-rate-slider',_v)">
+      <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+    </div>
+
+    <!-- Колесо смаків -->
+    <div id="esp-taste-mount"></div>
+
+    <div class="notes-block" style="margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:8px">Нотатки</div>
+      <textarea class="notes-inp" id="esp-notes" placeholder="Враження: тіло, гіркота, солодкість, баланс..."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="espSave()"><i class="ti ti-check" aria-hidden="true" style="font-size:17px"></i> Зберегти шот</button>
+  </div>
+
+</div>
 
 
 
-<div data-include="src/features/edit-brew/edit-brew.html"></div>
-<div data-include="src/features/beans/bean-form.html"></div>
-<div data-include="src/features/devices/device-forms.html"></div>
-<div data-include="src/features/profile/settings.html"></div>
-<div data-include="src/features/brew/pickers/pickers.html"></div>
-<div data-include="src/features/market/shop.html"></div>
-<div data-include="src/features/market/market.html"></div>
-<div data-include="src/features/compare/compare.html"></div>
-<div data-include="src/features/stats/stats.html"></div>
+<!-- OVERLAYS -->
+<!-- EDIT BREW OVERLAY -->
+<div class="overlay" id="ov-edit-brew" onclick="if(event.target===this)closeEditBrew()">
+  <div class="sheet" style="max-height:92vh;overflow-y:auto;padding-bottom:32px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div style="font-size:16px;font-weight:700;color:var(--txt)">Редагувати рецепт</div>
+      <button onclick="closeEditBrew()" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:22px;line-height:1;padding:4px"><i class="ti ti-x"></i></button>
+    </div>
+
+    <!-- Оцінка -->
+    <div class="notes-block" style="margin-bottom:16px">
+      <div class="lbl" style="margin-bottom:8px" data-i18n="rate_title">Оцінка</div>
+      <div class="rating-block" style="margin-bottom:0">
+        <div class="rating-big" id="edit-rate-num" style="font-size:52px">8.0</div>
+        <div class="rating-sub" data-i18n="rate_cup_sub">оцінка чашки</div>
+        <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="edit-rate-slider" style="width:100%"
+          oninput="var v=parseFloat(this.value);document.getElementById('edit-rate-num').textContent=v.toFixed(1);applyRatingColor('edit-rate-num','edit-rate-slider',v)">
+        <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+      </div>
+    </div>
+
+    <!-- Дата та час -->
+    <div class="notes-block" style="margin-bottom:16px">
+      <div class="lbl" style="margin-bottom:6px">Дата та час</div>
+      <input type="datetime-local" id="edit-datetime" class="notes-inp" style="padding:10px;font-size:14px;font-family:var(--mono);font-weight:600">
+    </div>
+
+    <!-- Час проливу (тільки для еспресо-рецептів) -->
+    <div class="notes-block" id="edit-esp-time-block" style="margin-bottom:16px;display:none">
+      <div class="lbl" style="margin-bottom:6px">Час проливу (с)</div>
+      <input type="number" id="edit-esp-time" min="0" max="180" class="notes-inp" style="padding:10px;font-size:15px;font-family:var(--mono);font-weight:700;text-align:center" readonly onclick="openNumPad('edit-esp-time','edit-esp-time')">
+    </div>
+
+    <!-- Доза / Ratio / Темп -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      <div class="notes-block" style="margin-bottom:0">
+        <div class="lbl" style="margin-bottom:6px" data-i18n="param_esp_dose">Доза (г)</div>
+        <input type="number" id="edit-dose" min="1" max="100" step="0.1" class="notes-inp" style="padding:10px;font-size:15px;font-family:var(--mono);font-weight:700;text-align:center">
+      </div>
+      <div class="notes-block" style="margin-bottom:0">
+        <div class="lbl" style="margin-bottom:6px" data-i18n="brew_ratio_label_full">Ratio 1:</div>
+        <input type="number" id="edit-ratio" min="1" max="30" step="0.1" class="notes-inp" style="padding:10px;font-size:15px;font-family:var(--mono);font-weight:700;text-align:center">
+      </div>
+      <div class="notes-block" style="margin-bottom:0">
+        <div class="lbl" style="margin-bottom:6px">Темп (°C)</div>
+        <input type="number" id="edit-temp" min="50" max="100" step="1" class="notes-inp" style="padding:10px;font-size:15px;font-family:var(--mono);font-weight:700;text-align:center">
+      </div>
+    </div>
+
+    <!-- Кроки (вливи/паузи) -->
+    <div class="notes-block" style="margin-bottom:16px" id="edit-steps-block">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="lbl">Кроки заварювання</div>
+        <button onclick="editAddStep()" style="background:var(--card-lo);border:1px solid var(--line-soft);color:var(--copper-lt);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit"><i class="ti ti-plus"></i> Додати</button>
+      </div>
+      <div id="edit-steps-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+
+    <!-- Колесо смаку/аромату -->
+    <div class="notes-block" style="margin-bottom:16px">
+      <div class="lbl" style="margin-bottom:8px">Смак та аромат</div>
+      <div id="edit-taste-mount"></div>
+    </div>
+
+    <!-- Нотатки -->
+    <div class="notes-block" style="margin-bottom:20px">
+      <div class="lbl" style="margin-bottom:8px">Нотатки</div>
+      <textarea class="notes-inp" id="edit-notes" placeholder="Враження, баланс, тіло..." rows="3"></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveEditBrew()"><i class="ti ti-check"></i> Зберегти зміни</button>
+  </div>
+</div>
+<div class="overlay" id="ov-bean" onclick="if(event.target===this)closeOv('ov-bean')">
+  <div class="sheet">
+    <div class="sheet-title" id="bean-sheet-title">Додати пачку</div>
+
+    <!-- Назва кофе з автодоповненням -->
+    <div class="ac-wrap" id="ac-bn-name-wrap">
+      <input class="sfi" id="bn-name" placeholder="Назва кави" autocomplete="off"
+        oninput="acSuggest('bn-name','beanNames')" onfocus="acSuggest('bn-name','beanNames')" style="margin-bottom:0">
+      <div class="ac-drop" id="ac-bn-name"></div>
+    </div>
+
+    <!-- Обсмажувач з автодоповненням -->
+    <div class="ac-wrap" id="ac-bn-roast-wrap" style="margin-top:10px">
+      <input class="sfi" id="bn-roast" placeholder="Обсмажувач" autocomplete="off"
+        oninput="acSuggest('bn-roast','roasters')" onfocus="acSuggest('bn-roast','roasters')" style="margin-bottom:0">
+      <div class="ac-drop" id="ac-bn-roast"></div>
+    </div>
+
+    <!-- Додаткові поля -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+      <div>
+        <div class="field-lbl" style="margin-bottom:4px">Країна</div>
+        <div class="ac-wrap" id="ac-bn-country-wrap">
+          <input class="sfi" id="bn-country" placeholder="Ефіопія" autocomplete="off"
+            oninput="acSuggest('bn-country','countries')" onfocus="acSuggest('bn-country','countries')" style="margin-bottom:0">
+          <div class="ac-drop" id="ac-bn-country"></div>
+        </div>
+      </div>
+      <div>
+        <div class="field-lbl" style="margin-bottom:4px">Обробка</div>
+        <select class="sfi" id="bn-process" style="margin-bottom:0">
+          <option value="">—</option>
+          <option>Washed</option><option>Natural</option><option>Honey</option>
+          <option>Anaerobic</option><option>Carbonic Maceration</option><option>Wet-Hulled</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <div class="field-lbl" style="margin-bottom:4px">Профіль обсмаження</div>
+      <select class="sfi" id="bn-roastprofile" style="margin-bottom:0">
+        <option value="">— визначати автоматично по методу —</option>
+        <option value="filter">Фільтр</option>
+        <option value="espresso">Еспресо</option>
+        <option value="omni">Омні</option>
+      </select>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div>
+        <div class="field-lbl" style="margin-bottom:4px">Ферма / регіон</div>
+        <input class="sfi" id="bn-farm" placeholder="Yirgacheffe" style="margin-bottom:0">
+      </div>
+      <div>
+        <div class="field-lbl" style="margin-bottom:4px">Бали SCA</div>
+        <input class="sfi" id="bn-score" type="number" min="50" max="100" step="0.1" placeholder="87.5" style="margin-bottom:0">
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <div class="field-lbl" style="margin-bottom:4px">Дескриптори</div>
+      <input class="sfi" id="bn-desc" placeholder="Чорниця, жасмин, цитрус..." style="margin-bottom:0">
+    </div>
+
+    <div style="margin-top:8px">
+      <div class="field-lbl" style="margin-bottom:5px">Вага пачки (г)</div>
+      <input class="sfi" id="bn-weight" type="number" inputmode="numeric" pattern="[0-9]*" value="250" min="1" max="5000" placeholder="250" style="font-size:16px;font-weight:700">
+    </div>
+
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-bean')">Скасувати</button><button class="btn-s" id="bean-save-btn" onclick="addBean()">Додати</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-filter-add" onclick="if(event.target===this)closeOv('ov-filter-add')">
+  <div class="sheet">
+    <div class="sheet-title">Додати фільтри</div>
+    <input class="sfi" id="fl-name" placeholder="Название, напр. Hario V60 белый">
+    <div class="field-lbl" style="margin-bottom:5px">Количество в пачке</div>
+    <select class="sfi" id="fl-count">
+      <option value="25">25 шт</option><option value="40">40 шт</option><option value="50">50 шт</option>
+      <option value="80">80 шт</option><option value="100" selected>100 шт</option><option value="200">200 шт</option><option value="350">350 шт</option>
+    </select>
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-filter-add')">Скасувати</button><button class="btn-s" onclick="addFilter()">Додати</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-custom-dev" onclick="if(event.target===this)closeOv('ov-custom-dev')">
+  <div class="sheet">
+    <div class="sheet-title" id="cd-sheet-title">Свой девайс</div>
+    <select class="sfi" id="cd-type"><option value="dripper" data-i18n="cd_type_dripper">Воронка / Альтернатива</option><option value="espresso" data-i18n="cd_type_espresso">Еспресо-машина</option><option value="grinder" data-i18n="cd_type_grinder">Кавомолка</option><option value="kettle" data-i18n="cd_type_kettle">Чайник</option><option value="acc" data-i18n="cd_type_acc">Аксесуар</option></select>
+    <input class="sfi" id="cd-name" placeholder="Название">
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-custom-dev')">Скасувати</button><button class="btn-s" id="cd-save-btn" onclick="addCustomDev()">Додати</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-settings" onclick="if(event.target===this)closeOv('ov-settings')">
+  <div class="sheet">
+    <div class="sheet-title">Профіль</div>
+    <input class="sfi" id="s-name" placeholder="Имя или никнейм">
+    <input class="sfi" id="s-loc" placeholder="Город">
+    <select class="sfi" id="s-cat"><option value="Новичок">Новичок</option><option value="Любитель кофе">Любитель кофе</option><option value="Кофейный сектант">Кофейный сектант</option><option value="Бариста">Бариста</option><option value="Профессионал">Профессионал</option></select>
+    <input class="sfi" id="s-stazh" placeholder="Стаж, напр. 2 года">
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-settings')" data-i18n="common_cancel">Скасувати</button><button class="btn-s" onclick="saveProf()" data-i18n="common_save">Зберегти</button></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bbean" onclick="if(event.target===this)closeOv('ov-bbean')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none">Вибери зерно</div>
+      <button onclick="toggleInlineAdd('bean')" id="btn-add-bean" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <!-- Inline add form (hidden by default) -->
+    <div id="inline-add-bean" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова пачка</div>
+      <div class="ac-wrap" style="margin-bottom:8px">
+        <input class="sfi" id="ib-name" placeholder="Назва кави" autocomplete="off" style="margin:0" oninput="acSuggest('ib-name','beanNames')" onfocus="acSuggest('ib-name','beanNames')">
+        <div class="ac-drop" id="ac-ib-name"></div>
+      </div>
+      <div class="ac-wrap" style="margin-bottom:8px">
+        <input class="sfi" id="ib-roast" placeholder="Обсмажувач" autocomplete="off" style="margin:0" oninput="acSuggest('ib-roast','roasters')" onfocus="acSuggest('ib-roast','roasters')">
+        <div class="ac-drop" id="ac-ib-roast"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div class="ac-wrap">
+          <input class="sfi" id="ib-country" placeholder="Країна" autocomplete="off" style="margin:0" oninput="acSuggest('ib-country','countries')" onfocus="acSuggest('ib-country','countries')">
+          <div class="ac-drop" id="ac-ib-country"></div>
+        </div>
+        <select class="sfi" id="ib-process" style="margin:0">
+          <option value="">Обробка</option>
+          <option>Washed</option><option>Natural</option><option>Honey</option><option>Anaerobic</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:10px">
+        <input class="sfi" id="ib-desc" placeholder="Дескриптори" style="margin:0">
+        <input class="sfi" id="ib-weight" type="number" value="250" placeholder="г" style="margin:0;font-weight:700">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('bean')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addBeanInline()" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bbean-pick"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-bgrinder" onclick="if(event.target===this)closeOv('ov-bgrinder')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none">Вибери кавомолку</div>
+      <button onclick="toggleInlineAdd('grinder')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-grinder" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова кавомолка</div>
+      <input class="sfi" id="ig-name" placeholder="Назва, напр. Comandante C40" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <select class="sfi" id="ig-type" style="margin:0">
+          <option value="manual">Ручна</option>
+          <option value="electric">Електрична</option>
+        </select>
+        <select class="sfi" id="ig-burr" style="margin:0">
+          <option value="">Тип жорна</option>
+          <option>Конічне</option><option>Плоске</option><option>Вальцьове</option>
+        </select>
+      </div>
+      <input class="sfi" id="ig-notes" placeholder="Нотатки (необов'язково)" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('grinder')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('grinder')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bgrinder-pick"></div>
+  </div>
+</div>
+
+<div class="overlay" id="ov-bdripper" onclick="if(event.target===this)closeOv('ov-bdripper')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" id="ov-bdripper-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_dripper">Вибери воронку</div>
+      <button onclick="toggleInlineAdd('dripper')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-dripper" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова воронка</div>
+      <input class="sfi" id="id-name" placeholder="Назва, напр. Hario V60" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Розмір</div>
+          <select class="sfi" id="id-size" style="margin:0">
+            <option value="">—</option>
+            <option value="S">S / 1-2 порції</option>
+            <option value="M">M / 3-4 порції</option>
+            <option value="L">L / 4+ порції</option>
+          </select>
+        </div>
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Матеріал</div>
+          <select class="sfi" id="id-material" style="margin:0">
+            <option value="">—</option>
+            <option>Пластик</option>
+            <option>Тритан</option>
+            <option>Метал</option>
+            <option>Скло</option>
+            <option>Кераміка</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('dripper')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('dripper')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bdripper-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bespmachine" onclick="if(event.target===this)closeOv('ov-bespmachine')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_espmachine">Вибери кавомашину</div>
+      <button onclick="toggleInlineAdd('espresso')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-espresso" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова кавомашина</div>
+      <input class="sfi" id="iem-name" placeholder="Назва, напр. Rancilio Silvia" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <select class="sfi" id="iem-type" style="margin:0">
+          <option value="manual">Ручна</option>
+          <option value="semi">Напівавтомат</option>
+          <option value="auto">Автомат</option>
+          <option value="capsule">Капсульна</option>
+        </select>
+        <select class="sfi" id="iem-pump" style="margin:0">
+          <option value="">Тип помпи</option>
+          <option>Вібраційна</option><option>Роторна</option>
+        </select>
+      </div>
+      <input class="sfi" id="iem-notes" placeholder="Нотатки (необов'язково)" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('espresso')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('espresso')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bespmachine-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bacc" onclick="if(event.target===this)closeOv('ov-bacc')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_acc">Аксесуари</div>
+      <button onclick="toggleInlineAdd('acc')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-acc" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Новий аксесуар</div>
+      <input class="sfi" id="iac-name" placeholder="Назва, напр. Темпер 58мм" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('acc')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addDeviceInline('acc')" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bacc-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-bfilter" onclick="if(event.target===this)closeOv('ov-bfilter')">
+  <div class="sheet">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin:0;padding:0;border:none" data-i18n="devices_choose_filter">Вибери фільтр</div>
+      <button onclick="toggleInlineAdd('filter')" style="background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-plus" aria-hidden="true"></i> Додати</button>
+    </div>
+    <div id="inline-add-filter" style="display:none;background:#0f1011;border:1px solid var(--copper-dk);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div class="field-lbl" style="margin-bottom:6px;color:var(--copper-lt)">Нова пачка фільтрів</div>
+      <input class="sfi" id="if-name" placeholder="Назва, напр. Hario V60 білі" style="margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Кількість (шт)</div>
+          <input class="sfi" id="if-count" type="number" inputmode="numeric" value="100" min="1" max="1000" style="margin:0;font-weight:700">
+        </div>
+        <div>
+          <div class="field-lbl" style="margin-bottom:4px">Тип</div>
+          <select class="sfi" id="if-type" style="margin:0">
+            <option value="">—</option>
+            <option>Паперовий</option>
+            <option>Металевий</option>
+            <option>Тканинний</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleInlineAdd('filter')" style="flex:1;background:#222;border:1px solid var(--line);border-radius:9px;padding:9px;font-size:12px;color:var(--txt2);cursor:pointer;font-family:inherit">Скасувати</button>
+        <button onclick="addFilterInline()" style="flex:2;background:linear-gradient(160deg,var(--copper-lt),var(--copper));color:#1c130a;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Зберегти і обрати</button>
+      </div>
+    </div>
+    <div id="bfilter-pick"></div>
+  </div>
+</div>
+<div class="overlay" id="ov-shop" onclick="if(event.target===this)closeOv('ov-shop')">
+  <div class="sheet">
+    <div class="sheet-title">Магазин</div>
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 6px 18px">
+      <div style="width:62px;height:62px;border-radius:18px;background:radial-gradient(120% 120% at 30% 25%,var(--copper-lt),var(--copper) 55%,var(--copper-dk));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.5),0 0 24px var(--copper-glow),inset 0 1px 1px rgba(255,255,255,.35);margin-bottom:14px"><i class="ti ti-building-store" aria-hidden="true" style="font-size:28px;color:#1c130a"></i></div>
+      <div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">Маркетплейс скоро</div>
+      <div style="font-size:12.5px;color:var(--txt2);line-height:1.6;max-width:280px;letter-spacing:.2px">Здесь появится витрина обжарщиков и девайсов: добавляешь зерно в инвентарь одной кнопкой или оформляешь подписку с доставкой.</div>
+    </div>
+    <div class="shop-row"><i class="ti ti-coffee" aria-hidden="true"></i><div><div class="shop-row-t">Спешелти зерно</div><div class="shop-row-s">Прямые поставки от ростеров</div></div><span class="shop-soon">скоро</span></div>
+    <div class="shop-row"><i class="ti ti-filter" aria-hidden="true"></i><div><div class="shop-row-t">Воронки и фильтры</div><div class="shop-row-s">Origami · Hario · CAFEC</div></div><span class="shop-soon">скоро</span></div>
+    <div class="shop-row"><i class="ti ti-repeat" aria-hidden="true"></i><div><div class="shop-row-t">Подписка на зерно</div><div class="shop-row-s">Авто-пополнение инвентаря</div></div><span class="shop-soon">скоро</span></div>
+    <button class="btn-c" style="width:100%;margin-top:14px" onclick="closeOv('ov-shop')">Закрыть</button>
+  </div>
+</div>
+
+<!-- МАРКЕТПЛЕЙС -->
+<div class="scr" id="scr-market" style="padding-bottom:0">
+  <!-- Market screen hidden — coming soon. All original code preserved below in comments. -->
+  <!-- MARKET_CONTENT_START
+  <div class="mkt-hdr">
+    <button class="mkt-back" onclick="showScr('scr-coffee')" aria-label="Назад"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <div class="mkt-search">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" id="mkt-q" placeholder="Кава, ростер, дескриптор..." oninput="mktRender()">
+    </div>
+    <button class="mkt-filter-toggle" id="mkt-filter-btn" onclick="mktToggleFilter()" aria-label="Фильтры">
+      <i class="ti ti-adjustments-horizontal" aria-hidden="true"></i>
+      <span id="mkt-filter-cnt" style="display:none"></span>
+    </button>
+    <div style="position:relative">
+      <button class="icon-btn" onclick="mktShowCart()" aria-label="Корзина" style="width:34px;height:34px"><i class="ti ti-shopping-bag" aria-hidden="true" style="font-size:17px"></i></button>
+      <div class="cart-badge" id="cart-badge" style="display:none">0</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--line-soft);flex-shrink:0">
+    <div class="mkt-count" id="mkt-count" style="margin:0">12 позиций</div>
+    <select class="mkt-sort" id="mkt-sort" onchange="mktRender()">
+      <option value="score">По оценке</option>
+      <option value="price_asc">Цена ↑</option>
+      <option value="price_desc">Цена ↓</option>
+      <option value="name">По имени</option>
+    </select>
+  </div>
+  <div id="mkt-active-pills" style="display:none;padding:6px 14px;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--line-soft);flex-shrink:0"></div>
+  <div class="mkt-body">
+    <div class="mkt-sidebar" id="mkt-sidebar" style="display:none"></div>
+    <div class="mkt-main" id="mkt-main">
+      <div id="mkt-grid"></div>
+    </div>
+  </div>
+  MARKET_CONTENT_END -->
+
+  <!-- Coming soon placeholder -->
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:60px 30px;text-align:center;gap:14px">
+    <i class="ti ti-building-store" aria-hidden="true" style="font-size:46px;color:var(--copper-lt);opacity:.4;display:block"></i>
+    <div style="font-size:17px;font-weight:700;color:var(--txt)">Скоро тут щось з'явиться</div>
+    <div style="font-size:13px;color:var(--txt3);line-height:1.6;max-width:240px" data-i18n="market_coming">Магазин спешелті зерна та девайсів вже в розробці</div>
+  </div>
+</div>
+
+
+
+
+<!-- COMPARE SCREEN -->
+<div class="scr" id="scr-compare">
+  <div class="cp-hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="showScr('scr-home')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px"><i class="ti ti-arrow-left"></i></button>
+      <div><div class="cp-h-title">Порівняння</div><div class="cp-h-sub" id="cp-count">3 рецепти · V60</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cpShare()" title="Поділитись порівнянням" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-share"></i></button>
+      <button onclick="cpResetSelection()" title="Скинути вибір" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:var(--txt2);cursor:pointer;padding:7px 10px;line-height:1;font-size:15px"><i class="ti ti-refresh"></i></button>
+      <span class="cp-chip"><i class="ti ti-scale"></i> <span id="cp-n">0/5</span></span>
+    </div>
+  </div>
+  <div class="cp-seg" id="cp-view-seg">
+    <button class="on" onclick="cpView('tl',this)">Таймлайн</button>
+    <button onclick="cpView('rg',this)">Кільця</button>
+    <button onclick="cpView('cv',this)">Крива</button>
+  </div>
+
+  <!-- Таймлайн -->
+  <div class="cp-view on" id="cp-view-tl">
+    <div class="cp-seg" id="cp-unit-seg" style="margin-bottom:12px">
+      <button class="on" onclick="cpUnit('sec',this)">Секунди</button>
+      <button onclick="cpUnit('ml',this)">Мілілітри</button>
+    </div>
+    <div id="cp-tl-list"></div>
+    <div class="cp-axis" id="cp-tl-axis" style="margin:0 4px 14px"></div>
+    <div class="cp-card" style="padding:14px">
+      <div class="cp-lbl" style="margin-bottom:10px">Параметри</div>
+      <div id="cp-params" style="font-size:11.5px"></div>
+    </div>
+    <div class="cp-lbl" style="margin-top:10px;text-align:center;color:#6b5f50">помаранчеве = відрізняється від решти</div>
+  </div>
+
+  <!-- Кільця -->
+  <div class="cp-view" id="cp-view-rg">
+    <div class="cp-card" style="padding:18px;display:flex;justify-content:center;margin-bottom:12px">
+      <svg id="cp-rings" width="280" height="280" viewBox="0 0 280 280"></svg>
+    </div>
+    <div id="cp-rg-list"></div>
+  </div>
+
+  <!-- Крива -->
+  <div class="cp-view" id="cp-view-cv">
+    <div class="cp-card" style="padding:16px 12px 10px;margin-bottom:12px">
+      <svg id="cp-curve" width="100%" height="240" viewBox="0 0 340 240"></svg>
+    </div>
+    <div id="cp-cv-list"></div>
+    <div class="cp-lbl" style="margin-top:12px;text-align:center;color:#6b5f50">полиця = пауза · крапка = дія · крутизна = темп вливу</div>
+  </div>
+</div>
+
+<!-- STATS SCREEN -->
+<div class="scr" id="scr-stats">
+  <div style="padding:14px 16px 28px">
+    <!-- Шапка -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <button onclick="showScr('scr-profile')" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;line-height:1;font-size:22px;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:17px;font-weight:700;color:var(--txt)">Статистика</div>
+        <div style="font-size:11px;color:var(--txt3)" id="st-period-lbl">Місяць</div>
+      </div>
+      <button onclick="statShareCarousel()" style="background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:9px;color:var(--copper-lt);padding:8px 12px;cursor:pointer;font-size:14px"><i class="ti ti-share"></i></button>
+    </div>
+
+    <!-- Таби -->
+    <div class="cp-seg" id="st-seg" style="margin-bottom:16px">
+      <button onclick="stSetPeriod('week',this);renderStats()">Тиждень</button>
+      <button class="on" onclick="stSetPeriod('month',this);renderStats()">Місяць</button>
+      <button onclick="stSetPeriod('year',this);renderStats()">Рік</button>
+    </div>
+
+    <!-- Напої по методах — компактні плитки -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px">Напої за методом</div>
+      <div id="st-drinks-list" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+
+    <!-- Донат зерна -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Зерно по обсмаженню</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <svg id="st-donut" width="90" height="90" viewBox="0 0 120 120" style="flex-shrink:0"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px" id="st-donut-leg"></div>
+      </div>
+    </div>
+
+    <!-- Смаковий профіль -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Смаковий профіль</div>
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <svg id="st-radar" width="120" height="110" viewBox="0 0 130 120" style="flex-shrink:0"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px;padding-top:4px" id="st-radar-leg"></div>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-top:10px;line-height:1.4" id="st-radar-hint"></div>
+    </div>
+
+    <!-- Рейтинг методів -->
+    <div style="background:var(--card);border-radius:14px;padding:14px 16px">
+      <div style="font-size:10px;letter-spacing:1.2px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px">Оцінка за методом</div>
+      <div id="st-methods"></div>
+    </div>
+  </div>
+</div>
   <div class="cp-card" style="padding:16px;margin-bottom:12px">
 </div><!-- /screens -->
 
@@ -95,20 +1455,296 @@
   <button class="nb" id="nb-eq" onclick="showScr('scr-eq')" aria-label="Девайси"><i class="ti ti-tools" aria-hidden="true"></i></button>
   <button class="nb" id="nb-profile" onclick="showScr('scr-profile')" aria-label="Профіль"><i class="ti ti-user" aria-hidden="true"></i></button>
 </nav>
-<div data-include="src/features/compare/compare-fab.html"></div>
+<!-- Compare FAB -->
+<div id="cp-fab" style="display:none;position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:200">
+  <div style="display:flex;align-items:stretch;background:linear-gradient(160deg,var(--copper-lt),var(--copper));border-radius:20px;box-shadow:0 4px 18px rgba(184,115,51,.45);overflow:hidden">
+    <button onclick="showScr('scr-compare');renderCompare()" style="background:none;border:none;color:#1c130a;padding:11px 18px 11px 20px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:7px;flex:1"><i class="ti ti-scale" style="font-size:16px"></i> Порівняти (<span id="cp-fab-count">0</span>)</button>
+    <div style="width:1px;background:rgba(0,0,0,.2);margin:8px 0"></div>
+    <button onclick="cpResetSelection()" title="Скинути" style="background:none;border:none;color:#1c130a;padding:11px 14px;font-size:17px;cursor:pointer;display:flex;align-items:center;opacity:.75" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.75'"><i class="ti ti-refresh"></i></button>
+  </div>
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<div data-include="src/features/numpad/numpad.html"></div>
-<div data-include="src/features/log-brew/log-brew.html"></div>
-<div data-include="src/features/trash/trash.html"></div>
-<div data-include="src/features/xp-history/xp-history.html"></div>
-<div data-include="src/features/coffee-stats/coffee-stats.html"></div>
-<div data-include="src/features/trash/delete-toast.html"></div>
-<div data-include="src/features/avatar-picker/avatar-picker.html"></div>
 
-<script src="src/loader.js"></script>
+
+<!-- NUMPAD OVERLAY -->
+<div id="ov-numpad" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;transition:opacity .2s" onclick="if(event.target===this)closeNumPad()">
+  <div style="width:100%;max-width:420px;background:#1a1c1e;border-radius:22px 22px 0 0;border-top:1px solid #2e3238;padding:16px 14px 28px;box-shadow:0 -8px 40px rgba(0,0,0,.6)">
+    <div id="np-display" style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;color:#D89858;text-align:center;margin-bottom:16px;min-height:52px;letter-spacing:-1px">—</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+      <button onclick="npKey(1)" class="np-btn">1</button><button onclick="npKey(2)" class="np-btn">2</button><button onclick="npKey(3)" class="np-btn">3</button>
+      <button onclick="npKey(4)" class="np-btn">4</button><button onclick="npKey(5)" class="np-btn">5</button><button onclick="npKey(6)" class="np-btn">6</button>
+      <button onclick="npKey(7)" class="np-btn">7</button><button onclick="npKey(8)" class="np-btn">8</button><button onclick="npKey(9)" class="np-btn">9</button>
+      <button onclick="npKey('.')" class="np-btn" id="np-dot" style="font-size:24px">.</button>
+      <button onclick="npKey(0)" class="np-btn">0</button>
+      <button onclick="npKey('del')" class="np-btn" style="font-size:20px">⌫</button>
+    </div>
+    <button onclick="npConfirm()" style="width:100%;margin-top:12px;padding:16px;border-radius:14px;border:none;background:linear-gradient(160deg,#8c552a,#D89858);font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#1c130a;cursor:pointer;letter-spacing:.5px">Готово</button>
+  </div>
+</div>
+
+<!-- ov-log-brew: Додати випите -->
+<div class="overlay" id="ov-log-brew" onclick="if(event.target===this)closeOv('ov-log-brew')">
+  <div class="sheet">
+    <div class="sheet-title">Додати випите</div>
+    <div style="display:flex;gap:4px;background:#111214;padding:4px;border-radius:11px;margin-bottom:14px">
+      <button id="lb-src-home" onclick="lbSetSource('home')" style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">Вдома</button>
+      <button id="lb-src-place" onclick="lbSetSource('place')" style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:none;color:var(--txt3)">У закладі</button>
+    </div>
+    <div class="field-lbl">Дата</div>
+    <input type="hidden" id="lb-date">
+    <button type="button" id="lb-date-btn" onclick="lbDatePickerToggle()" style="width:100%;background:linear-gradient(160deg,#222427,#191b1d);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;margin-bottom:8px;transition:border-color .2s">
+      <span id="lb-date-lbl" style="font-size:15px;font-weight:600;color:var(--txt)">Сьогодні</span>
+      <i class="ti ti-calendar" style="font-size:18px;color:var(--copper-lt)" aria-hidden="true"></i>
+    </button>
+    <div id="lb-date-picker" style="display:none;background:#16171a;border:1px solid var(--line-soft);border-radius:12px;padding:12px;margin-bottom:11px">
+      <!-- Month nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <button type="button" onclick="lbPickerNav(-1)" style="background:none;border:none;cursor:pointer;color:var(--txt2);padding:4px 8px;font-size:18px;border-radius:8px"><i class="ti ti-chevron-left"></i></button>
+        <span id="lb-picker-title" style="font-family:var(--mono);font-size:11px;font-weight:600;color:var(--txt);letter-spacing:1px;text-transform:uppercase"></span>
+        <button type="button" onclick="lbPickerNav(1)" style="background:none;border:none;cursor:pointer;color:var(--txt2);padding:4px 8px;font-size:18px;border-radius:8px"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <!-- Day-of-week headers -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Пн</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Вт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Ср</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Чт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Пт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Сб</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Нд</div>
+      </div>
+      <div id="lb-picker-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+      <!-- Quick: today / yesterday -->
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button type="button" onclick="lbPickerQuick(0)" style="flex:1;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--copper-lt);cursor:pointer;font-weight:600">Сьогодні</button>
+        <button type="button" onclick="lbPickerQuick(-1)" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-soft);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--txt2);cursor:pointer;font-weight:600">Вчора</button>
+        <button type="button" onclick="lbPickerQuick(-2)" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-soft);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--txt2);cursor:pointer;font-weight:600">Позавчора</button>
+      </div>
+    </div>
+    <div class="field-lbl">Кава / назва</div>
+    <input class="fi" type="text" id="lb-bean" placeholder="Наприклад: Ethiopia Ayla" style="font-size:14px;font-weight:500;text-align:left;margin-bottom:11px">
+    <div id="lb-place-wrap" style="display:none;margin-bottom:11px">
+      <div class="field-lbl">Назва закладу</div>
+      <input class="fi" type="text" id="lb-place" placeholder="Coffee Shop, бар..." style="font-size:14px;font-weight:500;text-align:left">
+    </div>
+    <div class="grid2" style="margin-bottom:11px">
+      <div>
+        <div class="field-lbl">Метод</div>
+        <select class="fi" id="lb-method">
+          <option>V60</option><option>Chemex</option><option>Aeropress</option>
+          <option>Moka</option><option>French Press</option><option>Bumble</option><option>Flat White</option>
+          <option>Latte</option><option>Cappuccino</option>
+          <option>Batch Brew</option><option>Cold Brew</option><option>Long Black</option>
+          <option>Ice Latte</option><option>Ice Cappuccino</option><option>Espresso Double</option>
+          <option>Espresso Single</option><option>Ristretto</option><option>Cortado</option>
+          <option>Інше</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-lbl" data-i18n="param_volume_ml">Обʼєм (мл)</div>
+        <input class="fi" type="number" id="lb-vol" value="240" min="10" max="1000" readonly onclick="openNumPad('lb-vol','vol')">
+      </div>
+    </div>
+    <div id="lb-home-params">
+      <div class="grid2" style="margin-bottom:11px">
+        <div>
+          <div class="field-lbl">Доза (г)</div>
+          <input class="fi" type="number" id="lb-dose" value="16" step="0.1" min="1" max="100">
+        </div>
+        <div>
+          <div class="field-lbl">Коеф.</div>
+          <input class="fi" type="number" id="lb-ratio" value="16" min="1" max="30">
+        </div>
+      </div>
+      <div class="grid2" style="margin-bottom:11px">
+        <div>
+          <div class="field-lbl">Температура (°C)</div>
+          <input class="fi" type="number" id="lb-temp" value="93" min="60" max="100">
+        </div>
+        <div>
+          <div class="field-lbl">Кавомолка</div>
+          <input class="fi" type="text" id="lb-grinder" placeholder="Необовʼязково" style="font-size:13px;font-weight:400;text-align:left">
+        </div>
+      </div>
+    </div>
+    <div class="lbl" style="margin-bottom:8px" data-i18n="rate_title">Оцінка</div>
+    <div class="rating-block" style="padding:14px;margin-bottom:11px">
+      <div class="rating-big" id="lb-rate-num" style="font-size:52px">8.0</div>
+      <div class="rating-sub" data-i18n="rate_cup_sub">оцінка чашки</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="lb-rate-slider"
+        oninput="var v=parseFloat(this.value);document.getElementById('lb-rate-num').textContent=v.toFixed(1);applyRatingColor('lb-rate-num','lb-rate-slider',v)">
+      <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+    </div>
+    <div class="field-lbl">Нотатки</div>
+    <input class="fi" type="text" id="lb-notes" placeholder="Необовʼязково" style="font-size:13px;font-weight:400;text-align:left;margin-bottom:14px">
+    <div class="sbtns">
+      <button class="btn-c" onclick="closeOv('ov-log-brew')">Скасувати</button>
+      <button class="btn-s" onclick="logBrewManual()">Додати</button>
+    </div>
+  </div>
+</div>
+
+<!-- ov-trash: Видалені рецепти -->
+<div class="overlay" id="ov-trash" onclick="if(event.target===this)closeOv('ov-trash')">
+  <div class="sheet" style="max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin-bottom:0">Видалені рецепти</div>
+      <button onclick="closeOv('ov-trash')" style="background:none;border:none;cursor:pointer;color:var(--txt3);font-size:22px;line-height:1;padding:2px"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div style="font-family:var(--mono);font-size:9.5px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px">Зберігаються 30 днів · потім видаляються назавжди</div>
+    <div id="trash-list"></div>
+  </div>
+</div>
+
+<!-- XP history -->
+<div class="overlay" id="ov-xp-history" onclick="if(event.target===this)closeOv('ov-xp-history')">
+  <div class="sheet" style="max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--line-soft)">
+      <div class="sheet-title" style="margin-bottom:0">Історія XP</div>
+      <button onclick="closeOv('ov-xp-history')" style="background:none;border:none;cursor:pointer;color:var(--txt3);font-size:22px;line-height:1;padding:2px"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div id="xp-history-list"></div>
+  </div>
+</div>
+
+<!-- Coffee stats (кг кави по періодах) -->
+<div class="overlay" id="ov-coffee-stats" onclick="if(event.target===this)closeOv('ov-coffee-stats')">
+  <div class="cw-sheet">
+    <div class="cw-top">
+      <div class="cw-title"><i class="ti ti-coffee" aria-hidden="true"></i> Випито кави</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="cwShareStats()" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:8px;color:var(--copper-lt);font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-share" style="font-size:13px"></i> Поділитись</button>
+        <div class="cw-x" onclick="closeOv('ov-coffee-stats')"><i class="ti ti-x" aria-hidden="true"></i></div>
+      </div>
+    </div>
+
+    <div class="cw-tabs">
+      <button class="cw-tab" onclick="cwSetPeriod('week')" data-period="week">Тиждень</button>
+      <button class="cw-tab on" onclick="cwSetPeriod('month')" data-period="month">Місяць</button>
+      <button class="cw-tab" onclick="cwSetPeriod('year')" data-period="year">Рік</button>
+      <button class="cw-tab" onclick="cwSetPeriod('custom')" data-period="custom">Свій</button>
+    </div>
+
+    <!-- Навігатор тижня/місяця -->
+    <div id="cw-nav" style="display:flex;align-items:center;justify-content:space-between;margin:8px 0;gap:8px">
+      <button onclick="cwNavPrev()" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt2);width:32px;height:32px;cursor:pointer;font-size:16px;flex-shrink:0"><i class="ti ti-chevron-left"></i></button>
+      <div id="cw-nav-label" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt2);text-align:center;flex:1"></div>
+      <button onclick="cwNavNext()" id="cw-nav-next" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt2);width:32px;height:32px;cursor:pointer;font-size:16px;flex-shrink:0"><i class="ti ti-chevron-right"></i></button>
+    </div>
+
+    <!-- Довільний діапазон -->
+    <div id="cw-custom-range" style="display:none;margin-bottom:10px;display:none">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1"><div style="font-size:10px;color:var(--txt3);margin-bottom:4px">Від</div><input type="date" id="cw-date-from" oninput="cwFromPicked(this.value)" style="width:100%;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:7px;box-sizing:border-box"></div>
+        <div style="color:var(--txt3);padding-top:18px">—</div>
+        <div style="flex:1"><div style="font-size:10px;color:var(--txt3);margin-bottom:4px">До</div><input type="date" id="cw-date-to" onchange="cwUpdateCustom()" style="width:100%;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:7px;box-sizing:border-box"></div>
+      </div>
+    </div>
+
+    <div class="cw-card">
+      <div class="cw-wheel">
+        <svg viewBox="0 0 150 150" width="126" height="126">
+          <circle cx="75" cy="75" r="61" fill="none" stroke="#1a1c1f" stroke-width="18"/>
+          <circle id="cw-seg-filter" cx="75" cy="75" r="61" fill="none" stroke="#E0A93B" stroke-width="18" stroke-dasharray="194.3 188.97" stroke-dashoffset="0" transform="rotate(-90 75 75)" style="transition:opacity .25s"/>
+          <circle id="cw-seg-espresso" cx="75" cy="75" r="61" fill="none" stroke="#A85A2E" stroke-width="18" stroke-dasharray="129.1 254.17" stroke-dashoffset="-199.3" transform="rotate(-90 75 75)" style="transition:opacity .25s"/>
+          <circle id="cw-seg-omni" cx="75" cy="75" r="61" fill="none" stroke="#8198AE" stroke-width="18" stroke-dasharray="44.8 338.47" stroke-dashoffset="-333.4" transform="rotate(-90 75 75)" style="transition:opacity .25s"/>
+        </svg>
+        <div class="cw-btn" onclick="cwNext()">
+          <div class="cw-lbl" id="cw-lbl">ВСЬОГО</div>
+          <div class="cw-val" id="cw-val">0</div>
+          <div class="cw-unit" id="cw-unit">кг</div>
+          <div class="cw-dots" id="cw-dots"><span class="on"></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="cw-legend all" id="cw-legend">
+        <div class="cw-row" id="cw-row-filter" style="--c:#E0A93B"><div class="cw-bar"></div><div class="cw-name">Фільтр</div><div class="cw-kg" id="cw-kg-filter">0 г</div></div>
+        <div class="cw-row" id="cw-row-espresso" style="--c:#A85A2E"><div class="cw-bar"></div><div class="cw-name">Еспресо</div><div class="cw-kg" id="cw-kg-espresso">0 г</div></div>
+        <div class="cw-row" id="cw-row-omni" style="--c:#8198AE"><div class="cw-bar"></div><div class="cw-name">Омні</div><div class="cw-kg" id="cw-kg-omni">0 г</div></div>
+      </div>
+    </div>
+
+    <div class="cw-grid">
+      <div class="cw-tile"><div class="v" id="cw-brewcount">0</div><div class="l">Заварювань</div></div>
+      <div class="cw-tile"><div class="v" id="cw-avgdose">0 г</div><div class="l">Середня доза</div></div>
+      <div class="cw-tile"><div class="v" id="cw-cafecnt">0</div><div class="l">Кав'ярень</div></div>
+      <div class="cw-tile"><div class="v" id="cw-favmethod">—</div><div class="l">Фаворит</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- delete toast -->
+<div id="brew-del-toast" style="position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);background:#2a0a0a;border:1px solid #7a1a1a;color:#f5a0a0;font-family:var(--mono);font-size:11px;letter-spacing:.5px;padding:9px 18px;border-radius:20px;transition:transform .35s cubic-bezier(.25,.9,.3,1),opacity .35s;opacity:0;white-space:nowrap;pointer-events:none;display:flex;align-items:center;gap:7px;z-index:999"><i class="ti ti-trash" aria-hidden="true" style="font-size:14px"></i> Переміщено у «Видалені рецепти»</div>
+
+
+<!-- Avatar picker -->
+<div class="av-picker-overlay" id="av-picker" onclick="if(event.target===this)closeAvPicker()">
+  <div class="av-picker-sheet">
+    <div class="av-picker-title">Аватар профілю</div>
+    <div class="av-emoji-grid" id="av-emoji-grid"></div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;text-align:center">Колір фону</div>
+    <div class="av-color-row" id="av-color-row"></div>
+    <button class="av-close-btn" onclick="closeAvPicker()">Готово</button>
+  </div>
+
+</div>
+
+<!-- JS: порядок важливий (глобальні функції/змінні); src/core/boot.js — останнім -->
+<script src="src/core/i18n.js"></script>
+<script src="src/core/utils.js"></script>
+<script src="src/core/data.js"></script>
+<script src="src/core/state.js"></script>
+<script src="src/core/helpers.js"></script>
+<script src="src/core/overlays.js"></script>
+<script src="src/core/router.js"></script>
+<script src="src/core/autocomplete.js"></script>
+<script src="src/core/keyboard-fix.js"></script>
+<script src="src/core/sync.js"></script>
+<script src="src/features/community/community.js"></script>
+<script src="src/features/feed/feed.js"></script>
+<script src="src/features/streak-calendar/streak-calendar.js"></script>
+<script src="src/features/profile/profile-stats.js"></script>
+<script src="src/features/feed/brew-card.js"></script>
+<script src="src/features/beans/beans.js"></script>
+<script src="src/features/brew/pickers/inline-add.js"></script>
+<script src="src/features/devices/filters.js"></script>
+<script src="src/features/devices/devices.js"></script>
+<script src="src/features/share/share.js"></script>
+<script src="src/features/profile/profile.js"></script>
+<script src="src/features/brew/brew-state.js"></script>
+<script src="src/features/brew/espresso/espresso.js"></script>
+<script src="src/features/brew/setup/setup.js"></script>
+<script src="src/features/brew/draft.js"></script>
+<script src="src/features/brew/brew-views.js"></script>
+<script src="src/features/brew/active/active.js"></script>
+<script src="src/features/brew/rate/rate.js"></script>
+<script src="src/features/flavor-wheel/flavor-data.js"></script>
+<script src="src/features/flavor-wheel/wheel-svg.js"></script>
+<script src="src/features/flavor-wheel/wheel-store.js"></script>
+<script src="src/features/flavor-wheel/wheel-drill.js"></script>
+<script src="src/features/flavor-wheel/wheel-cascade.js"></script>
+<script src="src/features/flavor-wheel/wheel-app.js"></script>
+<script src="src/features/flavor-wheel/wheel-tabs.js"></script>
+<script src="src/features/edit-brew/edit-brew.js"></script>
+<script src="src/features/brew/save.js"></script>
+<script src="src/features/market/market.js"></script>
+<script src="src/features/log-brew/log-brew.js"></script>
+<script src="src/features/profile/xp.js"></script>
+<script src="src/features/profile/profile-v2.js"></script>
+<script src="src/features/achievements/achievements.js"></script>
+<script src="src/features/profile/stats-carousel.js"></script>
+<script src="src/features/brew/result/result.js"></script>
+<script src="src/features/trash/trash.js"></script>
+<script src="src/features/xp-history/xp-history.js"></script>
+<script src="src/features/coffee-stats/coffee-stats.js"></script>
+<script src="src/features/avatar-picker/avatar-picker.js"></script>
+<script src="src/features/log-brew/log-date-picker.js"></script>
+<script src="src/features/numpad/numpad.js"></script>
+<script src="src/features/compare/compare.js"></script>
+<script src="src/features/stats/stats.js"></script>
+<script src="src/core/boot.js"></script>
 
 <template id="__bundler_thumbnail" data-bg-color="#17181a">
   <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
