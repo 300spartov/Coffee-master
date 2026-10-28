@@ -26,6 +26,7 @@ final class AppRouter {
         tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()
+        container.toastCenter.attach(to: window)
 
         if let link = pendingDeepLink {
             pendingDeepLink = nil
@@ -36,7 +37,7 @@ final class AppRouter {
     /// Order here = tab order. Adding a tab = adding a Flow.
     private func makeFlows() -> [any Flow] {
         [
-            BrewsFlow(module: container.brewsModule),
+            BrewsFlow(module: container.brewsModule, toasts: container.toastCenter),
             SettingsFlow(
                 module: container.settingsModule,
                 openDeepLink: { [weak self] in self?.handle($0) }

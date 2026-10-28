@@ -9,7 +9,8 @@ public struct WidgetSnapshot: Codable, Sendable, Equatable {
         public let id: String
         public let beanName: String
         public let methodTitle: String
-        public let rating: Int
+        /// 0...10
+        public let rating: Double
         public let date: Date
 
         /// Pass to `widgetURL(_:)` / `Link` so a tap opens the brew detail.
@@ -23,7 +24,7 @@ public struct WidgetSnapshot: Codable, Sendable, Equatable {
 
     public init(brews: [Brew], limit: Int = 3, generatedAt: Date = .now) {
         items = brews.prefix(limit).map {
-            Item(id: $0.id, beanName: $0.beanName, methodTitle: $0.method.title, rating: $0.rating, date: $0.date)
+            Item(id: $0.id.uuidString, beanName: $0.bean?.name ?? "", methodTitle: $0.method.rawValue, rating: $0.rating, date: $0.date)
         }
         self.generatedAt = generatedAt
     }

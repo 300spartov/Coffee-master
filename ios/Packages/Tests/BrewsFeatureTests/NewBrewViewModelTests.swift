@@ -23,7 +23,7 @@ struct NewBrewViewModelTests {
 
         let saved = await repository.savedBrews
         #expect(saved.count == 1)
-        #expect(saved.first?.beanName == "Colombia Huila")
+        #expect(saved.first?.bean?.name == "Colombia Huila")
         #expect(saved.first?.method == .chemex)
         #expect(router.finishedNewBrews == [saved.first])
     }

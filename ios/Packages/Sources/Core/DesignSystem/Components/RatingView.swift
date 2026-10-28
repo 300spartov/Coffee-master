@@ -1,27 +1,29 @@
 import SwiftUI
 
+/// Compact 0–10 score, e.g. "★ 8.5".
 public struct RatingView: View {
-    private let rating: Int
-    private let maxRating: Int
+    private let rating: Double
 
-    public init(rating: Int, maxRating: Int = 5) {
+    public init(rating: Double) {
         self.rating = rating
-        self.maxRating = maxRating
     }
 
     public var body: some View {
-        HStack(spacing: Spacing.xxs) {
-            ForEach(1...maxRating, id: \.self) { index in
-                Image(systemName: index <= rating ? "star.fill" : "star")
-            }
+        Label {
+            Text(rating, format: .number.precision(.fractionLength(1)))
+                .monospacedDigit()
+        } icon: {
+            // Explicit accent: list rows often override `.tint` for their text.
+            Image(systemName: "star.fill")
+                .foregroundStyle(Color.accentColor)
         }
-        .font(.caption)
-        .foregroundStyle(Color.brandSecondary)
+        .labelStyle(.titleAndIcon)
+        .font(.caption.weight(.semibold))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text("\(rating) of \(maxRating) stars"))
+        .accessibilityLabel(Text("Rating \(rating, format: .number.precision(.fractionLength(1))) of 10"))
     }
 }
 
 #Preview {
-    RatingView(rating: 3)
+    RatingView(rating: 8.5)
 }

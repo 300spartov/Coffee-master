@@ -26,7 +26,8 @@ ios/
     │   ├── DesignSystem/         # tokens + reusable SwiftUI components
     │   ├── DeepLinks/            # DeepLink enum + URL parser (Foundation-only)
     │   ├── Navigation/           # Flow, StackRouter, HostingController (UIKit)
-    │   └── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
+    │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
+    │   └── WebImport/            # one-time import of the web app's JSON export → Domain models
     ├── Sources/Features/
     │   ├── BrewsFeature/         # list → detail, new brew (modal)
     │   └── SettingsFeature/      # settings → about
@@ -161,5 +162,7 @@ struct BrewTimerLiveActivity: Widget {
   the router `weak`.
 - Express screen state as an `enum State` (`loading / loaded / empty / failed`), rendered with `DesignSystem` state views.
 - Async work goes through `async` / `await` from `.task { }`, so it's cancelled automatically when the view disappears.
+- Colors: system semantic colors only. The accent is the `AccentColor` asset (amber), used through `.tint` / `Color.accentColor`.
+- Toasts: flows get `any ToastPresenting` (backed by `ToastCenter`) and call `toasts.show(Toast("…", style: .success))`. View models report outcomes through their router, not by showing toasts.
 - Previews use `PreviewBrewRepository` and `PreviewRouter.shared`.
 - Tests use Swift Testing (`import Testing`), with a mock repository and a spy router per feature test target.

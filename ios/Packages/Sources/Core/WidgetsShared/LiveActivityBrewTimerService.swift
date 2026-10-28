@@ -24,11 +24,11 @@ public actor LiveActivityBrewTimerService: BrewTimerService {
         await stop()
 
         let attributes = BrewTimerAttributes(
-            brewID: brew.id,
-            methodTitle: brew.method.title,
-            beanName: brew.beanName
+            brewID: brew.id.uuidString,
+            methodTitle: brew.method.rawValue,
+            beanName: brew.bean?.name ?? ""
         )
-        let state = BrewTimerAttributes.ContentState(startedAt: .now, targetDuration: brew.brewTime)
+        let state = BrewTimerAttributes.ContentState(startedAt: .now, targetDuration: brew.totalTime ?? 180)
         let activity = try Activity.request(
             attributes: attributes,
             content: ActivityContent(state: state, staleDate: nil),

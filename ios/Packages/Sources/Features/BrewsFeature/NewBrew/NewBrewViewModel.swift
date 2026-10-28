@@ -10,7 +10,8 @@ final class NewBrewViewModel {
     var doseGrams: Double = 15
     var waterGrams: Double = 250
     var brewTime: TimeInterval = 180
-    var rating = 3
+    /// 0...10, like the web app.
+    var rating: Double = 8
 
     private(set) var isSaving = false
     private(set) var errorMessage: String?
@@ -34,10 +35,10 @@ final class NewBrewViewModel {
 
         let brew = Brew(
             method: method,
-            beanName: trimmedBeanName,
+            bean: BeanReference(name: trimmedBeanName),
             doseGrams: doseGrams,
-            waterGrams: waterGrams,
-            brewTime: brewTime,
+            ratio: waterGrams / doseGrams,
+            totalTime: brewTime,
             rating: rating
         )
         do {

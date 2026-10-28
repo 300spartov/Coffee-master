@@ -7,7 +7,8 @@ import PackageDescription
 //        │             │
 //        │             └──────► Domain ◄── DataLayer
 //        │             └──────► DesignSystem
-//        └──► WidgetsShared ──► Domain, DeepLinks, AppCore
+//        ├──► WidgetsShared ──► Domain, DeepLinks, AppCore
+//        └──► WebImport ──► Domain          (one-time import of the web app's JSON export)
 //
 // Features never import each other. Cross-feature navigation goes through the app's flows.
 // Modules listed in `ExtensionModules` must stay UIKit-navigation-free so widgets / live activities can link them.
@@ -20,7 +21,7 @@ let package = Package(
         .library(
             name: "AppModules",
             targets: [
-                "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared",
+                "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport",
                 "BrewsFeature", "SettingsFeature",
             ]
         ),
@@ -37,8 +38,9 @@ let package = Package(
         .target(name: "DataLayer", dependencies: ["Domain"], path: "Sources/Core/DataLayer"),
         .target(name: "DesignSystem", path: "Sources/Core/DesignSystem"),
         .target(name: "DeepLinks", dependencies: ["AppCore"], path: "Sources/Core/DeepLinks"),
-        .target(name: "Navigation", dependencies: ["DeepLinks"], path: "Sources/Core/Navigation"),
+        .target(name: "Navigation", dependencies: ["DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
         .target(name: "WidgetsShared", dependencies: ["AppCore", "Domain", "DeepLinks"], path: "Sources/Core/WidgetsShared"),
+        .target(name: "WebImport", dependencies: ["Domain"], path: "Sources/Core/WebImport"),
 
         // MARK: Features
         .target(
@@ -53,6 +55,8 @@ let package = Package(
         ),
 
         // MARK: Tests
+        .testTarget(name: "DomainTests", dependencies: ["Domain"]),
+        .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(name: "BrewsFeatureTests", dependencies: ["BrewsFeature", "Domain"]),
     ]

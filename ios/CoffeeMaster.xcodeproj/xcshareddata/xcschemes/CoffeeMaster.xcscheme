@@ -32,6 +32,26 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DomainTests"
+               BuildableName = "DomainTests"
+               BlueprintName = "DomainTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "WebImportTests"
+               BuildableName = "WebImportTests"
+               BlueprintName = "WebImportTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "DeepLinksTests"
                BuildableName = "DeepLinksTests"
                BlueprintName = "DeepLinksTests"

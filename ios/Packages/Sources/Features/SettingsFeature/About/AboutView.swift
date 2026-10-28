@@ -9,7 +9,7 @@ struct AboutView: View {
         VStack(spacing: Spacing.lg) {
             Image(systemName: "cup.and.saucer.fill")
                 .font(.system(size: 64))
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(.tint)
             Text("Coffee Master")
                 .font(.title.bold())
             Text("Notes, recipes and stats for your coffee.")

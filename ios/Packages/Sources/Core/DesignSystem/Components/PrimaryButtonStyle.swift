@@ -10,8 +10,9 @@ public struct PrimaryButtonStyle: ButtonStyle {
             .font(.headline)
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.md)
-            .background(Color.brandPrimary, in: RoundedRectangle(cornerRadius: Radius.medium))
-            .foregroundStyle(.white)
+            .background(.tint, in: RoundedRectangle(cornerRadius: Radius.medium))
+            // Dark label: the amber accent is too light for white text in both appearances.
+            .foregroundStyle(.black.opacity(0.85))
             .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.4)
     }
 }

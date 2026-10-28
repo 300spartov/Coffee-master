@@ -11,8 +11,8 @@ struct NewBrewView: View {
                 TextField("Bean name", text: $viewModel.beanName)
                     .textInputAutocapitalization(.words)
                 Picker("Method", selection: $viewModel.method) {
-                    ForEach(BrewMethod.allCases, id: \.self) { method in
-                        Text(method.title).tag(method)
+                    ForEach(BrewMethod.formPresets, id: \.self) { method in
+                        Text(method.rawValue).tag(method)
                     }
                 }
             }
@@ -33,10 +33,8 @@ struct NewBrewView: View {
             }
 
             Section("Rating") {
-                Picker("Rating", selection: $viewModel.rating) {
-                    ForEach(1...5, id: \.self) { Text("\($0)").tag($0) }
-                }
-                .pickerStyle(.segmented)
+                LabeledContent("Rating", value: viewModel.rating.formatted(.number.precision(.fractionLength(1))))
+                Slider(value: $viewModel.rating, in: Brew.ratingRange, step: 0.5)
             }
 
             if let errorMessage = viewModel.errorMessage {
@@ -50,7 +48,7 @@ struct NewBrewView: View {
                     Task { await viewModel.save() }
                 } label: {
                     if viewModel.isSaving {
-                        ProgressView().tint(.white)
+                        ProgressView()
                     } else {
                         Text("Save")
                     }

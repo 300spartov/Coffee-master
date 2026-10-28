@@ -52,13 +52,13 @@ struct BrewRow: View {
         HStack(spacing: Spacing.md) {
             Image(systemName: brew.method.systemImage)
                 .font(.title2)
-                .foregroundStyle(Color.brandPrimary)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 36)
 
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(brew.beanName)
+                Text(brew.displayTitle)
                     .font(.headline)
-                Text("\(brew.method.title) · 1:\(brew.ratio, format: .number.precision(.fractionLength(1)))")
+                Text("\(brew.method.rawValue) · 1:\(brew.ratio, format: .number.precision(.fractionLength(1)))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

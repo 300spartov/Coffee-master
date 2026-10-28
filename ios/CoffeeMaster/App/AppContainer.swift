@@ -2,6 +2,7 @@ import Foundation
 import Domain
 import DataLayer
 import WidgetsShared
+import Navigation
 import BrewsFeature
 import SettingsFeature
 
@@ -11,6 +12,8 @@ import SettingsFeature
 @MainActor
 final class AppContainer {
     // MARK: Services (singletons for the app's lifetime)
+
+    let toastCenter = ToastCenter()
 
     lazy var brewRepository: any BrewRepository = WidgetSyncingBrewRepository(
         wrapped: InMemoryBrewRepository(),

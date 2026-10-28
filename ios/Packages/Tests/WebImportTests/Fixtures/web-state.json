@@ -1,0 +1,73 @@
+{
+  "profile": { "name": "Олена", "loc": "Київ", "cat": "Бариста", "stazh": "3 роки", "avEmoji": "☕", "avColor": "#B87333" },
+  "beans": [
+    { "id": 5, "name": "Ethiopia Yirgacheffe", "roaster": "Wonder&Full", "total": 250, "current": 154, "country": "Ефіопія",
+      "process": "Washed", "farm": "Kochere", "score": 87.5, "descriptors": "жасмин, бергамот", "roastType": "filter", "_upd": 1761000000000 },
+    { "id": 6, "name": "Brazil Cerrado", "roaster": "Penyora", "total": "1000", "current": 420, "country": "", "process": "",
+      "farm": "", "score": "", "descriptors": "", "roastType": "" }
+  ],
+  "filters": [
+    { "id": 7, "name": "Cafec Abaca", "total": 100, "current": 64 }
+  ],
+  "equipment": [
+    { "id": 1, "name": "Hario V60 02", "type": "dripper", "_upd": 1760000000000 },
+    { "id": 2, "name": "Comandante C40 MK4", "type": "grinder" },
+    { "id": 3, "name": "Acaia Pearl", "type": "acc" }
+  ],
+  "brews": [
+    {
+      "id": 20, "ts": 1761300000000, "beanName": "Ethiopia Yirgacheffe", "roaster": "Wonder&Full", "roastType": "filter", "beanId": 5,
+      "method": "V60", "inverted": false, "aeroFilters": 1, "dripper": "Hario V60 02", "dripperId": 1,
+      "grinder": "Comandante C40 MK4", "grinderId": 2, "clicks": 24, "temp": "93", "ratio": 16,
+      "filter": "Cafec Abaca", "filterId": 7, "filterWet": true, "dose": "16.0",
+      "steps": [
+        { "type": "pour", "t": 0, "ph": 10000, "ml": 50 },
+        { "type": "pause", "t": 10000, "ph": 35000, "dur": 35, "ml": null },
+        { "type": "action", "label": "stir", "t": 45000, "ph": 4000, "dur": 4, "ml": null, "color": "#5fbf83" },
+        { "type": "pour", "t": 49000, "ph": 20000, "ml": "206.5" },
+        { "type": "unknown", "t": 70000 }
+      ],
+      "totalTime": "3:05", "rating": 9.2, "flavors": ["Жасмин", "Бергамот"], "aroma": ["Чай"], "notes": "Солодко на остиганні",
+      "accessories": [], "likes": 0, "liked": true
+    },
+    {
+      "id": 21, "ts": 1761200000000, "beanName": "Brazil Cerrado", "roaster": "Penyora", "roastType": "espresso", "beanId": 6,
+      "method": "Cappuccino", "dose": "18", "temp": "94", "grinder": "Comandante C40 MK4", "grinderId": 2, "clicks": 12,
+      "espMachine": "Gaggia Classic Pro", "espMachineId": 99, "accessories": [3],
+      "espresso": { "dose": 18, "targetYield": 36, "actualYield": 0, "shotTime": 28, "tdsTarget": 0, "tdsActual": 0, "pressure": "9" },
+      "milk": { "name": "Молоко 3.2%", "temp": "60", "vol": "120", "frother": "Стимер" },
+      "ice": null,
+      "totalTime": "28с", "ratio": "2.0", "rating": 8, "flavors": ["Шоколад"], "aroma": [], "notes": "", "likes": 0, "liked": false
+    },
+    {
+      "id": 22, "ts": 1761100000000, "beanName": "Кофе", "roaster": "", "method": "Flat White", "dripper": "", "grinder": "",
+      "clicks": 0, "temp": 93, "ratio": 16, "filter": "", "filterWet": true, "dose": 16, "steps": [], "totalTime": "—",
+      "rating": 7.5, "flavors": [], "aroma": [], "notes": "Затишна кав'ярня", "likes": 0, "liked": false, "manual": true,
+      "place": "Blackwood Coffee", "cafeVisit": true
+    },
+    {
+      "id": 23, "ts": 1761050000000, "beanName": "Deleted one", "method": "Chemex", "dose": 30, "ratio": 15, "rating": 6
+    },
+    { "ts": 1761000000000, "beanName": "Broken brew without id" }
+  ],
+  "log": [
+    { "id": 20, "ts": 1761300000000, "vol": 256, "cat": "filter", "method": "V60", "bean": "Ethiopia Yirgacheffe", "rating": 9.2, "dose": 16 },
+    { "id": 21, "ts": 1761200000000, "vol": 36, "cat": "espresso", "method": "Cappuccino", "bean": "Brazil Cerrado", "rating": 8, "dose": 18 },
+    { "id": 22, "ts": 1761100000000, "vol": 180, "cat": "filter", "method": "Flat White", "bean": "Кофе", "rating": 7.5,
+      "source": "place", "manual": true, "place": "Blackwood Coffee" },
+    { "id": 15, "ts": 1760900000000, "vol": 240, "cat": "other", "method": "Aeropress", "bean": "Kenya AA", "rating": "8.5",
+      "source": "home", "manual": true, "dose": 15, "ratio": 14, "temp": 85, "grinder": "Timemore C3" }
+  ],
+  "trash": [
+    { "id": 23, "ts": 1761050000000, "beanName": "Deleted one", "method": "Chemex", "dose": 30, "ratio": 15, "rating": 6,
+      "_deletedAt": 1761400000000 }
+  ],
+  "achEarned": { "brew_1": 1760000000000, "pack_1": 1760500000000 },
+  "roasters": ["Wonder&Full", "Penyora", "penyora", "  "],
+  "beanNames": ["Ethiopia Yirgacheffe", "Brazil Cerrado"],
+  "milks": ["Молоко 3.2%"],
+  "juices": ["Тонік"],
+  "record": 12,
+  "id": 23,
+  "xp": 340
+}

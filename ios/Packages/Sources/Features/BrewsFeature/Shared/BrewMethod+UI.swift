@@ -2,12 +2,20 @@ import Domain
 
 extension BrewMethod {
     var systemImage: String {
-        switch self {
-        case .v60: "drop"
-        case .aeropress: "cylinder"
+        switch category {
+        case .filter: "drop"
+        case .immersion: "cylinder"
         case .espresso: "cup.and.saucer.fill"
-        case .frenchPress: "mug"
-        case .chemex: "hourglass"
         }
+    }
+
+    /// Methods offered in the template's "New Brew" form.
+    static let formPresets: [BrewMethod] = alternativePresets + espressoPresets
+}
+
+extension Brew {
+    /// Bean name, or the method when no bean was recorded (café drinks, quick logs).
+    var displayTitle: String {
+        bean?.name ?? method.rawValue
     }
 }

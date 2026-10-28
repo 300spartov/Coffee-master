@@ -44,7 +44,7 @@ struct BrewDetailView: View {
                     StatTile(title: "Dose", value: "\(brew.doseGrams.formatted()) g")
                     StatTile(title: "Water", value: "\(brew.waterGrams.formatted()) g")
                     StatTile(title: "Ratio", value: "1:\(brew.ratio.formatted(.number.precision(.fractionLength(1))))")
-                    StatTile(title: "Time", value: Duration.seconds(brew.brewTime).formatted(.time(pattern: .minuteSecond)))
+                    StatTile(title: "Time", value: brew.totalTime.map { Duration.seconds($0).formatted(.time(pattern: .minuteSecond)) } ?? "—")
                 }
 
                 VStack(spacing: Spacing.md) {
@@ -75,10 +75,10 @@ struct BrewDetailView: View {
 
     private func header(for brew: Brew) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Label(brew.method.title, systemImage: brew.method.systemImage)
+            Label(brew.method.rawValue, systemImage: brew.method.systemImage)
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(Color.brandPrimary)
-            Text(brew.beanName)
+                .foregroundStyle(.tint)
+            Text(brew.displayTitle)
                 .font(.largeTitle.bold())
             HStack {
                 RatingView(rating: brew.rating)

@@ -20,7 +20,7 @@ public struct StatTile: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.md)
-        .background(Color.surface, in: RoundedRectangle(cornerRadius: Radius.medium))
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: Radius.medium))
     }
 }
 

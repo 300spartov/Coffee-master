@@ -16,8 +16,5 @@ public enum Radius {
     public static let large: CGFloat = 20
 }
 
-public extension Color {
-    static let brandPrimary = Color(red: 0.43, green: 0.27, blue: 0.17)
-    static let brandSecondary = Color(red: 0.85, green: 0.62, blue: 0.36)
-    static let surface = Color(uiColor: .secondarySystemGroupedBackground)
-}
+// Colors: system semantic colors only (light + dark follow the system setting).
+// The accent is the app's `AccentColor` asset (amber, from the web app) — use `.tint` / `Color.accentColor`.
