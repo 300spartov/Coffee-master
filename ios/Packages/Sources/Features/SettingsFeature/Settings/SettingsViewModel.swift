@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 import AppCore
-import Factory
+import FactoryKit
 
 @MainActor
 @Observable

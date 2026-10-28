@@ -1,6 +1,6 @@
 import UIKit
 import AppCore
-import Factory
+import FactoryKit
 import Navigation
 
 @MainActor

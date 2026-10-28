@@ -35,15 +35,16 @@ let package = Package(
         ),
     ],
     dependencies: [
-        // DI container: https://github.com/hmlongco/Factory
-        .package(url: "https://github.com/hmlongco/Factory.git", from: "2.4.12"),
+        // DI container: https://github.com/hmlongco/Factory (import `FactoryKit`, not `Factory`: same
+        // library, but `FactoryTesting` is built on `FactoryKit`, and the two have distinct `Container` types)
+        .package(url: "https://github.com/hmlongco/Factory.git", from: "2.5.3"),
     ],
     targets: [
         // MARK: Core
-        .target(name: "AppCore", dependencies: [.product(name: "Factory", package: "Factory")], path: "Sources/Core/AppCore"),
-        .target(name: "Domain", dependencies: ["AppCore", .product(name: "Factory", package: "Factory")], path: "Sources/Core/Domain"),
+        .target(name: "AppCore", dependencies: [.product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/AppCore"),
+        .target(name: "Domain", dependencies: ["AppCore", .product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/Domain"),
         .target(name: "DataLayer", dependencies: ["AppCore", "Domain", "WebImport"], path: "Sources/Core/DataLayer"),
-        .target(name: "DesignSystem", dependencies: [.product(name: "Factory", package: "Factory")], path: "Sources/Core/DesignSystem"),
+        .target(name: "DesignSystem", dependencies: [.product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/DesignSystem"),
         .target(name: "DeepLinks", dependencies: ["AppCore"], path: "Sources/Core/DeepLinks"),
         .target(name: "Navigation", dependencies: ["DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
         .target(name: "WidgetsShared", dependencies: ["AppCore", "Domain", "DeepLinks"], path: "Sources/Core/WidgetsShared"),
@@ -52,12 +53,12 @@ let package = Package(
         // MARK: Features
         .target(
             name: "BrewsFeature",
-            dependencies: ["Domain", "DesignSystem", "Navigation", .product(name: "Factory", package: "Factory")],
+            dependencies: ["Domain", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
             path: "Sources/Features/BrewsFeature"
         ),
         .target(
             name: "SettingsFeature",
-            dependencies: ["AppCore", "DesignSystem", "Navigation", .product(name: "Factory", package: "Factory")],
+            dependencies: ["AppCore", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
             path: "Sources/Features/SettingsFeature"
         ),
 
@@ -69,7 +70,7 @@ let package = Package(
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(
             name: "BrewsFeatureTests",
-            dependencies: ["BrewsFeature", "Domain", .product(name: "FactoryTesting", package: "Factory")]
+            dependencies: ["BrewsFeature", "Domain", .product(name: "FactoryKit", package: "Factory"), .product(name: "FactoryTesting", package: "Factory")]
         ),
     ]
 )

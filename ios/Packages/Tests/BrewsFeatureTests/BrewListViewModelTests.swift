@@ -1,4 +1,4 @@
-import Factory
+import FactoryKit
 import FactoryTesting
 import Testing
 import Domain

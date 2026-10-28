@@ -1,5 +1,5 @@
 import UIKit
-import Factory
+import FactoryKit
 import Domain
 import DeepLinks
 import DesignSystem

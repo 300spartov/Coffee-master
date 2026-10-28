@@ -1,9 +1,9 @@
-import Factory
+import FactoryKit
 
 public extension Container {
     /// Toast presenter. Default does nothing (previews, tests); the app registers its `ToastCenter`.
     var toasts: Factory<any ToastPresenting> {
-        self { @MainActor in SilentToastPresenter() }.singleton
+        self { @MainActor in SilentToastPresenter() }.cached
     }
 }
 

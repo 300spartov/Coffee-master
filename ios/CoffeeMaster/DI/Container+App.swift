@@ -1,4 +1,4 @@
-import Factory
+import FactoryKit
 import Foundation
 import AppCore
 import DataLayer
@@ -14,6 +14,8 @@ import WidgetsShared
 //   which Factory runs once before the first resolution.
 // - App-only services (store, import, toast center) are declared here.
 // - Tests and previews override anything with `Container.shared.<key>.register { … }`.
+// - Scope: `.cached` — one instance per container (the app has one: `Container.shared`).
+//   A fresh container (tests, `.container` trait) starts with fresh instances.
 
 extension Container {
     /// On-disk Core Data store. If it can't be opened (e.g. a corrupted file) the app still starts
@@ -27,15 +29,15 @@ extension Container {
                 // An in-memory store at /dev/null can't fail to open.
                 return try! PersistenceController(location: .inMemory)
             }
-        }.singleton
+        }.cached
     }
 
     var webImportService: Factory<WebImportService> {
-        self { WebImportService(persistence: self.persistence()) }.singleton
+        self { WebImportService(persistence: self.persistence()) }.cached
     }
 
     var toastCenter: Factory<ToastCenter> {
-        self { @MainActor in ToastCenter() }.singleton
+        self { @MainActor in ToastCenter() }.cached
     }
 }
 

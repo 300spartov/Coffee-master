@@ -1,5 +1,5 @@
 import UIKit
-import Factory
+import FactoryKit
 import UniformTypeIdentifiers
 import AppCore
 import DataLayer

@@ -1,5 +1,5 @@
 import UIKit
-import Factory
+import FactoryKit
 import AppCore
 import BrewsFeature
 import DeepLinks

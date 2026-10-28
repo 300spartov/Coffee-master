@@ -159,7 +159,7 @@ struct BrewTimerLiveActivity: Widget {
 
 ## Dependency injection (Factory)
 
-[Factory](https://github.com/hmlongco/Factory) 2.x.
+[Factory](https://github.com/hmlongco/Factory) 2.5+. **Import `FactoryKit`, not `Factory`.** The package ships the same library under both names, but `FactoryTesting` is built on `FactoryKit`, so mixing them gives two different `Container` types and test isolation silently stops working.
 
 | What | Where |
 |---|---|
