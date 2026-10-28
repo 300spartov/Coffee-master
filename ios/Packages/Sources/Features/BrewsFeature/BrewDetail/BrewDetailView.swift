@@ -1,0 +1,105 @@
+import SwiftUI
+import Domain
+import DesignSystem
+
+struct BrewDetailView: View {
+    let viewModel: BrewDetailViewModel
+    @State private var isConfirmingDelete = false
+
+    var body: some View {
+        content
+            .task { await viewModel.load() }
+            .alert(
+                "Error",
+                isPresented: Binding(
+                    get: { viewModel.alertMessage != nil },
+                    set: { if !$0 { viewModel.alertMessage = nil } }
+                ),
+                presenting: viewModel.alertMessage
+            ) { _ in
+                Button("OK", role: .cancel) {}
+            } message: { message in
+                Text(message)
+            }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .loading:
+            LoadingView()
+        case .failed(let message):
+            ErrorStateView(message: message)
+        case .loaded(let brew):
+            details(for: brew)
+        }
+    }
+
+    private func details(for brew: Brew) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Spacing.xl) {
+                header(for: brew)
+
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: Spacing.md) {
+                    StatTile(title: "Dose", value: "\(brew.doseGrams.formatted()) g")
+                    StatTile(title: "Water", value: "\(brew.waterGrams.formatted()) g")
+                    StatTile(title: "Ratio", value: "1:\(brew.ratio.formatted(.number.precision(.fractionLength(1))))")
+                    StatTile(title: "Time", value: Duration.seconds(brew.brewTime).formatted(.time(pattern: .minuteSecond)))
+                }
+
+                VStack(spacing: Spacing.md) {
+                    Button {
+                        Task { await viewModel.toggleTimer() }
+                    } label: {
+                        Label(
+                            viewModel.isTimerRunning ? "Stop Timer" : "Start Brew Timer",
+                            systemImage: viewModel.isTimerRunning ? "stop.fill" : "timer"
+                        )
+                    }
+                    .buttonStyle(.primary)
+
+                    Button("Delete Brew", role: .destructive) {
+                        isConfirmingDelete = true
+                    }
+                }
+            }
+            .padding(Spacing.lg)
+        }
+        .background(Color(uiColor: .systemGroupedBackground))
+        .confirmationDialog("Delete this brew?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                Task { await viewModel.delete() }
+            }
+        }
+    }
+
+    private func header(for brew: Brew) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Label(brew.method.title, systemImage: brew.method.systemImage)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Color.brandPrimary)
+            Text(brew.beanName)
+                .font(.largeTitle.bold())
+            HStack {
+                RatingView(rating: brew.rating)
+                Spacer()
+                Text(brew.date, style: .date)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+#if DEBUG
+#Preview {
+    BrewDetailView(
+        viewModel: BrewDetailViewModel(
+            brewID: Brew.samples[0].id,
+            repository: PreviewBrewRepository(),
+            brewTimer: NoopBrewTimerService(),
+            router: PreviewRouter.shared
+        )
+    )
+}
+#endif
