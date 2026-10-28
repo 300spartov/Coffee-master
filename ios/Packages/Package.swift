@@ -5,7 +5,7 @@ import PackageDescription
 //
 //   App target ──► Features ──► Navigation ──► DeepLinks ──► AppCore
 //        │             │
-//        │             └──────► Domain ◄── DataLayer
+//        │             └──────► Domain ◄── DataLayer (Core Data) ──► WebImport
 //        │             └──────► DesignSystem
 //        ├──► WidgetsShared ──► Domain, DeepLinks, AppCore
 //        └──► WebImport ──► Domain          (one-time import of the web app's JSON export)
@@ -35,7 +35,7 @@ let package = Package(
         // MARK: Core
         .target(name: "AppCore", path: "Sources/Core/AppCore"),
         .target(name: "Domain", dependencies: ["AppCore"], path: "Sources/Core/Domain"),
-        .target(name: "DataLayer", dependencies: ["Domain"], path: "Sources/Core/DataLayer"),
+        .target(name: "DataLayer", dependencies: ["AppCore", "Domain", "WebImport"], path: "Sources/Core/DataLayer"),
         .target(name: "DesignSystem", path: "Sources/Core/DesignSystem"),
         .target(name: "DeepLinks", dependencies: ["AppCore"], path: "Sources/Core/DeepLinks"),
         .target(name: "Navigation", dependencies: ["DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
@@ -57,6 +57,7 @@ let package = Package(
         // MARK: Tests
         .testTarget(name: "DomainTests", dependencies: ["Domain"]),
         .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem"]),
+        .testTarget(name: "DataLayerTests", dependencies: ["DataLayer", "Domain", "WebImport"]),
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(name: "BrewsFeatureTests", dependencies: ["BrewsFeature", "Domain"]),

@@ -42,10 +42,20 @@ final class AppRouter {
             BrewsFlow(module: container.brewsModule, toasts: container.toastCenter),
             SettingsFlow(
                 module: container.settingsModule,
+                toasts: container.toastCenter,
+                webImport: container.webImportService,
                 openDeepLink: { [weak self] in self?.handle($0) }
             ),
         ]
     }
+
+    #if DEBUG
+    /// Debug launch argument `-importWebJSON <path>`: imports a web export without the file picker.
+    func importWebJSON(at url: URL) {
+        guard let settings = flows.compactMap({ $0 as? SettingsFlow }).first else { return }
+        Task { await settings.importWebData(from: url) }
+    }
+    #endif
 
     // MARK: - Deep links
 

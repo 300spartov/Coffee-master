@@ -13,6 +13,24 @@ public struct WebImport: Sendable, Equatable {
     public var achievements: [EarnedAchievement]
     public var suggestions: Suggestions
 
+    public init(
+        profile: UserProfile? = nil,
+        beans: [Bean] = [],
+        devices: [Device] = [],
+        filterPacks: [FilterPack] = [],
+        brews: [Brew] = [],
+        achievements: [EarnedAchievement] = [],
+        suggestions: Suggestions = Suggestions()
+    ) {
+        self.profile = profile
+        self.beans = beans
+        self.devices = devices
+        self.filterPacks = filterPacks
+        self.brews = brews
+        self.achievements = achievements
+        self.suggestions = suggestions
+    }
+
     public var isEmpty: Bool {
         beans.isEmpty && devices.isEmpty && filterPacks.isEmpty && brews.isEmpty && achievements.isEmpty
     }
@@ -34,6 +52,10 @@ public enum WebImporter {
     public enum EntityKind: String, Sendable {
         case brew, bean, device, filter
     }
+
+    /// `updatedAt` for web records that never stored `_upd`. Fixed (not the import time) so
+    /// re-imports are byte-identical, and old enough that any local edit wins over it.
+    public static let unknownUpdateDate = Date(timeIntervalSince1970: 0)
 
     public static func decode(_ data: Data, importedAt: Date = .now) throws -> WebImport {
         let state = try parseState(data)
@@ -255,7 +277,7 @@ public enum WebImporter {
         return Bean(
             id: id(for: .bean, legacyID: web.id.int),
             legacyID: web.id.int,
-            updatedAt: web._upd.map { timestamp($0.value) } ?? importedAt,
+            updatedAt: web._upd.map { timestamp($0.value) } ?? unknownUpdateDate,
             name: web.name ?? "",
             roaster: web.roaster ?? "",
             totalGrams: total,
@@ -273,7 +295,7 @@ public enum WebImporter {
         Device(
             id: id(for: .device, legacyID: web.id.int),
             legacyID: web.id.int,
-            updatedAt: web._upd.map { timestamp($0.value) } ?? importedAt,
+            updatedAt: web._upd.map { timestamp($0.value) } ?? unknownUpdateDate,
             name: web.name ?? "",
             type: web.type.flatMap(DeviceType.init(rawValue:)) ?? .accessory
         )
@@ -284,7 +306,7 @@ public enum WebImporter {
         return FilterPack(
             id: id(for: .filter, legacyID: web.id.int),
             legacyID: web.id.int,
-            updatedAt: web._upd.map { timestamp($0.value) } ?? importedAt,
+            updatedAt: web._upd.map { timestamp($0.value) } ?? unknownUpdateDate,
             name: web.name ?? "",
             total: total,
             remaining: web.current?.int ?? total

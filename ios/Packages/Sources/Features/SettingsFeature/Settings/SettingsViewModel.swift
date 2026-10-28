@@ -31,4 +31,8 @@ final class SettingsViewModel {
     func didTapNewBrew() {
         router?.showNewBrew()
     }
+
+    func didTapWebImport() {
+        router?.showWebImport()
+    }
 }

@@ -22,7 +22,7 @@ ios/
     ├── Sources/Core/
     │   ├── AppCore/              # constants (scheme, app group), logging
     │   ├── Domain/               # models, repository & service protocols, fixtures
-    │   ├── DataLayer/            # repository implementations
+    │   ├── DataLayer/            # Core Data store (model in code), repositories, web import service
     │   ├── DesignSystem/         # tokens + reusable SwiftUI components
     │   ├── DeepLinks/            # DeepLink enum + URL parser (Foundation-only)
     │   ├── Navigation/           # Flow, StackRouter, HostingController (UIKit)
@@ -170,5 +170,7 @@ struct BrewTimerLiveActivity: Widget {
   - UIKit chrome (window tint, nav bar, tab bar) is set by `ThemeAppearance`. On iOS 26 the bars stay Liquid Glass, so `navigationBar` / `tabBar` colors apply on iOS 17–18.
   - To add a color: add a property to `ColorPalette` and give it a value in both themes.
 - Toasts: flows get `any ToastPresenting` (backed by `ToastCenter`) and call `toasts.show(Toast("…", style: .success))`. View models report outcomes through their router, not by showing toasts.
+- **Persistence**: features see repository protocols only. `DataLayer` stores each record as indexed columns plus a JSON payload of the Domain struct (the payload is the source of truth). A new Domain field needs no model change; add a column in `CoreDataModel` only when you need to query by it.
+- **Debug launch arguments**: `-deeplink <url>` and `-importWebJSON <path>`. For example `xcrun simctl launch booted com.coffeemaster.app -importWebJSON /tmp/export.json`.
 - Previews use `PreviewBrewRepository` and `PreviewRouter.shared`.
 - Tests use Swift Testing (`import Testing`), with a mock repository and a spy router per feature test target.

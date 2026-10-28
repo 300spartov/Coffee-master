@@ -39,6 +39,15 @@ struct WebImporterTests {
         #expect(first == second)
     }
 
+    @Test func recordsAreIndependentOfImportTime() throws {
+        let early = try WebImporter.decode(try fixtureData(), importedAt: Date(timeIntervalSince1970: 1))
+        let late = try WebImporter.decode(try fixtureData(), importedAt: Date(timeIntervalSince1970: 2_000_000_000))
+
+        #expect(early.beans == late.beans)
+        #expect(early.devices == late.devices)
+        #expect(early.filterPacks == late.filterPacks)
+    }
+
     // MARK: - Brews
 
     @Test func mapsAlternativeBrew() throws {
@@ -160,7 +169,7 @@ struct WebImporterTests {
         #expect(brazil.score == nil)
         #expect(brazil.process == nil)
         #expect(brazil.roastProfile == nil)
-        #expect(brazil.updatedAt == importedAt)
+        #expect(brazil.updatedAt == WebImporter.unknownUpdateDate)
     }
 
     @Test func mapsDevicesAndFilters() throws {

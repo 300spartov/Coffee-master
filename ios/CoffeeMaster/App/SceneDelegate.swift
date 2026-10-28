@@ -38,6 +38,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let link = UserDefaults.standard.string(forKey: "deeplink"), let url = URL(string: link) {
             router.open(url)
         }
+        // `-importWebJSON /path/to/export.json`
+        if let path = UserDefaults.standard.string(forKey: "importWebJSON") {
+            router.importWebJSON(at: URL(fileURLWithPath: path))
+        }
         #endif
     }
 

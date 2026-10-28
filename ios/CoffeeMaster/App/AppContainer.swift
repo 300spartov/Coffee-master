@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import Domain
 import DataLayer
 import WidgetsShared
@@ -15,10 +16,24 @@ final class AppContainer {
 
     let toastCenter = ToastCenter()
 
+    /// On-disk Core Data store. If it can't be opened (e.g. corrupted file) the app still starts
+    /// on an in-memory store and the failure is logged, rather than crashing at launch.
+    let persistence: PersistenceController = {
+        do {
+            return try PersistenceController()
+        } catch {
+            Log.data.fault("Falling back to in-memory store: \(error.localizedDescription, privacy: .public)")
+            // An in-memory store at /dev/null can't fail to open.
+            return try! PersistenceController(location: .inMemory)
+        }
+    }()
+
     lazy var brewRepository: any BrewRepository = WidgetSyncingBrewRepository(
-        wrapped: InMemoryBrewRepository(),
+        wrapped: CoreDataBrewRepository(persistence: persistence),
         snapshotStore: WidgetSnapshotStore()
     )
+
+    lazy var webImportService = WebImportService(persistence: persistence)
 
     lazy var brewTimer: any BrewTimerService = LiveActivityBrewTimerService()
 

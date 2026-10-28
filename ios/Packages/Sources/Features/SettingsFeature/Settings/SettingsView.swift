@@ -24,6 +24,20 @@ struct SettingsView: View {
 
             Section {
                 Button {
+                    viewModel.didTapWebImport()
+                } label: {
+                    Label("Import from Web App", systemImage: "square.and.arrow.down")
+                        .foregroundStyle(.theme.accent)
+                }
+                .themedRow()
+            } header: {
+                Text("Data")
+            } footer: {
+                Text("Choose the .json file exported from the Coffee Master web app. Importing again won't create duplicates.")
+            }
+
+            Section {
+                Button {
                     viewModel.didTapAbout()
                 } label: {
                     HStack {
