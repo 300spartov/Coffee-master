@@ -16,5 +16,4 @@ public enum Radius {
     public static let large: CGFloat = 20
 }
 
-// Colors: system semantic colors only (light + dark follow the system setting).
-// The accent is the app's `AccentColor` asset (amber, from the web app) — use `.tint` / `Color.accentColor`.
+// Colors live in `Theme/` — use `Color.theme.<role>` / `UIColor.theme.<role>`, never literal colors in screens.

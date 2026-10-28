@@ -13,9 +13,8 @@ public struct RatingView: View {
             Text(rating, format: .number.precision(.fractionLength(1)))
                 .monospacedDigit()
         } icon: {
-            // Explicit accent: list rows often override `.tint` for their text.
             Image(systemName: "star.fill")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.theme.accent)
         }
         .labelStyle(.titleAndIcon)
         .font(.caption.weight(.semibold))

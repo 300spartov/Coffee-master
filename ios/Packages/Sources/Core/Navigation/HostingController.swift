@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import DesignSystem
 
 /// Hosts a SwiftUI screen inside UIKit navigation and configures its navigation item.
 ///
@@ -13,6 +14,7 @@ public final class HostingController<Content: View>: UIHostingController<Content
         hidesBottomBarWhenPushed: Bool = false
     ) {
         super.init(rootView: rootView)
+        view.backgroundColor = .theme.background
         self.title = title
         navigationItem.largeTitleDisplayMode = largeTitleDisplayMode
         self.hidesBottomBarWhenPushed = hidesBottomBarWhenPushed

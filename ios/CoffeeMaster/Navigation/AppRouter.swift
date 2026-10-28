@@ -21,6 +21,8 @@ final class AppRouter {
     }
 
     func start() {
+        // Before any view controller exists, so every bar picks up the themed appearance.
+        ThemeAppearance.apply(to: window)
         flows = makeFlows()
         flows.forEach { $0.start() }
         tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)

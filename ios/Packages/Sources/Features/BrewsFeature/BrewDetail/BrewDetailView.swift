@@ -61,11 +61,12 @@ struct BrewDetailView: View {
                     Button("Delete Brew", role: .destructive) {
                         isConfirmingDelete = true
                     }
+                    .foregroundStyle(.theme.error)
                 }
             }
             .padding(Spacing.lg)
         }
-        .background(Color(uiColor: .systemGroupedBackground))
+        .themedGroupedBackground()
         .confirmationDialog("Delete this brew?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 Task { await viewModel.delete() }
@@ -77,15 +78,16 @@ struct BrewDetailView: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Label(brew.method.rawValue, systemImage: brew.method.systemImage)
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(.tint)
+                .foregroundStyle(.theme.accent)
             Text(brew.displayTitle)
                 .font(.largeTitle.bold())
+                .foregroundStyle(.theme.textPrimary)
             HStack {
                 RatingView(rating: brew.rating)
                 Spacer()
                 Text(brew.date, style: .date)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.theme.textSecondary)
             }
         }
     }

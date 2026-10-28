@@ -9,18 +9,20 @@ struct AboutView: View {
         VStack(spacing: Spacing.lg) {
             Image(systemName: "cup.and.saucer.fill")
                 .font(.system(size: 64))
-                .foregroundStyle(.tint)
+                .foregroundStyle(.theme.accent)
             Text("Coffee Master")
                 .font(.title.bold())
+                .foregroundStyle(.theme.textPrimary)
             Text("Notes, recipes and stats for your coffee.")
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.theme.textSecondary)
             Text("Version \(appVersion)")
                 .font(.footnote)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.theme.textTertiary)
         }
         .padding(Spacing.xl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .themedBackground()
     }
 }
 

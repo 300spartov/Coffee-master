@@ -12,6 +12,8 @@ public final class StackRouter: NSObject {
     public init(navigationController: UINavigationController = UINavigationController()) {
         self.navigationController = navigationController
         super.init()
+        // Not an appearance-proxy property, so it's set per bar. Screens opt out via `largeTitleDisplayMode`.
+        navigationController.navigationBar.prefersLargeTitles = true
     }
 
     public var viewControllers: [UIViewController] {

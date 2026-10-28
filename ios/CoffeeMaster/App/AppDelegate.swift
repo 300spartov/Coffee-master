@@ -9,8 +9,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Process-wide setup: appearance, analytics, crash reporting, push registration.
-        UINavigationBar.appearance().prefersLargeTitles = true
+        // Process-wide setup: analytics, crash reporting, push registration.
+        // Colors and bar appearance: `ThemeAppearance` (applied per window in `AppRouter`).
         return true
     }
 }

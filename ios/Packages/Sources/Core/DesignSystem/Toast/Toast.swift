@@ -59,10 +59,10 @@ extension Toast.Style {
 
     var iconStyle: AnyShapeStyle {
         switch self {
-        case .info: AnyShapeStyle(.tint)
-        case .success: AnyShapeStyle(.green)
-        case .warning: AnyShapeStyle(.orange)
-        case .error: AnyShapeStyle(.red)
+        case .info: AnyShapeStyle(.theme.info)
+        case .success: AnyShapeStyle(.theme.success)
+        case .warning: AnyShapeStyle(.theme.warning)
+        case .error: AnyShapeStyle(.theme.error)
         }
     }
 }
@@ -84,20 +84,21 @@ public struct ToastView: View {
                 .font(.body.weight(.semibold))
             Text(toast.message)
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(.primary)
+                .foregroundStyle(.theme.textPrimary)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
             if let action = toast.action {
                 Button(action.title, action: onAction)
                     .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.theme.accent)
                     .padding(.leading, Spacing.xs)
             }
         }
         .padding(.horizontal, Spacing.lg)
         .padding(.vertical, Spacing.md)
-        .background(.regularMaterial, in: Capsule())
-        .overlay(Capsule().strokeBorder(.separator.opacity(0.5), lineWidth: 0.5))
-        .shadow(color: .black.opacity(0.15), radius: 12, y: 4)
+        .background(.theme.elevatedSurface, in: Capsule())
+        .overlay(Capsule().strokeBorder(.theme.separator, lineWidth: 0.5))
+        .shadow(color: .theme.shadow, radius: 12, y: 4)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isStaticText)
     }

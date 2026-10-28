@@ -162,7 +162,13 @@ struct BrewTimerLiveActivity: Widget {
   the router `weak`.
 - Express screen state as an `enum State` (`loading / loaded / empty / failed`), rendered with `DesignSystem` state views.
 - Async work goes through `async` / `await` from `.task { }`, so it's cancelled automatically when the view disappears.
-- Colors: system semantic colors only. The accent is the `AccentColor` asset (amber), used through `.tint` / `Color.accentColor`.
+- **Colors come only from the theme** (`Packages/Sources/Core/DesignSystem/Theme/`):
+  - `ColorPalette.swift` lists every color role (backgrounds, text, accent, status, separator, bars).
+  - `LightTheme.swift` / `DarkTheme.swift` hold the values as hex. Edit these to restyle the app.
+  - Use them as `.foregroundStyle(.theme.textSecondary)`, `Color.theme.surface`, `UIColor.theme.accent`. They switch automatically with light/dark mode.
+  - Grouped screens: `.themedGroupedBackground()` on the `List`/`Form`, `.themedRow()` on rows. Plain screens: `.themedBackground()`.
+  - UIKit chrome (window tint, nav bar, tab bar) is set by `ThemeAppearance`. On iOS 26 the bars stay Liquid Glass, so `navigationBar` / `tabBar` colors apply on iOS 17–18.
+  - To add a color: add a property to `ColorPalette` and give it a value in both themes.
 - Toasts: flows get `any ToastPresenting` (backed by `ToastCenter`) and call `toasts.show(Toast("…", style: .success))`. View models report outcomes through their router, not by showing toasts.
 - Previews use `PreviewBrewRepository` and `PreviewRouter.shared`.
 - Tests use Swift Testing (`import Testing`), with a mock repository and a spy router per feature test target.

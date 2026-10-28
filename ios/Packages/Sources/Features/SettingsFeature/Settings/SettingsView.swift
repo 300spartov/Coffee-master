@@ -8,6 +8,8 @@ struct SettingsView: View {
         List {
             Section("General") {
                 Toggle("Haptics", isOn: $viewModel.hapticsEnabled)
+                    .tint(.theme.accent)
+                    .themedRow()
             }
 
             Section("Shortcuts") {
@@ -15,7 +17,9 @@ struct SettingsView: View {
                     viewModel.didTapNewBrew()
                 } label: {
                     Label("Log a New Brew", systemImage: "plus.circle")
+                        .foregroundStyle(.theme.accent)
                 }
+                .themedRow()
             }
 
             Section {
@@ -27,13 +31,16 @@ struct SettingsView: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
+                            .foregroundStyle(.theme.textTertiary)
                     }
                 }
-                .tint(.primary)
+                .foregroundStyle(.theme.textPrimary)
+                .themedRow()
                 LabeledContent("Version", value: viewModel.appVersion)
+                    .themedRow()
             }
         }
         .listStyle(.insetGrouped)
+        .themedGroupedBackground()
     }
 }

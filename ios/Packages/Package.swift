@@ -56,6 +56,7 @@ let package = Package(
 
         // MARK: Tests
         .testTarget(name: "DomainTests", dependencies: ["Domain"]),
+        .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem"]),
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(name: "BrewsFeatureTests", dependencies: ["BrewsFeature", "Domain"]),

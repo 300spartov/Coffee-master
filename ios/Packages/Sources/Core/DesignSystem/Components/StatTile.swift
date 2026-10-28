@@ -13,14 +13,15 @@ public struct StatTile: View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.theme.textSecondary)
             Text(value)
                 .font(.title3.weight(.semibold))
                 .monospacedDigit()
+                .foregroundStyle(.theme.textPrimary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.md)
-        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: Radius.medium))
+        .background(.theme.surface, in: RoundedRectangle(cornerRadius: Radius.medium))
     }
 }
 

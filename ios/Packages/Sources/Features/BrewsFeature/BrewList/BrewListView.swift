@@ -33,7 +33,7 @@ struct BrewListView: View {
                     } label: {
                         BrewRow(brew: brew)
                     }
-                    .tint(.primary)
+                    .themedRow()
                 }
                 .onDelete { offsets in
                     let removed = offsets.map { brews[$0] }
@@ -41,6 +41,7 @@ struct BrewListView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .themedGroupedBackground()
         }
     }
 }
@@ -52,15 +53,16 @@ struct BrewRow: View {
         HStack(spacing: Spacing.md) {
             Image(systemName: brew.method.systemImage)
                 .font(.title2)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.theme.accent)
                 .frame(width: 36)
 
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(brew.displayTitle)
                     .font(.headline)
+                    .foregroundStyle(.theme.textPrimary)
                 Text("\(brew.method.rawValue) · 1:\(brew.ratio, format: .number.precision(.fractionLength(1)))")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.theme.textSecondary)
             }
 
             Spacer()
@@ -69,7 +71,7 @@ struct BrewRow: View {
                 RatingView(rating: brew.rating)
                 Text(brew.date, format: .relative(presentation: .named))
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.theme.textSecondary)
             }
         }
         .padding(.vertical, Spacing.xs)
