@@ -2,28 +2,14 @@ import UIKit
 import Domain
 import Navigation
 
-/// Public entry point of the feature. Builds screens and wires each ViewModel to its dependencies
-/// and router. Views and ViewModels stay `internal`.
+/// Public entry point of the feature. Builds screens and wires each ViewModel to its router.
+/// Services are injected into ViewModels by Factory (`@Injected`). Views and ViewModels stay `internal`.
 @MainActor
 public struct BrewsModule {
-    public struct Dependencies {
-        public let repository: any BrewRepository
-        public let brewTimer: any BrewTimerService
-
-        public init(repository: any BrewRepository, brewTimer: any BrewTimerService) {
-            self.repository = repository
-            self.brewTimer = brewTimer
-        }
-    }
-
-    private let dependencies: Dependencies
-
-    public init(dependencies: Dependencies) {
-        self.dependencies = dependencies
-    }
+    public init() {}
 
     public func makeBrewList(router: any BrewListRouting) -> UIViewController {
-        let viewModel = BrewListViewModel(repository: dependencies.repository, router: router)
+        let viewModel = BrewListViewModel(router: router)
         let controller = HostingController(
             rootView: BrewListView(viewModel: viewModel),
             title: String(localized: "Brews"),
@@ -37,12 +23,7 @@ public struct BrewsModule {
     }
 
     public func makeBrewDetail(id: Brew.ID, router: any BrewDetailRouting) -> UIViewController {
-        let viewModel = BrewDetailViewModel(
-            brewID: id,
-            repository: dependencies.repository,
-            brewTimer: dependencies.brewTimer,
-            router: router
-        )
+        let viewModel = BrewDetailViewModel(brewID: id, router: router)
         return HostingController(
             rootView: BrewDetailView(viewModel: viewModel),
             hidesBottomBarWhenPushed: true
@@ -50,7 +31,7 @@ public struct BrewsModule {
     }
 
     public func makeNewBrew(router: any NewBrewRouting) -> UIViewController {
-        let viewModel = NewBrewViewModel(repository: dependencies.repository, router: router)
+        let viewModel = NewBrewViewModel(router: router)
         let controller = HostingController(
             rootView: NewBrewView(viewModel: viewModel),
             title: String(localized: "New Brew")

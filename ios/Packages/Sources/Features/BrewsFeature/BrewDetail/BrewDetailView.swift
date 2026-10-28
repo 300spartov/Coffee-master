@@ -95,13 +95,7 @@ struct BrewDetailView: View {
 
 #if DEBUG
 #Preview {
-    BrewDetailView(
-        viewModel: BrewDetailViewModel(
-            brewID: Brew.samples[0].id,
-            repository: PreviewBrewRepository(),
-            brewTimer: NoopBrewTimerService(),
-            router: PreviewRouter.shared
-        )
-    )
+    // Previews resolve the default (fixture) registrations — no setup needed.
+    BrewDetailView(viewModel: BrewDetailViewModel(brewID: Brew.samples[0].id, router: PreviewRouter.shared))
 }
 #endif

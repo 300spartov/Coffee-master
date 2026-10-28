@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import Domain
+import Factory
 
 @MainActor
 @Observable
@@ -16,11 +17,10 @@ final class NewBrewViewModel {
     private(set) var isSaving = false
     private(set) var errorMessage: String?
 
-    @ObservationIgnored private let repository: any BrewRepository
+    @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any NewBrewRouting)?
 
-    init(repository: any BrewRepository, router: any NewBrewRouting) {
-        self.repository = repository
+    init(router: any NewBrewRouting) {
         self.router = router
     }
 

@@ -1,4 +1,5 @@
 import UIKit
+import Factory
 import Domain
 import DeepLinks
 import DesignSystem
@@ -9,15 +10,14 @@ import BrewsFeature
 @MainActor
 final class BrewsFlow: Flow {
     private let module: BrewsModule
-    private let toasts: any ToastPresenting
+    @Injected(\.toasts) private var toasts
     private let router = StackRouter()
     private var modalRouter: StackRouter?
 
     var rootViewController: UIViewController { router.navigationController }
 
-    init(module: BrewsModule, toasts: any ToastPresenting) {
+    init(module: BrewsModule) {
         self.module = module
-        self.toasts = toasts
         router.navigationController.tabBarItem = UITabBarItem(
             title: String(localized: "Brews"),
             image: UIImage(systemName: "cup.and.saucer"),

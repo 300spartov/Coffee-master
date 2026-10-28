@@ -1,4 +1,5 @@
 import UIKit
+import Factory
 import UniformTypeIdentifiers
 import AppCore
 import DataLayer
@@ -14,21 +15,14 @@ import WebImport
 final class SettingsFlow: NSObject, Flow {
     private let module: SettingsModule
     private let router = StackRouter()
-    private let toasts: any ToastPresenting
-    private let webImport: WebImportService
+    @Injected(\.toasts) private var toasts
+    @Injected(\.webImportService) private var webImport
     private let openDeepLink: (DeepLink) -> Void
 
     var rootViewController: UIViewController { router.navigationController }
 
-    init(
-        module: SettingsModule,
-        toasts: any ToastPresenting,
-        webImport: WebImportService,
-        openDeepLink: @escaping (DeepLink) -> Void
-    ) {
+    init(module: SettingsModule, openDeepLink: @escaping (DeepLink) -> Void) {
         self.module = module
-        self.toasts = toasts
-        self.webImport = webImport
         self.openDeepLink = openDeepLink
         super.init()
         router.navigationController.tabBarItem = UITabBarItem(

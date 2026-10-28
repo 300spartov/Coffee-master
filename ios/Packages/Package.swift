@@ -10,6 +10,9 @@ import PackageDescription
 //        ├──► WidgetsShared ──► Domain, DeepLinks, AppCore
 //        └──► WebImport ──► Domain          (one-time import of the web app's JSON export)
 //
+// DI: Factory. Each module declares the keys for the protocols it owns (with preview-safe defaults);
+// the app target registers real implementations (`Container+App.swift`). View models use `@Injected`.
+//
 // Features never import each other. Cross-feature navigation goes through the app's flows.
 // Modules listed in `ExtensionModules` must stay UIKit-navigation-free so widgets / live activities can link them.
 
@@ -31,12 +34,16 @@ let package = Package(
             targets: ["AppCore", "Domain", "DesignSystem", "DeepLinks", "WidgetsShared"]
         ),
     ],
+    dependencies: [
+        // DI container: https://github.com/hmlongco/Factory
+        .package(url: "https://github.com/hmlongco/Factory.git", from: "2.4.12"),
+    ],
     targets: [
         // MARK: Core
-        .target(name: "AppCore", path: "Sources/Core/AppCore"),
-        .target(name: "Domain", dependencies: ["AppCore"], path: "Sources/Core/Domain"),
+        .target(name: "AppCore", dependencies: [.product(name: "Factory", package: "Factory")], path: "Sources/Core/AppCore"),
+        .target(name: "Domain", dependencies: ["AppCore", .product(name: "Factory", package: "Factory")], path: "Sources/Core/Domain"),
         .target(name: "DataLayer", dependencies: ["AppCore", "Domain", "WebImport"], path: "Sources/Core/DataLayer"),
-        .target(name: "DesignSystem", path: "Sources/Core/DesignSystem"),
+        .target(name: "DesignSystem", dependencies: [.product(name: "Factory", package: "Factory")], path: "Sources/Core/DesignSystem"),
         .target(name: "DeepLinks", dependencies: ["AppCore"], path: "Sources/Core/DeepLinks"),
         .target(name: "Navigation", dependencies: ["DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
         .target(name: "WidgetsShared", dependencies: ["AppCore", "Domain", "DeepLinks"], path: "Sources/Core/WidgetsShared"),
@@ -45,12 +52,12 @@ let package = Package(
         // MARK: Features
         .target(
             name: "BrewsFeature",
-            dependencies: ["Domain", "DesignSystem", "Navigation"],
+            dependencies: ["Domain", "DesignSystem", "Navigation", .product(name: "Factory", package: "Factory")],
             path: "Sources/Features/BrewsFeature"
         ),
         .target(
             name: "SettingsFeature",
-            dependencies: ["AppCore", "DesignSystem", "Navigation"],
+            dependencies: ["AppCore", "DesignSystem", "Navigation", .product(name: "Factory", package: "Factory")],
             path: "Sources/Features/SettingsFeature"
         ),
 
@@ -60,6 +67,9 @@ let package = Package(
         .testTarget(name: "DataLayerTests", dependencies: ["DataLayer", "Domain", "WebImport"]),
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
-        .testTarget(name: "BrewsFeatureTests", dependencies: ["BrewsFeature", "Domain"]),
+        .testTarget(
+            name: "BrewsFeatureTests",
+            dependencies: ["BrewsFeature", "Domain", .product(name: "FactoryTesting", package: "Factory")]
+        ),
     ]
 )

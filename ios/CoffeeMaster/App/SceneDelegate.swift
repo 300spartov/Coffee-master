@@ -12,12 +12,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        guard let windowScene = scene as? UIWindowScene,
-              let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        else { return }
+        guard let windowScene = scene as? UIWindowScene else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        let router = AppRouter(window: window, container: appDelegate.container)
+        let router = AppRouter(window: window)
         router.start()
         self.window = window
         appRouter = router

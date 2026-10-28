@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import Domain
+import Factory
 
 @MainActor
 @Observable
@@ -16,19 +17,12 @@ final class BrewDetailViewModel {
     var alertMessage: String?
 
     @ObservationIgnored private let brewID: Brew.ID
-    @ObservationIgnored private let repository: any BrewRepository
-    @ObservationIgnored private let brewTimer: any BrewTimerService
+    @ObservationIgnored @Injected(\.brewRepository) private var repository
+    @ObservationIgnored @Injected(\.brewTimer) private var brewTimer
     @ObservationIgnored private weak var router: (any BrewDetailRouting)?
 
-    init(
-        brewID: Brew.ID,
-        repository: any BrewRepository,
-        brewTimer: any BrewTimerService,
-        router: any BrewDetailRouting
-    ) {
+    init(brewID: Brew.ID, router: any BrewDetailRouting) {
         self.brewID = brewID
-        self.repository = repository
-        self.brewTimer = brewTimer
         self.router = router
     }
 

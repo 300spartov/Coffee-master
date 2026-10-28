@@ -1,23 +1,24 @@
 import UIKit
+import Factory
 import AppCore
+import BrewsFeature
 import DeepLinks
 import Navigation
+import SettingsFeature
 
 /// Root of the navigation tree: owns the window, the tab bar and one `Flow` per tab.
 /// Every external entry point ends up in `handle(_:)`.
 @MainActor
 final class AppRouter {
     private let window: UIWindow
-    private let container: AppContainer
     private let parser = DeepLinkParser()
     private let tabBarController = UITabBarController()
     private var flows: [any Flow] = []
     /// A link that arrived before `start()` (or while the UI wasn't ready, e.g. behind onboarding / login).
     private var pendingDeepLink: DeepLink?
 
-    init(window: UIWindow, container: AppContainer) {
+    init(window: UIWindow) {
         self.window = window
-        self.container = container
     }
 
     func start() {
@@ -28,7 +29,7 @@ final class AppRouter {
         tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()
-        container.toastCenter.attach(to: window)
+        Container.shared.toastCenter().attach(to: window)
 
         if let link = pendingDeepLink {
             pendingDeepLink = nil
@@ -39,13 +40,8 @@ final class AppRouter {
     /// Order here = tab order. Adding a tab = adding a Flow.
     private func makeFlows() -> [any Flow] {
         [
-            BrewsFlow(module: container.brewsModule, toasts: container.toastCenter),
-            SettingsFlow(
-                module: container.settingsModule,
-                toasts: container.toastCenter,
-                webImport: container.webImportService,
-                openDeepLink: { [weak self] in self?.handle($0) }
-            ),
+            BrewsFlow(module: BrewsModule()),
+            SettingsFlow(module: SettingsModule(), openDeepLink: { [weak self] in self?.handle($0) }),
         ]
     }
 

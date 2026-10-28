@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import Domain
+import Factory
 
 @MainActor
 @Observable
@@ -14,11 +15,10 @@ final class BrewListViewModel {
 
     private(set) var state: State = .loading
 
-    @ObservationIgnored private let repository: any BrewRepository
+    @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any BrewListRouting)?
 
-    init(repository: any BrewRepository, router: any BrewListRouting) {
-        self.repository = repository
+    init(router: any BrewListRouting) {
         self.router = router
     }
 

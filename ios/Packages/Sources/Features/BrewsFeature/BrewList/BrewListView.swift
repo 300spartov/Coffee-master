@@ -81,6 +81,6 @@ struct BrewRow: View {
 
 #if DEBUG
 #Preview {
-    BrewListView(viewModel: BrewListViewModel(repository: PreviewBrewRepository(), router: PreviewRouter.shared))
+    BrewListView(viewModel: BrewListViewModel(router: PreviewRouter.shared))
 }
 #endif

@@ -13,7 +13,8 @@ ios/
 ├── CoffeeMaster.xcodeproj        # synchronized folders: new files in CoffeeMaster/ are picked up automatically
 ├── Config/Info.plist             # URL scheme, scene manifest, NSSupportsLiveActivities, quick actions
 ├── CoffeeMaster/                 # App target = composition layer (thin)
-│   ├── App/                      # AppDelegate, SceneDelegate (entry points), AppContainer (DI)
+│   ├── App/                      # AppDelegate, SceneDelegate (entry points)
+│   ├── DI/                       # Factory registrations: composition root
 │   ├── Navigation/
 │   │   ├── AppRouter.swift       # window + tab bar + deep-link dispatch
 │   │   └── Flows/                # one Flow per tab; implements feature routing protocols
@@ -37,7 +38,7 @@ ios/
 Dependency rules (enforced by `Package.swift`):
 
 - **Features never import other features.** They import `Domain`, `DesignSystem` and `Navigation` only.
-- **Only the app target knows concrete types.** `AppContainer` wires them up.
+- **Only the app target knows concrete types.** They're registered with Factory in `DI/Container+App.swift`.
 - `ExtensionModules` (`AppCore`, `Domain`, `DesignSystem`, `DeepLinks`, `WidgetsShared`) must not need
   UIKit navigation, because widget and Live Activity extensions link them.
 
@@ -155,6 +156,34 @@ struct BrewTimerLiveActivity: Widget {
     }
 }
 ```
+
+## Dependency injection (Factory)
+
+[Factory](https://github.com/hmlongco/Factory) 2.x.
+
+| What | Where |
+|---|---|
+| Key for a shared protocol, with a **preview-safe default** | The module that owns the protocol, e.g. `Domain/DI/Container+Domain.swift` → `brewRepository` (default: fixtures), `DesignSystem/DI` → `toasts` (default: silent) |
+| Real implementations | `CoffeeMaster/DI/Container+App.swift` → `autoRegister()` |
+| App-only services (store, import, toast center) | Also `Container+App.swift` |
+
+```swift
+// ViewModel: services by injection, router by init
+@ObservationIgnored @Injected(\.brewRepository) private var repository
+
+// Test (Swift Testing): an isolated container per test
+@Suite(.container) struct BrewListViewModelTests {
+    @Test func loads() async {
+        Container.shared.brewRepository.register { MockBrewRepository(brews: Brew.samples) }
+        let viewModel = BrewListViewModel(router: SpyRouter())
+        …
+    }
+}
+```
+
+- Under `@Observable`, put `@ObservationIgnored` on `@Injected` properties.
+- Routers are **not** injected. They're passed to `init` and held `weak`, because each screen has its own.
+- Previews need no setup, because the defaults resolve to fixtures.
 
 ## Conventions
 

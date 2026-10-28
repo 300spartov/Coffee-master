@@ -1,5 +1,7 @@
 import Foundation
 import Observation
+import AppCore
+import Factory
 
 @MainActor
 @Observable
@@ -8,18 +10,16 @@ final class SettingsViewModel {
         static let haptics = "settings.hapticsEnabled"
     }
 
-    let appVersion: String
+    @ObservationIgnored @Injected(\.appVersion) var appVersion
 
-    var hapticsEnabled: Bool {
+    var hapticsEnabled: Bool = true {
         didSet { defaults.set(hapticsEnabled, forKey: Keys.haptics) }
     }
 
-    @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored @Injected(\.userDefaults) private var defaults
     @ObservationIgnored private weak var router: (any SettingsRouting)?
 
-    init(appVersion: String, defaults: UserDefaults, router: any SettingsRouting) {
-        self.appVersion = appVersion
-        self.defaults = defaults
+    init(router: any SettingsRouting) {
         self.router = router
         hapticsEnabled = defaults.object(forKey: Keys.haptics) as? Bool ?? true
     }

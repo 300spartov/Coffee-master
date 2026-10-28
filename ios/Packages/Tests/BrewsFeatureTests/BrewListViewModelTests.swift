@@ -1,13 +1,23 @@
+import Factory
+import FactoryTesting
 import Testing
 import Domain
 @testable import BrewsFeature
 
+/// `.container` gives every test its own Factory container, so registrations don't leak
+/// between tests and the suite can run in parallel.
+@Suite(.container)
 @MainActor
 struct BrewListViewModelTests {
     private let router = SpyRouter()
 
+    private func makeViewModel(repository: MockBrewRepository) -> BrewListViewModel {
+        Container.shared.brewRepository.register { repository }
+        return BrewListViewModel(router: router)
+    }
+
     @Test func loadPublishesBrews() async {
-        let viewModel = BrewListViewModel(repository: MockBrewRepository(brews: Brew.samples), router: router)
+        let viewModel = makeViewModel(repository: MockBrewRepository(brews: Brew.samples))
 
         await viewModel.load()
 
@@ -15,7 +25,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func loadWithNoBrewsIsEmpty() async {
-        let viewModel = BrewListViewModel(repository: MockBrewRepository(), router: router)
+        let viewModel = makeViewModel(repository: MockBrewRepository())
 
         await viewModel.load()
 
@@ -23,7 +33,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func loadFailureShowsError() async {
-        let viewModel = BrewListViewModel(repository: MockBrewRepository(error: TestError()), router: router)
+        let viewModel = makeViewModel(repository: MockBrewRepository(error: TestError()))
 
         await viewModel.load()
 
@@ -31,7 +41,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func selectingBrewRoutesToDetail() {
-        let viewModel = BrewListViewModel(repository: MockBrewRepository(), router: router)
+        let viewModel = makeViewModel(repository: MockBrewRepository())
 
         viewModel.didSelect(Brew.samples[1])
 
@@ -39,10 +49,19 @@ struct BrewListViewModelTests {
     }
 
     @Test func tappingAddRoutesToNewBrew() {
-        let viewModel = BrewListViewModel(repository: MockBrewRepository(), router: router)
+        let viewModel = makeViewModel(repository: MockBrewRepository())
 
         viewModel.didTapAdd()
 
         #expect(router.newBrewShownCount == 1)
+    }
+
+    @Test func usesPreviewDataWhenNothingIsRegistered() async {
+        // Default registration = fixtures; this is what SwiftUI previews get.
+        let viewModel = BrewListViewModel(router: router)
+
+        await viewModel.load()
+
+        #expect(viewModel.state == .loaded(Brew.samples))
     }
 }

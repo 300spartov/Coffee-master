@@ -1,13 +1,21 @@
+import Factory
+import FactoryTesting
 import Testing
 import Domain
 @testable import BrewsFeature
 
+@Suite(.container)
 @MainActor
 struct NewBrewViewModelTests {
     private let router = SpyRouter()
 
+    private func makeViewModel(repository: MockBrewRepository = MockBrewRepository()) -> NewBrewViewModel {
+        Container.shared.brewRepository.register { repository }
+        return NewBrewViewModel(router: router)
+    }
+
     @Test func blankBeanNameIsInvalid() {
-        let viewModel = NewBrewViewModel(repository: MockBrewRepository(), router: router)
+        let viewModel = makeViewModel()
         viewModel.beanName = "   "
 
         #expect(!viewModel.isValid)
@@ -15,7 +23,7 @@ struct NewBrewViewModelTests {
 
     @Test func saveStoresBrewAndFinishes() async {
         let repository = MockBrewRepository()
-        let viewModel = NewBrewViewModel(repository: repository, router: router)
+        let viewModel = makeViewModel(repository: repository)
         viewModel.beanName = "  Colombia Huila "
         viewModel.method = .chemex
 
@@ -29,7 +37,7 @@ struct NewBrewViewModelTests {
     }
 
     @Test func saveFailureKeepsScreenOpen() async {
-        let viewModel = NewBrewViewModel(repository: MockBrewRepository(error: TestError()), router: router)
+        let viewModel = makeViewModel(repository: MockBrewRepository(error: TestError()))
         viewModel.beanName = "Kenya"
 
         await viewModel.save()
@@ -39,7 +47,7 @@ struct NewBrewViewModelTests {
     }
 
     @Test func cancelFinishesWithoutBrew() {
-        let viewModel = NewBrewViewModel(repository: MockBrewRepository(), router: router)
+        let viewModel = makeViewModel()
 
         viewModel.cancel()
 

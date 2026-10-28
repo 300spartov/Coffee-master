@@ -17,6 +17,7 @@ Size: **S** ≈ 1–2 days, **M** ≈ 3–5 days, **L** ≈ 1–2 weeks.
 | D3 | **Local storage & sync model — decided: Core Data.** Our own backend means we design the API instead of inheriting the web's whole-blob merge. | Affects Phase 0 storage and Phase 5. | Core Data behind repository protocols, so features never see it. Codable domain models that can still decode the web JSON (D2). Per-record sync through a REST API (`updatedAt` + soft delete, last-write-wins). |
 | D4 | **Release scope.** | Decides whether sync blocks the first TestFlight build. | Beta = Phases 0–5 (includes sync). Market and Community come after. |
 | D5 | **Languages — decided.** UA (default) + EN. The web app has ~700 keys in `core/i18n.js`. Some catalog data (devices, flavors) is in UA/RU. | String Catalog setup. | `Localizable.xcstrings` with UA + EN. Keep data catalogs as-is, localize later. |
+| D6 | **Tooling — decided.** DI: **[Factory](https://github.com/hmlongco/Factory)** (adopted). Networking: **[Alamofire](https://github.com/Alamofire/Alamofire)** (added with the networking module in 5.2). | Shapes every module. | Keys with preview-safe defaults live in the owning module; the app registers real implementations; tests use the `FactoryTesting` `.container` trait. |
 
 ---
 
@@ -95,7 +96,7 @@ Size: **S** ≈ 1–2 days, **M** ≈ 3–5 days, **L** ≈ 1–2 weeks.
 | Step | What | Web source | Size |
 |---|---|---|---|
 | 5.1 | **API contract** with the backend team (OpenAPI): auth endpoints, per-entity CRUD for brews / beans / devices / filters / profile, `GET /changes?since=` for delta sync, achievements and XP either computed on the server or synced as records. | — | M |
-| 5.2 | **Networking layer**: `APIClient` (async/await, typed endpoints, error mapping), an auth interceptor that refreshes tokens automatically, environments (dev/stage/prod via xcconfig). New module `Networking`. | — | M |
+| 5.2 | **Networking layer on Alamofire** (decided): `APIClient` (async/await over Alamofire `Session`, typed endpoints, `Decodable` responses, error mapping), a `RequestInterceptor` that attaches tokens and refreshes them on 401 (Alamofire `AuthenticationInterceptor`), retry policy, `EventMonitor` logging, environments (dev/stage/prod via xcconfig). New module `Networking`; `APIClient` registered with Factory and mocked in tests. | — | M |
 | 5.3 | **Sign in with Apple**: `ASAuthorizationAppleIDButton` on a welcome screen, nonce, identity token → backend → app tokens in the Keychain. Restore the session on launch, sign out, check credential state (`getCredentialState`) on foreground. **Account deletion** in Settings (required by App Store rules). New module `AuthFeature`, gating `AppRouter` (a pending deep link resumes after login). | — | M |
 | 5.4 | **Sync engine**: push local changes (outbox), pull with `since`, last-write-wins on `updatedAt`, propagate soft deletes (ties into trash 3.4), first-login merge of local data into the account. Unit tests with fixtures. | — | L |
 | 5.5 | Offline-first behavior, a sync status indicator, retry/backoff, background refresh (`BGAppRefreshTask`). | — | S |
