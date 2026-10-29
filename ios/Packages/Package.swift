@@ -7,8 +7,8 @@ import PackageDescription
 //        │             │
 //        │             └──────► Domain ◄── DataLayer (Core Data) ──► WebImport
 //        │             └──────► DesignSystem
-//        ├──► WidgetsShared ──► Domain, DeepLinks, AppCore
-//        └──► WebImport ──► Domain          (one-time import of the web app's JSON export)
+//        ├────► WidgetsShared ──► Domain, DeepLinks, AppCore
+//        └────► WebImport ──► Domain          (one-time import of the web app's JSON export)
 //
 // DI: Factory. Each module declares the keys for the protocols it owns (with preview-safe defaults);
 // the app target registers real implementations (`Container+App.swift`). View models use `@Injected`.
@@ -34,7 +34,7 @@ let package = Package(
             name: "AppModules",
             targets: [
                 "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport",
-                "BrewsFeature", "SettingsFeature",
+                "BrewsFeature", "SettingsFeature", "BeansFeature",
             ]
         ),
         // Lightweight subset for app extensions (Widget Extension, Live Activities).
@@ -89,6 +89,13 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
+        .target(
+            name: "BeansFeature",
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
+            path: "Sources/Features/BeansFeature",
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
+        ),
 
         // MARK: Tests
         .testTarget(name: "AppCoreTests", dependencies: ["AppCore"]),
@@ -105,6 +112,10 @@ let package = Package(
         .testTarget(
             name: "BrewsFeatureTests",
             dependencies: ["BrewsFeature", "Domain", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+        ),
+        .testTarget(
+            name: "BeansFeatureTests",
+            dependencies: ["BeansFeature", "Domain", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
     ]
 )

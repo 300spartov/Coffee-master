@@ -210,6 +210,22 @@
         }
       }
     },
+    "This bean no longer exists." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This bean no longer exists."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цієї пачки більше немає."
+          }
+        }
+      }
+    },
     "This brew no longer exists." : {
       "localizations" : {
         "en" : {
@@ -259,6 +275,7 @@
       }
     },
     "Your coffee bags will live here." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

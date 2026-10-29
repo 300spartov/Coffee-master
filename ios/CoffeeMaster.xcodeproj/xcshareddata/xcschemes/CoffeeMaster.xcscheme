@@ -128,6 +128,16 @@
                ReferencedContainer = "container:Packages">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BeansFeatureTests"
+               BuildableName = "BeansFeatureTests"
+               BlueprintName = "BeansFeatureTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
