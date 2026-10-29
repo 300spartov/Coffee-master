@@ -1,4 +1,4 @@
-public extension Theme {
+nonisolated public extension Theme {
     /// Light appearance. Neutrals currently mirror iOS system colors; the accent is the web app's amber,
     /// darkened for contrast on white.
     static let light = ColorPalette(

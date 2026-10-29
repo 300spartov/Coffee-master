@@ -10,20 +10,19 @@ import SettingsFeature
 import WebImport
 
 /// Profile tab. For now it hosts Settings; the profile itself (stats, XP, achievements) comes in
-/// ROADMAP Phase 4. Reaches other features only through deep links routed by `AppRouter`.
-@MainActor
+/// ROADMAP Phase 4.
 final class ProfileFlow: NSObject, Flow {
     private let module: SettingsModule
     private let router = StackRouter()
     @Injected(\.toasts) private var toasts
     @Injected(\.webImportService) private var webImport
-    private let openDeepLink: (DeepLink) -> Void
+    private let startBrew: () -> Void
 
     var rootViewController: UIViewController { router.navigationController }
 
-    init(module: SettingsModule, openDeepLink: @escaping (DeepLink) -> Void) {
+    init(module: SettingsModule, startBrew: @escaping () -> Void) {
         self.module = module
-        self.openDeepLink = openDeepLink
+        self.startBrew = startBrew
         super.init()
         router.navigationController.tabBarItem = UITabBarItem(
             title: tr("Profile"),
@@ -33,9 +32,7 @@ final class ProfileFlow: NSObject, Flow {
     }
 
     func start() {
-        let settings = module.makeSettings(router: self)
-        settings.title = tr("Profile")
-        router.setRoot(settings)
+        router.setRoot(module.makeSettings(router: self, title: tr("Profile")))
     }
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
@@ -54,10 +51,8 @@ final class ProfileFlow: NSObject, Flow {
             #if DEBUG
             router.push(makeDesignSystemGallery(), animated: false)
             #endif
-        case .achievements:
-            // The achievements screen arrives with ROADMAP 4.3; until then the link lands on Profile.
-            break
         default:
+            // `.achievements` lands on Profile until its screen arrives (ROADMAP 4.3).
             break
         }
     }
@@ -69,7 +64,7 @@ extension ProfileFlow: SettingsRouting {
     }
 
     func showNewBrew() {
-        openDeepLink(.newBrew)
+        startBrew()
     }
 
     func showDesignSystem() {
@@ -105,15 +100,13 @@ extension ProfileFlow: UIDocumentPickerDelegate {
     /// Also used by the Debug `-importWebJSON <path>` launch argument.
     func importWebData(from url: URL) async {
         do {
-            let data = try Data(contentsOf: url)
-            let summary = try await webImport.importJSON(data)
-            toasts.show(Self.toast(for: summary))
+            toasts.show(Self.toast(for: try await webImport.importJSON(contentsOf: url)))
         } catch let error as WebImportError {
             Log.data.error("Web import rejected: \(String(describing: error), privacy: .public)")
-            toasts.show(Toast(tr("This file isn't a Coffee Master export."), style: .error))
+            toasts.show(tr("This file isn't a Coffee Master export."), style: .error)
         } catch {
             Log.data.error("Web import failed: \(error.localizedDescription, privacy: .public)")
-            toasts.show(Toast(tr("Import failed. Please try again."), style: .error))
+            toasts.show(tr("Import failed. Please try again."), style: .error)
         }
     }
 

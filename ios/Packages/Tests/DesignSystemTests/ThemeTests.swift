@@ -7,23 +7,21 @@ struct ThemeTests {
     private let lightTraits = UITraitCollection(userInterfaceStyle: .light)
     private let darkTraits = UITraitCollection(userInterfaceStyle: .dark)
 
-    @Test(arguments: [
-        \ColorPalette.background, \.groupedBackground, \.surface, \.elevatedSurface, \.fill,
-        \.textPrimary, \.textSecondary, \.textTertiary, \.accent, \.onAccent, \.accentSoft,
-        \.success, \.warning, \.error, \.info, \.separator, \.shadow,
-        \.navigationBar, \.tabBar, \.tabBarItem,
-    ] as [KeyPath<ColorPalette, ThemeColor> & Sendable])
-    func dynamicColorResolvesPerAppearance(_ role: KeyPath<ColorPalette, ThemeColor> & Sendable) {
+    @Test(arguments: ColorPalette.roles.map(\.name))
+    func dynamicColorResolvesPerAppearance(_ name: String) throws {
+        let role = try #require(ColorPalette.roles.first { $0.name == name }).keyPath
         let color = UIColor.theme[dynamicMember: role]
 
         #expect(color.resolvedColor(with: lightTraits) == Theme.light[keyPath: role].uiColor)
         #expect(color.resolvedColor(with: darkTraits) == Theme.dark[keyPath: role].uiColor)
     }
 
-    @Test func paletteForStyle() {
-        #expect(Theme.palette(for: .dark).background == Theme.dark.background)
-        #expect(Theme.palette(for: .light).background == Theme.light.background)
-        #expect(Theme.palette(for: .unspecified).background == Theme.light.background)
+    /// `ColorPalette.roles` must list every property, or the gallery and this test miss a color.
+    @Test func rolesCoverEveryPaletteProperty() {
+        let properties = Mirror(reflecting: Theme.light).children.compactMap(\.label)
+
+        #expect(Set(ColorPalette.roles.map(\.name)) == Set(properties))
+        #expect(ColorPalette.roles.count == properties.count)
     }
 
     @Test func hexParsing() {

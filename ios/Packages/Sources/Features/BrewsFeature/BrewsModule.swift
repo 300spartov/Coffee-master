@@ -4,7 +4,6 @@ import Navigation
 
 /// Public entry point of the feature. Builds screens and wires each ViewModel to its router.
 /// Services are injected into ViewModels by Factory (`@Injected`). Views and ViewModels stay `internal`.
-@MainActor
 public struct BrewsModule {
     public init() {}
 
@@ -15,7 +14,7 @@ public struct BrewsModule {
             title: tr("Journal"),
             largeTitleDisplayMode: .always
         )
-        // No "+" here: starting a brew is the app-wide Brew action (tab bar accessory).
+        // No "+" here: starting a brew is the app-wide Brew button in the top bar.
         controller.view.accessibilityIdentifier = "journal.list"
         return controller
     }

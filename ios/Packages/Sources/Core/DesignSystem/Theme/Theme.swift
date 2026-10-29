@@ -10,16 +10,11 @@ import UIKit
 ///
 /// Colors are dynamic: they follow the system light/dark setting (or a window's
 /// `overrideUserInterfaceStyle`) without any code in screens.
-public enum Theme {
-    /// The palette for a given appearance.
-    public static func palette(for style: UIUserInterfaceStyle) -> ColorPalette {
-        style == .dark ? dark : light
-    }
-}
+nonisolated public enum Theme {}
 
 /// Resolves any `ColorPalette` role into a dynamic UIKit color.
 @dynamicMemberLookup
-public struct ThemeUIColors: Sendable {
+nonisolated public struct ThemeUIColors: Sendable {
     public subscript(dynamicMember role: KeyPath<ColorPalette, ThemeColor>) -> UIColor {
         // Resolve both values now so the provider closure only captures plain values.
         let light = Theme.light[keyPath: role]
@@ -32,21 +27,17 @@ public struct ThemeUIColors: Sendable {
 
 /// Resolves any `ColorPalette` role into a dynamic SwiftUI color.
 @dynamicMemberLookup
-public struct ThemeColors: Sendable {
+nonisolated public struct ThemeColors: Sendable {
     public subscript(dynamicMember role: KeyPath<ColorPalette, ThemeColor>) -> Color {
         Color(uiColor: ThemeUIColors()[dynamicMember: role])
     }
 }
 
-public extension UIColor {
+nonisolated public extension UIColor {
     static var theme: ThemeUIColors { ThemeUIColors() }
 }
 
-public extension Color {
-    static var theme: ThemeColors { ThemeColors() }
-}
-
-public extension ShapeStyle where Self == Color {
+nonisolated public extension ShapeStyle where Self == Color {
     /// Enables `.foregroundStyle(.theme.textSecondary)` / `.background(.theme.surface)`.
     static var theme: ThemeColors { ThemeColors() }
 }

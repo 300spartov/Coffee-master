@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 import PackageDescription
 
 // Layering (arrows = "depends on"):
@@ -15,6 +15,14 @@ import PackageDescription
 //
 // Features never import each other. Cross-feature navigation goes through the app's flows.
 // Modules listed in `ExtensionModules` must stay UIKit-navigation-free so widgets / live activities can link them.
+
+/// Factory's DI library. Import `FactoryKit`, not `Factory`: same library, but `FactoryTesting` is
+/// built on `FactoryKit`, and the two have distinct `Container` types.
+let factoryKit: Target.Dependency = .product(name: "FactoryKit", package: "Factory")
+
+/// UI modules run on the main actor by default (Swift 6.2), so views, view models, routers and
+/// modules need no `@MainActor`. Pure value types used off the main actor are marked `nonisolated`.
+let mainActorByDefault: [SwiftSetting] = [.defaultIsolation(MainActor.self)]
 
 let package = Package(
     name: "Packages",
@@ -36,23 +44,28 @@ let package = Package(
         ),
     ],
     dependencies: [
-        // DI container: https://github.com/hmlongco/Factory (import `FactoryKit`, not `Factory`: same
-        // library, but `FactoryTesting` is built on `FactoryKit`, and the two have distinct `Container` types)
+        // DI container: https://github.com/hmlongco/Factory
         .package(url: "https://github.com/hmlongco/Factory.git", from: "2.5.3"),
     ],
     targets: [
         // MARK: Core
-        .target(name: "AppCore", dependencies: [.product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/AppCore"),
-        .target(name: "Domain", dependencies: ["AppCore", .product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/Domain"),
+        .target(name: "AppCore", dependencies: [factoryKit], path: "Sources/Core/AppCore"),
+        .target(name: "Domain", dependencies: [factoryKit], path: "Sources/Core/Domain"),
         .target(name: "DataLayer", dependencies: ["AppCore", "Domain", "WebImport"], path: "Sources/Core/DataLayer"),
         .target(
             name: "DesignSystem",
-            dependencies: ["AppCore", .product(name: "FactoryKit", package: "Factory")],
+            dependencies: ["AppCore", factoryKit],
             path: "Sources/Core/DesignSystem",
-            resources: [.process("Resources")]
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
         ),
         .target(name: "DeepLinks", dependencies: ["AppCore"], path: "Sources/Core/DeepLinks"),
-        .target(name: "Navigation", dependencies: ["AppCore", "DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
+        .target(
+            name: "Navigation",
+            dependencies: ["AppCore", "DeepLinks", "DesignSystem", factoryKit],
+            path: "Sources/Core/Navigation",
+            swiftSettings: mainActorByDefault
+        ),
         .target(
             name: "WidgetsShared",
             dependencies: ["AppCore", "Domain", "DeepLinks"],
@@ -64,15 +77,17 @@ let package = Package(
         // MARK: Features
         .target(
             name: "BrewsFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
             path: "Sources/Features/BrewsFeature",
-            resources: [.process("Resources")]
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
         ),
         .target(
             name: "SettingsFeature",
-            dependencies: ["AppCore", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
+            dependencies: ["AppCore", "DesignSystem", "Navigation", factoryKit],
             path: "Sources/Features/SettingsFeature",
-            resources: [.process("Resources")]
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
         ),
 
         // MARK: Tests
@@ -84,8 +99,12 @@ let package = Package(
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(
+            name: "SettingsFeatureTests",
+            dependencies: ["SettingsFeature", "AppCore", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+        ),
+        .testTarget(
             name: "BrewsFeatureTests",
-            dependencies: ["BrewsFeature", "Domain", .product(name: "FactoryKit", package: "Factory"), .product(name: "FactoryTesting", package: "Factory")]
+            dependencies: ["BrewsFeature", "Domain", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
     ]
 )

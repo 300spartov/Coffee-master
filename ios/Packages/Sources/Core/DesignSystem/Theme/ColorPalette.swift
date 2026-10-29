@@ -6,7 +6,7 @@ import UIKit
 /// To change a color, edit `LightTheme.swift` / `DarkTheme.swift`.
 /// To add a role, add a property here and give it a value in both themes —
 /// it becomes available as `Color.theme.<role>` and `UIColor.theme.<role>` automatically.
-public struct ColorPalette: Sendable {
+nonisolated public struct ColorPalette: Sendable {
     // MARK: Backgrounds
 
     /// Main screen background (plain screens).
@@ -56,53 +56,23 @@ public struct ColorPalette: Sendable {
     /// Unselected tab bar items.
     public var tabBarItem: ThemeColor
 
-    public init(
-        background: ThemeColor,
-        groupedBackground: ThemeColor,
-        surface: ThemeColor,
-        elevatedSurface: ThemeColor,
-        fill: ThemeColor,
-        textPrimary: ThemeColor,
-        textSecondary: ThemeColor,
-        textTertiary: ThemeColor,
-        accent: ThemeColor,
-        onAccent: ThemeColor,
-        accentSoft: ThemeColor,
-        success: ThemeColor,
-        warning: ThemeColor,
-        error: ThemeColor,
-        info: ThemeColor,
-        separator: ThemeColor,
-        shadow: ThemeColor,
-        navigationBar: ThemeColor,
-        tabBar: ThemeColor,
-        tabBarItem: ThemeColor
-    ) {
-        self.background = background
-        self.groupedBackground = groupedBackground
-        self.surface = surface
-        self.elevatedSurface = elevatedSurface
-        self.fill = fill
-        self.textPrimary = textPrimary
-        self.textSecondary = textSecondary
-        self.textTertiary = textTertiary
-        self.accent = accent
-        self.onAccent = onAccent
-        self.accentSoft = accentSoft
-        self.success = success
-        self.warning = warning
-        self.error = error
-        self.info = info
-        self.separator = separator
-        self.shadow = shadow
-        self.navigationBar = navigationBar
-        self.tabBar = tabBar
-        self.tabBarItem = tabBarItem
+    /// Every role with its name, for the Design System gallery and theme tests. Keep in sync when
+    /// adding a role (the theme test fails otherwise).
+    public static var roles: [(name: String, keyPath: KeyPath<ColorPalette, ThemeColor>)] {
+        [
+            ("background", \.background), ("groupedBackground", \.groupedBackground),
+            ("surface", \.surface), ("elevatedSurface", \.elevatedSurface), ("fill", \.fill),
+            ("textPrimary", \.textPrimary), ("textSecondary", \.textSecondary), ("textTertiary", \.textTertiary),
+            ("accent", \.accent), ("onAccent", \.onAccent), ("accentSoft", \.accentSoft),
+            ("success", \.success), ("warning", \.warning), ("error", \.error), ("info", \.info),
+            ("separator", \.separator), ("shadow", \.shadow),
+            ("navigationBar", \.navigationBar), ("tabBar", \.tabBar), ("tabBarItem", \.tabBarItem),
+        ]
     }
 }
 
 /// An sRGB color written as hex, e.g. `ThemeColor(0xD89858)` or `ThemeColor(0x3C3C43, alpha: 0.6)`.
-public struct ThemeColor: Hashable, Sendable {
+nonisolated public struct ThemeColor: Hashable, Sendable {
     public let red: Double
     public let green: Double
     public let blue: Double

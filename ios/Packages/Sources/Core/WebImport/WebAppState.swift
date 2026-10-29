@@ -83,92 +83,44 @@ struct WebFilter: Decodable {
 
 struct WebBrew: Decodable {
     var id: LenientNumber
-    var ts: LenientNumber?
-    var beanName: String?
-    var roaster: String?
-    var roastType: String?
-    var beanId: LenientNumber?
-    var method: String?
-    var inverted: Bool?
-    var aeroFilters: LenientNumber?
-    var dripper: String?
-    var dripperId: LenientNumber?
-    var grinder: String?
-    var grinderId: LenientNumber?
-    var clicks: LenientNumber?
-    var temp: LenientNumber?
-    var ratio: LenientNumber?
-    var filter: String?
-    var filterId: LenientNumber?
-    var filterWet: Bool?
-    var espMachine: String?
-    var espMachineId: LenientNumber?
-    var accessories: [LenientNumber]?
-    var dose: LenientNumber?
-    var steps: LossyArray<WebStep>?
-    var totalTime: String?
-    var espresso: WebEspresso?
-    var milk: WebMilk?
-    var ice: WebIce?
-    var rating: LenientNumber?
-    var flavors: [String]?
-    var aroma: [String]?
-    var notes: String?
-    var liked: Bool?
-    var manual: Bool?
-    var place: String?
-    var source: String?
-    var cafeVisit: Bool?
-    var _deletedAt: LenientNumber?
-
-    enum CodingKeys: String, CodingKey {
-        case id, ts, beanName, roaster, roastType, beanId, method, inverted, aeroFilters, dripper, dripperId,
-             grinder, grinderId, clicks, temp, ratio, filter, filterId, filterWet, espMachine, espMachineId,
-             accessories, dose, steps, totalTime, espresso, milk, ice, rating, flavors, aroma, notes, liked,
-             manual, place, source, cafeVisit, _deletedAt
-    }
-
-    init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        id = try c.decode(LenientNumber.self, forKey: .id)
-        ts = c.lenient(.ts)
-        beanName = c.string(.beanName)
-        roaster = c.string(.roaster)
-        roastType = c.string(.roastType)
-        beanId = c.lenient(.beanId)
-        method = c.string(.method)
-        inverted = try? c.decodeIfPresent(Bool.self, forKey: .inverted)
-        aeroFilters = c.lenient(.aeroFilters)
-        dripper = c.string(.dripper)
-        dripperId = c.lenient(.dripperId)
-        grinder = c.string(.grinder)
-        grinderId = c.lenient(.grinderId)
-        clicks = c.lenient(.clicks)
-        temp = c.lenient(.temp)
-        ratio = c.lenient(.ratio)
-        filter = c.string(.filter)
-        filterId = c.lenient(.filterId)
-        filterWet = try? c.decodeIfPresent(Bool.self, forKey: .filterWet)
-        espMachine = c.string(.espMachine)
-        espMachineId = c.lenient(.espMachineId)
-        accessories = (try? c.decodeIfPresent(LossyArray<LenientNumber>.self, forKey: .accessories))?.elements
-        dose = c.lenient(.dose)
-        steps = try? c.decodeIfPresent(LossyArray<WebStep>.self, forKey: .steps)
-        totalTime = c.string(.totalTime) ?? c.lenient(.totalTime).map { String($0.value) }
-        espresso = try? c.decodeIfPresent(WebEspresso.self, forKey: .espresso)
-        milk = try? c.decodeIfPresent(WebMilk.self, forKey: .milk)
-        ice = try? c.decodeIfPresent(WebIce.self, forKey: .ice)
-        rating = c.lenient(.rating)
-        flavors = c.lossyStrings(forKey: .flavors)
-        aroma = c.lossyStrings(forKey: .aroma)
-        notes = c.string(.notes)
-        liked = try? c.decodeIfPresent(Bool.self, forKey: .liked)
-        manual = try? c.decodeIfPresent(Bool.self, forKey: .manual)
-        place = c.string(.place)
-        source = c.string(.source)
-        cafeVisit = try? c.decodeIfPresent(Bool.self, forKey: .cafeVisit)
-        _deletedAt = c.lenient(._deletedAt)
-    }
+    @Lenient var ts: LenientNumber?
+    @Lenient var beanName: String?
+    @Lenient var roaster: String?
+    @Lenient var roastType: String?
+    @Lenient var beanId: LenientNumber?
+    @Lenient var method: String?
+    @Lenient var inverted: Bool?
+    @Lenient var aeroFilters: LenientNumber?
+    @Lenient var dripper: String?
+    @Lenient var dripperId: LenientNumber?
+    @Lenient var grinder: String?
+    @Lenient var grinderId: LenientNumber?
+    @Lenient var clicks: LenientNumber?
+    @Lenient var temp: LenientNumber?
+    @Lenient var ratio: LenientNumber?
+    @Lenient var filter: String?
+    @Lenient var filterId: LenientNumber?
+    @Lenient var filterWet: Bool?
+    @Lenient var espMachine: String?
+    @Lenient var espMachineId: LenientNumber?
+    @Lenient var accessories: LossyArray<LenientNumber>?
+    @Lenient var dose: LenientNumber?
+    @Lenient var steps: LossyArray<WebStep>?
+    /// "3:05", "28с", "—" — or occasionally a bare number.
+    @Lenient var totalTime: LenientText?
+    @Lenient var espresso: WebEspresso?
+    @Lenient var milk: WebMilk?
+    @Lenient var ice: WebIce?
+    @Lenient var rating: LenientNumber?
+    @Lenient var flavors: LossyArray<String>?
+    @Lenient var aroma: LossyArray<String>?
+    @Lenient var notes: String?
+    @Lenient var liked: Bool?
+    @Lenient var manual: Bool?
+    @Lenient var place: String?
+    @Lenient var source: String?
+    @Lenient var cafeVisit: Bool?
+    @Lenient var _deletedAt: LenientNumber?
 }
 
 struct WebStep: Decodable {

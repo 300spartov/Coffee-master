@@ -2,11 +2,11 @@ import UIKit
 
 /// Thin wrapper around `UINavigationController`. All push / pop / present calls go through here,
 /// so flows never touch UIKit containers directly and navigation stays in one place.
-@MainActor
 public final class StackRouter: NSObject {
     public let navigationController: UINavigationController
 
-    /// Fired when this router's stack was presented modally and the user swiped it away.
+    /// Fired when this router's stack was presented modally and the user swiped it away,
+    /// so the owner can drop its reference.
     public var onInteractiveDismiss: (() -> Void)?
 
     public init(navigationController: UINavigationController = UINavigationController()) {
@@ -16,18 +16,10 @@ public final class StackRouter: NSObject {
         navigationController.navigationBar.prefersLargeTitles = true
     }
 
-    public var viewControllers: [UIViewController] {
-        navigationController.viewControllers
-    }
-
     // MARK: - Stack
 
     public func setRoot(_ viewController: UIViewController, animated: Bool = false) {
         navigationController.setViewControllers([viewController], animated: animated)
-    }
-
-    public func setStack(_ viewControllers: [UIViewController], animated: Bool = true) {
-        navigationController.setViewControllers(viewControllers, animated: animated)
     }
 
     public func push(_ viewController: UIViewController, animated: Bool = true) {
@@ -45,50 +37,43 @@ public final class StackRouter: NSObject {
     // MARK: - Modal
 
     /// Presents on top of whatever is currently presented above this stack.
-    public func present(
-        _ viewController: UIViewController,
-        animated: Bool = true,
-        completion: (() -> Void)? = nil
-    ) {
-        topPresenter.present(viewController, animated: animated, completion: completion)
+    public func present(_ viewController: UIViewController, animated: Bool = true) {
+        topPresenter.present(viewController, animated: animated)
     }
 
-    /// Presents `root` inside its own navigation stack and returns the router driving it.
+    /// Presents `root` in its own navigation stack above this one and returns the router driving it.
     /// Keep the returned router for as long as the modal flow is alive.
     @discardableResult
     public func presentStack(
         root: UIViewController,
         style: UIModalPresentationStyle = .automatic,
-        animated: Bool = true,
         configureSheet: ((UISheetPresentationController) -> Void)? = nil
     ) -> StackRouter {
-        let child = StackRouter()
-        child.setRoot(root)
-        child.navigationController.modalPresentationStyle = style
-        child.navigationController.presentationController?.delegate = child
-        if let sheet = child.navigationController.sheetPresentationController {
-            configureSheet?(sheet)
-        }
-        present(child.navigationController, animated: animated)
-        return child
+        Self.presentStack(root: root, from: topPresenter, style: style, configureSheet: configureSheet)
     }
 
-    /// Dismisses everything presented above this stack.
-    public func dismissPresented(animated: Bool = true, completion: (() -> Void)? = nil) {
-        guard navigationController.presentedViewController != nil else {
-            completion?()
-            return
+    /// Presents `root` in a new navigation stack from any view controller (e.g. the tab bar).
+    @discardableResult
+    public static func presentStack(
+        root: UIViewController,
+        from presenter: UIViewController,
+        style: UIModalPresentationStyle = .automatic,
+        configureSheet: ((UISheetPresentationController) -> Void)? = nil
+    ) -> StackRouter {
+        let router = StackRouter()
+        router.setRoot(root)
+        router.navigationController.modalPresentationStyle = style
+        router.navigationController.presentationController?.delegate = router
+        if let sheet = router.navigationController.sheetPresentationController {
+            configureSheet?(sheet)
         }
-        navigationController.dismiss(animated: animated, completion: completion)
+        presenter.present(router.navigationController, animated: true)
+        return router
     }
 
     /// Dismisses this stack itself (for routers returned by `presentStack`).
-    public func close(animated: Bool = true, completion: (() -> Void)? = nil) {
-        guard let presenter = navigationController.presentingViewController else {
-            completion?()
-            return
-        }
-        presenter.dismiss(animated: animated, completion: completion)
+    public func close(animated: Bool = true) {
+        navigationController.presentingViewController?.dismiss(animated: animated)
     }
 
     private var topPresenter: UIViewController {

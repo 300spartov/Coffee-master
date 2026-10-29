@@ -5,20 +5,27 @@ import Testing
 /// every key has a Ukrainian and an English value, and every `tr("…")` used in code exists
 /// in its module's catalog. Reads source files, so it needs no app or module bundles.
 struct StringCatalogTests {
-    /// Module source folder → its catalog (paths relative to `ios/`).
-    private static let modules: [(sources: String, catalog: String)] = [
-        ("Packages/Sources/Core/DesignSystem", "Packages/Sources/Core/DesignSystem/Resources/Localizable.xcstrings"),
-        ("Packages/Sources/Core/WidgetsShared", "Packages/Sources/Core/WidgetsShared/Resources/Localizable.xcstrings"),
-        ("Packages/Sources/Features/BrewsFeature", "Packages/Sources/Features/BrewsFeature/Resources/Localizable.xcstrings"),
-        ("Packages/Sources/Features/SettingsFeature", "Packages/Sources/Features/SettingsFeature/Resources/Localizable.xcstrings"),
-        ("CoffeeMaster", "CoffeeMaster/Localizable.xcstrings"),
-    ]
-
     private static let iosRoot = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent() // LocalizationTests
         .deletingLastPathComponent() // Tests
         .deletingLastPathComponent() // Packages
         .deletingLastPathComponent() // ios
+
+    /// Module source folder → its catalog (paths relative to `ios/`), discovered so a new module
+    /// can't be skipped: every package module's `Resources/Localizable.xcstrings`, plus the app's.
+    private static let modules: [(sources: String, catalog: String)] = {
+        let suffix = "/Resources/Localizable.xcstrings"
+        let packageCatalogs = (FileManager.default.enumerator(atPath: iosRoot.appendingPathComponent("Packages/Sources").path)?
+            .compactMap { $0 as? String } ?? [])
+            .filter { $0.hasSuffix(suffix) }
+            .map { "Packages/Sources/" + $0 }
+            .sorted()
+        return packageCatalogs.map { (String($0.dropLast(suffix.count)), $0) }
+            + [("CoffeeMaster", "CoffeeMaster/Localizable.xcstrings")]
+    }()
+
+    /// Every catalog whose values must be complete (includes the app's Info.plist strings).
+    private static let allCatalogs = modules.map(\.catalog) + ["CoffeeMaster/InfoPlist.xcstrings"]
 
     private static func catalog(_ path: String) throws -> [String: Any] {
         let data = try Data(contentsOf: iosRoot.appendingPathComponent(path))
@@ -26,7 +33,7 @@ struct StringCatalogTests {
         return try #require(json["strings"] as? [String: Any])
     }
 
-    @Test(arguments: modules.map(\.catalog))
+    @Test(arguments: allCatalogs)
     func everyKeyIsTranslated(_ catalogPath: String) throws {
         let strings = try Self.catalog(catalogPath)
         #expect(!strings.isEmpty)
@@ -38,6 +45,18 @@ struct StringCatalogTests {
                 #expect(!value.isEmpty, "\(catalogPath): \"\(key)\" has no \(language) value")
                 #expect(unit?["state"] as? String == "translated", "\(catalogPath): \"\(key)\" \(language) isn't translated")
             }
+        }
+    }
+
+    /// A module that calls `tr(…)` must ship a catalog (otherwise its strings never translate).
+    @Test func everyModuleUsingTrHasACatalog() throws {
+        let sources = Self.iosRoot.appendingPathComponent("Packages/Sources")
+        let helpers = (FileManager.default.enumerator(atPath: sources.path)?.compactMap { $0 as? String } ?? [])
+            .filter { $0.hasSuffix("/Localization.swift") }
+            .map { "Packages/Sources/" + $0.replacingOccurrences(of: "/Localization.swift", with: "") }
+        #expect(!helpers.isEmpty)
+        for module in helpers {
+            #expect(Self.modules.contains { $0.sources == module }, "\(module) uses tr() but has no Resources/Localizable.xcstrings")
         }
     }
 

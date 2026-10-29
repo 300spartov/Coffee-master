@@ -6,17 +6,16 @@ import Domain
 /// Core Data repositories on an in-memory SQLite store.
 struct RepositoriesTests {
     private let persistence: PersistenceController
-    private let brews: CoreDataBrewRepository
-    private let trash: CoreDataTrashRepository
-    private let beans: CoreDataBeanRepository
-    private let filters: CoreDataFilterPackRepository
+    private let brews: CoreDataRecordRepository<Brew>
+    private let beans: CoreDataRecordRepository<Bean>
+    private let filters: CoreDataRecordRepository<FilterPack>
+    private var trash: CoreDataRecordRepository<Brew> { brews }
 
     init() throws {
         persistence = try PersistenceController(location: .inMemory)
-        brews = CoreDataBrewRepository(persistence: persistence)
-        trash = CoreDataTrashRepository(persistence: persistence)
-        beans = CoreDataBeanRepository(persistence: persistence)
-        filters = CoreDataFilterPackRepository(persistence: persistence)
+        brews = CoreDataRecordRepository(persistence: persistence)
+        beans = CoreDataRecordRepository(persistence: persistence)
+        filters = CoreDataRecordRepository(persistence: persistence)
     }
 
     /// A V60 brew using `bean` (15 g) and one filter from `pack`.
@@ -134,7 +133,7 @@ struct RepositoriesTests {
     }
 
     @Test func devicesByTypeAndDuplicateCheck() async throws {
-        let devices = CoreDataDeviceRepository(persistence: persistence)
+        let devices = CoreDataRecordRepository<Device>(persistence: persistence)
         for device in Device.samples { try await devices.save(device) }
 
         #expect(try await devices.fetchAll().count == Device.samples.count)
@@ -157,7 +156,7 @@ struct RepositoriesTests {
     // MARK: - Profile & suggestions
 
     @Test func profileDefaultsToEmptyAndSaves() async throws {
-        let profiles = CoreDataProfileRepository(persistence: persistence)
+        let profiles = CoreDataProfileRepository(documents: DocumentStore(persistence: persistence))
 
         #expect(try await profiles.profile().name.isEmpty)
         try await profiles.saveProfile(UserProfile(name: "Олена", location: "Київ"))
@@ -165,7 +164,7 @@ struct RepositoriesTests {
     }
 
     @Test func recordAchievementsReturnsOnlyNewOnes() async throws {
-        let profiles = CoreDataProfileRepository(persistence: persistence)
+        let profiles = CoreDataProfileRepository(documents: DocumentStore(persistence: persistence))
         let first = EarnedAchievement(achievementID: "brew_1", earnedAt: Date(timeIntervalSince1970: 100))
         let second = EarnedAchievement(achievementID: "streak_7", earnedAt: Date(timeIntervalSince1970: 200))
 
@@ -176,7 +175,7 @@ struct RepositoriesTests {
     }
 
     @Test func suggestionsAccumulateWithoutDuplicates() async throws {
-        let suggestions = CoreDataSuggestionsRepository(persistence: persistence)
+        let suggestions = CoreDataSuggestionsRepository(documents: DocumentStore(persistence: persistence))
 
         try await suggestions.remember(Suggestions(roasters: ["Penyora"], milks: ["Oat"]))
         try await suggestions.remember(Suggestions(roasters: ["penyora", "Wonder&Full"]))

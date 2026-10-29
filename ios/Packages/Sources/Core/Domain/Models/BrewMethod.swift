@@ -4,24 +4,11 @@ import Foundation
 ///
 /// Open set: the web app stores methods as free text ("V60", "Ice Latte", "Інше", …), so this is a
 /// string-backed value with well-known presets rather than a closed enum. Unknown names are preserved.
-public struct BrewMethod: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral {
+public struct BrewMethod: StringBacked {
     public let rawValue: String
 
     public init(rawValue: String) {
         self.rawValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    public init(stringLiteral value: String) {
-        self.init(rawValue: value)
-    }
-
-    public init(from decoder: Decoder) throws {
-        self.init(rawValue: try decoder.singleValueContainer().decode(String.self))
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(rawValue)
     }
 }
 

@@ -5,7 +5,6 @@ import DeepLinks
 /// the routing protocols of the features it hosts.
 ///
 /// Flows live in the app target — the composition layer — so features stay unaware of each other.
-@MainActor
 public protocol Flow: AnyObject {
     /// Installed into the parent container (tab bar, window, modal).
     var rootViewController: UIViewController { get }

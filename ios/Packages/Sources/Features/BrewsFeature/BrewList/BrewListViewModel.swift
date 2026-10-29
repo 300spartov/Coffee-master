@@ -2,8 +2,6 @@ import Foundation
 import Observation
 import Domain
 import FactoryKit
-
-@MainActor
 @Observable
 final class BrewListViewModel {
     enum State: Equatable {
@@ -14,6 +12,8 @@ final class BrewListViewModel {
     }
 
     private(set) var state: State = .loading
+    /// A failed action (e.g. delete), shown as an alert over the list.
+    var alertMessage: String?
 
     @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any BrewListRouting)?
@@ -54,7 +54,8 @@ final class BrewListViewModel {
                 try await repository.delete(id: brew.id)
             }
         } catch {
-            state = .failed(error.localizedDescription)
+            // Keep the list; the change stream reloads whatever did get deleted.
+            alertMessage = error.localizedDescription
         }
     }
 }

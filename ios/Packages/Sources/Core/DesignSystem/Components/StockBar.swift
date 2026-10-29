@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// How full a bag of beans or a pack of filters is.
-public enum StockLevel: Equatable, Sendable {
+nonisolated public enum StockLevel: Equatable, Sendable {
     case empty
     case low
     case normal

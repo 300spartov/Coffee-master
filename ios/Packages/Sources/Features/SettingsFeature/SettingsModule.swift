@@ -2,16 +2,15 @@ import UIKit
 import AppCore
 import FactoryKit
 import Navigation
-
-@MainActor
 public struct SettingsModule {
     public init() {}
 
-    public func makeSettings(router: any SettingsRouting) -> UIViewController {
+    /// `title`: the screen is hosted by Profile for now, which names it.
+    public func makeSettings(router: any SettingsRouting, title: String) -> UIViewController {
         let viewModel = SettingsViewModel(router: router)
         return HostingController(
             rootView: SettingsView(viewModel: viewModel),
-            title: tr("Settings"),
+            title: title,
             largeTitleDisplayMode: .always
         )
     }

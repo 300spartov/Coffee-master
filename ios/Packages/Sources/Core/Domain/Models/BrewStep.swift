@@ -28,20 +28,10 @@ public struct BrewStep: Hashable, Codable, Sendable {
 }
 
 /// Open set of in-brew actions; unknown labels from imported data are preserved.
-public struct BrewAction: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral {
+public struct BrewAction: StringBacked {
     public let rawValue: String
 
     public init(rawValue: String) { self.rawValue = rawValue }
-    public init(stringLiteral value: String) { self.init(rawValue: value) }
-
-    public init(from decoder: Decoder) throws {
-        self.init(rawValue: try decoder.singleValueContainer().decode(String.self))
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(rawValue)
-    }
 
     public static let stir: BrewAction = "stir"
     public static let swirl: BrewAction = "swirl"

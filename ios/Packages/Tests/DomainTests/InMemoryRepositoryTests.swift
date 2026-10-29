@@ -82,3 +82,29 @@ struct MergeTests {
         #expect(merged.mixers == ["Tonic"])
     }
 }
+
+/// The in-memory repositories must behave like the Core Data ones, since tests and previews rely on them.
+struct InMemoryParityTests {
+    @Test func restoringActiveBrewIsNotFound() async {
+        let repository = InMemoryRecordRepository(brews: Brew.samples)
+
+        await #expect(throws: RepositoryError.notFound) {
+            try await repository.restore(brewID: Brew.samples[0].id)
+        }
+    }
+
+    @Test func deviceDuplicateCheckTrims() async throws {
+        let devices = InMemoryRecordRepository(devices: Device.samples)
+
+        #expect(try await devices.contains(name: "  hario v60 02 ", type: .dripper))
+    }
+
+    @Test func profileChangesEmitOnSave() async throws {
+        let profiles = InMemoryProfileRepository()
+        var changes = await profiles.changes().makeAsyncIterator()
+
+        try await profiles.saveProfile(UserProfile(name: "Олена"))
+
+        #expect(await changes.next() != nil)
+    }
+}

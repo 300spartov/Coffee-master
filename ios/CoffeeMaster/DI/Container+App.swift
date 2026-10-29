@@ -36,6 +36,10 @@ extension Container {
         self { WebImportService(persistence: self.persistence()) }.cached
     }
 
+    var widgetSync: Factory<WidgetSyncService> {
+        self { @MainActor in WidgetSyncService() }.cached
+    }
+
     var toastCenter: Factory<ToastCenter> {
         self { @MainActor in ToastCenter() }.cached
     }
@@ -43,18 +47,13 @@ extension Container {
 
 extension Container: @retroactive AutoRegistering {
     public func autoRegister() {
-        brewRepository.register {
-            WidgetSyncingBrewRepository(
-                wrapped: CoreDataBrewRepository(persistence: self.persistence()),
-                snapshotStore: WidgetSnapshotStore()
-            )
-        }
-        trashRepository.register { CoreDataTrashRepository(persistence: self.persistence()) }
-        beanRepository.register { CoreDataBeanRepository(persistence: self.persistence()) }
-        deviceRepository.register { CoreDataDeviceRepository(persistence: self.persistence()) }
-        filterPackRepository.register { CoreDataFilterPackRepository(persistence: self.persistence()) }
-        profileRepository.register { CoreDataProfileRepository(persistence: self.persistence()) }
-        suggestionsRepository.register { CoreDataSuggestionsRepository(persistence: self.persistence()) }
+        brewRepository.register { CoreDataRepositories.brews(self.persistence()) }
+        trashRepository.register { CoreDataRepositories.trash(self.persistence()) }
+        beanRepository.register { CoreDataRepositories.beans(self.persistence()) }
+        deviceRepository.register { CoreDataRepositories.devices(self.persistence()) }
+        filterPackRepository.register { CoreDataRepositories.filterPacks(self.persistence()) }
+        profileRepository.register { CoreDataRepositories.profile(self.persistence()) }
+        suggestionsRepository.register { CoreDataRepositories.suggestions(self.persistence()) }
         brewTimer.register { LiveActivityBrewTimerService() }
         toasts.register { @MainActor in self.toastCenter() }
     }

@@ -65,3 +65,18 @@ struct BrewListViewModelTests {
         #expect(viewModel.state == .loaded(Brew.samples))
     }
 }
+
+@Suite(.container)
+@MainActor
+struct BrewListDeleteTests {
+    @Test func failedDeleteKeepsListAndShowsAlert() async {
+        Container.shared.brewRepository.register { MockBrewRepository(brews: Brew.samples, deleteError: TestError()) }
+        let viewModel = BrewListViewModel(router: SpyRouter())
+        await viewModel.load()
+
+        await viewModel.delete([Brew.samples[0]])
+
+        #expect(viewModel.state == .loaded(Brew.samples))
+        #expect(viewModel.alertMessage == "Boom")
+    }
+}

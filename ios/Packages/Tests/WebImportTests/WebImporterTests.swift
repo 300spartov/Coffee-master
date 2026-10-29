@@ -11,11 +11,11 @@ struct WebImporterTests {
         return try Data(contentsOf: url)
     }
 
-    private func importFixture() throws -> WebImport {
+    private func importFixture() throws -> WebImportPayload {
         try WebImporter.decode(try fixtureData(), importedAt: importedAt)
     }
 
-    private func brew(_ legacyID: Int, in result: WebImport) throws -> Brew {
+    private func brew(_ legacyID: Int, in result: WebImportPayload) throws -> Brew {
         try #require(result.brews.first { $0.legacyID == legacyID })
     }
 

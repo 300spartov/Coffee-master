@@ -3,7 +3,7 @@ import SwiftUI
 /// A short, non-blocking message ("Brew saved", "Beans are running low", "Deleted · Undo").
 ///
 /// Show through `ToastPresenting` — flows get it injected, view models stay unaware of UIKit.
-public struct Toast: Identifiable {
+public struct Toast {
     public enum Style: Sendable {
         case info
         case success
@@ -21,7 +21,6 @@ public struct Toast: Identifiable {
         }
     }
 
-    public let id = UUID()
     public var message: String
     public var style: Style
     public var duration: TimeInterval
@@ -35,8 +34,6 @@ public struct Toast: Identifiable {
         self.action = action
     }
 }
-
-@MainActor
 public protocol ToastPresenting: AnyObject {
     func show(_ toast: Toast)
 }
@@ -57,12 +54,12 @@ extension Toast.Style {
         }
     }
 
-    var iconStyle: AnyShapeStyle {
+    var tint: Color {
         switch self {
-        case .info: AnyShapeStyle(.theme.info)
-        case .success: AnyShapeStyle(.theme.success)
-        case .warning: AnyShapeStyle(.theme.warning)
-        case .error: AnyShapeStyle(.theme.error)
+        case .info: .theme.info
+        case .success: .theme.success
+        case .warning: .theme.warning
+        case .error: .theme.error
         }
     }
 }
@@ -80,7 +77,7 @@ public struct ToastView: View {
     public var body: some View {
         HStack(spacing: Spacing.sm) {
             Image(systemName: toast.style.systemImage)
-                .foregroundStyle(toast.style.iconStyle)
+                .foregroundStyle(toast.style.tint)
                 .font(.body.weight(.semibold))
             Text(toast.message)
                 .font(.subheadline.weight(.medium))

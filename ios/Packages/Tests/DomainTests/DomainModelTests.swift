@@ -138,6 +138,7 @@ struct BeanTests {
         #expect(Bean(name: "A", totalGrams: 250, remainingGrams: 400).remainingGrams == 250)
         #expect(Bean(name: "A", totalGrams: 250, remainingGrams: -5).remainingGrams == 0)
         #expect(Bean(name: "A", totalGrams: 250).remainingFraction == 1)
+        #expect(Bean(name: "A", totalGrams: -10).totalGrams == 0)
     }
 }
 

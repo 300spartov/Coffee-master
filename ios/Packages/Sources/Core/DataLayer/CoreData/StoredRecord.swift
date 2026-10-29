@@ -9,6 +9,11 @@ protocol StoredRecord: Syncable {
     static var defaultSort: [SortKey] { get }
     /// Writes the derived columns (everything except id / legacyID / updatedAt / deletedAt / payload).
     func writeColumns(to object: NSManagedObject)
+
+    /// Side effects of moving a record to the trash, run in the same transaction. Default: none.
+    static func didSoftDelete(_ record: Self, in context: NSManagedObjectContext) throws
+    /// Side effects of restoring a record from the trash, run in the same transaction. Default: none.
+    static func didRestore(_ record: Self, in context: NSManagedObjectContext) throws
 }
 
 struct SortKey: Sendable {
@@ -21,29 +26,38 @@ struct SortKey: Sendable {
 private typealias A = CoreDataModel.Attribute
 
 extension StoredRecord {
-    func write(to object: NSManagedObject, encoder: JSONEncoder) throws {
+    static func didSoftDelete(_ record: Self, in context: NSManagedObjectContext) throws {}
+    static func didRestore(_ record: Self, in context: NSManagedObjectContext) throws {}
+
+    /// Writes the row: shared columns, the already-encoded `payload` and the derived columns.
+    func write(to object: NSManagedObject, payload: Data) {
         object.setValue(id, forKey: A.id)
         object.setValue(legacyID.map { Int64($0) }, forKey: A.legacyID)
         object.setValue(updatedAt, forKey: A.updatedAt)
         object.setValue(deletedAt, forKey: A.deletedAt)
-        object.setValue(try encoder.encode(self), forKey: A.payload)
+        object.setValue(payload, forKey: A.payload)
         writeColumns(to: object)
     }
 
-    static func read(from object: NSManagedObject, decoder: JSONDecoder) throws -> Self {
+    static func read(from object: NSManagedObject) throws -> Self {
         guard let payload = object.value(forKey: A.payload) as? Data else {
             throw PersistenceError.corruptRecord(entity: entityName)
         }
-        return try decoder.decode(Self.self, from: payload)
+        return try StoredRecordCoding.decode(Self.self, from: payload)
     }
 }
 
+/// JSON coding for record payloads (and singleton documents).
 enum StoredRecordCoding {
     /// Sorted keys make payloads byte-stable, so "unchanged" can be detected by comparing bytes.
-    static func encoder() -> JSONEncoder {
+    static func encode(_ value: some Encodable) throws -> Data {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        return encoder
+        return try encoder.encode(value)
+    }
+
+    static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        try JSONDecoder().decode(type, from: data)
     }
 }
 
@@ -65,6 +79,15 @@ extension Brew: StoredRecord {
         object.setValue(bean?.beanID, forKey: A.beanID)
         object.setValue(isManual, forKey: A.isManual)
         object.setValue(isCafeVisit, forKey: A.isCafeVisit)
+    }
+
+    /// Trashing a brew returns its coffee and filter to stock; restoring takes them again.
+    static func didSoftDelete(_ brew: Brew, in context: NSManagedObjectContext) throws {
+        try BrewStockEffects.apply(.returnToStock, for: brew, in: context)
+    }
+
+    static func didRestore(_ brew: Brew, in context: NSManagedObjectContext) throws {
+        try BrewStockEffects.apply(.takeFromStock, for: brew, in: context)
     }
 }
 

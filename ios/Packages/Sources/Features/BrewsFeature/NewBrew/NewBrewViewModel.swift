@@ -2,8 +2,6 @@ import Foundation
 import Observation
 import Domain
 import FactoryKit
-
-@MainActor
 @Observable
 final class NewBrewViewModel {
     var method: BrewMethod = .v60

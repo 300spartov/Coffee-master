@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Lays out subviews left to right, wrapping onto new rows when the width runs out.
-public struct FlowLayout: Layout {
+nonisolated public struct FlowLayout: Layout {
     private let spacing: CGFloat
 
     public init(spacing: CGFloat = Spacing.sm) {

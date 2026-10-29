@@ -43,8 +43,8 @@ public struct Bean: Syncable {
         self.deletedAt = deletedAt
         self.name = name
         self.roaster = roaster
-        self.totalGrams = totalGrams
-        self.remainingGrams = min(max(remainingGrams ?? totalGrams, 0), totalGrams)
+        self.totalGrams = max(totalGrams, 0)
+        self.remainingGrams = min(max(remainingGrams ?? totalGrams, 0), self.totalGrams)
         self.country = country
         self.farm = farm
         self.process = process
@@ -92,20 +92,10 @@ public enum RoastProfile: String, Codable, Sendable, CaseIterable {
 }
 
 /// Open set; presets match the web app's bean form.
-public struct ProcessingMethod: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral {
+public struct ProcessingMethod: StringBacked {
     public let rawValue: String
 
     public init(rawValue: String) { self.rawValue = rawValue }
-    public init(stringLiteral value: String) { self.init(rawValue: value) }
-
-    public init(from decoder: Decoder) throws {
-        self.init(rawValue: try decoder.singleValueContainer().decode(String.self))
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(rawValue)
-    }
 
     public static let washed: ProcessingMethod = "Washed"
     public static let natural: ProcessingMethod = "Natural"

@@ -1,12 +1,13 @@
 import SwiftUI
 import UIKit
+import AppCore
 import DesignSystem
+import FactoryKit
 
 /// Shows toasts on top of everything in a window (including modals), one at a time, queued.
 ///
 /// The toast view is added straight to the window at show time, sized to its content,
 /// so it never blocks touches outside its own frame. Swipe up or wait to dismiss.
-@MainActor
 public final class ToastCenter: NSObject, ToastPresenting {
     private weak var window: UIWindow?
     private var queue: [Toast] = []
@@ -91,6 +92,7 @@ public final class ToastCenter: NSObject, ToastPresenting {
     }
 
     private func playHaptic(for style: Toast.Style) {
+        guard Container.shared.preferences().hapticsEnabled else { return }
         let generator = UINotificationFeedbackGenerator()
         switch style {
         case .success: generator.notificationOccurred(.success)

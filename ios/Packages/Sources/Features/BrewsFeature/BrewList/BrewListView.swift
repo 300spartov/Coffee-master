@@ -8,6 +8,18 @@ struct BrewListView: View {
     var body: some View {
         content
             .task { await viewModel.start() }
+            .alert(
+                tr("Error"),
+                isPresented: Binding(
+                    get: { viewModel.alertMessage != nil },
+                    set: { if !$0 { viewModel.alertMessage = nil } }
+                ),
+                presenting: viewModel.alertMessage
+            ) { _ in
+                Button(tr("OK"), role: .cancel) {}
+            } message: { message in
+                Text(message)
+            }
     }
 
     @ViewBuilder

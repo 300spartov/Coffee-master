@@ -27,14 +27,14 @@ struct DocumentStore: Sendable {
     }
 
     func changes() -> AsyncStream<Void> {
-        persistence.changes(of: [CoreDataModel.Entity.document])
+        persistence.changes(of: CoreDataModel.Entity.document)
     }
 
     // MARK: - Context-level helpers
 
     static func load<Value: Decodable>(_ type: Value.Type, key: Key, in context: NSManagedObjectContext) throws -> Value? {
         guard let payload = try object(key: key, in: context)?.value(forKey: A.payload) as? Data else { return nil }
-        return try JSONDecoder().decode(type, from: payload)
+        return try StoredRecordCoding.decode(type, from: payload)
     }
 
     static func save<Value: Encodable>(_ value: Value, key: Key, updatedAt: Date, in context: NSManagedObjectContext) throws {
@@ -44,7 +44,7 @@ struct DocumentStore: Sendable {
             object.setValue(key.rawValue, forKey: A.key)
             return object
         }()
-        object.setValue(try JSONEncoder().encode(value), forKey: A.payload)
+        object.setValue(try StoredRecordCoding.encode(value), forKey: A.payload)
         object.setValue(updatedAt, forKey: A.updatedAt)
     }
 

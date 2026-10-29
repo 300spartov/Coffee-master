@@ -2,8 +2,6 @@ import Foundation
 import Observation
 import Domain
 import FactoryKit
-
-@MainActor
 @Observable
 final class BrewDetailViewModel {
     enum State: Equatable {
@@ -30,7 +28,7 @@ final class BrewDetailViewModel {
         do {
             state = .loaded(try await repository.fetch(id: brewID))
         } catch RepositoryError.notFound {
-            state = .failed(tr("This brew no longer exists."))
+            router?.brewDetailNotFound(id: brewID)
         } catch {
             state = .failed(error.localizedDescription)
         }

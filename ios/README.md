@@ -104,8 +104,8 @@ handle it in the owning flow's `canHandle` / `handle`. The round-trip tests will
    `View` + `ViewModel` per screen.
 2. Register the target in `Package.swift` (depends on `Domain`, `DesignSystem`, `Navigation`), add it to the
    `AppModules` product, and add a test target.
-3. In the app: give `AppContainer` a module property. Then either add a new `Flow` (for a new tab) to
-   `AppRouter.makeFlows()`, or make an existing flow conform to the new routing protocol.
+3. In the app: create the module in a flow (`FeatureModule()`; services reach view models through Factory). Then either add a
+   new `Flow` (for a new tab) to `AppRouter.makeFlows()`, or make an existing flow conform to the new routing protocol.
 4. Add any deep links (see above).
 
 ## Widgets and Live Activities (prepared, not yet added)
@@ -115,7 +115,7 @@ Already in place:
 - `WidgetsShared.BrewTimerAttributes` is the `ActivityAttributes` for a brew timer. It includes `deepLinkURL`.
 - `WidgetsShared.LiveActivityBrewTimerService` starts and ends activities. It's wired to the **Start Brew Timer** button.
 - `WidgetsShared.WidgetSnapshot` / `WidgetSnapshotStore` hold the data widgets read from the App Group. The app
-  keeps it current through `WidgetSyncingBrewRepository`.
+  keeps it current through `WidgetSyncService`, which listens to the brew repository's change stream (every write path).
 - `DeepLink.url` is the tap target for widgets and Live Activities. Taps arrive in `SceneDelegate` as URLs.
 - `NSSupportsLiveActivities = YES` is already in `Info.plist`.
 
@@ -192,13 +192,14 @@ struct BrewTimerLiveActivity: Widget {
 ```
 
 - Under `@Observable`, put `@ObservationIgnored` on `@Injected` properties.
+- **Concurrency:** UI modules (Navigation, DesignSystem, features) and the app target run on the main actor by default (Swift 6.2 default isolation), so views, view models, routers and flows need no `@MainActor`. Mark pure value types used off the main actor `nonisolated` (see the theme types).
 - Routers are **not** injected. They're passed to `init` and held `weak`, because each screen has its own.
 - Previews need no setup, because the defaults resolve to fixtures.
 
 ## App shell
 
 - `AppRouter` owns the `UITabBarController`: **Journal · Beans · Devices · Profile**, one `Flow` per tab.
-- **Brew action** (starting a brew is app-wide, not a tab): an accent **Brew** button in the top bar of every tab root (`AppRouter.makeBrewButton()`): `UIBarButtonItem.Style.prominent` on iOS 26, accent-tinted before. On iOS 26 the tab bar minimizes while scrolling (`tabBarMinimizeBehavior = .onScrollDown`), and the top bar keeps Brew reachable. It opens `BrewFlow` full screen. `coffeemaster://brew/new` and Profile → "Log a New Brew" go through the same `AppRouter.startBrew()`.
+- **Brew action** (starting a brew is app-wide, not a tab): an accent **Brew** button in the **Journal**'s top bar only (`AppRouter.makeBrewButton()`): `UIBarButtonItem.Style.prominent` on iOS 26, accent-tinted before. On iOS 26 the tab bar minimizes while scrolling (`tabBarMinimizeBehavior = .onScrollDown`), and the top bar keeps Brew reachable. It opens `BrewFlow` full screen. `coffeemaster://brew/new` and Profile → "Log a New Brew" go through the same `AppRouter.startBrew()`.
 - **UI tests**: `CoffeeMasterUITests` (part of the CoffeeMaster scheme). It scrolls the Journal for real, asserts the tab bar minimizes while the Brew button stays tappable, and attaches screenshots to the test report.
 
 ## Localization (Ukrainian + English)
@@ -210,6 +211,12 @@ struct BrewTimerLiveActivity: Widget {
 - Format interpolated numbers before passing them in (`let value = rating.formatted(…)`), so keys stay simple.
 - Screens get the language's `Locale` through `HostingController`, so dates and numbers format correctly. Changing the language rebuilds all flows (`AppRouter.rebuildForLanguageChange`).
 - Debug: launch with `-app.language uk` or `-app.language en`.
+
+## Data layer
+
+- Repositories are Domain protocols. The app gets Core Data implementations from `CoreDataRepositories` (`.brews(_:)`, `.beans(_:)`, …); the types behind it stay internal.
+- `CoreDataRecordRepository<Record>` is one generic implementation with conditional conformances per protocol, the same shape as `InMemoryRecordRepository`. Per-type side effects live on the record (`StoredRecord.didSoftDelete` / `didRestore`; for example, trashing a brew returns its coffee to stock).
+- Change streams come from one `ChangeBroadcaster` per entity.
 
 ## Conventions
 

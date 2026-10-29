@@ -1,45 +1,34 @@
 import SwiftUI
 
-/// Filled accent button for the main action of a screen ("Save", "Start Brew").
-public struct PrimaryButtonStyle: ButtonStyle {
+/// Full-width rounded button. `.primary` (accent fill) for a screen's main action,
+/// `.secondary` (soft accent) for actions next to it.
+public struct AppButtonStyle: ButtonStyle {
+    public enum Kind: Sendable {
+        case primary
+        case secondary
+    }
+
+    private let kind: Kind
     @Environment(\.isEnabled) private var isEnabled
 
-    public init() {}
+    public init(_ kind: Kind) {
+        self.kind = kind
+    }
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.md)
-            .background(.theme.accent, in: RoundedRectangle(cornerRadius: Radius.medium))
-            .foregroundStyle(.theme.onAccent)
-            .opacity(isEnabled ? (configuration.isPressed ? 0.8 : 1) : 0.4)
+            .background(kind == .primary ? Color.theme.accent : Color.theme.accentSoft, in: RoundedRectangle(cornerRadius: Radius.medium))
+            .foregroundStyle(kind == .primary ? Color.theme.onAccent : Color.theme.accent)
+            .opacity(isEnabled ? (configuration.isPressed ? 0.75 : 1) : 0.4)
     }
 }
 
-/// Soft accent button for secondary actions next to a primary one ("Add Bean", "Skip").
-public struct SecondaryButtonStyle: ButtonStyle {
-    @Environment(\.isEnabled) private var isEnabled
-
-    public init() {}
-
-    public func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.headline)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.md)
-            .background(.theme.accentSoft, in: RoundedRectangle(cornerRadius: Radius.medium))
-            .foregroundStyle(.theme.accent)
-            .opacity(isEnabled ? (configuration.isPressed ? 0.7 : 1) : 0.4)
-    }
-}
-
-public extension ButtonStyle where Self == PrimaryButtonStyle {
-    static var primary: PrimaryButtonStyle { PrimaryButtonStyle() }
-}
-
-public extension ButtonStyle where Self == SecondaryButtonStyle {
-    static var secondary: SecondaryButtonStyle { SecondaryButtonStyle() }
+public extension ButtonStyle where Self == AppButtonStyle {
+    static var primary: AppButtonStyle { AppButtonStyle(.primary) }
+    static var secondary: AppButtonStyle { AppButtonStyle(.secondary) }
 }
 
 #Preview {

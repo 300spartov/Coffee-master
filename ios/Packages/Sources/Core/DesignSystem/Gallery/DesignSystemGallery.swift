@@ -48,7 +48,7 @@ struct GalleryContent: View {
     private var colors: some View {
         section("Colors") {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: Spacing.sm)], spacing: Spacing.sm) {
-                ForEach(Self.roles, id: \.name) { role in
+                ForEach(ColorPalette.roles, id: \.name) { role in
                     VStack(alignment: .leading, spacing: Spacing.xs) {
                         RoundedRectangle(cornerRadius: Radius.small)
                             .fill(Color.theme[dynamicMember: role.keyPath])
@@ -215,34 +215,6 @@ struct GalleryContent: View {
             content()
         }
     }
-
-    private struct Role {
-        let name: String
-        let keyPath: KeyPath<ColorPalette, ThemeColor>
-    }
-
-    private static let roles: [Role] = [
-        Role(name: "background", keyPath: \.background),
-        Role(name: "groupedBackground", keyPath: \.groupedBackground),
-        Role(name: "surface", keyPath: \.surface),
-        Role(name: "elevatedSurface", keyPath: \.elevatedSurface),
-        Role(name: "fill", keyPath: \.fill),
-        Role(name: "textPrimary", keyPath: \.textPrimary),
-        Role(name: "textSecondary", keyPath: \.textSecondary),
-        Role(name: "textTertiary", keyPath: \.textTertiary),
-        Role(name: "accent", keyPath: \.accent),
-        Role(name: "onAccent", keyPath: \.onAccent),
-        Role(name: "accentSoft", keyPath: \.accentSoft),
-        Role(name: "success", keyPath: \.success),
-        Role(name: "warning", keyPath: \.warning),
-        Role(name: "error", keyPath: \.error),
-        Role(name: "info", keyPath: \.info),
-        Role(name: "separator", keyPath: \.separator),
-        Role(name: "shadow", keyPath: \.shadow),
-        Role(name: "navigationBar", keyPath: \.navigationBar),
-        Role(name: "tabBar", keyPath: \.tabBar),
-        Role(name: "tabBarItem", keyPath: \.tabBarItem),
-    ]
 }
 
 #Preview {

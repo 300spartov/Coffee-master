@@ -30,12 +30,12 @@ struct CoreDataStoreTests {
         try await brews.softDelete(id: Brew.samples[1].id)
 
         let active = try await brews.fetchAll()
-        let trash = try await brews.fetchAll(deleted: .only)
+        let trash = try await brews.fetchAll(.only)
 
         #expect(active.map(\.id) == [Brew.samples[0].id, Brew.samples[2].id])
         #expect(trash.map(\.id) == [Brew.samples[1].id])
         #expect(try await brews.count() == 2)
-        #expect(try await brews.count(deleted: .include) == 3)
+        #expect(try await brews.count(.include) == 3)
     }
 
     @Test func queryColumnsAreWritten() async throws {
@@ -104,7 +104,7 @@ struct CoreDataStoreTests {
 
         try await brews.softDelete(id: id, at: Date(timeIntervalSince1970: 100))
         #expect(try await brews.fetch(id: id) == nil)
-        #expect(try await brews.fetch(id: id, includeDeleted: true)?.deletedAt == Date(timeIntervalSince1970: 100))
+        #expect(try await brews.fetch(id: id, .include)?.deletedAt == Date(timeIntervalSince1970: 100))
 
         try await brews.restore(id: id)
         #expect(try await brews.fetch(id: id) != nil)
@@ -112,7 +112,7 @@ struct CoreDataStoreTests {
         try await brews.softDelete(id: id, at: Date(timeIntervalSince1970: 100))
         #expect(try await brews.purgeDeleted(before: Date(timeIntervalSince1970: 50)) == 0)
         #expect(try await brews.purgeDeleted(before: Date(timeIntervalSince1970: 200)) == 1)
-        #expect(try await brews.count(deleted: .include) == 0)
+        #expect(try await brews.count(.include) == 0)
     }
 
     @Test func deletingMissingRecordThrowsNotFound() async throws {
@@ -168,7 +168,7 @@ struct CoreDataStoreTests {
 
 struct CoreDataBrewRepositoryTests {
     @Test func repositoryBehaviour() async throws {
-        let repository = CoreDataBrewRepository(persistence: try PersistenceController(location: .inMemory))
+        let repository = CoreDataRecordRepository<Brew>(persistence: try PersistenceController(location: .inMemory))
         var brew = Brew.samples[0]
         brew.updatedAt = .distantPast
 
@@ -188,10 +188,10 @@ struct CoreDataBrewRepositoryTests {
         defer { try? FileManager.default.removeItem(at: directory) }
 
         do {
-            let repository = CoreDataBrewRepository(persistence: try PersistenceController(location: .directory(directory)))
+            let repository = CoreDataRecordRepository<Brew>(persistence: try PersistenceController(location: .directory(directory)))
             try await repository.save(Brew.samples[0])
         }
-        let reopened = CoreDataBrewRepository(persistence: try PersistenceController(location: .directory(directory)))
+        let reopened = CoreDataRecordRepository<Brew>(persistence: try PersistenceController(location: .directory(directory)))
 
         #expect(try await reopened.fetchAll().map(\.id) == [Brew.samples[0].id])
     }

@@ -3,17 +3,17 @@ import Foundation
 import Domain
 
 /// Everything recovered from a web app export, as Domain models ready to be stored.
-public struct WebImport: Sendable, Equatable {
-    public var profile: UserProfile?
-    public var beans: [Bean]
-    public var devices: [Device]
-    public var filterPacks: [FilterPack]
+package struct WebImportPayload: Sendable, Equatable {
+    package var profile: UserProfile?
+    package var beans: [Bean]
+    package var devices: [Device]
+    package var filterPacks: [FilterPack]
     /// Includes trashed brews (with `deletedAt` set).
-    public var brews: [Brew]
-    public var achievements: [EarnedAchievement]
-    public var suggestions: Suggestions
+    package var brews: [Brew]
+    package var achievements: [EarnedAchievement]
+    package var suggestions: Suggestions
 
-    public init(
+    package init(
         profile: UserProfile? = nil,
         beans: [Bean] = [],
         devices: [Device] = [],
@@ -31,7 +31,7 @@ public struct WebImport: Sendable, Equatable {
         self.suggestions = suggestions
     }
 
-    public var isEmpty: Bool {
+    package var isEmpty: Bool {
         beans.isEmpty && devices.isEmpty && filterPacks.isEmpty && brews.isEmpty && achievements.isEmpty
     }
 }
@@ -48,22 +48,22 @@ public enum WebImportError: Error, Equatable {
 /// IDs are **deterministic**: the same web record always maps to the same UUID
 /// (`id(for:legacyID:)`). Importing a file twice, or on two devices, yields identical records,
 /// so storage and sync deduplicate naturally.
-public enum WebImporter {
-    public enum EntityKind: String, Sendable {
+package enum WebImporter {
+    package enum EntityKind: String, Sendable {
         case brew, bean, device, filter
     }
 
     /// `updatedAt` for web records that never stored `_upd`. Fixed (not the import time) so
     /// re-imports are byte-identical, and old enough that any local edit wins over it.
-    public static let unknownUpdateDate = Date(timeIntervalSince1970: 0)
+    package static let unknownUpdateDate = Date(timeIntervalSince1970: 0)
 
-    public static func decode(_ data: Data, importedAt: Date = .now) throws -> WebImport {
+    package static func decode(_ data: Data, importedAt: Date = .now) throws -> WebImportPayload {
         let state = try parseState(data)
         return map(state, importedAt: importedAt)
     }
 
     /// Stable UUID for a web record (name-based, SHA-256, RFC 4122 version 5 layout).
-    public static func id(for kind: EntityKind, legacyID: Int) -> UUID {
+    package static func id(for kind: EntityKind, legacyID: Int) -> UUID {
         let digest = SHA256.hash(data: Data("coffeemaster.web.\(kind.rawValue).\(legacyID)".utf8))
         var bytes = Array(digest.prefix(16))
         bytes[6] = (bytes[6] & 0x0F) | 0x50
@@ -102,7 +102,7 @@ public enum WebImporter {
 
     // MARK: - Mapping
 
-    private static func map(_ state: WebAppState, importedAt: Date) -> WebImport {
+    private static func map(_ state: WebAppState, importedAt: Date) -> WebImportPayload {
         let trashed = state.trash.elements.map { mapBrew($0, logEntry: nil, importedAt: importedAt, isTrashed: true) }
         let trashedIDs = Set(state.trash.elements.map(\.id.int))
 
@@ -129,11 +129,11 @@ public enum WebImporter {
 
         let brews = (active + logOnly + trashed).sorted { $0.date > $1.date }
 
-        return WebImport(
+        return WebImportPayload(
             profile: state.profile.map { mapProfile($0, importedAt: importedAt) },
-            beans: unique(state.beans.elements.map { mapBean($0, importedAt: importedAt) }),
-            devices: unique(state.equipment.elements.map { mapDevice($0, importedAt: importedAt) }),
-            filterPacks: unique(state.filters.elements.map { mapFilter($0, importedAt: importedAt) }),
+            beans: unique(state.beans.elements.map { mapBean($0) }),
+            devices: unique(state.equipment.elements.map { mapDevice($0) }),
+            filterPacks: unique(state.filters.elements.map { mapFilter($0) }),
             brews: brews,
             achievements: (state.achEarned ?? [:])
                 .map { EarnedAchievement(achievementID: $0.key, earnedAt: timestamp($0.value.value)) }
@@ -176,7 +176,7 @@ public enum WebImporter {
             filter: gear(web.filter, id: web.filterId, kind: .filter),
             isFilterRinsed: web.filter.flatMap(nonEmpty) != nil ? web.filterWet : nil,
             espressoMachine: gear(web.espMachine, id: web.espMachineId, kind: .device),
-            accessoryIDs: (web.accessories ?? []).map { id(for: .device, legacyID: $0.int) },
+            accessoryIDs: (web.accessories?.elements ?? []).map { id(for: .device, legacyID: $0.int) },
             aeropress: method.rawValue.lowercased().contains("aero") && (web.inverted != nil || web.aeroFilters != nil)
                 ? AeroPressOptions(isInverted: web.inverted ?? false, filterCount: max(web.aeroFilters?.int ?? 1, 1))
                 : nil,
@@ -184,14 +184,14 @@ public enum WebImporter {
             ratio: web.ratio?.value ?? (espresso != nil ? 2 : 16),
             waterTemperature: web.temp?.value,
             steps: (web.steps?.elements ?? []).compactMap(mapStep),
-            totalTime: espresso?.shotTime ?? parseDuration(web.totalTime),
+            totalTime: espresso?.shotTime ?? parseDuration(web.totalTime?.value),
             beverageVolume: isManual ? logEntry?.vol?.value : nil,
             espresso: espresso,
             milk: web.milk.flatMap(mapMilk),
             ice: web.ice.flatMap(mapIce),
             rating: web.rating?.value ?? 8,
-            flavors: web.flavors ?? [],
-            aromas: web.aroma ?? [],
+            flavors: web.flavors?.elements ?? [],
+            aromas: web.aroma?.elements ?? [],
             notes: web.notes ?? "",
             origin: origin(cafeVisit: web.cafeVisit, source: web.source, place: web.place),
             isManual: isManual,
@@ -272,7 +272,7 @@ public enum WebImporter {
         return IceInfo(amountGrams: positive(web.amount), mixer: web.mixer ?? "")
     }
 
-    private static func mapBean(_ web: WebBean, importedAt: Date) -> Bean {
+    private static func mapBean(_ web: WebBean) -> Bean {
         let total = web.total?.value ?? Bean.defaultBagGrams
         return Bean(
             id: id(for: .bean, legacyID: web.id.int),
@@ -291,7 +291,7 @@ public enum WebImporter {
         )
     }
 
-    private static func mapDevice(_ web: WebDevice, importedAt: Date) -> Device {
+    private static func mapDevice(_ web: WebDevice) -> Device {
         Device(
             id: id(for: .device, legacyID: web.id.int),
             legacyID: web.id.int,
@@ -301,7 +301,7 @@ public enum WebImporter {
         )
     }
 
-    private static func mapFilter(_ web: WebFilter, importedAt: Date) -> FilterPack {
+    private static func mapFilter(_ web: WebFilter) -> FilterPack {
         let total = web.total?.int ?? FilterPack.defaultCount
         return FilterPack(
             id: id(for: .filter, legacyID: web.id.int),

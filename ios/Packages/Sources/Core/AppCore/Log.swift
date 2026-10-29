@@ -5,7 +5,6 @@ import OSLog
 public enum Log {
     private static let subsystem = Bundle.main.bundleIdentifier ?? "CoffeeMaster"
 
-    public static let navigation = Logger(subsystem: subsystem, category: "navigation")
     public static let deepLink = Logger(subsystem: subsystem, category: "deeplink")
     public static let data = Logger(subsystem: subsystem, category: "data")
     public static let widgets = Logger(subsystem: subsystem, category: "widgets")

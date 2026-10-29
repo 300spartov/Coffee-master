@@ -7,29 +7,24 @@ import os
 
 /// Generic in-memory store for any `Syncable` record, with soft delete and change notifications.
 /// Specific repository protocols are added through conditional conformances below.
-public final class InMemoryRecordRepository<Record: Syncable>: RecordRepository, @unchecked Sendable {
-    // @unchecked: all mutable state is behind `state`'s lock.
-    private struct State {
-        var records: [UUID: Record]
-        var observers: [UUID: AsyncStream<Void>.Continuation] = [:]
-    }
-
-    private let state: OSAllocatedUnfairLock<State>
+public final class InMemoryRecordRepository<Record: Syncable>: RecordRepository, Sendable {
+    private let storage: OSAllocatedUnfairLock<[UUID: Record]>
+    private let broadcaster = ChangeBroadcaster()
     private let areInIncreasingOrder: @Sendable (Record, Record) -> Bool
 
     public init(_ records: [Record] = [], sortedBy areInIncreasingOrder: @escaping @Sendable (Record, Record) -> Bool) {
-        state = OSAllocatedUnfairLock(uncheckedState: State(records: Dictionary(records.map { ($0.id, $0) }, uniquingKeysWith: { $1 })))
+        storage = OSAllocatedUnfairLock(initialState: Dictionary(records.map { ($0.id, $0) }, uniquingKeysWith: { $1 }))
         self.areInIncreasingOrder = areInIncreasingOrder
     }
 
     // MARK: RecordRepository
 
     public func fetchAll() async throws -> [Record] {
-        records(deleted: false)
+        records(.exclude)
     }
 
     public func fetch(id: UUID) async throws -> Record {
-        guard let record = state.withLockUnchecked({ $0.records[id] }), !record.isDeleted else {
+        guard let record = storage.withLock({ $0[id] }), !record.isDeleted else {
             throw RepositoryError.notFound
         }
         return record
@@ -38,7 +33,8 @@ public final class InMemoryRecordRepository<Record: Syncable>: RecordRepository,
     public func save(_ record: Record) async throws {
         var record = record
         record.touch()
-        write { $0.records[record.id] = record }
+        let saved = record
+        write { $0[saved.id] = saved }
     }
 
     public func delete(id: UUID) async throws {
@@ -46,48 +42,38 @@ public final class InMemoryRecordRepository<Record: Syncable>: RecordRepository,
     }
 
     public func changes() async -> AsyncStream<Void> {
-        let (stream, continuation) = AsyncStream.makeStream(of: Void.self, bufferingPolicy: .bufferingNewest(1))
-        let token = UUID()
-        state.withLockUnchecked { $0.observers[token] = continuation }
-        continuation.onTermination = { [weak self] _ in
-            self?.state.withLockUnchecked { _ = $0.observers.removeValue(forKey: token) }
-        }
-        return stream
+        broadcaster.stream()
     }
 
     // MARK: Helpers for the conditional conformances
 
-    func records(deleted: Bool) -> [Record] {
-        state.withLockUnchecked { $0.records.values.filter { $0.isDeleted == deleted } }.sorted(by: areInIncreasingOrder)
+    func records(_ filter: DeletedFilter) -> [Record] {
+        storage.withLock { $0.values.filter(filter.matches) }.sorted(by: areInIncreasingOrder)
     }
 
+    /// Changes one record matching `filter`. Throws `notFound` otherwise.
     @discardableResult
-    func mutate(id: UUID, includeDeleted: Bool = false, _ change: (inout Record) -> Void) throws -> Record {
-        let updated: Record = try write { state in
-            guard var record = state.records[id], includeDeleted || !record.isDeleted else {
-                throw RepositoryError.notFound
-            }
+    func mutate(id: UUID, _ filter: DeletedFilter = .exclude, _ change: (inout Record) -> Void) throws -> Record {
+        try write { records in
+            guard var record = records[id], filter.matches(record) else { throw RepositoryError.notFound }
             change(&record)
-            state.records[id] = record
+            records[id] = record
             return record
         }
-        return updated
     }
 
     @discardableResult
     func removeAll(where shouldRemove: (Record) -> Bool) -> Int {
-        write { state in
-            let ids = state.records.values.filter(shouldRemove).map(\.id)
-            ids.forEach { state.records.removeValue(forKey: $0) }
+        write { records in
+            let ids = records.values.filter(shouldRemove).map(\.id)
+            ids.forEach { records.removeValue(forKey: $0) }
             return ids.count
         }
     }
 
-    private func write<T>(_ body: (inout State) throws -> T) rethrows -> T {
-        let (result, observers) = try state.withLockUnchecked { state in
-            (try body(&state), Array(state.observers.values))
-        }
-        observers.forEach { $0.yield() }
+    private func write<T>(_ body: (inout [UUID: Record]) throws -> T) rethrows -> T {
+        let result = try storage.withLockUnchecked { try body(&$0) }
+        broadcaster.notify()
         return result
     }
 }
@@ -102,11 +88,11 @@ extension InMemoryRecordRepository: BrewRepository where Record == Brew {
 
 extension InMemoryRecordRepository: TrashRepository where Record == Brew {
     public func trashedBrews() async throws -> [Brew] {
-        records(deleted: true).sorted { ($0.deletedAt ?? .distantPast) > ($1.deletedAt ?? .distantPast) }
+        records(.only).sorted { ($0.deletedAt ?? .distantPast) > ($1.deletedAt ?? .distantPast) }
     }
 
     public func restore(brewID: Brew.ID) async throws {
-        try mutate(id: brewID, includeDeleted: true) { $0.restore() }
+        try mutate(id: brewID, .only) { $0.restore() }
     }
 
     public func deletePermanently(brewID: Brew.ID) async throws {
@@ -148,11 +134,12 @@ extension InMemoryRecordRepository: DeviceRepository where Record == Device {
     }
 
     public func fetchAll(of type: DeviceType) async throws -> [Device] {
-        records(deleted: false).filter { $0.type == type }
+        records(.exclude).filter { $0.type == type }
     }
 
     public func contains(name: String, type: DeviceType) async throws -> Bool {
-        records(deleted: false).contains { $0.type == type && $0.name.caseInsensitiveCompare(name) == .orderedSame }
+        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return records(.exclude).contains { $0.type == type && $0.name.caseInsensitiveCompare(name) == .orderedSame }
     }
 }
 
@@ -181,6 +168,7 @@ public final class InMemoryProfileRepository: ProfileRepository, Sendable {
     }
 
     private let state: OSAllocatedUnfairLock<State>
+    private let broadcaster = ChangeBroadcaster()
 
     public init(profile: UserProfile = UserProfile(), achievements: [EarnedAchievement] = []) {
         state = OSAllocatedUnfairLock(initialState: State(profile: profile, achievements: achievements))
@@ -193,20 +181,23 @@ public final class InMemoryProfileRepository: ProfileRepository, Sendable {
         updated.updatedAt = .now
         let saved = updated
         state.withLock { $0.profile = saved }
+        broadcaster.notify()
     }
 
     public func earnedAchievements() async throws -> [EarnedAchievement] { state.withLock { $0.achievements } }
 
     @discardableResult
     public func recordAchievements(_ achievements: [EarnedAchievement]) async throws -> [EarnedAchievement] {
-        state.withLock { state in
+        let added = state.withLock { state in
             let known = Set(state.achievements.map(\.achievementID))
             state.achievements = EarnedAchievement.merge(state.achievements, achievements)
             return state.achievements.filter { !known.contains($0.achievementID) }
         }
+        if !added.isEmpty { broadcaster.notify() }
+        return added
     }
 
-    public func changes() async -> AsyncStream<Void> { AsyncStream { _ in } }
+    public func changes() async -> AsyncStream<Void> { broadcaster.stream() }
 }
 
 public final class InMemorySuggestionsRepository: SuggestionsRepository, Sendable {

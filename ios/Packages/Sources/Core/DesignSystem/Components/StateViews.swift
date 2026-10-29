@@ -61,9 +61,8 @@ public struct ErrorStateView: View {
         } actions: {
             if let retry {
                 Button(tr("Retry"), action: retry)
-                    .buttonStyle(.borderedProminent)
-                    .tint(.theme.accent)
-                    .foregroundStyle(.theme.onAccent)
+                    .buttonStyle(.primary)
+                    .frame(width: 240)
             }
         }
     }

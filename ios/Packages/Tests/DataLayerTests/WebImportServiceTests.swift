@@ -13,8 +13,8 @@ struct WebImportServiceTests {
         service = WebImportService(persistence: persistence)
     }
 
-    private func sampleImport(profileName: String = "Олена") -> WebImport {
-        WebImport(
+    private func sampleImport(profileName: String = "Олена") -> WebImportPayload {
+        WebImportPayload(
             profile: UserProfile(name: profileName),
             beans: Bean.samples,
             devices: [Device(id: .fixture(201), updatedAt: Date(timeIntervalSince1970: 10), name: "Hario V60 02", type: .dripper)],
@@ -56,7 +56,7 @@ struct WebImportServiceTests {
 
     @Test func localEditsSurviveReimport() async throws {
         try await service.save(sampleImport())
-        let repository = CoreDataBrewRepository(persistence: persistence)
+        let repository = CoreDataRecordRepository<Brew>(persistence: persistence)
         var edited = try await repository.fetch(id: Brew.samples[0].id)
         edited.notes = "edited after import"
         try await repository.save(edited)
@@ -74,21 +74,6 @@ struct WebImportServiceTests {
 
         #expect(!summary.profileImported)
         #expect(try await DocumentStore(persistence: persistence).load(UserProfile.self, key: .profile)?.name == "Local Name")
-    }
-
-    @Test func achievementsMergeKeepingEarliestDate() {
-        let local = [EarnedAchievement(achievementID: "a", earnedAt: Date(timeIntervalSince1970: 200))]
-        let imported = [
-            EarnedAchievement(achievementID: "a", earnedAt: Date(timeIntervalSince1970: 100)),
-            EarnedAchievement(achievementID: "b", earnedAt: Date(timeIntervalSince1970: 300)),
-        ]
-
-        let merged = EarnedAchievement.merge(local, imported)
-
-        #expect(merged == [
-            EarnedAchievement(achievementID: "a", earnedAt: Date(timeIntervalSince1970: 100)),
-            EarnedAchievement(achievementID: "b", earnedAt: Date(timeIntervalSince1970: 300)),
-        ])
     }
 
     @Test func importsJSONFile() async throws {

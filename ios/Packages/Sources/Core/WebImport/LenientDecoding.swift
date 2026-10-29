@@ -4,10 +4,6 @@ import Foundation
 struct LenientNumber: Decodable, Hashable {
     let value: Double
 
-    init(_ value: Double) {
-        self.value = value
-    }
-
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let double = try? container.decode(Double.self) {
@@ -33,6 +29,20 @@ struct LenientNumber: Decodable, Hashable {
             }
         }
         return Double(number)
+    }
+}
+
+/// Text that may arrive as a JSON string or a number (`"3:05"`, `"28с"`, `185`).
+struct LenientText: Decodable, Hashable {
+    let value: String
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let string = try? container.decode(String.self) {
+            value = string
+        } else {
+            value = String(try container.decode(Double.self))
+        }
     }
 }
 
@@ -68,14 +78,6 @@ extension KeyedDecodingContainer {
     func lossyStrings(forKey key: Key) -> [String]? {
         (try? decodeIfPresent(LossyArray<String>.self, forKey: key))?.elements
     }
-
-    func lenient(_ key: Key) -> LenientNumber? {
-        (try? decodeIfPresent(LenientNumber.self, forKey: key)) ?? nil
-    }
-
-    func string(_ key: Key) -> String? {
-        (try? decodeIfPresent(String.self, forKey: key)) ?? nil
-    }
 }
 
 /// Optional field that decodes to `nil` instead of throwing when the value has an unexpected type.
@@ -95,6 +97,6 @@ struct Lenient<Value: Decodable>: Decodable {
 extension KeyedDecodingContainer {
     // Called by synthesized `init(from:)` for `@Lenient` properties; tolerates missing keys and bad values.
     func decode<Value>(_ type: Lenient<Value>.Type, forKey key: Key) throws -> Lenient<Value> {
-        Lenient(wrappedValue: (try? decodeIfPresent(Value.self, forKey: key)) ?? nil)
+        Lenient(wrappedValue: try? decodeIfPresent(Value.self, forKey: key))
     }
 }

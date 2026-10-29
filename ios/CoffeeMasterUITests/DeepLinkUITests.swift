@@ -1,27 +1,17 @@
 import XCTest
 
-/// Deep link map v1, end to end: each link (passed as the Debug `-deeplink` launch argument,
-/// the same path as a cold-start URL) must land on the right tab or screen.
+/// Deep link map v1, end to end: each link must land on the right tab or screen.
 @MainActor
 final class DeepLinkUITests: XCTestCase {
     override func setUp() async throws {
         continueAfterFailure = false
     }
 
-    private func launch(_ link: String) -> XCUIApplication {
-        let app = XCUIApplication()
-        app.launchArguments += ["-app.language", "en", "-deeplink", link]
-        app.launch()
-        return app
-    }
-
     private func assertSelectedTab(_ title: String, after link: String, file: StaticString = #filePath, line: UInt = #line) {
-        let app = launch(link)
+        let app = XCUIApplication.launched(deepLink: link)
         let tab = app.tabBars.buttons[title]
         XCTAssertTrue(tab.waitForExistence(timeout: 5), "No tab \(title)", file: file, line: line)
-        let selected = NSPredicate(format: "isSelected == true")
-        expectation(for: selected, evaluatedWith: tab)
-        waitForExpectations(timeout: 5)
+        XCTAssertTrue(tab.wait(for: \.isSelected, toEqual: true, timeout: 5), "\(link) didn't select \(title)", file: file, line: line)
         app.terminate()
     }
 
@@ -37,17 +27,17 @@ final class DeepLinkUITests: XCTestCase {
     }
 
     func testNewBrewLinkOpensBrewFlow() {
-        let app = launch("coffeemaster://brew/new")
+        let app = XCUIApplication.launched(deepLink: "coffeemaster://brew/new")
         XCTAssertTrue(app.navigationBars["New Brew"].waitForExistence(timeout: 5))
     }
 
     func testLegacyNewBrewLinkStillWorks() {
-        let app = launch("coffeemaster://brews/new")
+        let app = XCUIApplication.launched(deepLink: "coffeemaster://brews/new")
         XCTAssertTrue(app.navigationBars["New Brew"].waitForExistence(timeout: 5))
     }
 
     func testAboutLinkPushesAbout() {
-        let app = launch("coffeemaster://settings/about")
+        let app = XCUIApplication.launched(deepLink: "coffeemaster://settings/about")
         let about = app.navigationBars["About"]
         XCTAssertTrue(about.waitForExistence(timeout: 5))
         // About hides the tab bar; its back button shows it was pushed on the Profile stack.
@@ -55,7 +45,14 @@ final class DeepLinkUITests: XCTestCase {
     }
 
     func testUnknownBrewShowsWarning() {
-        let app = launch("coffeemaster://journal/not-a-brew-id")
+        let app = XCUIApplication.launched(deepLink: "coffeemaster://journal/not-a-brew-id")
+        XCTAssertTrue(app.staticTexts["This brew no longer exists."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.tabBars.buttons["Journal"].isSelected)
+    }
+
+    /// A well-formed id for a brew that doesn't exist behaves the same as a malformed one.
+    func testMissingBrewShowsSameWarning() {
+        let app = XCUIApplication.launched(deepLink: "coffeemaster://journal/00000000-0000-0000-0000-00000000dead")
         XCTAssertTrue(app.staticTexts["This brew no longer exists."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.tabBars.buttons["Journal"].isSelected)
     }

@@ -2,9 +2,9 @@ import FactoryKit
 import Foundation
 
 public extension Container {
-    /// Key-value settings storage. Tests can register an isolated suite.
-    var userDefaults: Factory<UserDefaults> {
-        self { .standard }.cached
+    /// User preferences (haptics, …). Tests can register one backed by an isolated suite.
+    var preferences: Factory<AppPreferences> {
+        self { AppPreferences() }.cached
     }
 
     /// "1.2.0 (42)" from the main bundle.

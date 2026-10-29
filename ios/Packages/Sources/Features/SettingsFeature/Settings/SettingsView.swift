@@ -13,7 +13,6 @@ struct SettingsView: View {
                         Text(language.nativeName).tag(language)
                     }
                 }
-                .tint(.theme.accent)
                 .themedRow()
                 Toggle(tr("Haptics"), isOn: $viewModel.hapticsEnabled)
                     .tint(.theme.accent)

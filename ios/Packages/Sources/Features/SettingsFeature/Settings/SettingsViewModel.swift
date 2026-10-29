@@ -2,18 +2,12 @@ import Foundation
 import Observation
 import AppCore
 import FactoryKit
-
-@MainActor
 @Observable
 final class SettingsViewModel {
-    private enum Keys {
-        static let haptics = "settings.hapticsEnabled"
-    }
-
     @ObservationIgnored @Injected(\.appVersion) var appVersion
 
     var hapticsEnabled: Bool = true {
-        didSet { defaults.set(hapticsEnabled, forKey: Keys.haptics) }
+        didSet { preferences.hapticsEnabled = hapticsEnabled }
     }
 
     /// In-app language. Changing it persists the choice; the app then rebuilds its screens.
@@ -21,12 +15,12 @@ final class SettingsViewModel {
         didSet { LanguageSettings.shared.set(language) }
     }
 
-    @ObservationIgnored @Injected(\.userDefaults) private var defaults
+    @ObservationIgnored @Injected(\.preferences) private var preferences
     @ObservationIgnored private weak var router: (any SettingsRouting)?
 
     init(router: any SettingsRouting) {
         self.router = router
-        hapticsEnabled = defaults.object(forKey: Keys.haptics) as? Bool ?? true
+        hapticsEnabled = preferences.hapticsEnabled
     }
 
     func didTapAbout() {

@@ -7,7 +7,6 @@ import Navigation
 import BrewsFeature
 
 /// Journal tab: brew list → detail. Starting a brew goes through the app-wide Brew action.
-@MainActor
 final class JournalFlow: Flow {
     private let module: BrewsModule
     private let startBrew: () -> Void
@@ -41,7 +40,7 @@ final class JournalFlow: Flow {
         router.popToRoot(animated: false)
         guard case .brewDetail(let rawID) = deepLink else { return }
         guard let id = UUID(uuidString: rawID) else {
-            toasts.show(Toast(tr("This brew no longer exists."), style: .warning))
+            toasts.show(tr("This brew no longer exists."), style: .warning)
             return
         }
         router.push(module.makeBrewDetail(id: id, router: self), animated: false)
@@ -61,6 +60,12 @@ extension JournalFlow: BrewListRouting {
 extension JournalFlow: BrewDetailRouting {
     func brewDetailDidDelete(id: Brew.ID) {
         router.pop()
-        toasts.show(Toast(tr("Brew deleted"), style: .success))
+        toasts.show(tr("Brew deleted"), style: .success)
+    }
+
+    /// Same outcome as a malformed brew link: back on the Journal with a warning.
+    func brewDetailNotFound(id: Brew.ID) {
+        router.popToRoot(animated: false)
+        toasts.show(tr("This brew no longer exists."), style: .warning)
     }
 }

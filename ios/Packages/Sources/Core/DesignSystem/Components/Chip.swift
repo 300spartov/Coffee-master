@@ -33,9 +33,9 @@ public struct Chip: View {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.xs + 2)
-        .foregroundStyle(isSelected ? AnyShapeStyle(.theme.accent) : AnyShapeStyle(.theme.textPrimary))
-        .background(isSelected ? AnyShapeStyle(.theme.accentSoft) : AnyShapeStyle(.theme.fill), in: Capsule())
-        .overlay(Capsule().strokeBorder(isSelected ? AnyShapeStyle(.theme.accent) : AnyShapeStyle(.clear), lineWidth: 1))
+        .foregroundStyle(isSelected ? Color.theme.accent : Color.theme.textPrimary)
+        .background(isSelected ? Color.theme.accentSoft : Color.theme.fill, in: Capsule())
+        .overlay(Capsule().strokeBorder(isSelected ? Color.theme.accent : .clear, lineWidth: 1))
         .contentShape(Capsule())
     }
 }

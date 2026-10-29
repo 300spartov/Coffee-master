@@ -8,13 +8,9 @@ public struct RatingView: View {
         self.rating = rating
     }
 
-    private var formattedRating: String {
-        rating.formatted(.number.precision(.fractionLength(1)))
-    }
-
     public var body: some View {
         Label {
-            Text(rating, format: .number.precision(.fractionLength(1)))
+            Text(RatingFormat.value(rating))
                 .monospacedDigit()
         } icon: {
             Image(systemName: "star.fill")
@@ -23,7 +19,7 @@ public struct RatingView: View {
         .labelStyle(.titleAndIcon)
         .font(.caption.weight(.semibold))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(tr("Rating \(formattedRating) of 10")))
+        .accessibilityLabel(Text(RatingFormat.accessibilityLabel(rating)))
     }
 }
 

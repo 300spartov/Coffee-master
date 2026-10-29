@@ -5,7 +5,6 @@ import DesignSystem
 import Navigation
 
 /// Stand-in for a tab whose feature isn't built yet (Beans and Devices arrive in ROADMAP Phase 1).
-@MainActor
 final class PlaceholderFlow: Flow {
     private let title: String
     private let systemImage: String

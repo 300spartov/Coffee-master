@@ -35,7 +35,6 @@ struct NewBrewView: View {
             Section(tr("Rating")) {
                 LabeledContent(tr("Rating"), value: viewModel.rating.formatted(.number.precision(.fractionLength(1))))
                 Slider(value: $viewModel.rating, in: Brew.ratingRange, step: 0.5)
-                    .tint(.theme.accent)
             }
 
             if let errorMessage = viewModel.errorMessage {

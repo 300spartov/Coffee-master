@@ -12,10 +12,6 @@ public struct RatingRing: View {
         self.lineWidth = lineWidth
     }
 
-    private var formattedRating: String {
-        rating.formatted(.number.precision(.fractionLength(1)))
-    }
-
     public var body: some View {
         ZStack {
             Circle().stroke(.theme.fill, lineWidth: lineWidth)
@@ -23,7 +19,7 @@ public struct RatingRing: View {
                 .trim(from: 0, to: rating / 10)
                 .stroke(.theme.accent, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
-            Text(rating, format: .number.precision(.fractionLength(1)))
+            Text(RatingFormat.value(rating))
                 .font(.system(size: size * 0.3, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.theme.textPrimary)
@@ -31,7 +27,7 @@ public struct RatingRing: View {
         .frame(width: size, height: size)
         .animation(.smooth, value: rating)
         .accessibilityElement()
-        .accessibilityLabel(Text(tr("Rating \(formattedRating) of 10")))
+        .accessibilityLabel(Text(RatingFormat.accessibilityLabel(rating)))
     }
 }
 

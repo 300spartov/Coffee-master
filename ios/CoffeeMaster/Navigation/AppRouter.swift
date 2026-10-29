@@ -10,10 +10,9 @@ import SettingsFeature
 /// Root of the navigation tree: owns the window, the tab bar, one `Flow` per tab and the
 /// app-wide Brew action. Every external entry point ends up in `handle(_:)`.
 ///
-/// The Brew action isn't a tab (tabs are for navigation): it's an accent button in the top bar of
-/// every tab's root screen, a prominent Liquid Glass button on iOS 26. The tab bar minimizes while
-/// scrolling (iOS 26), and the top bar keeps the Brew button reachable.
-@MainActor
+/// The Brew action isn't a tab (tabs are for navigation): it's an accent button in the Journal's top
+/// bar, a prominent Liquid Glass button on iOS 26. The tab bar minimizes while scrolling (iOS 26),
+/// and the top bar keeps the Brew button reachable.
 final class AppRouter {
     private let window: UIWindow
     private let parser = DeepLinkParser()
@@ -22,7 +21,7 @@ final class AppRouter {
     private var brewFlow: BrewFlow?
     /// A link that arrived before `start()` (or while the UI wasn't ready, e.g. behind onboarding / login).
     private var pendingDeepLink: DeepLink?
-    private var languageObserver: NSObjectProtocol?
+    private var languageObserver: Task<Void, Never>?
 
     init(window: UIWindow) {
         self.window = window
@@ -41,10 +40,10 @@ final class AppRouter {
             handle(link)
         }
 
-        languageObserver = NotificationCenter.default.addObserver(
-            forName: .appLanguageDidChange, object: nil, queue: .main
-        ) { [weak self] _ in
-            MainActor.assumeIsolated { self?.rebuildForLanguageChange() }
+        languageObserver = Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: .appLanguageDidChange) {
+                self?.rebuildForLanguageChange()
+            }
         }
     }
 
@@ -63,7 +62,7 @@ final class AppRouter {
             PlaceholderFlow(title: tr("Devices"), systemImage: "wrench.and.screwdriver", message: tr("Your brewing equipment will live here.")) { link in
                 link == .devices
             },
-            ProfileFlow(module: SettingsModule(), openDeepLink: { [weak self] in self?.handle($0) }),
+            ProfileFlow(module: SettingsModule(), startBrew: { [weak self] in self?.startBrew() }),
         ]
     }
 
@@ -79,10 +78,11 @@ final class AppRouter {
         if #available(iOS 26, *) {
             tabBarController.tabBarMinimizeBehavior = .onScrollDown
         }
-        for flow in flows {
-            guard let root = (flow.rootViewController as? UINavigationController)?.viewControllers.first else { continue }
-            root.navigationItem.rightBarButtonItem = makeBrewButton()
-        }
+        // Only the Journal, where brews live. Other entry points: `brew/new`, Profile → "Log a New Brew".
+        guard let journal = flows.first(where: { $0 is JournalFlow }),
+              let root = (journal.rootViewController as? UINavigationController)?.viewControllers.first
+        else { return }
+        root.navigationItem.rightBarButtonItem = makeBrewButton()
     }
 
     /// Accent "Brew" button: prominent (accent-filled glass) on iOS 26, accent-tinted before.

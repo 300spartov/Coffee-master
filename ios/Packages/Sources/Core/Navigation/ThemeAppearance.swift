@@ -2,7 +2,6 @@ import UIKit
 import DesignSystem
 
 /// Applies the theme to UIKit chrome. Call once per window, before it becomes visible.
-@MainActor
 public enum ThemeAppearance {
     public static func apply(to window: UIWindow) {
         // SwiftUI `.tint` inside hosting controllers inherits this.

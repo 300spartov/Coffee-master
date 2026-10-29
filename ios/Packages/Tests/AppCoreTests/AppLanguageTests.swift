@@ -56,9 +56,4 @@ struct LanguageSettingsTests {
         _ = await iterator.next()
         #expect(settings.current == other)
     }
-
-    @Test func resolvesWithExplicitLanguage() {
-        // Foundation has its own strings for neither key; an unknown key falls back to itself.
-        #expect(L10n.string("Not a key", bundle: .main, language: .ukrainian) == "Not a key")
-    }
 }

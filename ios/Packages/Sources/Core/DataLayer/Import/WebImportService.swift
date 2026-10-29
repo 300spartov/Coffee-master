@@ -31,6 +31,14 @@ public struct WebImportService: Sendable {
         self.persistence = persistence
     }
 
+    /// Reads, decodes and saves a `.json` export file (off the main thread).
+    /// Throws `WebImportError` for files that aren't an export.
+    @discardableResult
+    public func importJSON(contentsOf url: URL) async throws -> WebImportSummary {
+        let data = try await Task.detached(priority: .userInitiated) { try Data(contentsOf: url) }.value
+        return try await importJSON(data)
+    }
+
     /// Decodes and saves a `.json` export. Throws `WebImportError` for unreadable files.
     @discardableResult
     public func importJSON(_ data: Data, importedAt: Date = .now) async throws -> WebImportSummary {
@@ -39,7 +47,7 @@ public struct WebImportService: Sendable {
     }
 
     @discardableResult
-    public func save(_ data: WebImport) async throws -> WebImportSummary {
+    package func save(_ data: WebImportPayload) async throws -> WebImportSummary {
         let summary = try await persistence.write(author: .import) { context in
             var summary = WebImportSummary()
             summary.brews = try RecordStore<Brew>.upsert(data.brews, policy: .lastWriteWins, in: context)
@@ -49,7 +57,7 @@ public struct WebImportService: Sendable {
 
             if let profile = data.profile {
                 let local = try DocumentStore.load(UserProfile.self, key: .profile, in: context)
-                if local == nil || local?.name.isEmpty == true {
+                if local?.name.isEmpty ?? true {
                     try DocumentStore.save(profile, key: .profile, updatedAt: profile.updatedAt, in: context)
                     summary.profileImported = true
                 }

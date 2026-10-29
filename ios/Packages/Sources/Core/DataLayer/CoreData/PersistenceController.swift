@@ -1,6 +1,6 @@
 import CoreData
 import Foundation
-import os
+import Domain
 import AppCore
 
 /// Owns the Core Data stack. All reads and writes run on short-lived background contexts,
@@ -30,11 +30,14 @@ public final class PersistenceController: @unchecked Sendable {
         case widget
     }
 
-    public static let storeFileName = "CoffeeMaster.sqlite"
+    private static let storeFileName = "CoffeeMaster.sqlite"
 
     let container: NSPersistentContainer
-    public let storeURL: URL
-    private let changeCenter = ChangeCenter()
+    private let storeURL: URL
+    /// One broadcaster per entity, so observers only hear about the entity they watch.
+    private let broadcasters: [String: ChangeBroadcaster] = Dictionary(
+        uniqueKeysWithValues: CoreDataModel.shared.entities.compactMap(\.name).map { ($0, ChangeBroadcaster()) }
+    )
 
     public init(location: Location = .appGroup(AppConfiguration.appGroupID)) throws {
         storeURL = Self.storeURL(for: location)
@@ -75,7 +78,7 @@ public final class PersistenceController: @unchecked Sendable {
             return (result, changed)
         }
         if !changed.isEmpty {
-            changeCenter.notify(changed)
+            changed.forEach { broadcasters[$0]?.notify() }
         }
         return result
     }
@@ -85,9 +88,10 @@ public final class PersistenceController: @unchecked Sendable {
         return try await context.perform { try block(context) }
     }
 
-    /// Emits after every saved write that touched one of `entities`.
-    func changes(of entities: Set<String>) -> AsyncStream<Void> {
-        changeCenter.subscribe(to: entities)
+    /// Emits after every saved write that touched `entity`.
+    func changes(of entity: String) -> AsyncStream<Void> {
+        guard let broadcaster = broadcasters[entity] else { preconditionFailure("Unknown entity \(entity)") }
+        return broadcaster.stream()
     }
 
     // MARK: - Private
@@ -120,32 +124,5 @@ public final class PersistenceController: @unchecked Sendable {
             let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             return storeURL(for: .directory(support.appendingPathComponent("Database", isDirectory: true)))
         }
-    }
-}
-
-/// Fan-out of "entities changed" events to `AsyncStream` subscribers.
-private final class ChangeCenter: Sendable {
-    private struct Subscriber {
-        let entities: Set<String>
-        let continuation: AsyncStream<Void>.Continuation
-    }
-
-    private let subscribers = OSAllocatedUnfairLock(initialState: [UUID: Subscriber]())
-
-    func subscribe(to entities: Set<String>) -> AsyncStream<Void> {
-        let (stream, continuation) = AsyncStream.makeStream(of: Void.self, bufferingPolicy: .bufferingNewest(1))
-        let id = UUID()
-        subscribers.withLock { $0[id] = Subscriber(entities: entities, continuation: continuation) }
-        continuation.onTermination = { [weak self] _ in
-            self?.subscribers.withLock { _ = $0.removeValue(forKey: id) }
-        }
-        return stream
-    }
-
-    func notify(_ changed: Set<String>) {
-        let targets = subscribers.withLock { subscribers in
-            subscribers.values.filter { !$0.entities.isDisjoint(with: changed) }.map(\.continuation)
-        }
-        targets.forEach { $0.yield() }
     }
 }

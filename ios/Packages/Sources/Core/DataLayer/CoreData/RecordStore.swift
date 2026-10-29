@@ -3,7 +3,7 @@ import Foundation
 import Domain
 
 /// How `upsert` treats a record that already exists.
-public enum UpsertPolicy: Sendable {
+enum UpsertPolicy: Sendable {
     /// Keep whichever version has the newer `updatedAt` (ties go to the incoming one).
     /// Used for imports and, later, sync.
     case lastWriteWins
@@ -25,8 +25,6 @@ public struct UpsertResult: Equatable, Sendable {
         self.skipped = skipped
         self.unchanged = unchanged
     }
-
-    public var total: Int { inserted + updated + skipped + unchanged }
 }
 
 /// Generic CRUD for one syncable record type. Repositories are thin wrappers around this.
@@ -37,40 +35,43 @@ struct RecordStore<Record: StoredRecord>: Sendable {
 
     // MARK: - Reads
 
-    func fetch(id: UUID, includeDeleted: Bool = false) async throws -> Record? {
+    func fetch(id: UUID, _ filter: DeletedFilter = .exclude) async throws -> Record? {
         try await persistence.read { context in
-            try Self.objects(in: context, predicate: Self.predicate(id: id, includeDeleted: includeDeleted), limit: 1)
-                .first
-                .map { try Record.read(from: $0, decoder: JSONDecoder()) }
+            try Self.object(id: id, filter, in: context).map { try Record.read(from: $0) }
         }
     }
 
-    /// `deleted`: `.exclude` for normal lists, `.only` for the trash.
+    /// Like `fetch`, but throws `RepositoryError.notFound` instead of returning `nil`.
+    func require(id: UUID) async throws -> Record {
+        guard let record = try await fetch(id: id) else { throw RepositoryError.notFound }
+        return record
+    }
+
     /// `filter` builds an extra predicate on the context's queue (`NSPredicate` isn't `Sendable`).
-    func fetchAll(deleted: DeletedFilter = .exclude, where filter: (@Sendable () -> NSPredicate)? = nil) async throws -> [Record] {
-        let format = deleted.predicateFormat
-        return try await persistence.read { context in
-            var predicates = [NSPredicate]()
-            if let format { predicates.append(NSPredicate(format: format)) }
-            if let filter { predicates.append(filter()) }
+    func fetchAll(_ deleted: DeletedFilter = .exclude, where filter: (@Sendable () -> NSPredicate)? = nil) async throws -> [Record] {
+        try await persistence.read { context in
+            let predicates = [Self.predicate(for: deleted), filter?()].compactMap { $0 }
             let compound = predicates.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-            let decoder = JSONDecoder()
-            return try Self.objects(in: context, predicate: compound, sort: Record.defaultSort).map {
-                try Record.read(from: $0, decoder: decoder)
-            }
+            return try Self.objects(in: context, predicate: compound, sort: Record.defaultSort).map { try Record.read(from: $0) }
         }
     }
 
-    func count(deleted: DeletedFilter = .exclude) async throws -> Int {
-        let format = deleted.predicateFormat
-        return try await persistence.read { context in
+    func count(_ deleted: DeletedFilter = .exclude) async throws -> Int {
+        try await persistence.read { context in
             let request = NSFetchRequest<NSManagedObject>(entityName: Record.entityName)
-            request.predicate = format.map { NSPredicate(format: $0) }
+            request.predicate = Self.predicate(for: deleted)
             return try context.count(for: request)
         }
     }
 
     // MARK: - Writes
+
+    /// A local edit: stamps `updatedAt` (so it wins in sync) and overwrites.
+    func save(_ record: Record) async throws {
+        var record = record
+        record.touch()
+        try await upsert([record], policy: .overwrite)
+    }
 
     @discardableResult
     func upsert(_ records: [Record], policy: UpsertPolicy, author: PersistenceController.TransactionAuthor = .app) async throws -> UpsertResult {
@@ -79,30 +80,35 @@ struct RecordStore<Record: StoredRecord>: Sendable {
         }
     }
 
-    /// Moves to the trash (`deletedAt`). Throws `notFound` if missing or already deleted.
+    /// Moves to the trash (`deletedAt`) and runs the record's soft-delete side effects in the same
+    /// transaction. Throws `notFound` if missing or already trashed.
     func softDelete(id: UUID, at date: Date = .now) async throws {
-        try await mutate(id: id, includeDeleted: false) { $0.markDeleted(at: date) }
-    }
-
-    func restore(id: UUID, at date: Date = .now) async throws {
-        try await mutate(id: id, includeDeleted: true) { $0.restore(at: date) }
-    }
-
-    /// Loads, changes and saves one record in a single transaction.
-    @discardableResult
-    func mutate(id: UUID, includeDeleted: Bool = false, _ change: @escaping @Sendable (inout Record) -> Void) async throws -> Record {
         try await persistence.write { context in
-            try Self.mutate(id: id, includeDeleted: includeDeleted, in: context, change)
+            let deleted = try Self.mutate(id: id, in: context) { $0.markDeleted(at: date) }
+            try Record.didSoftDelete(deleted, in: context)
+        }
+    }
+
+    /// Brings a trashed record back, with its side effects. Throws `notFound` unless it's in the trash.
+    func restore(id: UUID, at date: Date = .now) async throws {
+        try await persistence.write { context in
+            let restored = try Self.mutate(id: id, .only, in: context) { $0.restore(at: date) }
+            try Record.didRestore(restored, in: context)
+        }
+    }
+
+    /// Loads, changes and saves one active record in a single transaction.
+    @discardableResult
+    func mutate(id: UUID, _ change: @escaping @Sendable (inout Record) -> Void) async throws -> Record {
+        try await persistence.write { context in
+            try Self.mutate(id: id, in: context, change)
         }
     }
 
     /// Permanently removes one trashed record. Throws `notFound` if it isn't in the trash.
     func deletePermanently(id: UUID) async throws {
         try await persistence.write { context in
-            let predicate = NSPredicate(format: "%K == %@ AND %K != nil", A.id, id as CVarArg, A.deletedAt)
-            guard let object = try Self.objects(in: context, predicate: predicate, limit: 1).first else {
-                throw RepositoryError.notFound
-            }
+            guard let object = try Self.object(id: id, .only, in: context) else { throw RepositoryError.notFound }
             context.delete(object)
         }
     }
@@ -111,16 +117,15 @@ struct RecordStore<Record: StoredRecord>: Sendable {
     @discardableResult
     func purgeDeleted(before date: Date) async throws -> Int {
         try await persistence.write { context in
-            let request = NSFetchRequest<NSManagedObject>(entityName: Record.entityName)
-            request.predicate = NSPredicate(format: "%K != nil AND %K < %@", A.deletedAt, A.deletedAt, date as NSDate)
-            let objects = try context.fetch(request)
+            let predicate = NSPredicate(format: "%K != nil AND %K < %@", A.deletedAt, A.deletedAt, date as NSDate)
+            let objects = try Self.objects(in: context, predicate: predicate)
             objects.forEach(context.delete)
             return objects.count
         }
     }
 
     func changes() -> AsyncStream<Void> {
-        persistence.changes(of: [Record.entityName])
+        persistence.changes(of: Record.entityName)
     }
 
     // MARK: - Context-level helpers (shared with multi-entity transactions, e.g. import)
@@ -133,24 +138,22 @@ struct RecordStore<Record: StoredRecord>: Sendable {
             if let id = object.value(forKey: A.id) as? UUID { byID[id] = object }
         }
 
-        let encoder = StoredRecordCoding.encoder()
         var result = UpsertResult()
         for record in records {
+            let payload = try StoredRecordCoding.encode(record)
             if let object = byID[record.id] {
                 let existingUpdatedAt = object.value(forKey: A.updatedAt) as? Date ?? .distantPast
                 if policy == .lastWriteWins, existingUpdatedAt > record.updatedAt {
                     result.skipped += 1
-                    continue
-                }
-                if object.value(forKey: A.payload) as? Data == (try encoder.encode(record)) {
+                } else if object.value(forKey: A.payload) as? Data == payload {
                     result.unchanged += 1
-                    continue
+                } else {
+                    record.write(to: object, payload: payload)
+                    result.updated += 1
                 }
-                try record.write(to: object, encoder: encoder)
-                result.updated += 1
             } else {
                 let object = NSManagedObject(entity: entity(in: context), insertInto: context)
-                try record.write(to: object, encoder: encoder)
+                record.write(to: object, payload: payload)
                 byID[record.id] = object
                 result.inserted += 1
             }
@@ -158,26 +161,30 @@ struct RecordStore<Record: StoredRecord>: Sendable {
         return result
     }
 
-    /// Context-level `mutate`, for multi-entity transactions. Throws `notFound` if missing
-    /// (or trashed, unless `includeDeleted`).
+    /// Context-level `mutate`, for multi-entity transactions. Throws `notFound` unless a record
+    /// with `id` matches `filter`.
     @discardableResult
     static func mutate(
         id: UUID,
-        includeDeleted: Bool = false,
+        _ filter: DeletedFilter = .exclude,
         in context: NSManagedObjectContext,
         _ change: (inout Record) -> Void
     ) throws -> Record {
-        guard let object = try objects(in: context, predicate: predicate(id: id, includeDeleted: includeDeleted), limit: 1).first else {
-            throw RepositoryError.notFound
-        }
-        var record = try Record.read(from: object, decoder: JSONDecoder())
+        guard let object = try object(id: id, filter, in: context) else { throw RepositoryError.notFound }
+        var record = try Record.read(from: object)
         change(&record)
-        try record.write(to: object, encoder: StoredRecordCoding.encoder())
+        record.write(to: object, payload: try StoredRecordCoding.encode(record))
         return record
     }
 
     private static func entity(in context: NSManagedObjectContext) -> NSEntityDescription {
         NSEntityDescription.entity(forEntityName: Record.entityName, in: context)!
+    }
+
+    private static func object(id: UUID, _ filter: DeletedFilter, in context: NSManagedObjectContext) throws -> NSManagedObject? {
+        let byID = NSPredicate(format: "%K == %@", A.id, id as CVarArg)
+        let predicate = predicate(for: filter).map { NSCompoundPredicate(andPredicateWithSubpredicates: [byID, $0]) } ?? byID
+        return try objects(in: context, predicate: predicate, limit: 1).first
     }
 
     private static func objects(
@@ -194,25 +201,11 @@ struct RecordStore<Record: StoredRecord>: Sendable {
         return try context.fetch(request)
     }
 
-    private static func predicate(id: UUID, includeDeleted: Bool) -> NSPredicate {
-        includeDeleted
-            ? NSPredicate(format: "%K == %@", A.id, id as CVarArg)
-            : NSPredicate(format: "%K == %@ AND %K == nil", A.id, id as CVarArg, A.deletedAt)
-    }
-}
-
-enum DeletedFilter: Sendable {
-    case exclude
-    case only
-    case include
-
-    var predicateFormat: String? {
-        switch self {
-        case .exclude: "\(CoreDataModel.Attribute.deletedAt) == nil"
-        case .only: "\(CoreDataModel.Attribute.deletedAt) != nil"
+    private static func predicate(for filter: DeletedFilter) -> NSPredicate? {
+        switch filter {
+        case .exclude: NSPredicate(format: "%K == nil", A.deletedAt)
+        case .only: NSPredicate(format: "%K != nil", A.deletedAt)
         case .include: nil
         }
     }
 }
-
-extension UpsertPolicy: Equatable {}

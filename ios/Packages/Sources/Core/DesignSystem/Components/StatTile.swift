@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Labeled value in a small rounded tile ("Dose · 16 g").
 public struct StatTile: View {
     private let title: String
     private let value: String
@@ -11,17 +12,13 @@ public struct StatTile: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.theme.textSecondary)
-            Text(value)
-                .font(.title3.weight(.semibold))
-                .monospacedDigit()
-                .foregroundStyle(.theme.textPrimary)
+            Text(title).appTextStyle(.caption)
+            Text(value).appTextStyle(.metric)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(Spacing.md)
-        .background(.theme.surface, in: RoundedRectangle(cornerRadius: Radius.medium))
+        .background(.theme.surface, in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }
 
