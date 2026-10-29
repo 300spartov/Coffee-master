@@ -163,7 +163,7 @@ struct BrewTimerLiveActivity: Widget {
 
 | What | Where |
 |---|---|
-| Key for a shared protocol, with a **preview-safe default** | The module that owns the protocol, e.g. `Domain/DI/Container+Domain.swift` → `brewRepository` (default: fixtures), `DesignSystem/DI` → `toasts` (default: silent) |
+| Key for a shared protocol, with a **preview-safe default** | The module that owns the protocol, e.g. `Domain/DI/Container+Domain.swift` → `brewRepository`, `trashRepository`, `beanRepository`, `deviceRepository`, `filterPackRepository`, `profileRepository`, `suggestionsRepository` (defaults: in-memory repositories with fixtures), `DesignSystem/DI` → `toasts` (default: silent) |
 | Real implementations | `CoffeeMaster/DI/Container+App.swift` → `autoRegister()` |
 | App-only services (store, import, toast center) | Also `Container+App.swift` |
 

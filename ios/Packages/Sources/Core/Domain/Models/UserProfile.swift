@@ -55,6 +55,16 @@ public struct EarnedAchievement: Hashable, Codable, Sendable, Identifiable {
     }
 
     public var id: String { achievementID }
+
+    /// Union by id, keeping the earliest unlock date; sorted oldest first.
+    public static func merge(_ lhs: [EarnedAchievement], _ rhs: [EarnedAchievement]) -> [EarnedAchievement] {
+        var byID = [String: EarnedAchievement]()
+        for achievement in lhs + rhs {
+            if let existing = byID[achievement.achievementID], existing.earnedAt <= achievement.earnedAt { continue }
+            byID[achievement.achievementID] = achievement
+        }
+        return byID.values.sorted { ($0.earnedAt, $0.achievementID) < ($1.earnedAt, $1.achievementID) }
+    }
 }
 
 /// Values the user has typed before, offered as autocomplete.
@@ -70,6 +80,17 @@ public struct Suggestions: Hashable, Codable, Sendable {
         self.beanNames = beanNames
         self.milks = milks
         self.mixers = mixers
+    }
+
+    /// Union of both, keeping this instance's order and appending new values.
+    public func merging(_ other: Suggestions) -> Suggestions {
+        func union(_ a: [String], _ b: [String]) -> [String] { b.reduce(a) { Suggestions.adding($1, to: $0) } }
+        return Suggestions(
+            roasters: union(roasters, other.roasters),
+            beanNames: union(beanNames, other.beanNames),
+            milks: union(milks, other.milks),
+            mixers: union(mixers, other.mixers)
+        )
     }
 
     /// Adds without duplicates (case-insensitive), ignoring blanks. Returns the updated list.

@@ -1,7 +1,8 @@
 import Foundation
 import Domain
 
-/// Core Data–backed `BrewRepository`. Deleting moves a brew to the trash (soft delete).
+/// Core Data–backed `BrewRepository`. Deleting moves a brew to the trash and returns its
+/// coffee and filter to stock in the same transaction.
 public struct CoreDataBrewRepository: BrewRepository {
     private let store: RecordStore<Brew>
 
@@ -19,7 +20,6 @@ public struct CoreDataBrewRepository: BrewRepository {
         return brew
     }
 
-    /// Inserts or updates; stamps `updatedAt` so the edit wins in sync.
     public func save(_ brew: Brew) async throws {
         var brew = brew
         brew.touch()
@@ -27,7 +27,10 @@ public struct CoreDataBrewRepository: BrewRepository {
     }
 
     public func delete(id: Brew.ID) async throws {
-        try await store.softDelete(id: id)
+        try await store.persistence.write { context in
+            let deleted = try RecordStore<Brew>.mutate(id: id, in: context) { $0.markDeleted() }
+            try BrewStockEffects.apply(.returnToStock, for: deleted, in: context)
+        }
     }
 
     public func changes() async -> AsyncStream<Void> {

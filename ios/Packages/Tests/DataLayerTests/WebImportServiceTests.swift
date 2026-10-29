@@ -83,7 +83,7 @@ struct WebImportServiceTests {
             EarnedAchievement(achievementID: "b", earnedAt: Date(timeIntervalSince1970: 300)),
         ]
 
-        let merged = WebImportService.merge(local, imported)
+        let merged = EarnedAchievement.merge(local, imported)
 
         #expect(merged == [
             EarnedAchievement(achievementID: "a", earnedAt: Date(timeIntervalSince1970: 100)),

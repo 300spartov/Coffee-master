@@ -92,13 +92,18 @@ struct RecordStore<Record: StoredRecord>: Sendable {
     @discardableResult
     func mutate(id: UUID, includeDeleted: Bool = false, _ change: @escaping @Sendable (inout Record) -> Void) async throws -> Record {
         try await persistence.write { context in
-            guard let object = try Self.objects(in: context, predicate: Self.predicate(id: id, includeDeleted: includeDeleted), limit: 1).first else {
+            try Self.mutate(id: id, includeDeleted: includeDeleted, in: context, change)
+        }
+    }
+
+    /// Permanently removes one trashed record. Throws `notFound` if it isn't in the trash.
+    func deletePermanently(id: UUID) async throws {
+        try await persistence.write { context in
+            let predicate = NSPredicate(format: "%K == %@ AND %K != nil", A.id, id as CVarArg, A.deletedAt)
+            guard let object = try Self.objects(in: context, predicate: predicate, limit: 1).first else {
                 throw RepositoryError.notFound
             }
-            var record = try Record.read(from: object, decoder: JSONDecoder())
-            change(&record)
-            try record.write(to: object, encoder: StoredRecordCoding.encoder())
-            return record
+            context.delete(object)
         }
     }
 
@@ -151,6 +156,24 @@ struct RecordStore<Record: StoredRecord>: Sendable {
             }
         }
         return result
+    }
+
+    /// Context-level `mutate`, for multi-entity transactions. Throws `notFound` if missing
+    /// (or trashed, unless `includeDeleted`).
+    @discardableResult
+    static func mutate(
+        id: UUID,
+        includeDeleted: Bool = false,
+        in context: NSManagedObjectContext,
+        _ change: (inout Record) -> Void
+    ) throws -> Record {
+        guard let object = try objects(in: context, predicate: predicate(id: id, includeDeleted: includeDeleted), limit: 1).first else {
+            throw RepositoryError.notFound
+        }
+        var record = try Record.read(from: object, decoder: JSONDecoder())
+        change(&record)
+        try record.write(to: object, encoder: StoredRecordCoding.encoder())
+        return record
     }
 
     private static func entity(in context: NSManagedObjectContext) -> NSEntityDescription {

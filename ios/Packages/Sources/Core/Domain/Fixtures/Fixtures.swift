@@ -85,22 +85,20 @@ public extension Brew {
     ]
 }
 
-/// Read-only repository for SwiftUI previews.
-public struct PreviewBrewRepository: BrewRepository {
-    private let brews: [Brew]
+public extension Device {
+    static let samples: [Device] = [
+        Device(id: .fixture(201), name: "Hario V60 02", type: .dripper),
+        Device(id: .fixture(202), name: "AeroPress Original", type: .dripper),
+        Device(id: .fixture(203), name: "Comandante C40 MK4", type: .grinder),
+        Device(id: .fixture(204), name: "Gaggia Classic Pro", type: .espressoMachine),
+        Device(id: .fixture(205), name: "Fellow Stagg EKG", type: .kettle),
+        Device(id: .fixture(206), name: "Acaia Pearl", type: .accessory),
+    ]
+}
 
-    public init(brews: [Brew] = Brew.samples) {
-        self.brews = brews
-    }
-
-    public func fetchAll() async throws -> [Brew] { brews }
-
-    public func fetch(id: Brew.ID) async throws -> Brew {
-        guard let brew = brews.first(where: { $0.id == id }) else { throw RepositoryError.notFound }
-        return brew
-    }
-
-    public func save(_ brew: Brew) async throws {}
-    public func delete(id: Brew.ID) async throws {}
-    public func changes() async -> AsyncStream<Void> { AsyncStream { _ in } }
+public extension FilterPack {
+    static let samples: [FilterPack] = [
+        FilterPack(id: .fixture(301), name: "Cafec Abaca 02", total: 100, remaining: 64),
+        FilterPack(id: .fixture(302), name: "Hario V60 Tabbed", total: 100, remaining: 8),
+    ]
 }

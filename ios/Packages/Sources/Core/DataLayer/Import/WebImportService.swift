@@ -56,14 +56,14 @@ public struct WebImportService: Sendable {
             }
 
             let localAchievements = try DocumentStore.load([EarnedAchievement].self, key: .achievements, in: context) ?? []
-            let mergedAchievements = Self.merge(localAchievements, data.achievements)
+            let mergedAchievements = EarnedAchievement.merge(localAchievements, data.achievements)
             summary.achievementsAdded = mergedAchievements.count - localAchievements.count
             if summary.achievementsAdded > 0 {
                 try DocumentStore.save(mergedAchievements, key: .achievements, updatedAt: .now, in: context)
             }
 
             let localSuggestions = try DocumentStore.load(Suggestions.self, key: .suggestions, in: context) ?? Suggestions()
-            let mergedSuggestions = Self.merge(localSuggestions, data.suggestions)
+            let mergedSuggestions = localSuggestions.merging(data.suggestions)
             if mergedSuggestions != localSuggestions {
                 try DocumentStore.save(mergedSuggestions, key: .suggestions, updatedAt: .now, in: context)
             }
@@ -72,33 +72,4 @@ public struct WebImportService: Sendable {
         Log.data.info("Web import: \(summary.changedCount) changed, brews \(summary.brews.inserted)+\(summary.brews.updated), skipped \(summary.brews.skipped)")
         return summary
     }
-
-    /// Union by id, keeping the earliest unlock date.
-    static func merge(_ local: [EarnedAchievement], _ imported: [EarnedAchievement]) -> [EarnedAchievement] {
-        var byID = Dictionary(local.map { ($0.achievementID, $0) }, uniquingKeysWith: { min($0, $1, by: \.earnedAt) })
-        for achievement in imported {
-            if let existing = byID[achievement.achievementID] {
-                byID[achievement.achievementID] = min(existing, achievement, by: \.earnedAt)
-            } else {
-                byID[achievement.achievementID] = achievement
-            }
-        }
-        return byID.values.sorted { $0.earnedAt < $1.earnedAt }
-    }
-
-    static func merge(_ local: Suggestions, _ imported: Suggestions) -> Suggestions {
-        func union(_ a: [String], _ b: [String]) -> [String] {
-            b.reduce(a) { Suggestions.adding($1, to: $0) }
-        }
-        return Suggestions(
-            roasters: union(local.roasters, imported.roasters),
-            beanNames: union(local.beanNames, imported.beanNames),
-            milks: union(local.milks, imported.milks),
-            mixers: union(local.mixers, imported.mixers)
-        )
-    }
-}
-
-private func min<T>(_ a: T, _ b: T, by key: KeyPath<T, Date>) -> T {
-    a[keyPath: key] <= b[keyPath: key] ? a : b
 }

@@ -49,6 +49,12 @@ extension Container: @retroactive AutoRegistering {
                 snapshotStore: WidgetSnapshotStore()
             )
         }
+        trashRepository.register { CoreDataTrashRepository(persistence: self.persistence()) }
+        beanRepository.register { CoreDataBeanRepository(persistence: self.persistence()) }
+        deviceRepository.register { CoreDataDeviceRepository(persistence: self.persistence()) }
+        filterPackRepository.register { CoreDataFilterPackRepository(persistence: self.persistence()) }
+        profileRepository.register { CoreDataProfileRepository(persistence: self.persistence()) }
+        suggestionsRepository.register { CoreDataSuggestionsRepository(persistence: self.persistence()) }
         brewTimer.register { LiveActivityBrewTimerService() }
         toasts.register { @MainActor in self.toastCenter() }
     }
