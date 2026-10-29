@@ -75,7 +75,7 @@ struct BrewRow: View {
                 Text(brew.displayTitle)
                     .font(.headline)
                     .foregroundStyle(.theme.textPrimary)
-                Text("\(brew.method.rawValue) · 1:\(brew.ratio, format: .number.precision(.fractionLength(1)))")
+                Text(verbatim: "\(brew.method.rawValue) · 1:\(brew.ratio.formatted(.number.precision(.fractionLength(1))))")
                     .font(.subheadline)
                     .foregroundStyle(.theme.textSecondary)
             }

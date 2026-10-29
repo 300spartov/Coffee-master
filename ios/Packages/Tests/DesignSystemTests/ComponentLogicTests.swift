@@ -59,3 +59,25 @@ struct DesignSystemLocalizationTests {
         #expect(tr("Rating \("8.5") of 10", language: .ukrainian) == "Оцінка 8.5 з 10")
     }
 }
+
+struct AutocompleteTests {
+    private let roasters = ["Penyora", "Wonder&Full", "Mad Heads", "penyora", "Pérez Coffee", "Svit Kavy"]
+
+    @Test func prefixMatchesFirstThenContains() {
+        #expect(Autocomplete.matches(for: "pe", in: roasters) == ["Penyora", "Pérez Coffee"])
+        #expect(Autocomplete.matches(for: "ad", in: roasters) == ["Mad Heads"])
+    }
+
+    @Test func caseAndDiacriticInsensitiveAndDeduplicated() {
+        #expect(Autocomplete.matches(for: "PEREZ", in: roasters) == ["Pérez Coffee"])
+        #expect(Autocomplete.matches(for: "", in: roasters, limit: 3) == ["Penyora", "Wonder&Full", "Mad Heads"])
+    }
+
+    @Test func exactValueIsNotSuggested() {
+        #expect(Autocomplete.matches(for: "penyora", in: roasters).isEmpty)
+    }
+
+    @Test func ignoresBlanksAndRespectsLimit() {
+        #expect(Autocomplete.matches(for: "", in: ["", "  ", "A", "B"], limit: 1) == ["A"])
+    }
+}

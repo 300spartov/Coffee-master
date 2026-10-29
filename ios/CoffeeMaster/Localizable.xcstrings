@@ -1,296 +1,344 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "Beans" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beans"
+  "sourceLanguage": "en",
+  "strings": {
+    "Bean added": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bean added"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Зерно"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачку додано"
           }
         }
       }
     },
-    "Brew" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brew"
+    "Bean deleted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bean deleted"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Заварити"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачку видалено"
           }
         }
       }
     },
-    "Brew deleted" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brew deleted"
+    "Bean saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bean saved"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Рецепт видалено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачку збережено"
           }
         }
       }
     },
-    "Brew saved" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brew saved"
+    "Beans": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beans"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Рецепт збережено"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зерно"
           }
         }
       }
     },
-    "Coming soon" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coming soon"
+    "Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Скоро"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заварити"
           }
         }
       }
     },
-    "Devices" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Devices"
+    "Brew deleted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew deleted"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Девайси"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рецепт видалено"
           }
         }
       }
     },
-    "Everything is already imported." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Everything is already imported."
+    "Brew saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew saved"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Усе вже імпортовано."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рецепт збережено"
           }
         }
       }
     },
-    "Import failed. Please try again." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Import failed. Please try again."
+    "Coming soon": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coming soon"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не вдалося імпортувати. Спробуй ще раз."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скоро"
           }
         }
       }
     },
-    "Imported — brews: %lld, beans: %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imported — brews: %lld, beans: %lld"
+    "Devices": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devices"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Імпортовано — рецептів: %lld, зерна: %lld"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Девайси"
           }
         }
       }
     },
-    "Journal" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Journal"
+    "Everything is already imported.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything is already imported."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Журнал"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Усе вже імпортовано."
           }
         }
       }
     },
-    "New Brew" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New Brew"
+    "Import failed. Please try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import failed. Please try again."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Новий рецепт"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не вдалося імпортувати. Спробуй ще раз."
           }
         }
       }
     },
-    "Profile" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profile"
+    "Imported — brews: %lld, beans: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported — brews: %lld, beans: %lld"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Профіль"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Імпортовано — рецептів: %lld, зерна: %lld"
           }
         }
       }
     },
-    "Start a Brew" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start a Brew"
+    "Journal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journal"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Почати заварювання"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Журнал"
           }
         }
       }
     },
-    "This bean no longer exists." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This bean no longer exists."
+    "New Brew": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Brew"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Цієї пачки більше немає."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новий рецепт"
           }
         }
       }
     },
-    "This brew no longer exists." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This brew no longer exists."
+    "Profile": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Цього рецепта більше немає."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профіль"
           }
         }
       }
     },
-    "This file isn't a Coffee Master export." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This file isn't a Coffee Master export."
+    "Start a Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a Brew"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Цей файл не є експортом Coffee Master."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Почати заварювання"
           }
         }
       }
     },
-    "Your brewing equipment will live here." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your brewing equipment will live here."
+    "This bean no longer exists.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This bean no longer exists."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Тут житиме твоє обладнання."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цієї пачки більше немає."
           }
         }
       }
     },
-    "Your coffee bags will live here." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your coffee bags will live here."
+    "This brew no longer exists.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This brew no longer exists."
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Тут житимуть твої пачки кави."
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цього рецепта більше немає."
+          }
+        }
+      }
+    },
+    "This file isn't a Coffee Master export.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file isn't a Coffee Master export."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цей файл не є експортом Coffee Master."
+          }
+        }
+      }
+    },
+    "Your brewing equipment will live here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your brewing equipment will live here."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тут житиме твоє обладнання."
+          }
+        }
+      }
+    },
+    "Your coffee bags will live here.": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your coffee bags will live here."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тут житимуть твої пачки кави."
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

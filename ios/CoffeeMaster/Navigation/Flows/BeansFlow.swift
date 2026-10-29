@@ -6,11 +6,13 @@ import DesignSystem
 import Navigation
 import BeansFeature
 
-/// Beans tab: bean list -> detail/edit.
+/// Beans tab: bean list → edit (push); new bean (sheet).
 final class BeansFlow: Flow {
     private let module: BeansModule
     @Injected(\.toasts) private var toasts
     private let router = StackRouter()
+    /// The "New Bean" sheet while it's open.
+    private var modalRouter: StackRouter?
 
     var rootViewController: UIViewController { router.navigationController }
 
@@ -47,10 +49,39 @@ final class BeansFlow: Flow {
 
 extension BeansFlow: BeanListRouting {
     func showBeanDetail(id: Bean.ID) {
-        // Step 1.2 will implement the Bean detail/edit screen.
+        router.push(module.makeEditBean(id: id, router: self))
     }
 
     func showAddBean() {
-        // Step 1.2 will implement the Add Bean modal.
+        guard modalRouter == nil else { return }
+        let modal = router.presentStack(root: module.makeAddBean(router: self)) { sheet in
+            sheet.detents = [.large()]
+        }
+        modal.onInteractiveDismiss = { [weak self] in self?.modalRouter = nil }
+        modalRouter = modal
+    }
+}
+
+extension BeansFlow: BeanFormRouting {
+    func beanFormDidFinish(saved bean: Bean?) {
+        if let modalRouter {
+            modalRouter.close()
+            self.modalRouter = nil
+            if bean != nil { toasts.show(tr("Bean added"), style: .success) }
+        } else {
+            router.pop()
+            if bean != nil { toasts.show(tr("Bean saved"), style: .success) }
+        }
+    }
+
+    func beanFormDidDelete(id: Bean.ID) {
+        router.popToRoot()
+        toasts.show(tr("Bean deleted"), style: .success)
+    }
+
+    /// Same outcome as a malformed bean link: back on the list with a warning.
+    func beanFormNotFound(id: Bean.ID) {
+        router.popToRoot(animated: false)
+        toasts.show(tr("This bean no longer exists."), style: .warning)
     }
 }

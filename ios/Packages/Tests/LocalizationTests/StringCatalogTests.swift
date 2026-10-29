@@ -38,6 +38,8 @@ struct StringCatalogTests {
         let strings = try Self.catalog(catalogPath)
         #expect(!strings.isEmpty)
         for (key, entry) in strings {
+            // Debug-only labels (gallery, previews) are marked "Don't translate" in Xcode.
+            if (entry as? [String: Any])?["shouldTranslate"] as? Bool == false { continue }
             let localizations = (entry as? [String: Any])?["localizations"] as? [String: Any] ?? [:]
             for language in ["uk", "en"] {
                 let unit = (localizations[language] as? [String: Any])?["stringUnit"] as? [String: Any]

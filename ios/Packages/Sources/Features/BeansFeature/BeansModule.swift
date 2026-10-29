@@ -24,4 +24,27 @@ public struct BeansModule {
         controller.view.accessibilityIdentifier = "beans.list"
         return controller
     }
+
+    /// Empty form for a new bag; present it modally (it has a Cancel button).
+    public func makeAddBean(router: any BeanFormRouting) -> UIViewController {
+        let viewModel = BeanFormViewModel(mode: .add, router: router)
+        let controller = HostingController(rootView: BeanFormView(viewModel: viewModel), title: tr("New Bean"))
+        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
+            systemItem: .cancel,
+            primaryAction: UIAction { [weak viewModel] _ in viewModel?.cancel() }
+        )
+        // Don't lose typed details to an accidental swipe.
+        controller.isModalInPresentation = true
+        return controller
+    }
+
+    /// Edit form for an existing bag (push it).
+    public func makeEditBean(id: Bean.ID, router: any BeanFormRouting) -> UIViewController {
+        let viewModel = BeanFormViewModel(mode: .edit(id), router: router)
+        return HostingController(
+            rootView: BeanFormView(viewModel: viewModel),
+            title: tr("Edit Bean"),
+            hidesBottomBarWhenPushed: true
+        )
+    }
 }

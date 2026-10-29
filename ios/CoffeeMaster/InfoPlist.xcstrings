@@ -1,52 +1,53 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "CFBundleDisplayName" : {
-      "comment" : "App name on the Home Screen",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coffee Master"
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "comment": "App name on the Home Screen",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coffee Master"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coffee Master"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coffee Master"
           }
         }
       }
     },
-    "CFBundleName" : {
-      "comment" : "Bundle name",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "CoffeeMaster"
+    "CFBundleName": {
+      "comment": "Bundle name",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "new",
+            "value": "CoffeeMaster"
           }
         }
-      }
+      },
+      "shouldTranslate": false
     },
-    "New Brew" : {
-      "comment" : "Home Screen quick action (UIApplicationShortcutItemTitle)",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New Brew"
+    "New Brew": {
+      "comment": "Home Screen quick action (UIApplicationShortcutItemTitle)",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Brew"
           }
         },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Новий рецепт"
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новий рецепт"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

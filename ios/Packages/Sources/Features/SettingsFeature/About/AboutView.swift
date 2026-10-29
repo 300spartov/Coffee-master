@@ -10,7 +10,7 @@ struct AboutView: View {
             Image(systemName: "cup.and.saucer.fill")
                 .font(.system(size: 64))
                 .foregroundStyle(.theme.accent)
-            Text("Coffee Master")
+            Text(verbatim: "Coffee Master")
                 .font(.title.bold())
                 .foregroundStyle(.theme.textPrimary)
             Text(tr("Notes, recipes and stats for your coffee."))

@@ -28,6 +28,7 @@ struct GalleryContent: View {
     @State private var temperature = 93.0
     @State private var period = "Week"
     @State private var rating = 8.5
+    @State private var roaster = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.xxl) {
@@ -170,6 +171,8 @@ struct GalleryContent: View {
                     NumberField("Dose", value: $dose, unit: "g", range: 1...60)
                     Divider()
                     NumberField("Temperature", value: $temperature, unit: "°C", range: 70...100, fractionDigits: 0)
+                    Divider()
+                    AutocompleteField("Roaster", text: $roaster, suggestions: ["Penyora", "Wonder&Full", "Mad Heads", "Svit Kavy"])
                     Divider()
                     Picker("Period", selection: $period) {
                         ForEach(["Week", "Month", "Year"], id: \.self) { Text($0).tag($0) }
