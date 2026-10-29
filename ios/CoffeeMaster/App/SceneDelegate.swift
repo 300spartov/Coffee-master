@@ -32,7 +32,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         #if DEBUG
-        // Launch argument for UI tests / scheme arguments: `-deeplink coffeemaster://brews/42`
+        // Launch argument for UI tests / scheme arguments: `-deeplink coffeemaster://journal/42`
         if let link = UserDefaults.standard.string(forKey: "deeplink"), let url = URL(string: link) {
             router.open(url)
         }

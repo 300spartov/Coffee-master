@@ -4,8 +4,11 @@ import AppCore
 /// Two-way mapping between URLs and `DeepLink`.
 ///
 /// Supported shapes (identical paths for both):
-/// - Custom scheme: `coffeemaster://brews/42`
-/// - Universal link: `https://coffeemaster.app/brews/42`
+/// - Custom scheme: `coffeemaster://journal/42`
+/// - Universal link: `https://coffeemaster.app/journal/42`
+///
+/// Paths are matched case-insensitively; ids keep their case. Earlier paths (`brews`, `brews/<id>`,
+/// `brews/new`) are still accepted as aliases, but URLs are always generated in the current form.
 ///
 /// To add a route: add a `DeepLink` case, then extend `segments(for:)` and `route(_:)`.
 /// The round-trip test in `DeepLinksTests` catches mismatches.
@@ -31,7 +34,7 @@ public struct DeepLinkParser: Sendable {
         let pathSegments = components.path.split(separator: "/").map(String.init)
 
         if urlScheme == scheme {
-            // For custom schemes the "host" is the first path segment: coffeemaster://brews/42
+            // For custom schemes the "host" is the first path segment: coffeemaster://journal/42
             let host = [components.host].compactMap { $0 }.filter { !$0.isEmpty }
             return route(host + pathSegments)
         }
@@ -70,9 +73,14 @@ public struct DeepLinkParser: Sendable {
 
     private func segments(for link: DeepLink) -> [String] {
         switch link {
-        case .brews: ["brews"]
-        case .brewDetail(let id): ["brews", id]
-        case .newBrew: ["brews", "new"]
+        case .journal: ["journal"]
+        case .brewDetail(let id): ["journal", id]
+        case .newBrew: ["brew", "new"]
+        case .beans: ["beans"]
+        case .beanDetail(let id): ["beans", id]
+        case .devices: ["devices"]
+        case .profile: ["profile"]
+        case .achievements: ["profile", "achievements"]
         case .settings: ["settings"]
         case .about: ["settings", "about"]
         case .designSystem: ["settings", "design-system"]
@@ -80,22 +88,33 @@ public struct DeepLinkParser: Sendable {
     }
 
     private func route(_ segments: [String]) -> DeepLink? {
-        guard let first = segments.first?.lowercased() else { return .brews }
+        guard let first = segments.first?.lowercased() else { return .journal }
         let rest = Array(segments.dropFirst())
+        let second = rest.first?.lowercased()
 
         switch (first, rest.count) {
-        case ("brews", 0):
-            return .brews
-        case ("brews", 1):
-            return rest[0].lowercased() == "new" ? .newBrew : .brewDetail(id: rest[0])
-        case ("settings", 0):
-            return .settings
-        case ("settings", 1) where rest[0].lowercased() == "about":
-            return .about
-        case ("settings", 1) where rest[0].lowercased() == "design-system":
-            return .designSystem
-        default:
-            return nil
+        case ("journal", 0): return .journal
+        case ("journal", 1): return .brewDetail(id: rest[0])
+
+        case ("brew", 1) where second == "new": return .newBrew
+
+        case ("beans", 0): return .beans
+        case ("beans", 1): return .beanDetail(id: rest[0])
+
+        case ("devices", 0): return .devices
+
+        case ("profile", 0): return .profile
+        case ("profile", 1) where second == "achievements": return .achievements
+
+        case ("settings", 0): return .settings
+        case ("settings", 1) where second == "about": return .about
+        case ("settings", 1) where second == "design-system": return .designSystem
+
+        // Aliases for earlier paths.
+        case ("brews", 0): return .journal
+        case ("brews", 1): return second == "new" ? .newBrew : .brewDetail(id: rest[0])
+
+        default: return nil
         }
     }
 }

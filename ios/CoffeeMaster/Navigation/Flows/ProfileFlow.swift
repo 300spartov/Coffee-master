@@ -40,8 +40,8 @@ final class ProfileFlow: NSObject, Flow {
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
         switch deepLink {
-        case .settings, .about, .designSystem: true
-        case .brews, .brewDetail, .newBrew: false
+        case .profile, .achievements, .settings, .about, .designSystem: true
+        default: false
         }
     }
 
@@ -54,6 +54,9 @@ final class ProfileFlow: NSObject, Flow {
             #if DEBUG
             router.push(makeDesignSystemGallery(), animated: false)
             #endif
+        case .achievements:
+            // The achievements screen arrives with ROADMAP 4.3; until then the link lands on Profile.
+            break
         default:
             break
         }

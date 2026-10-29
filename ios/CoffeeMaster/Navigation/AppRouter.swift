@@ -54,8 +54,15 @@ final class AppRouter {
     private func makeFlows() -> [any Flow] {
         [
             JournalFlow(module: BrewsModule(), startBrew: { [weak self] in self?.startBrew() }),
-            PlaceholderFlow(title: tr("Beans"), systemImage: "leaf", message: tr("Your coffee bags will live here.")),
-            PlaceholderFlow(title: tr("Devices"), systemImage: "wrench.and.screwdriver", message: tr("Your brewing equipment will live here.")),
+            PlaceholderFlow(title: tr("Beans"), systemImage: "leaf", message: tr("Your coffee bags will live here.")) { link in
+                switch link {
+                case .beans, .beanDetail: true
+                default: false
+                }
+            },
+            PlaceholderFlow(title: tr("Devices"), systemImage: "wrench.and.screwdriver", message: tr("Your brewing equipment will live here.")) { link in
+                link == .devices
+            },
             ProfileFlow(module: SettingsModule(), openDeepLink: { [weak self] in self?.handle($0) }),
         ]
     }

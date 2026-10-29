@@ -66,20 +66,30 @@ The ownership chain has no retain cycles: `Flow → StackRouter → UINavigation
 
 ## Deep links
 
+Map v1 (`DeepLink` + `DeepLinkParser`). The same paths work for the custom scheme and universal links.
+
 | URL (custom scheme) | Universal link | Destination |
 |---|---|---|
-| `coffeemaster://brews` | `https://coffeemaster.app/brews` | Brews tab root |
-| `coffeemaster://brews/<id>` | `…/brews/<id>` | Brew detail |
-| `coffeemaster://brews/new` | `…/brews/new` | New brew (modal) |
-| `coffeemaster://settings` | `…/settings` | Settings tab root |
+| `coffeemaster://journal` | `https://coffeemaster.app/journal` | Journal tab |
+| `coffeemaster://journal/<brewId>` | `…/journal/<brewId>` | Brew detail |
+| `coffeemaster://brew/new` | `…/brew/new` | Brew action (full-screen brew flow) |
+| `coffeemaster://beans` | `…/beans` | Beans tab |
+| `coffeemaster://beans/<beanId>` | `…/beans/<beanId>` | Bean detail (Beans tab root until Phase 1) |
+| `coffeemaster://devices` | `…/devices` | Devices tab |
+| `coffeemaster://profile` | `…/profile` | Profile tab |
+| `coffeemaster://profile/achievements` | `…/profile/achievements` | Achievements (Profile root until 4.3) |
+| `coffeemaster://settings` | `…/settings` | Settings (in Profile) |
 | `coffeemaster://settings/about` | `…/settings/about` | About |
+| `coffeemaster://settings/design-system` | `…/settings/design-system` | Design System gallery (Debug only) |
+
+Paths are case-insensitive; ids keep their case. The earlier `brews`, `brews/<id>` and `brews/new` paths are still parsed as aliases, but URLs are always generated in the current form (`DeepLink.url`).
 
 How a link travels: `SceneDelegate` (cold or warm start, universal link, quick action) → `AppRouter.open(url)`
 → `DeepLinkParser` → `DeepLink` → dismiss modals → select the flow where `canHandle` is true → `flow.handle(link)`
 rebuilds the stack.
 
-- **Testing on the simulator:** `xcrun simctl openurl booted coffeemaster://brews/sample-1`. In Debug builds you can also
-  pass the launch argument `-deeplink coffeemaster://brews/sample-1`, from the scheme or from UI tests.
+- **Testing on the simulator:** `xcrun simctl openurl booted coffeemaster://journal/<brewId>`. In Debug builds you can also
+  pass the launch argument `-deeplink coffeemaster://journal/<brewId>`, from the scheme or from UI tests.
 - **Cross-feature navigation** uses the same path. For example, Settings → "Log a New Brew" emits `.newBrew` and
   `AppRouter` routes it.
 - **Universal links in production:** add the Associated Domains entitlement `applinks:coffeemaster.app` and host
@@ -188,7 +198,7 @@ struct BrewTimerLiveActivity: Widget {
 ## App shell
 
 - `AppRouter` owns the `UITabBarController`: **Journal · Beans · Devices · Profile**, one `Flow` per tab.
-- **Brew action** (starting a brew is app-wide, not a tab): an accent **Brew** button in the top bar of every tab root (`AppRouter.makeBrewButton()`): `UIBarButtonItem.Style.prominent` on iOS 26, accent-tinted before. On iOS 26 the tab bar minimizes while scrolling (`tabBarMinimizeBehavior = .onScrollDown`), and the top bar keeps Brew reachable. It opens `BrewFlow` full screen. `coffeemaster://brews/new` and Profile → "Log a New Brew" go through the same `AppRouter.startBrew()`.
+- **Brew action** (starting a brew is app-wide, not a tab): an accent **Brew** button in the top bar of every tab root (`AppRouter.makeBrewButton()`): `UIBarButtonItem.Style.prominent` on iOS 26, accent-tinted before. On iOS 26 the tab bar minimizes while scrolling (`tabBarMinimizeBehavior = .onScrollDown`), and the top bar keeps Brew reachable. It opens `BrewFlow` full screen. `coffeemaster://brew/new` and Profile → "Log a New Brew" go through the same `AppRouter.startBrew()`.
 - **UI tests**: `CoffeeMasterUITests` (part of the CoffeeMaster scheme). It scrolls the Journal for real, asserts the tab bar minimizes while the Brew button stays tappable, and attaches screenshots to the test report.
 
 ## Localization (Ukrainian + English)

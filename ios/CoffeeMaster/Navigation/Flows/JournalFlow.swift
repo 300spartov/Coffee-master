@@ -32,8 +32,8 @@ final class JournalFlow: Flow {
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
         switch deepLink {
-        case .brews, .brewDetail: true
-        case .newBrew, .settings, .about, .designSystem: false
+        case .journal, .brewDetail: true
+        default: false
         }
     }
 
