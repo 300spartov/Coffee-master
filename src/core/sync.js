@@ -1,6 +1,6 @@
 /* ── SUPABASE SYNC ── */
-const SUPABASE_URL='https://mhudtufaxjjvvxefeyrs.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1odWR0dWZheGpqdnZ4ZWZleXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNTU2NDEsImV4cCI6MjA5NTYzMTY0MX0.IKMFN_y4oOa_3dcxxLNLW2txPoKRyXjPaS05p_S3t8M';
+const SUPABASE_URL='https://nospowwurogucxzsatdy.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vc3Bvd3d1cm9ndWN4enNhdGR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyNzM1ODgsImV4cCI6MjEwODg0OTU4OH0.PjZSnG3DhTfdNADivWcTg0iTeeqL3JeyQTZgsiXYtgM';
 
 let TG_USER_ID=null;
 let _sbLoaded=false; // захист від запису до завантаження

@@ -235,6 +235,7 @@
   <div style="margin-top:4px;padding-bottom:8px">
     <div class="srow" onclick="showScr('scr-market')"><i class="ti ti-building-store gear-ic" aria-hidden="true" style="color:var(--copper-lt)"></i><span class="srow-lbl" data-i18n="profile_shop">Магазин зерна та девайсів</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
     <div class="srow" onclick="openOv('ov-settings')"><i class="ti ti-user-edit gear-ic" aria-hidden="true"></i><span class="srow-lbl" data-i18n="profile_edit">Редагувати профіль</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
+    <div class="srow" onclick="exportData()"><i class="ti ti-download gear-ic" aria-hidden="true"></i><span class="srow-lbl" data-i18n="profile_export">Експорт даних (для iOS)</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
     <div class="srow" onclick="openDeletedTrash()"><i class="ti ti-trash" aria-hidden="true" style="color:#E24B4A"></i><span class="srow-lbl" style="color:#E24B4A" data-i18n="profile_trash">Видалені рецепти</span><span class="srow-arr"><i class="ti ti-chevron-right" aria-hidden="true"></i></span></div>
   </div>
 
@@ -1713,6 +1714,7 @@
 <script src="src/features/devices/devices.js"></script>
 <script src="src/features/share/share.js"></script>
 <script src="src/features/profile/profile.js"></script>
+<script src="src/features/profile/export-data.js"></script>
 <script src="src/features/brew/brew-state.js"></script>
 <script src="src/features/brew/espresso/espresso.js"></script>
 <script src="src/features/brew/setup/setup.js"></script>
