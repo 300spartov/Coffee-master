@@ -1,0 +1,17 @@
+
+
+<!-- NUMPAD OVERLAY -->
+<div id="ov-numpad" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;transition:opacity .2s" onclick="if(event.target===this)closeNumPad()">
+  <div style="width:100%;max-width:420px;background:#1a1c1e;border-radius:22px 22px 0 0;border-top:1px solid #2e3238;padding:16px 14px 28px;box-shadow:0 -8px 40px rgba(0,0,0,.6)">
+    <div id="np-display" style="font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:700;color:#D89858;text-align:center;margin-bottom:16px;min-height:52px;letter-spacing:-1px">—</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+      <button onclick="npKey(1)" class="np-btn">1</button><button onclick="npKey(2)" class="np-btn">2</button><button onclick="npKey(3)" class="np-btn">3</button>
+      <button onclick="npKey(4)" class="np-btn">4</button><button onclick="npKey(5)" class="np-btn">5</button><button onclick="npKey(6)" class="np-btn">6</button>
+      <button onclick="npKey(7)" class="np-btn">7</button><button onclick="npKey(8)" class="np-btn">8</button><button onclick="npKey(9)" class="np-btn">9</button>
+      <button onclick="npKey('.')" class="np-btn" id="np-dot" style="font-size:24px">.</button>
+      <button onclick="npKey(0)" class="np-btn">0</button>
+      <button onclick="npKey('del')" class="np-btn" style="font-size:20px">⌫</button>
+    </div>
+    <button onclick="npConfirm()" style="width:100%;margin-top:12px;padding:16px;border-radius:14px;border:none;background:linear-gradient(160deg,#8c552a,#D89858);font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:#1c130a;cursor:pointer;letter-spacing:.5px">Готово</button>
+  </div>
+</div>

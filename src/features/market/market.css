@@ -1,0 +1,66 @@
+/* ── MARKETPLACE ── */
+.mkt-hdr{padding:44px 14px 11px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--line-soft);flex-shrink:0}
+.mkt-search{flex:1;display:flex;align-items:center;gap:7px;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:10px;padding:0 10px;height:34px}
+.mkt-search i{font-size:14px;color:var(--txt3);flex-shrink:0}
+.mkt-search input{flex:1;background:none;border:none;outline:none;font-size:12px;color:var(--txt);font-family:inherit;caret-color:var(--copper)}
+.mkt-search input::placeholder{color:var(--txt3)}
+.mkt-sort{background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--txt2);font-family:inherit;cursor:pointer;appearance:none;outline:none}
+.mkt-back,.mkt-filter-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;cursor:pointer;color:var(--txt2);flex-shrink:0;transition:all .15s;position:relative}
+.mkt-filter-toggle.active{background:rgba(184,115,51,.2);border-color:var(--copper);color:var(--copper-lt)}
+.mkt-filter-toggle i,.mkt-back i{font-size:17px}
+.mkt-filter-toggle span{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--copper);border-radius:50%;font-family:var(--mono);font-size:8px;font-weight:700;color:#1c130a;display:flex;align-items:center;justify-content:center}
+.mkt-body{display:flex;overflow:hidden;min-height:0;flex:1}
+.mkt-sidebar{width:110px;flex-shrink:0;border-right:1px solid var(--line-soft);overflow-y:auto;padding:8px 0;animation:slideRight .18s ease}
+@keyframes slideRight{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.mkt-main{flex:1;overflow-y:auto;padding:10px 12px}
+.mkt-grid-1{display:flex;flex-direction:column;gap:7px}
+.mkt-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mkt-pill-group{padding:0 8px 10px}
+.mkt-pill-lbl{font-family:var(--mono);font-size:8px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:4px;display:block}
+.mkt-pill{font-size:9px;padding:2px 6px;border-radius:20px;border:0.5px solid var(--line);background:none;color:var(--txt2);cursor:pointer;font-family:inherit;margin:0 2px 3px 0;display:inline-block;transition:all .12s}
+.mkt-pill.on{background:var(--copper);border-color:var(--copper);color:#1c130a;font-weight:700}
+.mkt-divider{height:0.5px;background:var(--line-soft);margin:4px 8px 8px}
+.mkt-count{font-family:var(--mono);font-size:10px;color:var(--txt3);letter-spacing:.3px;margin-bottom:8px}
+/* Card base */
+.cc{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.cc:active{border-color:var(--copper-dk)}
+.cc.expanded{border-color:var(--copper-dk)}
+/* 1-col horizontal row */
+.cc-row{display:flex;gap:10px;padding:10px 12px;align-items:center}
+.cc-row-ico{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cc-row-info{flex:1;min-width:0}
+.cc-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+/* 2-col card */
+.cc-sq-img{height:64px;display:flex;align-items:center;justify-content:center;position:relative}
+.cc-sq-body{padding:7px 9px 9px}
+/* shared */
+.cc-score{font-family:var(--mono);font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:20px;background:var(--copper);color:#1c130a}
+.cc-roast-pill{font-family:var(--mono);font-size:8px;font-weight:600;padding:2px 5px;border-radius:20px}
+.cc-name{font-size:12px;font-weight:600;color:var(--txt);line-height:1.3}
+.cc-sub{font-size:10px;color:var(--txt3);margin-top:1px}
+.cc-brew-pills{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.cc-brew-pills span{font-size:8px;padding:1px 5px;border-radius:20px;border:0.5px solid var(--copper-dk);color:var(--copper-lt)}
+.cc-brew-pills .proc{border-color:var(--line);color:var(--txt3)}
+.cc-price{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt)}
+.cc-cart{font-size:9px;padding:4px 8px;border-radius:7px;border:0.5px solid var(--copper);background:none;color:var(--copper-lt);cursor:pointer;font-family:inherit;font-weight:600;transition:all .18s;white-space:nowrap}
+.cc-cart.added{background:var(--copper);border-color:var(--copper);color:#1c130a}
+.cc-cart:disabled{opacity:.35;cursor:not-allowed}
+/* Expand panel */
+.cc-expand{border-top:1px solid var(--line-soft);padding:10px 12px;animation:expandIn .18s ease}
+@keyframes expandIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.cc-bars{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.cc-bar-row{display:flex;align-items:center;gap:7px}
+.cc-bar-lbl{font-family:var(--mono);font-size:9px;color:var(--txt3);width:62px;flex-shrink:0}
+.cc-bar-track{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.cc-bar-fill{height:100%;border-radius:2px}
+.cc-descs{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:9px}
+.cc-descs span{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,.05);color:var(--txt3)}
+.cc-add-inv{width:100%;padding:8px;border-radius:8px;background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);color:var(--copper-lt);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;letter-spacing:.3px;transition:all .15s;margin-top:2px}
+.cc-add-inv:active{background:rgba(184,115,51,.25)}
+.cc-nostock-badge{font-family:var(--mono);font-size:8px;color:var(--txt3);letter-spacing:.6px;border:0.5px solid var(--line);padding:2px 7px;border-radius:20px;display:inline-block}
+.mkt-empty{text-align:center;padding:50px 20px;color:var(--txt3)}
+.mkt-empty i{font-size:36px;display:block;margin-bottom:10px;opacity:.35}
+.cart-badge{position:absolute;top:-4px;right:-4px;width:15px;height:15px;background:var(--copper);border-radius:50%;font-family:var(--mono);font-size:8px;font-weight:700;color:#1c130a;display:flex;align-items:center;justify-content:center}
+/* heat micro-icon */
+.heat-ico{display:inline-block;color:var(--copper-lt);animation:vibrate .25s linear infinite;font-size:15px;vertical-align:middle}
+@keyframes vibrate{0%,100%{transform:translate(0,0)}25%{transform:translate(.5px,-.5px)}50%{transform:translate(-.5px,.5px)}75%{transform:translate(.5px,.5px)}}

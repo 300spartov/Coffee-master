@@ -1,0 +1,29 @@
+/* ── Вкладка «Випито кави» ── */
+.cw-sheet{width:100%;max-width:420px;background:linear-gradient(180deg,#202327,#16181b);border:1px solid var(--line);border-radius:22px;padding:16px 18px 20px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.cw-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.cw-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px}
+.cw-title i{color:var(--copper-lt);font-size:19px;filter:drop-shadow(0 0 6px var(--copper-glow))}
+.cw-x{width:30px;height:30px;border-radius:9px;background:var(--card-lo);border:1px solid var(--line-soft);display:flex;align-items:center;justify-content:center;color:var(--txt2);font-size:15px;cursor:pointer}
+.cw-tabs{display:flex;gap:3px;background:#0d0e0f;border-radius:10px;padding:3px;margin-bottom:13px}
+.cw-tab{flex:1;padding:7px;border-radius:7px;border:none;cursor:pointer;font-family:var(--mono);font-size:10.5px;font-weight:600;background:none;color:var(--txt3);letter-spacing:.3px}
+.cw-tab.on{background:var(--card);color:var(--copper-lt)}
+.cw-card{background:linear-gradient(160deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-radius:16px;padding:16px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.cw-wheel{flex-shrink:0;width:126px;height:126px;position:relative}
+.cw-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:radial-gradient(120% 120% at 50% 18%,#2f3237 0%,#212328 52%,#191b1e 100%);border:1px solid rgba(255,255,255,.07);box-shadow:0 10px 22px rgba(0,0,0,.5),0 2px 5px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06),inset 0 -8px 18px rgba(0,0,0,.35);transition:transform .12s}
+.cw-btn:active{transform:translate(-50%,-50%) scale(.95)}
+.cw-lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);transition:color .2s}
+.cw-val{font-family:var(--mono);font-weight:700;font-size:24px;letter-spacing:-1px;line-height:1;color:var(--txt);margin-top:4px;transition:color .25s}
+.cw-unit{font-family:var(--mono);font-size:9px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-top:3px}
+.cw-dots{display:flex;gap:4px;margin-top:8px}
+.cw-dots span{width:5px;height:5px;border-radius:50%;background:#3a3e44;transition:all .2s}
+.cw-dots span.on{background:var(--copper-lt);width:14px;border-radius:3px}
+.cw-legend{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding:5px;border-radius:13px;border:1px solid transparent;transition:background .22s,border-color .22s}
+.cw-legend.all{background:#191b1e;border-color:var(--line-soft)}
+.cw-row{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:10px;border:1px solid transparent;transition:opacity .2s,background .2s,border-color .2s}
+.cw-bar{width:9px;height:18px;border-radius:5px;background:var(--c);flex-shrink:0}
+.cw-name{font-size:13px;font-weight:600;color:var(--txt);flex:1}
+.cw-kg{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt);line-height:1;white-space:nowrap}
+.cw-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.cw-tile{background:linear-gradient(160deg,var(--card-hi),var(--card-lo));border:1px solid var(--line-soft);border-radius:11px;padding:11px 13px}
+.cw-tile .v{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--txt)}
+.cw-tile .l{font-size:11px;color:var(--txt3);margin-top:2px}

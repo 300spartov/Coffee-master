@@ -1,0 +1,190 @@
+  <!-- SETUP -->
+  <div id="bv-setup" style="padding:14px 16px 32px">
+    <!-- Фіча 4: кнопка ← назад -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <button onclick="brewGoBack()" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;font-size:20px;line-height:1;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+      <div style="font-size:13px;font-weight:600;color:var(--txt2)" id="b-setup-method-lbl">Налаштування</div>
+    </div>
+
+    <!-- Фіча 4: Normal / Inverted тільки для Aeropress -->
+    <div id="b-aeropress-opts" style="display:none;margin-bottom:12px">
+      <div class="field-lbl" style="margin-bottom:6px">Позиція</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button id="b-aero-normal" onclick="setAeroInverted(false)"
+          style="padding:10px;border-radius:10px;border:2px solid var(--copper);background:linear-gradient(160deg,#2a1e10,#1d1610);color:var(--copper-lt);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          <i class="ti ti-arrow-up"></i> Normal
+        </button>
+        <button id="b-aero-inverted" onclick="setAeroInverted(true)"
+          style="padding:10px;border-radius:10px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt3);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          <i class="ti ti-arrow-down"></i> Inverted
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Зерно</div>
+      <button class="sel-btn" onclick="openOv('ov-bbean')">
+        <div><div class="sel-main" id="bsel-bean" data-i18n="devices_choose_bean">Вибери пачку</div><div class="sel-sub" id="bsel-bean-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="wbar" id="bbean-bar" style="display:none"><div class="wfill-g" id="bbean-fill" style="width:0%"></div></div>
+    </div>
+    <div class="card" id="bcard-dripper">
+      <button class="sel-btn" onclick="openOv('ov-bdripper')">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span id="bsel-dripper-ico" style="flex-shrink:0;display:flex;width:34px;height:34px;align-items:center;justify-content:center"></span>
+          <div><div class="sel-main" id="bsel-dripper" data-i18n="devices_choose_dripper">Вибери воронку</div><div class="sel-sub" id="bsel-dripper-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        </div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="card" id="bcard-filter">
+      <div class="lbl">Фільтр</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="sel-btn" onclick="openOv('ov-bfilter')" style="flex:1;min-width:0">
+          <div><div class="sel-main" id="bsel-filter" data-i18n="devices_choose_filter">Вибери фільтр</div><div class="sel-sub" id="bsel-filter-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+          <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+        </button>
+        <!-- Фіча 6: кількість фільтрів — тільки для Aeropress -->
+        <div id="b-filter-count-wrap" style="display:none;position:relative;flex-shrink:0">
+          <button onclick="toggleFilterDropdown()" id="b-filter-count-btn"
+            style="width:42px;height:42px;border-radius:10px;border:1px solid var(--line-soft);background:var(--card-lo);color:var(--txt);font-family:var(--mono);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center">
+            <span id="b-aero-filters">1</span>
+          </button>
+          <div id="b-filter-dropdown" style="display:none;position:absolute;right:0;top:48px;background:var(--card-hi);border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;z-index:20;min-width:52px;box-shadow:0 8px 24px rgba(0,0,0,.5)">
+            <button onclick="setAeroFilters(1)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;border-bottom:1px solid var(--line-soft);color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">1</button>
+            <button onclick="setAeroFilters(2)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;border-bottom:1px solid var(--line-soft);color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">2</button>
+            <button onclick="setAeroFilters(3)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;border-bottom:1px solid var(--line-soft);color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">3</button>
+            <button onclick="setAeroFilters(4)" style="display:block;width:100%;padding:10px 14px;background:none;border:none;color:var(--txt);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;text-align:center">4</button>
+          </div>
+        </div>
+      </div>
+      <div class="wbar" id="bfilter-bar" style="display:none"><div class="wfill-b" id="bfilter-fill" style="width:0%"></div></div>
+      <div class="wd-grid">
+        <button class="wd-btn" id="wet-btn" onclick="setWet(true)" style="border:2px solid #1a4a8a;background:#0d1f35;color:#4A9EDB" data-i18n="brew_wet">Змочений</button>
+        <button class="wd-btn" id="dry-btn" onclick="setWet(false)" style="border:0.5px solid #333;background:#1a1a1a;color:#888" data-i18n="brew_dry">Сухий</button>
+      </div>
+    </div>
+
+    <!-- КАВОМАШИНА (лише для еспресо) -->
+    <div class="card" id="bcard-espmachine" style="display:none">
+      <button class="sel-btn" onclick="openOv('ov-bespmachine')">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span id="bsel-espmachine-ico" style="flex-shrink:0;display:flex;width:34px;height:34px;align-items:center;justify-content:center"></span>
+          <div><div class="sel-main" id="bsel-espmachine" data-i18n="devices_choose_espmachine">Вибери кавомашину</div><div class="sel-sub" id="bsel-espmachine-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        </div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <!-- КОФЕМОЛКА + КЛИКИ -->
+    <div class="card">
+      <div class="lbl">Кавомолка і помол</div>
+      <button class="sel-btn" onclick="openOv('ov-bgrinder')" style="margin-bottom:10px">
+        <div><div class="sel-main" id="bsel-grinder" data-i18n="devices_choose_grinder">Вибери кавомолку</div><div class="sel-sub" id="bsel-grinder-sub" data-i18n="devices_tap">натисни для вибору</div></div>
+        <i class="ti ti-chevron-right sel-arr" aria-hidden="true"></i>
+      </button>
+      <div class="field-lbl">Клики / ділення помолу</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="click-btn" onclick="clicksAdj(-1)">−</button>
+        <div style="flex:1;text-align:center" onclick="openNumPad('clicks-input','clicks')" style="cursor:pointer">
+          <div class="clicks-val" id="clicks-val" style="cursor:pointer;border-bottom:1px dashed var(--copper-dk);display:inline-block;padding-bottom:2px">28</div>
+          <div class="clicks-unit">Кліків</div>
+        </div>
+        <button class="click-btn" onclick="clicksAdj(1)">+</button>
+      </div>
+    </div>
+
+    <!-- АКСЕСУАРИ (лише для еспресо) -->
+    <div class="card" id="bcard-acc" style="display:none">
+      <div class="lbl" data-i18n="devices_acc">Аксесуари</div>
+      <div id="bacc-list" style="display:flex;flex-wrap:wrap;gap:6px">
+        <div style="font-size:12px;color:var(--txt3)" data-i18n="devices_no_acc">Додай аксесуари в Девайси → Аксесуари</div>
+      </div>
+      <button class="sel-btn" onclick="openOv('ov-bacc')" style="margin-top:8px">
+        <div><div class="sel-main"><i class="ti ti-plus" aria-hidden="true"></i> <span data-i18n="devices_add_acc">Додати аксесуар</span></div></div>
+      </button>
+    </div>
+
+    <!-- Параметри альтернативы (вливания) -->
+    <div id="bcard-pours-wrap" style="max-width:480px;margin-left:auto;margin-right:auto;width:100%">
+      <div class="card" style="margin-bottom:10px">
+        <div class="lbl" data-i18n="param_section">Параметри</div>
+        <div class="grid3">
+          <div><div class="field-lbl" data-i18n="param_dose">Кава (г)</div><input id="b-dose" type="number" step="0.1" value="16" min="1" max="300" class="fi" oninput="bCalc()" readonly onclick="openNumPad('b-dose','dose')"></div>
+          <div><div class="field-lbl" data-i18n="param_ratio">Коефіцієнт</div>
+            <div style="position:relative">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13px;color:var(--txt3);pointer-events:none">1 :</span>
+              <input id="b-ratio" type="number" step="0.1" value="16" min="1" max="30" class="fi" style="padding-left:36px" oninput="bCalc()" onblur="bRatioValidate()" readonly onclick="openNumPad('b-ratio','ratio')">
+            </div>
+          </div>
+          <div><div class="field-lbl" data-i18n="param_pours">Вливань</div>
+            <select id="b-pours" class="fi" onchange="bCalc()">
+              <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:8px">
+          <div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> <span data-i18n="param_temp">Температура</span></div>
+            <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)">
+              <div style="display:flex;align-items:center;gap:8px;width:100%;min-width:0">
+                <button class="click-btn" onclick="var s=document.getElementById('b-temp-sl');s.value=Math.max(+s.min,+s.value-1);document.getElementById('b-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">−</button>
+                <input id="b-temp-sl" type="range" min="84" max="100" step="1" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-temp-out').textContent=this.value+'°C'">
+                <button class="click-btn" onclick="var s=document.getElementById('b-temp-sl');s.value=Math.min(+s.max,+s.value+1);document.getElementById('b-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">+</button>
+                <span id="b-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Параметри еспресо -->
+    <div id="bcard-esp-params" style="display:none">
+      <div class="card" style="margin-bottom:10px">
+        <div class="lbl" data-i18n="param_esp_section">Параметри еспресо</div>
+        <div class="grid2" style="margin-bottom:8px">
+          <div><div class="field-lbl" data-i18n="param_esp_dose">Доза (г)</div><input id="b-esp-dose" type="number" step="0.1" value="18" min="1" max="30" class="fi" oninput="bEspCalc()" readonly onclick="openNumPad('b-esp-dose','esp-dose')"></div>
+          <div><div class="field-lbl" data-i18n="param_esp_ratio">Ретіо (1 : X)</div>
+            <div style="display:flex;align-items:center;gap:5px">
+              <button class="click-btn" onclick="espRatioAdj(-0.1)" style="width:32px;height:38px;font-size:16px">−</button>
+              <input id="b-esp-ratio-sel" type="number" step="0.1" min="1" max="5" value="2.0" class="fi" style="flex:1;text-align:center" oninput="bEspCalc()" readonly onclick="openNumPad('b-esp-ratio-sel','esp-ratio')">
+              <button class="click-btn" onclick="espRatioAdj(0.1)" style="width:32px;height:38px;font-size:16px">+</button>
+            </div>
+          </div>
+        </div>
+        <div><div class="field-lbl"><i class="ti ti-temperature heat-ico" aria-hidden="true"></i> Температура</div>
+          <div style="background:linear-gradient(160deg,#26282c,#1a1c1e);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="click-btn" onclick="var s=document.getElementById('b-esp-temp-sl');s.value=Math.max(84,+s.value-0.5);document.getElementById('b-esp-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">−</button>
+              <input id="b-esp-temp-sl" type="range" min="84" max="100" step="0.5" value="93" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-temp-out').textContent=this.value+'°C'">
+              <button class="click-btn" onclick="var s=document.getElementById('b-esp-temp-sl');s.value=Math.min(100,+s.value+0.5);document.getElementById('b-esp-temp-out').textContent=s.value+'°C'" style="width:36px;height:36px;font-size:18px;flex-shrink:0">+</button>
+              <span id="b-esp-temp-out" style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--copper-lt);min-width:46px;text-align:right">93°C</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="field-lbl">Тиск (бар)</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+            <input id="b-esp-bar-sl" type="range" min="6" max="12" step="0.5" value="9" class="rslider" style="flex:1;margin:0;cursor:pointer" oninput="document.getElementById('b-esp-bar-out').textContent=this.value+' бар'">
+            <span id="b-esp-bar-out" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--copper-lt);min-width:52px;text-align:right">9 бар</span>
+          </div>
+        </div>
+      </div>
+      <div class="calc-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div><div style="font-size:11px;color:var(--txt3);margin-bottom:3px">Доза / Вихід</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--copper-lt);line-height:1"><span id="b-esp-dose-lbl">18</span> / <span id="b-esp-yield-lbl">36</span> г</div></div>
+          <div style="text-align:right"><div style="font-size:11px;color:var(--txt3);margin-bottom:3px">Коефіцієнт</div><div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--txt);line-height:1">1 : <span id="b-esp-ratio-lbl">2.0</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-box" id="bcard-altcalc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end">
+        <div><div style="font-size:11px;color:#888;margin-bottom:3px" data-i18n="param_total_water">Всього води</div><div style="font-size:24px;font-weight:700;color:#4A9EDB;line-height:1" id="b-total-lbl">256 мл</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:#888;margin-bottom:3px">Bloom ~</div><div style="font-size:20px;font-weight:700;color:#fff;line-height:1" id="b-bloom-lbl">48 мл</div></div>
+      </div>
+      <div style="font-size:12px;color:#555;margin-top:8px">Перший злив вільний — інші перераховуються</div>
+    </div>
+    <button class="start-btn" onclick="brewStart()"><i class="ti ti-player-play" aria-hidden="true" style="font-size:17px"></i> <span data-i18n="brew_start">Почати заварювання</span></button>
+  </div>
+

@@ -1,0 +1,14 @@
+/* BEANS */
+.bean-add{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:1.5px dashed var(--copper-dk);border-radius:14px;padding:13px;margin-bottom:9px;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--copper-lt);text-transform:uppercase;letter-spacing:1px;transition:background .15s,border-color .15s,transform .12s}
+.bean-add i{font-size:16px}
+.bean-add:active{transform:scale(.98)}
+.bean-add:hover{background:#1d1813;border-color:var(--copper)}
+.bean-card{background:linear-gradient(160deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 5px 14px rgba(0,0,0,.3)}
+.bean-icon{width:42px;height:42px;border-radius:12px;background:radial-gradient(120% 120% at 30% 25%,#2e2620,#1a1714);border:1px solid var(--copper-dk);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.bean-icon i{font-size:20px}
+.filter-card{background:linear-gradient(160deg,var(--card-hi),var(--card),var(--card-lo));border:1px solid var(--line-soft);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:13px}
+.filter-icon{width:42px;height:42px;border-radius:12px;background:#1a1c1f;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--steel)}
+.filter-icon i{font-size:20px}
+.del-btn{background:none;border:none;cursor:pointer;padding:6px;color:var(--txt3);flex-shrink:0;transition:transform .12s,color .2s}
+.del-btn:active{transform:scale(.85);color:#c46}
+.del-btn i{font-size:16px}

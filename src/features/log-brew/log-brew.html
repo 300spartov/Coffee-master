@@ -1,0 +1,102 @@
+
+<!-- ov-log-brew: Додати випите -->
+<div class="overlay" id="ov-log-brew" onclick="if(event.target===this)closeOv('ov-log-brew')">
+  <div class="sheet">
+    <div class="sheet-title">Додати випите</div>
+    <div style="display:flex;gap:4px;background:#111214;padding:4px;border-radius:11px;margin-bottom:14px">
+      <button id="lb-src-home" onclick="lbSetSource('home')" style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:linear-gradient(160deg,var(--card-hi),var(--card-lo));color:var(--copper-lt);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)">Вдома</button>
+      <button id="lb-src-place" onclick="lbSetSource('place')" style="flex:1;padding:9px 6px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;background:none;color:var(--txt3)">У закладі</button>
+    </div>
+    <div class="field-lbl">Дата</div>
+    <input type="hidden" id="lb-date">
+    <button type="button" id="lb-date-btn" onclick="lbDatePickerToggle()" style="width:100%;background:linear-gradient(160deg,#222427,#191b1d);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit;margin-bottom:8px;transition:border-color .2s">
+      <span id="lb-date-lbl" style="font-size:15px;font-weight:600;color:var(--txt)">Сьогодні</span>
+      <i class="ti ti-calendar" style="font-size:18px;color:var(--copper-lt)" aria-hidden="true"></i>
+    </button>
+    <div id="lb-date-picker" style="display:none;background:#16171a;border:1px solid var(--line-soft);border-radius:12px;padding:12px;margin-bottom:11px">
+      <!-- Month nav -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <button type="button" onclick="lbPickerNav(-1)" style="background:none;border:none;cursor:pointer;color:var(--txt2);padding:4px 8px;font-size:18px;border-radius:8px"><i class="ti ti-chevron-left"></i></button>
+        <span id="lb-picker-title" style="font-family:var(--mono);font-size:11px;font-weight:600;color:var(--txt);letter-spacing:1px;text-transform:uppercase"></span>
+        <button type="button" onclick="lbPickerNav(1)" style="background:none;border:none;cursor:pointer;color:var(--txt2);padding:4px 8px;font-size:18px;border-radius:8px"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <!-- Day-of-week headers -->
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Пн</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Вт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Ср</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Чт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Пт</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Сб</div>
+        <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--txt3);padding:2px">Нд</div>
+      </div>
+      <div id="lb-picker-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+      <!-- Quick: today / yesterday -->
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button type="button" onclick="lbPickerQuick(0)" style="flex:1;background:rgba(184,115,51,.1);border:1px solid var(--copper-dk);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--copper-lt);cursor:pointer;font-weight:600">Сьогодні</button>
+        <button type="button" onclick="lbPickerQuick(-1)" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-soft);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--txt2);cursor:pointer;font-weight:600">Вчора</button>
+        <button type="button" onclick="lbPickerQuick(-2)" style="flex:1;background:rgba(255,255,255,.04);border:1px solid var(--line-soft);border-radius:8px;padding:7px;font-family:var(--mono);font-size:10px;color:var(--txt2);cursor:pointer;font-weight:600">Позавчора</button>
+      </div>
+    </div>
+    <div class="field-lbl">Кава / назва</div>
+    <input class="fi" type="text" id="lb-bean" placeholder="Наприклад: Ethiopia Ayla" style="font-size:14px;font-weight:500;text-align:left;margin-bottom:11px">
+    <div id="lb-place-wrap" style="display:none;margin-bottom:11px">
+      <div class="field-lbl">Назва закладу</div>
+      <input class="fi" type="text" id="lb-place" placeholder="Coffee Shop, бар..." style="font-size:14px;font-weight:500;text-align:left">
+    </div>
+    <div class="grid2" style="margin-bottom:11px">
+      <div>
+        <div class="field-lbl">Метод</div>
+        <select class="fi" id="lb-method">
+          <option>V60</option><option>Chemex</option><option>Aeropress</option>
+          <option>Moka</option><option>French Press</option><option>Bumble</option><option>Flat White</option>
+          <option>Latte</option><option>Cappuccino</option>
+          <option>Batch Brew</option><option>Cold Brew</option><option>Long Black</option>
+          <option>Ice Latte</option><option>Ice Cappuccino</option><option>Espresso Double</option>
+          <option>Espresso Single</option><option>Ristretto</option><option>Cortado</option>
+          <option>Інше</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-lbl" data-i18n="param_volume_ml">Обʼєм (мл)</div>
+        <input class="fi" type="number" id="lb-vol" value="240" min="10" max="1000" readonly onclick="openNumPad('lb-vol','vol')">
+      </div>
+    </div>
+    <div id="lb-home-params">
+      <div class="grid2" style="margin-bottom:11px">
+        <div>
+          <div class="field-lbl">Доза (г)</div>
+          <input class="fi" type="number" id="lb-dose" value="16" step="0.1" min="1" max="100">
+        </div>
+        <div>
+          <div class="field-lbl">Коеф.</div>
+          <input class="fi" type="number" id="lb-ratio" value="16" min="1" max="30">
+        </div>
+      </div>
+      <div class="grid2" style="margin-bottom:11px">
+        <div>
+          <div class="field-lbl">Температура (°C)</div>
+          <input class="fi" type="number" id="lb-temp" value="93" min="60" max="100">
+        </div>
+        <div>
+          <div class="field-lbl">Кавомолка</div>
+          <input class="fi" type="text" id="lb-grinder" placeholder="Необовʼязково" style="font-size:13px;font-weight:400;text-align:left">
+        </div>
+      </div>
+    </div>
+    <div class="lbl" style="margin-bottom:8px" data-i18n="rate_title">Оцінка</div>
+    <div class="rating-block" style="padding:14px;margin-bottom:11px">
+      <div class="rating-big" id="lb-rate-num" style="font-size:52px">8.0</div>
+      <div class="rating-sub" data-i18n="rate_cup_sub">оцінка чашки</div>
+      <input type="range" class="rslider" min="1" max="10" step="0.1" value="8" id="lb-rate-slider"
+        oninput="var v=parseFloat(this.value);document.getElementById('lb-rate-num').textContent=v.toFixed(1);applyRatingColor('lb-rate-num','lb-rate-slider',v)">
+      <div class="rrange"><span data-i18n="rate_bad">Погано</span><span data-i18n="rate_perfect">Ідеально</span></div>
+    </div>
+    <div class="field-lbl">Нотатки</div>
+    <input class="fi" type="text" id="lb-notes" placeholder="Необовʼязково" style="font-size:13px;font-weight:400;text-align:left;margin-bottom:14px">
+    <div class="sbtns">
+      <button class="btn-c" onclick="closeOv('ov-log-brew')">Скасувати</button>
+      <button class="btn-s" onclick="logBrewManual()">Додати</button>
+    </div>
+  </div>
+</div>

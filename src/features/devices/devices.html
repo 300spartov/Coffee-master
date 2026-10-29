@@ -1,0 +1,13 @@
+<!-- ДЕВАЙСЫ -->
+<div class="scr" id="scr-eq">
+  <div class="hdr" style="margin-bottom:0"><div><div class="hdr-title" data-i18n="devices_title">Девайсы</div><div class="hdr-sub" data-i18n="devices_equipment">Оборудование</div></div></div>
+  <div class="cat-grid" id="cat-grid"></div>
+</div>
+<div class="scr" id="scr-devlist">
+  <div class="dev-hdr">
+    <button class="back-btn" onclick="showScr('scr-eq')"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+    <div class="dev-hdr-title" id="devlist-title">—</div>
+  </div>
+  <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="dev-search" placeholder="Пошук..." oninput="filterDevs()"></div>
+  <div id="devlist-body"></div>
+</div>

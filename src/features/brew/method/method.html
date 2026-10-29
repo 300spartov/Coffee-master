@@ -1,0 +1,38 @@
+  <!-- ВЫБОР МЕТОДА -->
+  <div id="bv-method-pick" style="padding:14px 16px 32px">
+    <!-- Рівень 1 -->
+    <div class="method-pick-screen" id="bv-method-l1">
+      <div>
+        <div class="method-pick-title" data-i18n="method_pick_title">Що сьогодні?</div>
+        <div class="method-pick-sub" data-i18n="brew_choose">Обери метод</div>
+      </div>
+      <button class="method-big-btn alt" onclick="pickBrewMethod('alt')">
+        <div class="mbtn-ico alt"><i class="ti ti-filter" aria-hidden="true"></i></div>
+        <div>
+          <div class="mbtn-name" data-i18n="method_alt">Альтернатива</div>
+          <div class="mbtn-sub" data-i18n="method_alt_sub">V60 · Aeropress · Chemex · French Press та ін.</div>
+        </div>
+        <i class="ti ti-chevron-right" style="margin-left:auto;font-size:18px;color:var(--copper-dk)" aria-hidden="true"></i>
+      </button>
+      <button class="method-big-btn esp" onclick="pickBrewMethod('esp')">
+        <div class="mbtn-ico esp"><i class="ti ti-coffee" aria-hidden="true"></i></div>
+        <div>
+          <div class="mbtn-name" data-i18n="method_esp">Еспресо</div>
+          <div class="mbtn-sub" data-i18n="method_esp_sub">Шот · Таймер · Коефіцієнт · TDS</div>
+        </div>
+        <i class="ti ti-chevron-right" style="margin-left:auto;font-size:18px;color:var(--steel-dk)" aria-hidden="true"></i>
+      </button>
+    </div>
+    <!-- Рівень 2: підгрупи Альтернативи -->
+    <div id="bv-method-l2" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <button onclick="document.getElementById('bv-method-l1').style.display='';document.getElementById('bv-method-l2').style.display='none'" style="background:none;border:none;color:var(--txt2);cursor:pointer;padding:4px;font-size:20px;line-height:1"><i class="ti ti-arrow-left"></i></button>
+        <div>
+          <div class="method-pick-title" style="margin:0" id="bv-l2-title" data-i18n="method_alt">Альтернатива</div>
+          <div class="method-pick-sub" style="margin:0" id="bv-l2-sub" data-i18n="method_alt_pick_sub">Вибери спосіб</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="bv-alt-subgrid"></div>
+    </div>
+  </div>
+

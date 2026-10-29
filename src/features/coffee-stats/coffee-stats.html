@@ -1,0 +1,65 @@
+
+<!-- Coffee stats (кг кави по періодах) -->
+<div class="overlay" id="ov-coffee-stats" onclick="if(event.target===this)closeOv('ov-coffee-stats')">
+  <div class="cw-sheet">
+    <div class="cw-top">
+      <div class="cw-title"><i class="ti ti-coffee" aria-hidden="true"></i> Випито кави</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="cwShareStats()" style="background:rgba(184,115,51,.12);border:1px solid var(--copper-dk);border-radius:8px;color:var(--copper-lt);font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><i class="ti ti-share" style="font-size:13px"></i> Поділитись</button>
+        <div class="cw-x" onclick="closeOv('ov-coffee-stats')"><i class="ti ti-x" aria-hidden="true"></i></div>
+      </div>
+    </div>
+
+    <div class="cw-tabs">
+      <button class="cw-tab" onclick="cwSetPeriod('week')" data-period="week">Тиждень</button>
+      <button class="cw-tab on" onclick="cwSetPeriod('month')" data-period="month">Місяць</button>
+      <button class="cw-tab" onclick="cwSetPeriod('year')" data-period="year">Рік</button>
+      <button class="cw-tab" onclick="cwSetPeriod('custom')" data-period="custom">Свій</button>
+    </div>
+
+    <!-- Навігатор тижня/місяця -->
+    <div id="cw-nav" style="display:flex;align-items:center;justify-content:space-between;margin:8px 0;gap:8px">
+      <button onclick="cwNavPrev()" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt2);width:32px;height:32px;cursor:pointer;font-size:16px;flex-shrink:0"><i class="ti ti-chevron-left"></i></button>
+      <div id="cw-nav-label" style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt2);text-align:center;flex:1"></div>
+      <button onclick="cwNavNext()" id="cw-nav-next" style="background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt2);width:32px;height:32px;cursor:pointer;font-size:16px;flex-shrink:0"><i class="ti ti-chevron-right"></i></button>
+    </div>
+
+    <!-- Довільний діапазон -->
+    <div id="cw-custom-range" style="display:none;margin-bottom:10px;display:none">
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="flex:1"><div style="font-size:10px;color:var(--txt3);margin-bottom:4px">Від</div><input type="date" id="cw-date-from" oninput="cwFromPicked(this.value)" style="width:100%;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:7px;box-sizing:border-box"></div>
+        <div style="color:var(--txt3);padding-top:18px">—</div>
+        <div style="flex:1"><div style="font-size:10px;color:var(--txt3);margin-bottom:4px">До</div><input type="date" id="cw-date-to" onchange="cwUpdateCustom()" style="width:100%;background:var(--card-lo);border:1px solid var(--line-soft);border-radius:8px;color:var(--txt);font-family:var(--mono);font-size:13px;padding:7px;box-sizing:border-box"></div>
+      </div>
+    </div>
+
+    <div class="cw-card">
+      <div class="cw-wheel">
+        <svg viewBox="0 0 150 150" width="126" height="126">
+          <circle cx="75" cy="75" r="61" fill="none" stroke="#1a1c1f" stroke-width="18"/>
+          <circle id="cw-seg-filter" cx="75" cy="75" r="61" fill="none" stroke="#E0A93B" stroke-width="18" stroke-dasharray="194.3 188.97" stroke-dashoffset="0" transform="rotate(-90 75 75)" style="transition:opacity .25s"/>
+          <circle id="cw-seg-espresso" cx="75" cy="75" r="61" fill="none" stroke="#A85A2E" stroke-width="18" stroke-dasharray="129.1 254.17" stroke-dashoffset="-199.3" transform="rotate(-90 75 75)" style="transition:opacity .25s"/>
+          <circle id="cw-seg-omni" cx="75" cy="75" r="61" fill="none" stroke="#8198AE" stroke-width="18" stroke-dasharray="44.8 338.47" stroke-dashoffset="-333.4" transform="rotate(-90 75 75)" style="transition:opacity .25s"/>
+        </svg>
+        <div class="cw-btn" onclick="cwNext()">
+          <div class="cw-lbl" id="cw-lbl">ВСЬОГО</div>
+          <div class="cw-val" id="cw-val">0</div>
+          <div class="cw-unit" id="cw-unit">кг</div>
+          <div class="cw-dots" id="cw-dots"><span class="on"></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="cw-legend all" id="cw-legend">
+        <div class="cw-row" id="cw-row-filter" style="--c:#E0A93B"><div class="cw-bar"></div><div class="cw-name">Фільтр</div><div class="cw-kg" id="cw-kg-filter">0 г</div></div>
+        <div class="cw-row" id="cw-row-espresso" style="--c:#A85A2E"><div class="cw-bar"></div><div class="cw-name">Еспресо</div><div class="cw-kg" id="cw-kg-espresso">0 г</div></div>
+        <div class="cw-row" id="cw-row-omni" style="--c:#8198AE"><div class="cw-bar"></div><div class="cw-name">Омні</div><div class="cw-kg" id="cw-kg-omni">0 г</div></div>
+      </div>
+    </div>
+
+    <div class="cw-grid">
+      <div class="cw-tile"><div class="v" id="cw-brewcount">0</div><div class="l">Заварювань</div></div>
+      <div class="cw-tile"><div class="v" id="cw-avgdose">0 г</div><div class="l">Середня доза</div></div>
+      <div class="cw-tile"><div class="v" id="cw-cafecnt">0</div><div class="l">Кав'ярень</div></div>
+      <div class="cw-tile"><div class="v" id="cw-favmethod">—</div><div class="l">Фаворит</div></div>
+    </div>
+  </div>
+</div>

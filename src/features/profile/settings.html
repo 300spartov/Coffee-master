@@ -1,0 +1,10 @@
+<div class="overlay" id="ov-settings" onclick="if(event.target===this)closeOv('ov-settings')">
+  <div class="sheet">
+    <div class="sheet-title">Профіль</div>
+    <input class="sfi" id="s-name" placeholder="Имя или никнейм">
+    <input class="sfi" id="s-loc" placeholder="Город">
+    <select class="sfi" id="s-cat"><option value="Новичок">Новичок</option><option value="Любитель кофе">Любитель кофе</option><option value="Кофейный сектант">Кофейный сектант</option><option value="Бариста">Бариста</option><option value="Профессионал">Профессионал</option></select>
+    <input class="sfi" id="s-stazh" placeholder="Стаж, напр. 2 года">
+    <div class="sbtns"><button class="btn-c" onclick="closeOv('ov-settings')" data-i18n="common_cancel">Скасувати</button><button class="btn-s" onclick="saveProf()" data-i18n="common_save">Зберегти</button></div>
+  </div>
+</div>
