@@ -12,7 +12,7 @@ public struct BrewsModule {
         let viewModel = BrewListViewModel(router: router)
         let controller = HostingController(
             rootView: BrewListView(viewModel: viewModel),
-            title: String(localized: "Brews"),
+            title: tr("Brews"),
             largeTitleDisplayMode: .always
         )
         controller.navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -34,7 +34,7 @@ public struct BrewsModule {
         let viewModel = NewBrewViewModel(router: router)
         let controller = HostingController(
             rootView: NewBrewView(viewModel: viewModel),
-            title: String(localized: "New Brew")
+            title: tr("New Brew")
         )
         controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
             systemItem: .cancel,

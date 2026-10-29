@@ -185,6 +185,16 @@ struct BrewTimerLiveActivity: Widget {
 - Routers are **not** injected. They're passed to `init` and held `weak`, because each screen has its own.
 - Previews need no setup, because the defaults resolve to fixtures.
 
+## Localization (Ukrainian + English)
+
+- Every module with UI text has `Resources/Localizable.xcstrings`, and the app has `CoffeeMaster/Localizable.xcstrings`.
+- In code, write English and wrap it: `Text(tr("No brews yet"))`, `tr("Version \(version)")`. Interpolations become `%@` (strings) or `%lld` (integers) in the catalog.
+- `tr` looks the key up in **this module's** catalog in the **in-app language** (`LanguageSettings`), not the device language. That keeps all modules consistent and makes the in-app switch possible.
+- Add the key with both `en` and `uk` values to the module's catalog. `LocalizationTests` fails if a `tr("…")` key or a translation is missing.
+- Format interpolated numbers before passing them in (`let value = rating.formatted(…)`), so keys stay simple.
+- Screens get the language's `Locale` through `HostingController`, so dates and numbers format correctly. Changing the language rebuilds all flows (`AppRouter.rebuildForLanguageChange`).
+- Debug: launch with `-app.language uk` or `-app.language en`.
+
 ## Conventions
 
 - ViewModels are `@MainActor @Observable final class`. Mark dependencies and the router `@ObservationIgnored`, and hold

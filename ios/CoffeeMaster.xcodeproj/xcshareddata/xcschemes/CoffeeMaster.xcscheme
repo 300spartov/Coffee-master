@@ -32,6 +32,26 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AppCoreTests"
+               BuildableName = "AppCoreTests"
+               BlueprintName = "AppCoreTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "LocalizationTests"
+               BuildableName = "LocalizationTests"
+               BlueprintName = "LocalizationTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "DataLayerTests"
                BuildableName = "DataLayerTests"
                BlueprintName = "DataLayerTests"

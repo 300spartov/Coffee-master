@@ -13,10 +13,10 @@ struct AboutView: View {
             Text("Coffee Master")
                 .font(.title.bold())
                 .foregroundStyle(.theme.textPrimary)
-            Text("Notes, recipes and stats for your coffee.")
+            Text(tr("Notes, recipes and stats for your coffee."))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.theme.textSecondary)
-            Text("Version \(appVersion)")
+            Text(tr("Version \(appVersion)"))
                 .font(.footnote)
                 .foregroundStyle(.theme.textTertiary)
         }

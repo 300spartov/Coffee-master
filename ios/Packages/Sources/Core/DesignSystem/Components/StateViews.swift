@@ -55,12 +55,12 @@ public struct ErrorStateView: View {
 
     public var body: some View {
         ContentUnavailableView {
-            Label("Something went wrong", systemImage: "exclamationmark.triangle")
+            Label(tr("Something went wrong"), systemImage: "exclamationmark.triangle")
         } description: {
             Text(message)
         } actions: {
             if let retry {
-                Button("Retry", action: retry)
+                Button(tr("Retry"), action: retry)
                     .buttonStyle(.borderedProminent)
                     .tint(.theme.accent)
                     .foregroundStyle(.theme.onAccent)

@@ -19,7 +19,7 @@ final class BrewsFlow: Flow {
     init(module: BrewsModule) {
         self.module = module
         router.navigationController.tabBarItem = UITabBarItem(
-            title: String(localized: "Brews"),
+            title: tr("Brews"),
             image: UIImage(systemName: "cup.and.saucer"),
             selectedImage: UIImage(systemName: "cup.and.saucer.fill")
         )
@@ -41,7 +41,7 @@ final class BrewsFlow: Flow {
         switch deepLink {
         case .brewDetail(let rawID):
             guard let id = UUID(uuidString: rawID) else {
-                toasts.show(Toast(String(localized: "This brew no longer exists."), style: .warning))
+                toasts.show(Toast(tr("This brew no longer exists."), style: .warning))
                 return
             }
             router.push(module.makeBrewDetail(id: id, router: self), animated: false)
@@ -71,7 +71,7 @@ extension BrewsFlow: BrewListRouting {
 extension BrewsFlow: BrewDetailRouting {
     func brewDetailDidDelete(id: Brew.ID) {
         router.pop()
-        toasts.show(Toast(String(localized: "Brew deleted"), style: .success))
+        toasts.show(Toast(tr("Brew deleted"), style: .success))
     }
 }
 
@@ -80,7 +80,7 @@ extension BrewsFlow: NewBrewRouting {
         modalRouter?.close()
         modalRouter = nil
         if brew != nil {
-            toasts.show(Toast(String(localized: "Brew saved"), style: .success))
+            toasts.show(Toast(tr("Brew saved"), style: .success))
         }
     }
 }

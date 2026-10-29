@@ -11,7 +11,7 @@ public actor LiveActivityBrewTimerService: BrewTimerService {
         case activitiesDisabled
 
         public var errorDescription: String? {
-            "Live Activities are turned off for this app in Settings."
+            tr("Live Activities are turned off for this app in Settings.")
         }
     }
 

@@ -18,6 +18,7 @@ import PackageDescription
 
 let package = Package(
     name: "Packages",
+    defaultLocalization: "en",
     platforms: [.iOS(.v17)],
     products: [
         // Everything the main app links.
@@ -44,27 +45,41 @@ let package = Package(
         .target(name: "AppCore", dependencies: [.product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/AppCore"),
         .target(name: "Domain", dependencies: ["AppCore", .product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/Domain"),
         .target(name: "DataLayer", dependencies: ["AppCore", "Domain", "WebImport"], path: "Sources/Core/DataLayer"),
-        .target(name: "DesignSystem", dependencies: [.product(name: "FactoryKit", package: "Factory")], path: "Sources/Core/DesignSystem"),
+        .target(
+            name: "DesignSystem",
+            dependencies: ["AppCore", .product(name: "FactoryKit", package: "Factory")],
+            path: "Sources/Core/DesignSystem",
+            resources: [.process("Resources")]
+        ),
         .target(name: "DeepLinks", dependencies: ["AppCore"], path: "Sources/Core/DeepLinks"),
-        .target(name: "Navigation", dependencies: ["DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
-        .target(name: "WidgetsShared", dependencies: ["AppCore", "Domain", "DeepLinks"], path: "Sources/Core/WidgetsShared"),
+        .target(name: "Navigation", dependencies: ["AppCore", "DeepLinks", "DesignSystem"], path: "Sources/Core/Navigation"),
+        .target(
+            name: "WidgetsShared",
+            dependencies: ["AppCore", "Domain", "DeepLinks"],
+            path: "Sources/Core/WidgetsShared",
+            resources: [.process("Resources")]
+        ),
         .target(name: "WebImport", dependencies: ["Domain"], path: "Sources/Core/WebImport"),
 
         // MARK: Features
         .target(
             name: "BrewsFeature",
-            dependencies: ["Domain", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
-            path: "Sources/Features/BrewsFeature"
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
+            path: "Sources/Features/BrewsFeature",
+            resources: [.process("Resources")]
         ),
         .target(
             name: "SettingsFeature",
             dependencies: ["AppCore", "DesignSystem", "Navigation", .product(name: "FactoryKit", package: "Factory")],
-            path: "Sources/Features/SettingsFeature"
+            path: "Sources/Features/SettingsFeature",
+            resources: [.process("Resources")]
         ),
 
         // MARK: Tests
+        .testTarget(name: "AppCoreTests", dependencies: ["AppCore"]),
         .testTarget(name: "DomainTests", dependencies: ["Domain"]),
-        .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem"]),
+        .testTarget(name: "LocalizationTests"),
+        .testTarget(name: "DesignSystemTests", dependencies: ["DesignSystem", "AppCore"]),
         .testTarget(name: "DataLayerTests", dependencies: ["DataLayer", "Domain", "WebImport"]),
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),

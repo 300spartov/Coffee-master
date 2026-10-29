@@ -7,33 +7,33 @@ struct NewBrewView: View {
 
     var body: some View {
         Form {
-            Section("Coffee") {
-                TextField("Bean name", text: $viewModel.beanName)
+            Section(tr("Coffee")) {
+                TextField(tr("Bean name"), text: $viewModel.beanName)
                     .textInputAutocapitalization(.words)
-                Picker("Method", selection: $viewModel.method) {
+                Picker(tr("Method"), selection: $viewModel.method) {
                     ForEach(BrewMethod.formPresets, id: \.self) { method in
                         Text(method.rawValue).tag(method)
                     }
                 }
             }
 
-            Section("Recipe") {
+            Section(tr("Recipe")) {
                 Stepper(value: $viewModel.doseGrams, in: 5...40, step: 0.5) {
-                    LabeledContent("Dose", value: "\(viewModel.doseGrams.formatted()) g")
+                    LabeledContent(tr("Dose"), value: "\(viewModel.doseGrams.formatted()) g")
                 }
                 Stepper(value: $viewModel.waterGrams, in: 20...1_000, step: 10) {
-                    LabeledContent("Water", value: "\(viewModel.waterGrams.formatted()) g")
+                    LabeledContent(tr("Water"), value: "\(viewModel.waterGrams.formatted()) g")
                 }
                 Stepper(value: $viewModel.brewTime, in: 10...600, step: 5) {
                     LabeledContent(
-                        "Time",
+                        tr("Time"),
                         value: Duration.seconds(viewModel.brewTime).formatted(.time(pattern: .minuteSecond))
                     )
                 }
             }
 
-            Section("Rating") {
-                LabeledContent("Rating", value: viewModel.rating.formatted(.number.precision(.fractionLength(1))))
+            Section(tr("Rating")) {
+                LabeledContent(tr("Rating"), value: viewModel.rating.formatted(.number.precision(.fractionLength(1))))
                 Slider(value: $viewModel.rating, in: Brew.ratingRange, step: 0.5)
                     .tint(.theme.accent)
             }
@@ -51,7 +51,7 @@ struct NewBrewView: View {
                     if viewModel.isSaving {
                         ProgressView()
                     } else {
-                        Text("Save")
+                        Text(tr("Save"))
                     }
                 }
                 .buttonStyle(.primary)

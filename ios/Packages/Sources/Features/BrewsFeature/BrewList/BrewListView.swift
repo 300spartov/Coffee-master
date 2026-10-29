@@ -17,9 +17,9 @@ struct BrewListView: View {
             LoadingView()
         case .empty:
             EmptyStateView(
-                title: "No brews yet",
+                title: tr("No brews yet"),
                 systemImage: "cup.and.saucer",
-                message: "Tap + to log your first brew."
+                message: tr("Tap + to log your first brew.")
             )
         case .failed(let message):
             ErrorStateView(message: message) {

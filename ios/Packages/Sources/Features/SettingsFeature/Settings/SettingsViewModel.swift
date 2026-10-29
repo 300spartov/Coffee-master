@@ -16,6 +16,11 @@ final class SettingsViewModel {
         didSet { defaults.set(hapticsEnabled, forKey: Keys.haptics) }
     }
 
+    /// In-app language. Changing it persists the choice; the app then rebuilds its screens.
+    var language: AppLanguage = LanguageSettings.shared.current {
+        didSet { LanguageSettings.shared.set(language) }
+    }
+
     @ObservationIgnored @Injected(\.userDefaults) private var defaults
     @ObservationIgnored private weak var router: (any SettingsRouting)?
 

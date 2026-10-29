@@ -1,4 +1,5 @@
 import SwiftUI
+import AppCore
 import DesignSystem
 
 struct SettingsView: View {
@@ -6,17 +7,24 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            Section("General") {
-                Toggle("Haptics", isOn: $viewModel.hapticsEnabled)
+            Section(tr("General")) {
+                Picker(tr("Language"), selection: $viewModel.language) {
+                    ForEach(AppLanguage.allCases) { language in
+                        Text(language.nativeName).tag(language)
+                    }
+                }
+                .tint(.theme.accent)
+                .themedRow()
+                Toggle(tr("Haptics"), isOn: $viewModel.hapticsEnabled)
                     .tint(.theme.accent)
                     .themedRow()
             }
 
-            Section("Shortcuts") {
+            Section(tr("Shortcuts")) {
                 Button {
                     viewModel.didTapNewBrew()
                 } label: {
-                    Label("Log a New Brew", systemImage: "plus.circle")
+                    Label(tr("Log a New Brew"), systemImage: "plus.circle")
                         .foregroundStyle(.theme.accent)
                 }
                 .themedRow()
@@ -26,14 +34,14 @@ struct SettingsView: View {
                 Button {
                     viewModel.didTapWebImport()
                 } label: {
-                    Label("Import from Web App", systemImage: "square.and.arrow.down")
+                    Label(tr("Import from Web App"), systemImage: "square.and.arrow.down")
                         .foregroundStyle(.theme.accent)
                 }
                 .themedRow()
             } header: {
-                Text("Data")
+                Text(tr("Data"))
             } footer: {
-                Text("Choose the .json file exported from the Coffee Master web app. Importing again won't create duplicates.")
+                Text(tr("Choose the .json file exported from the Coffee Master web app. Importing again won't create duplicates."))
             }
 
             Section {
@@ -41,7 +49,7 @@ struct SettingsView: View {
                     viewModel.didTapAbout()
                 } label: {
                     HStack {
-                        Text("About")
+                        Text(tr("About"))
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
@@ -50,16 +58,16 @@ struct SettingsView: View {
                 }
                 .foregroundStyle(.theme.textPrimary)
                 .themedRow()
-                LabeledContent("Version", value: viewModel.appVersion)
+                LabeledContent(tr("Version"), value: viewModel.appVersion)
                     .themedRow()
             }
 
             #if DEBUG
-            Section("Developer") {
+            Section(tr("Developer")) {
                 Button {
                     viewModel.didTapDesignSystem()
                 } label: {
-                    Label("Design System", systemImage: "paintpalette")
+                    Label(tr("Design System"), systemImage: "paintpalette")
                         .foregroundStyle(.theme.accent)
                 }
                 .themedRow()

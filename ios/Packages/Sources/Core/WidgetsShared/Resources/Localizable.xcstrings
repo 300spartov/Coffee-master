@@ -1,0 +1,22 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Live Activities are turned off for this app in Settings.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Activities are turned off for this app in Settings."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Activities вимкнено для цього застосунку в Параметрах."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

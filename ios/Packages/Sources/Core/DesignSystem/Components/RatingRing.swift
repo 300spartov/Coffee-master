@@ -12,6 +12,10 @@ public struct RatingRing: View {
         self.lineWidth = lineWidth
     }
 
+    private var formattedRating: String {
+        rating.formatted(.number.precision(.fractionLength(1)))
+    }
+
     public var body: some View {
         ZStack {
             Circle().stroke(.theme.fill, lineWidth: lineWidth)
@@ -27,7 +31,7 @@ public struct RatingRing: View {
         .frame(width: size, height: size)
         .animation(.smooth, value: rating)
         .accessibilityElement()
-        .accessibilityLabel(Text("Rating \(rating, format: .number.precision(.fractionLength(1))) of 10"))
+        .accessibilityLabel(Text(tr("Rating \(formattedRating) of 10")))
     }
 }
 

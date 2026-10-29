@@ -30,7 +30,7 @@ final class BrewDetailViewModel {
         do {
             state = .loaded(try await repository.fetch(id: brewID))
         } catch RepositoryError.notFound {
-            state = .failed(String(localized: "This brew no longer exists."))
+            state = .failed(tr("This brew no longer exists."))
         } catch {
             state = .failed(error.localizedDescription)
         }

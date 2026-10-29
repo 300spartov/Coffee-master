@@ -26,7 +26,7 @@ final class SettingsFlow: NSObject, Flow {
         self.openDeepLink = openDeepLink
         super.init()
         router.navigationController.tabBarItem = UITabBarItem(
-            title: String(localized: "Settings"),
+            title: tr("Settings"),
             image: UIImage(systemName: "gearshape"),
             selectedImage: UIImage(systemName: "gearshape.fill")
         )
@@ -105,19 +105,19 @@ extension SettingsFlow: UIDocumentPickerDelegate {
             toasts.show(Self.toast(for: summary))
         } catch let error as WebImportError {
             Log.data.error("Web import rejected: \(String(describing: error), privacy: .public)")
-            toasts.show(Toast(String(localized: "This file isn't a Coffee Master export."), style: .error))
+            toasts.show(Toast(tr("This file isn't a Coffee Master export."), style: .error))
         } catch {
             Log.data.error("Web import failed: \(error.localizedDescription, privacy: .public)")
-            toasts.show(Toast(String(localized: "Import failed. Please try again."), style: .error))
+            toasts.show(Toast(tr("Import failed. Please try again."), style: .error))
         }
     }
 
     private static func toast(for summary: WebImportSummary) -> Toast {
         guard summary.changedCount > 0 else {
-            return Toast(String(localized: "Everything is already imported."), style: .info)
+            return Toast(tr("Everything is already imported."), style: .info)
         }
         let brews = summary.brews.inserted + summary.brews.updated
         let beans = summary.beans.inserted + summary.beans.updated
-        return Toast(String(localized: "Imported \(brews) brews and \(beans) beans"), style: .success)
+        return Toast(tr("Imported — brews: \(brews), beans: \(beans)"), style: .success)
     }
 }

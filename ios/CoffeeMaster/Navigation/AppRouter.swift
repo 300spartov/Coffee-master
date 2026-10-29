@@ -16,6 +16,7 @@ final class AppRouter {
     private var flows: [any Flow] = []
     /// A link that arrived before `start()` (or while the UI wasn't ready, e.g. behind onboarding / login).
     private var pendingDeepLink: DeepLink?
+    private var languageObserver: NSObjectProtocol?
 
     init(window: UIWindow) {
         self.window = window
@@ -35,6 +36,23 @@ final class AppRouter {
             pendingDeepLink = nil
             handle(link)
         }
+
+        languageObserver = NotificationCenter.default.addObserver(
+            forName: .appLanguageDidChange, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.rebuildForLanguageChange() }
+        }
+    }
+
+    /// Screens resolve their strings when they're built, so a language change rebuilds every flow,
+    /// keeping the selected tab.
+    private func rebuildForLanguageChange() {
+        let selectedIndex = tabBarController.selectedIndex
+        tabBarController.dismiss(animated: false)
+        flows = makeFlows()
+        flows.forEach { $0.start() }
+        tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
+        tabBarController.selectedIndex = selectedIndex
     }
 
     /// Order here = tab order. Adding a tab = adding a Flow.

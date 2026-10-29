@@ -48,7 +48,7 @@ public struct StockBar: View {
         .frame(height: 6)
         .animation(.smooth, value: fraction)
         .accessibilityElement()
-        .accessibilityLabel(Text("Remaining"))
+        .accessibilityLabel(Text(tr("Remaining")))
         .accessibilityValue(Text(fraction, format: .percent.precision(.fractionLength(0))))
     }
 }

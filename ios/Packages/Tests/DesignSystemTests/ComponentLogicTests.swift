@@ -51,3 +51,11 @@ struct NumberFieldTests {
         #expect(NumberField.clamp(input, to: 1...60) == expected)
     }
 }
+
+struct DesignSystemLocalizationTests {
+    @Test func resolvesInBothLanguages() {
+        #expect(tr("Retry", language: .ukrainian) == "Спробувати ще")
+        #expect(tr("Retry", language: .english) == "Retry")
+        #expect(tr("Rating \("8.5") of 10", language: .ukrainian) == "Оцінка 8.5 з 10")
+    }
+}

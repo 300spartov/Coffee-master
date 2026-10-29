@@ -10,14 +10,14 @@ struct BrewDetailView: View {
         content
             .task { await viewModel.load() }
             .alert(
-                "Error",
+                tr("Error"),
                 isPresented: Binding(
                     get: { viewModel.alertMessage != nil },
                     set: { if !$0 { viewModel.alertMessage = nil } }
                 ),
                 presenting: viewModel.alertMessage
             ) { _ in
-                Button("OK", role: .cancel) {}
+                Button(tr("OK"), role: .cancel) {}
             } message: { message in
                 Text(message)
             }
@@ -41,10 +41,10 @@ struct BrewDetailView: View {
                 header(for: brew)
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: Spacing.md) {
-                    StatTile(title: "Dose", value: "\(brew.doseGrams.formatted()) g")
-                    StatTile(title: "Water", value: "\(brew.waterGrams.formatted()) g")
-                    StatTile(title: "Ratio", value: "1:\(brew.ratio.formatted(.number.precision(.fractionLength(1))))")
-                    StatTile(title: "Time", value: brew.totalTime.map { Duration.seconds($0).formatted(.time(pattern: .minuteSecond)) } ?? "—")
+                    StatTile(title: tr("Dose"), value: "\(brew.doseGrams.formatted()) g")
+                    StatTile(title: tr("Water"), value: "\(brew.waterGrams.formatted()) g")
+                    StatTile(title: tr("Ratio"), value: "1:\(brew.ratio.formatted(.number.precision(.fractionLength(1))))")
+                    StatTile(title: tr("Time"), value: brew.totalTime.map { Duration.seconds($0).formatted(.time(pattern: .minuteSecond)) } ?? "—")
                 }
 
                 VStack(spacing: Spacing.md) {
@@ -52,13 +52,13 @@ struct BrewDetailView: View {
                         Task { await viewModel.toggleTimer() }
                     } label: {
                         Label(
-                            viewModel.isTimerRunning ? "Stop Timer" : "Start Brew Timer",
+                            viewModel.isTimerRunning ? tr("Stop Timer") : tr("Start Brew Timer"),
                             systemImage: viewModel.isTimerRunning ? "stop.fill" : "timer"
                         )
                     }
                     .buttonStyle(.primary)
 
-                    Button("Delete Brew", role: .destructive) {
+                    Button(tr("Delete Brew"), role: .destructive) {
                         isConfirmingDelete = true
                     }
                     .foregroundStyle(.theme.error)
@@ -67,8 +67,8 @@ struct BrewDetailView: View {
             .padding(Spacing.lg)
         }
         .themedGroupedBackground()
-        .confirmationDialog("Delete this brew?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
+        .confirmationDialog(tr("Delete this brew?"), isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button(tr("Delete"), role: .destructive) {
                 Task { await viewModel.delete() }
             }
         }

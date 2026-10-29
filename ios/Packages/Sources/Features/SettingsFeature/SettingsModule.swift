@@ -11,7 +11,7 @@ public struct SettingsModule {
         let viewModel = SettingsViewModel(router: router)
         return HostingController(
             rootView: SettingsView(viewModel: viewModel),
-            title: String(localized: "Settings"),
+            title: tr("Settings"),
             largeTitleDisplayMode: .always
         )
     }
@@ -19,7 +19,7 @@ public struct SettingsModule {
     public func makeAbout() -> UIViewController {
         HostingController(
             rootView: AboutView(appVersion: Container.shared.appVersion()),
-            title: String(localized: "About"),
+            title: tr("About"),
             hidesBottomBarWhenPushed: true
         )
     }
