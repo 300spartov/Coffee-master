@@ -42,7 +42,7 @@ Size: **S** ≈ 1–2 days, **M** ≈ 3–5 days, **L** ≈ 1–2 weeks.
 
 | Step | What | Web source | Module | Size |
 |---|---|---|---|---|
-| 1.1 | **Beans list**: bags with remaining/total grams, progress bar, "running out" state. | `features/beans` | `BeansFeature` | S |
+| 1.1 ✅ | **Beans list**: bags with remaining/total grams, progress bar, "running out" state. | `features/beans` | `BeansFeature` | S |
 | 1.2 | **Add/Edit bean**: name, roaster, weight, roast profile, country, process, farm, score, descriptors. Autocomplete from `roasters` / `beanNames`. Delete. Set `_upd` on every edit (sync relies on it). | `beans/bean-form.html`, `core/autocomplete.js` | `BeansFeature` | M |
 | 1.3 | **Devices catalog**: category grid (dripper, espresso, grinder, kettle, filter, accessories) built from the built-in database (`DB`); search; mark as owned; add custom; quick-add. | `features/devices`, `core/data.js` (`DB`, `DB_CATS`) | `DevicesFeature` | M |
 | 1.4 | **Filters stock**: filter packs with count, low-stock warning. | `devices/filters.js` | `DevicesFeature` | S |
