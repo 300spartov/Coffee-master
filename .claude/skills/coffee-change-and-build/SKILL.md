@@ -55,4 +55,4 @@ grep -c 'data-include' index.html             # must print 0 (all partials inlin
 
 - `build.py` exits with an error if an include path is missing or the includes form a cycle. Fix the path and rerun.
 - Smoke-test by opening `index.html` directly (`open index.html` on macOS) and checking the browser console for errors. If headless Chrome is available, load it via `file://` and confirm there are no `pageerror` events while switching screens.
-- Commit the source changes and the regenerated `index.html` together.
+- Commit the source changes and the regenerated `index.html` together, on a new branch (see `AGENTS.md`). Don't push.
