@@ -198,6 +198,7 @@ struct BrewTimerLiveActivity: Widget {
   - Grouped screens: `.themedGroupedBackground()` on the `List`/`Form`, `.themedRow()` on rows. Plain screens: `.themedBackground()`.
   - UIKit chrome (window tint, nav bar, tab bar) is set by `ThemeAppearance`. On iOS 26 the bars stay Liquid Glass, so `navigationBar` / `tabBar` colors apply on iOS 17–18.
   - To add a color: add a property to `ColorPalette` and give it a value in both themes.
+- **UI components** live in `DesignSystem/Components` (cards, chips, stock bars, rating ring, metrics, number fields, buttons, states, text styles). Browse them in the Debug **Design System gallery** (Settings → Developer, or `coffeemaster://settings/design-system`), and add new components to the gallery too.
 - Toasts: flows get `any ToastPresenting` (backed by `ToastCenter`) and call `toasts.show(Toast("…", style: .success))`. View models report outcomes through their router, not by showing toasts.
 - **Persistence**: features see repository protocols only. `DataLayer` stores each record as indexed columns plus a JSON payload of the Domain struct (the payload is the source of truth). A new Domain field needs no model change; add a column in `CoreDataModel` only when you need to query by it.
 - **Debug launch arguments**: `-deeplink <url>` and `-importWebJSON <path>`. For example `xcrun simctl launch booted com.coffeemaster.app -importWebJSON /tmp/export.json`.

@@ -75,6 +75,7 @@ public struct DeepLinkParser: Sendable {
         case .newBrew: ["brews", "new"]
         case .settings: ["settings"]
         case .about: ["settings", "about"]
+        case .designSystem: ["settings", "design-system"]
         }
     }
 
@@ -91,6 +92,8 @@ public struct DeepLinkParser: Sendable {
             return .settings
         case ("settings", 1) where rest[0].lowercased() == "about":
             return .about
+        case ("settings", 1) where rest[0].lowercased() == "design-system":
+            return .designSystem
         default:
             return nil
         }

@@ -15,15 +15,32 @@ public struct EmptyStateView: View {
     private let title: String
     private let systemImage: String
     private let message: String
+    private let actionTitle: String?
+    private let action: (() -> Void)?
 
-    public init(title: String, systemImage: String, message: String) {
+    /// Pass `actionTitle` + `action` to offer the next step ("Add your first bean").
+    public init(title: String, systemImage: String, message: String, actionTitle: String? = nil, action: (() -> Void)? = nil) {
         self.title = title
         self.systemImage = systemImage
         self.message = message
+        self.actionTitle = actionTitle
+        self.action = action
     }
 
     public var body: some View {
-        ContentUnavailableView(title, systemImage: systemImage, description: Text(message))
+        ContentUnavailableView {
+            Label(title, systemImage: systemImage)
+                .foregroundStyle(.theme.textPrimary)
+        } description: {
+            Text(message).foregroundStyle(.theme.textSecondary)
+        } actions: {
+            if let actionTitle, let action {
+                Button(actionTitle, action: action)
+                    .buttonStyle(.primary)
+                    // ContentUnavailableView proposes a narrow width to actions; give the button room.
+                    .frame(width: 240)
+            }
+        }
     }
 }
 

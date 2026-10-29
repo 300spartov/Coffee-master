@@ -8,8 +8,8 @@ struct ThemeTests {
     private let darkTraits = UITraitCollection(userInterfaceStyle: .dark)
 
     @Test(arguments: [
-        \ColorPalette.background, \.groupedBackground, \.surface, \.elevatedSurface,
-        \.textPrimary, \.textSecondary, \.textTertiary, \.accent, \.onAccent,
+        \ColorPalette.background, \.groupedBackground, \.surface, \.elevatedSurface, \.fill,
+        \.textPrimary, \.textSecondary, \.textTertiary, \.accent, \.onAccent, \.accentSoft,
         \.success, \.warning, \.error, \.info, \.separator, \.shadow,
         \.navigationBar, \.tabBar, \.tabBarItem,
     ] as [KeyPath<ColorPalette, ThemeColor> & Sendable])

@@ -53,6 +53,18 @@ struct SettingsView: View {
                 LabeledContent("Version", value: viewModel.appVersion)
                     .themedRow()
             }
+
+            #if DEBUG
+            Section("Developer") {
+                Button {
+                    viewModel.didTapDesignSystem()
+                } label: {
+                    Label("Design System", systemImage: "paintpalette")
+                        .foregroundStyle(.theme.accent)
+                }
+                .themedRow()
+            }
+            #endif
         }
         .listStyle(.insetGrouped)
         .themedGroupedBackground()

@@ -17,6 +17,8 @@ public struct ColorPalette: Sendable {
     public var surface: ThemeColor
     /// Raised content: sheets, toasts, popovers, cards on `surface`.
     public var elevatedSurface: ThemeColor
+    /// Subtle fill for inputs, unselected chips, tracks of bars and rings.
+    public var fill: ThemeColor
 
     // MARK: Text & icons
 
@@ -32,6 +34,8 @@ public struct ColorPalette: Sendable {
     public var accent: ThemeColor
     /// Text and icons placed on `accent`.
     public var onAccent: ThemeColor
+    /// Translucent accent for selected chips and soft highlights.
+    public var accentSoft: ThemeColor
 
     // MARK: Status
 
@@ -57,11 +61,13 @@ public struct ColorPalette: Sendable {
         groupedBackground: ThemeColor,
         surface: ThemeColor,
         elevatedSurface: ThemeColor,
+        fill: ThemeColor,
         textPrimary: ThemeColor,
         textSecondary: ThemeColor,
         textTertiary: ThemeColor,
         accent: ThemeColor,
         onAccent: ThemeColor,
+        accentSoft: ThemeColor,
         success: ThemeColor,
         warning: ThemeColor,
         error: ThemeColor,
@@ -76,11 +82,13 @@ public struct ColorPalette: Sendable {
         self.groupedBackground = groupedBackground
         self.surface = surface
         self.elevatedSurface = elevatedSurface
+        self.fill = fill
         self.textPrimary = textPrimary
         self.textSecondary = textSecondary
         self.textTertiary = textTertiary
         self.accent = accent
         self.onAccent = onAccent
+        self.accentSoft = accentSoft
         self.success = success
         self.warning = warning
         self.error = error

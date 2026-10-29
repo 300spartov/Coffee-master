@@ -32,7 +32,7 @@ final class BrewsFlow: Flow {
     func canHandle(_ deepLink: DeepLink) -> Bool {
         switch deepLink {
         case .brews, .brewDetail, .newBrew: true
-        case .settings, .about: false
+        case .settings, .about, .designSystem: false
         }
     }
 
@@ -47,7 +47,7 @@ final class BrewsFlow: Flow {
             router.push(module.makeBrewDetail(id: id, router: self), animated: false)
         case .newBrew:
             showNewBrew()
-        case .brews, .settings, .about:
+        case .brews, .settings, .about, .designSystem:
             break
         }
     }

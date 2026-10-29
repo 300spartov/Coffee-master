@@ -38,15 +38,22 @@ final class SettingsFlow: NSObject, Flow {
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
         switch deepLink {
-        case .settings, .about: true
+        case .settings, .about, .designSystem: true
         case .brews, .brewDetail, .newBrew: false
         }
     }
 
     func handle(_ deepLink: DeepLink) {
         router.popToRoot(animated: false)
-        if deepLink == .about {
+        switch deepLink {
+        case .about:
             router.push(module.makeAbout(), animated: false)
+        case .designSystem:
+            #if DEBUG
+            router.push(makeDesignSystemGallery(), animated: false)
+            #endif
+        default:
+            break
         }
     }
 }
@@ -59,6 +66,22 @@ extension SettingsFlow: SettingsRouting {
     func showNewBrew() {
         openDeepLink(.newBrew)
     }
+
+    func showDesignSystem() {
+        #if DEBUG
+        router.push(makeDesignSystemGallery())
+        #endif
+    }
+
+    #if DEBUG
+    private func makeDesignSystemGallery() -> UIViewController {
+        HostingController(
+            rootView: DesignSystemGallery { [weak self] toast in self?.toasts.show(toast) },
+            title: "Design System",
+            hidesBottomBarWhenPushed: true
+        )
+    }
+    #endif
 
     func showWebImport() {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json], asCopy: true)

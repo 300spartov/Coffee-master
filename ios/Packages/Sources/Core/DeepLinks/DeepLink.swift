@@ -10,6 +10,8 @@ public enum DeepLink: Hashable, Sendable {
     case newBrew
     case settings
     case about
+    /// Component gallery. Opens only in Debug builds.
+    case designSystem
 }
 
 public extension DeepLink {

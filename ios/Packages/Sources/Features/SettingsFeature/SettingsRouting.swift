@@ -5,4 +5,6 @@ public protocol SettingsRouting: AnyObject {
     func showNewBrew()
     /// Pick a web app JSON export and import it.
     func showWebImport()
+    /// Debug builds only: component gallery.
+    func showDesignSystem()
 }

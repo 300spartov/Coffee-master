@@ -5,6 +5,7 @@ public extension Theme {
         groupedBackground: ThemeColor(0x000000),
         surface: ThemeColor(0x1C1C1E),
         elevatedSurface: ThemeColor(0x2C2C2E),
+        fill: ThemeColor(0x767680, alpha: 0.24),
 
         textPrimary: ThemeColor(0xFFFFFF),
         textSecondary: ThemeColor(0xEBEBF5, alpha: 0.6),
@@ -12,6 +13,7 @@ public extension Theme {
 
         accent: ThemeColor(0xD89858),
         onAccent: ThemeColor(0x1C130A),
+        accentSoft: ThemeColor(0xD89858, alpha: 0.22),
 
         success: ThemeColor(0x30D158),
         warning: ThemeColor(0xFF9F0A),

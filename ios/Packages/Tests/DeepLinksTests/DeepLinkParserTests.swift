@@ -6,7 +6,7 @@ struct DeepLinkParserTests {
     private let parser = DeepLinkParser(scheme: "coffeemaster", universalLinkHost: "coffeemaster.app")
 
     private static let allLinks: [DeepLink] = [
-        .brews, .brewDetail(id: "42"), .newBrew, .settings, .about,
+        .brews, .brewDetail(id: "42"), .newBrew, .settings, .about, .designSystem,
     ]
 
     @Test(arguments: [
@@ -16,6 +16,7 @@ struct DeepLinkParserTests {
         ("coffeemaster://brews/new", .newBrew),
         ("coffeemaster://settings", .settings),
         ("coffeemaster://settings/about", .about),
+        ("coffeemaster://settings/design-system", .designSystem),
         ("COFFEEMASTER://Brews/AbC", .brewDetail(id: "AbC")),
         ("https://coffeemaster.app/brews/42", .brewDetail(id: "42")),
         ("https://CoffeeMaster.app/settings/about", .about),

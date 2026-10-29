@@ -35,4 +35,8 @@ final class SettingsViewModel {
     func didTapWebImport() {
         router?.showWebImport()
     }
+
+    func didTapDesignSystem() {
+        router?.showDesignSystem()
+    }
 }
