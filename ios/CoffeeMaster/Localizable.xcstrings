@@ -1,6 +1,38 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Beans": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beans"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зерно"
+          }
+        }
+      }
+    },
+    "Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Заварити"
+          }
+        }
+      }
+    },
     "Brew deleted": {
       "localizations": {
         "en": {
@@ -33,18 +65,34 @@
         }
       }
     },
-    "Brews": {
+    "Coming soon": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Brews"
+            "value": "Coming soon"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Рецепти"
+            "value": "Скоро"
+          }
+        }
+      }
+    },
+    "Devices": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devices"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Девайси"
           }
         }
       }
@@ -97,18 +145,66 @@
         }
       }
     },
-    "Settings": {
+    "Journal": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Settings"
+            "value": "Journal"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Налаштування"
+            "value": "Журнал"
+          }
+        }
+      }
+    },
+    "New Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новий рецепт"
+          }
+        }
+      }
+    },
+    "Profile": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профіль"
+          }
+        }
+      }
+    },
+    "Start a Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Почати заварювання"
           }
         }
       }
@@ -141,6 +237,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Цей файл не є експортом Coffee Master."
+          }
+        }
+      }
+    },
+    "Your brewing equipment will live here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your brewing equipment will live here."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тут житиме твоє обладнання."
+          }
+        }
+      }
+    },
+    "Your coffee bags will live here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your coffee bags will live here."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тут житимуть твої пачки кави."
           }
         }
       }

@@ -19,8 +19,11 @@ struct BrewListView: View {
             EmptyStateView(
                 title: tr("No brews yet"),
                 systemImage: "cup.and.saucer",
-                message: tr("Tap + to log your first brew.")
-            )
+                message: tr("Your brews will appear here."),
+                actionTitle: tr("Start a Brew")
+            ) {
+                viewModel.didTapAdd()
+            }
         case .failed(let message):
             ErrorStateView(message: message) {
                 Task { await viewModel.load() }

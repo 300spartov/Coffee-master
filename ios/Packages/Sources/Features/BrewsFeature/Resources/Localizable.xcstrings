@@ -17,22 +17,6 @@
         }
       }
     },
-    "Brews": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brews"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Рецепти"
-          }
-        }
-      }
-    },
     "Coffee": {
       "localizations": {
         "en": {
@@ -125,6 +109,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Помилка"
+          }
+        }
+      }
+    },
+    "Journal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journal"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Журнал"
           }
         }
       }
@@ -273,6 +273,22 @@
         }
       }
     },
+    "Start a Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Почати заварювання"
+          }
+        }
+      }
+    },
     "Stop Timer": {
       "localizations": {
         "en": {
@@ -285,22 +301,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Зупинити таймер"
-          }
-        }
-      }
-    },
-    "Tap + to log your first brew.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tap + to log your first brew."
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Натисни +, щоб записати перший рецепт."
           }
         }
       }
@@ -349,6 +349,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Вода"
+          }
+        }
+      }
+    },
+    "Your brews will appear here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your brews will appear here."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тут з'являться твої рецепти."
           }
         }
       }

@@ -185,6 +185,12 @@ struct BrewTimerLiveActivity: Widget {
 - Routers are **not** injected. They're passed to `init` and held `weak`, because each screen has its own.
 - Previews need no setup, because the defaults resolve to fixtures.
 
+## App shell
+
+- `AppRouter` owns the `UITabBarController`: **Journal · Beans · Devices · Profile**, one `Flow` per tab.
+- **Brew action** (starting a brew is app-wide, not a tab): an accent **Brew** button in the top bar of every tab root (`AppRouter.makeBrewButton()`): `UIBarButtonItem.Style.prominent` on iOS 26, accent-tinted before. On iOS 26 the tab bar minimizes while scrolling (`tabBarMinimizeBehavior = .onScrollDown`), and the top bar keeps Brew reachable. It opens `BrewFlow` full screen. `coffeemaster://brews/new` and Profile → "Log a New Brew" go through the same `AppRouter.startBrew()`.
+- **UI tests**: `CoffeeMasterUITests` (part of the CoffeeMaster scheme). It scrolls the Journal for real, asserts the tab bar minimizes while the Brew button stays tappable, and attaches screenshots to the test report.
+
 ## Localization (Ukrainian + English)
 
 - Every module with UI text has `Resources/Localizable.xcstrings`, and the app has `CoffeeMaster/Localizable.xcstrings`.

@@ -9,10 +9,10 @@ import Navigation
 import SettingsFeature
 import WebImport
 
-/// Settings tab. Shows how one flow reaches another feature: by emitting a deep link
-/// that `AppRouter` routes, never by importing the other feature.
+/// Profile tab. For now it hosts Settings; the profile itself (stats, XP, achievements) comes in
+/// ROADMAP Phase 4. Reaches other features only through deep links routed by `AppRouter`.
 @MainActor
-final class SettingsFlow: NSObject, Flow {
+final class ProfileFlow: NSObject, Flow {
     private let module: SettingsModule
     private let router = StackRouter()
     @Injected(\.toasts) private var toasts
@@ -26,14 +26,16 @@ final class SettingsFlow: NSObject, Flow {
         self.openDeepLink = openDeepLink
         super.init()
         router.navigationController.tabBarItem = UITabBarItem(
-            title: tr("Settings"),
-            image: UIImage(systemName: "gearshape"),
-            selectedImage: UIImage(systemName: "gearshape.fill")
+            title: tr("Profile"),
+            image: UIImage(systemName: "person.crop.circle"),
+            selectedImage: UIImage(systemName: "person.crop.circle.fill")
         )
     }
 
     func start() {
-        router.setRoot(module.makeSettings(router: self))
+        let settings = module.makeSettings(router: self)
+        settings.title = tr("Profile")
+        router.setRoot(settings)
     }
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
@@ -58,7 +60,7 @@ final class SettingsFlow: NSObject, Flow {
     }
 }
 
-extension SettingsFlow: SettingsRouting {
+extension ProfileFlow: SettingsRouting {
     func showAbout() {
         router.push(module.makeAbout())
     }
@@ -91,7 +93,7 @@ extension SettingsFlow: SettingsRouting {
     }
 }
 
-extension SettingsFlow: UIDocumentPickerDelegate {
+extension ProfileFlow: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
         Task { await importWebData(from: url) }

@@ -10,9 +10,20 @@
 		C0FFEE000000000000000001 /* AppModules in Frameworks */ = {isa = PBXBuildFile; productRef = C0FFEE000000000000000020 /* AppModules */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		C0FFEE000000000000000031 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0FFEE00000000000000000C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0FFEE000000000000000009;
+			remoteInfo = CoffeeMaster;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		C0FFEE000000000000000002 /* CoffeeMaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoffeeMaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0FFEE000000000000000003 /* Packages */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Packages; sourceTree = "<group>"; };
+		C0FFEE000000000000000030 /* CoffeeMasterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoffeeMasterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -26,6 +37,11 @@
 			path = Config;
 			sourceTree = "<group>";
 		};
+		C0FFEE000000000000000032 /* CoffeeMasterUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CoffeeMasterUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +53,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0FFEE000000000000000033 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -45,6 +68,7 @@
 			children = (
 				C0FFEE000000000000000004 /* CoffeeMaster */,
 				C0FFEE000000000000000005 /* Config */,
+				C0FFEE000000000000000032 /* CoffeeMasterUITests */,
 				C0FFEE000000000000000003 /* Packages */,
 				C0FFEE000000000000000008 /* Products */,
 			);
@@ -54,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				C0FFEE000000000000000002 /* CoffeeMaster.app */,
+				C0FFEE000000000000000030 /* CoffeeMasterUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,6 +109,27 @@
 			productReference = C0FFEE000000000000000002 /* CoffeeMaster.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C0FFEE000000000000000034 /* CoffeeMasterUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0FFEE000000000000000035 /* Build configuration list for PBXNativeTarget "CoffeeMasterUITests" */;
+			buildPhases = (
+				C0FFEE000000000000000036 /* Sources */,
+				C0FFEE000000000000000033 /* Frameworks */,
+				C0FFEE000000000000000037 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0FFEE000000000000000038 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0FFEE000000000000000032 /* CoffeeMasterUITests */,
+			);
+			name = CoffeeMasterUITests;
+			productName = CoffeeMasterUITests;
+			productReference = C0FFEE000000000000000030 /* CoffeeMasterUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -96,6 +142,10 @@
 				TargetAttributes = {
 					C0FFEE000000000000000009 = {
 						CreatedOnToolsVersion = 26.0;
+					};
+					C0FFEE000000000000000034 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = C0FFEE000000000000000009;
 					};
 				};
 			};
@@ -118,12 +168,20 @@
 			projectRoot = "";
 			targets = (
 				C0FFEE000000000000000009 /* CoffeeMaster */,
+				C0FFEE000000000000000034 /* CoffeeMasterUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C0FFEE00000000000000000B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0FFEE000000000000000037 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -140,7 +198,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0FFEE000000000000000036 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C0FFEE000000000000000038 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0FFEE000000000000000009 /* CoffeeMaster */;
+			targetProxy = C0FFEE000000000000000031 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C0FFEE00000000000000000E /* Debug */ = {
@@ -248,6 +321,36 @@
 			};
 			name = Release;
 		};
+		C0FFEE000000000000000039 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = CoffeeMaster;
+			};
+			name = Debug;
+		};
+		C0FFEE00000000000000003A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = CoffeeMaster;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -265,6 +368,15 @@
 			buildConfigurations = (
 				C0FFEE000000000000000011 /* Debug */,
 				C0FFEE000000000000000012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0FFEE000000000000000035 /* Build configuration list for PBXNativeTarget "CoffeeMasterUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0FFEE000000000000000039 /* Debug */,
+				C0FFEE00000000000000003A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

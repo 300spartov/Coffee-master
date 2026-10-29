@@ -3,17 +3,23 @@ import FactoryKit
 import AppCore
 import BrewsFeature
 import DeepLinks
+import DesignSystem
 import Navigation
 import SettingsFeature
 
-/// Root of the navigation tree: owns the window, the tab bar and one `Flow` per tab.
-/// Every external entry point ends up in `handle(_:)`.
+/// Root of the navigation tree: owns the window, the tab bar, one `Flow` per tab and the
+/// app-wide Brew action. Every external entry point ends up in `handle(_:)`.
+///
+/// The Brew action isn't a tab (tabs are for navigation): it's an accent button in the top bar of
+/// every tab's root screen, a prominent Liquid Glass button on iOS 26. The tab bar minimizes while
+/// scrolling (iOS 26), and the top bar keeps the Brew button reachable.
 @MainActor
 final class AppRouter {
     private let window: UIWindow
     private let parser = DeepLinkParser()
     private let tabBarController = UITabBarController()
     private var flows: [any Flow] = []
+    private var brewFlow: BrewFlow?
     /// A link that arrived before `start()` (or while the UI wasn't ready, e.g. behind onboarding / login).
     private var pendingDeepLink: DeepLink?
     private var languageObserver: NSObjectProtocol?
@@ -25,9 +31,7 @@ final class AppRouter {
     func start() {
         // Before any view controller exists, so every bar picks up the themed appearance.
         ThemeAppearance.apply(to: window)
-        flows = makeFlows()
-        flows.forEach { $0.start() }
-        tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
+        buildTabs()
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()
         Container.shared.toastCenter().attach(to: window)
@@ -44,30 +48,79 @@ final class AppRouter {
         }
     }
 
-    /// Screens resolve their strings when they're built, so a language change rebuilds every flow,
-    /// keeping the selected tab.
-    private func rebuildForLanguageChange() {
-        let selectedIndex = tabBarController.selectedIndex
-        tabBarController.dismiss(animated: false)
-        flows = makeFlows()
-        flows.forEach { $0.start() }
-        tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
-        tabBarController.selectedIndex = selectedIndex
-    }
+    // MARK: - Tabs
 
     /// Order here = tab order. Adding a tab = adding a Flow.
     private func makeFlows() -> [any Flow] {
         [
-            BrewsFlow(module: BrewsModule()),
-            SettingsFlow(module: SettingsModule(), openDeepLink: { [weak self] in self?.handle($0) }),
+            JournalFlow(module: BrewsModule(), startBrew: { [weak self] in self?.startBrew() }),
+            PlaceholderFlow(title: tr("Beans"), systemImage: "leaf", message: tr("Your coffee bags will live here.")),
+            PlaceholderFlow(title: tr("Devices"), systemImage: "wrench.and.screwdriver", message: tr("Your brewing equipment will live here.")),
+            ProfileFlow(module: SettingsModule(), openDeepLink: { [weak self] in self?.handle($0) }),
         ]
+    }
+
+    private func buildTabs() {
+        flows = makeFlows()
+        flows.forEach { $0.start() }
+        tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
+        brewFlow = BrewFlow(module: BrewsModule(), presenter: tabBarController)
+        installBrewAction()
+    }
+
+    private func installBrewAction() {
+        if #available(iOS 26, *) {
+            tabBarController.tabBarMinimizeBehavior = .onScrollDown
+        }
+        for flow in flows {
+            guard let root = (flow.rootViewController as? UINavigationController)?.viewControllers.first else { continue }
+            root.navigationItem.rightBarButtonItem = makeBrewButton()
+        }
+    }
+
+    /// Accent "Brew" button: prominent (accent-filled glass) on iOS 26, accent-tinted before.
+    private func makeBrewButton() -> UIBarButtonItem {
+        let item = UIBarButtonItem(
+            title: tr("Brew"),
+            image: UIImage(systemName: "cup.and.heat.waves.fill"),
+            primaryAction: UIAction { [weak self] _ in self?.startBrew() }
+        )
+        if #available(iOS 26, *) {
+            item.style = .prominent
+        } else {
+            item.style = .done
+        }
+        item.tintColor = .theme.accent
+        item.accessibilityLabel = tr("Start a Brew")
+        item.accessibilityIdentifier = "brew.button"
+        return item
+    }
+
+    /// Screens resolve their strings when they're built, so a language change rebuilds every flow
+    /// (and the Brew buttons), keeping the selected tab.
+    private func rebuildForLanguageChange() {
+        let selectedIndex = tabBarController.selectedIndex
+        tabBarController.dismiss(animated: false)
+        buildTabs()
+        tabBarController.selectedIndex = selectedIndex
+    }
+
+    // MARK: - Brew action
+
+    func startBrew() {
+        guard let brewFlow, !brewFlow.isPresented else { return }
+        if tabBarController.presentedViewController != nil {
+            tabBarController.dismiss(animated: false) { brewFlow.start() }
+        } else {
+            brewFlow.start()
+        }
     }
 
     #if DEBUG
     /// Debug launch argument `-importWebJSON <path>`: imports a web export without the file picker.
     func importWebJSON(at url: URL) {
-        guard let settings = flows.compactMap({ $0 as? SettingsFlow }).first else { return }
-        Task { await settings.importWebData(from: url) }
+        guard let profile = flows.compactMap({ $0 as? ProfileFlow }).first else { return }
+        Task { await profile.importWebData(from: url) }
     }
     #endif
 
@@ -88,11 +141,16 @@ final class AppRouter {
             pendingDeepLink = link
             return
         }
+        Log.deepLink.info("Routing \(String(describing: link), privacy: .public)")
+
+        if link == .newBrew {
+            startBrew()
+            return
+        }
         guard let index = flows.firstIndex(where: { $0.canHandle(link) }) else {
             Log.deepLink.error("No flow handles \(String(describing: link), privacy: .public)")
             return
         }
-        Log.deepLink.info("Routing \(String(describing: link), privacy: .public)")
 
         // Start from a clean slate so a link always lands on the same screen.
         let route = { [tabBarController, flows] in

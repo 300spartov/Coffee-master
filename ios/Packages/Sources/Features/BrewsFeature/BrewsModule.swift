@@ -12,13 +12,11 @@ public struct BrewsModule {
         let viewModel = BrewListViewModel(router: router)
         let controller = HostingController(
             rootView: BrewListView(viewModel: viewModel),
-            title: tr("Brews"),
+            title: tr("Journal"),
             largeTitleDisplayMode: .always
         )
-        controller.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            systemItem: .add,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapAdd() }
-        )
+        // No "+" here: starting a brew is the app-wide Brew action (tab bar accessory).
+        controller.view.accessibilityIdentifier = "journal.list"
         return controller
     }
 

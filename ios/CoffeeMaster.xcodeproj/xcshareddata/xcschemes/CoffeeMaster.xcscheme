@@ -32,6 +32,16 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C0FFEE000000000000000034"
+               BuildableName = "CoffeeMasterUITests.xctest"
+               BlueprintName = "CoffeeMasterUITests"
+               ReferencedContainer = "container:CoffeeMaster.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "AppCoreTests"
                BuildableName = "AppCoreTests"
                BlueprintName = "AppCoreTests"
