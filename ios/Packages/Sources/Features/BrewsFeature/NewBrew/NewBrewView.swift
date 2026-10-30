@@ -43,20 +43,8 @@ struct NewBrewView: View {
                 }
             }
 
-            Section {
-                Button {
-                    Task { await viewModel.save() }
-                } label: {
-                    if viewModel.isSaving {
-                        ProgressView()
-                    } else {
-                        Text(tr("Save"))
-                    }
-                }
-                .buttonStyle(.primary)
-                .disabled(!viewModel.isValid || viewModel.isSaving)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
+            FormActions(isSaving: viewModel.isSaving, canSave: viewModel.isValid) {
+                Task { await viewModel.save() }
             }
         }
     }

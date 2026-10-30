@@ -3,6 +3,7 @@ import FactoryKit
 import FactoryTesting
 import Testing
 import Domain
+import TestSupport
 @testable import DevicesFeature
 
 @MainActor
@@ -18,18 +19,6 @@ final class SpyFilterPacksRouter: FilterPacksRouting, FilterPackFormRouting {
     func filterPackFormDidFinish(saved pack: FilterPack?) { finished.append(pack) }
     func filterPackFormDidDelete(id: FilterPack.ID) { deletedIDs.append(id) }
     func filterPackFormNotFound(id: FilterPack.ID) { notFoundIDs.append(id) }
-}
-
-/// Repository whose writes fail, for the alert path.
-struct FailingFilterPackRepository: FilterPackRepository {
-    var packs: [FilterPack] = FilterPack.samples
-    func fetchAll() async throws -> [FilterPack] { packs }
-    func fetch(id: FilterPack.ID) async throws -> FilterPack { throw TestError() }
-    func save(_ record: FilterPack) async throws { throw TestError() }
-    func delete(id: FilterPack.ID) async throws { throw TestError() }
-    func use(packID: FilterPack.ID, count: Int) async throws -> FilterPack { throw TestError() }
-    func putBack(packID: FilterPack.ID, count: Int) async throws -> FilterPack { throw TestError() }
-    func changes() async -> AsyncStream<Void> { AsyncStream { _ in } }
 }
 
 @Suite(.container)
@@ -83,7 +72,7 @@ struct FilterPacksViewModelTests {
     }
 
     @Test func failedWriteKeepsListAndShowsAlert() async {
-        Container.shared.filterPackRepository.register { FailingFilterPackRepository() }
+        Container.shared.filterPackRepository.register { TestRepository(filterPacks: FilterPack.samples, failing: .writes) }
         let viewModel = FilterPacksViewModel(router: router)
         await viewModel.load()
 

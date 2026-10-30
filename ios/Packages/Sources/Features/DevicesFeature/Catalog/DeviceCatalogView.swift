@@ -3,7 +3,7 @@ import Domain
 import DesignSystem
 
 struct DeviceCatalogView: View {
-    let viewModel: DeviceCatalogViewModel
+    @Bindable var viewModel: DeviceCatalogViewModel
 
     var body: some View {
         // Rows as drawn, so a swipe-to-delete maps to the device the user saw even if the list
@@ -64,18 +64,7 @@ struct DeviceCatalogView: View {
         .listStyle(.insetGrouped)
         .themedGroupedBackground()
         .task { await viewModel.start() }
-        .alert(
-            tr("Error"),
-            isPresented: Binding(
-                get: { viewModel.alertMessage != nil },
-                set: { if !$0 { viewModel.alertMessage = nil } }
-            ),
-            presenting: viewModel.alertMessage
-        ) { _ in
-            Button(tr("OK"), role: .cancel) {}
-        } message: { message in
-            Text(verbatim: message)
-        }
+        .errorAlert($viewModel.alertMessage)
     }
 }
 

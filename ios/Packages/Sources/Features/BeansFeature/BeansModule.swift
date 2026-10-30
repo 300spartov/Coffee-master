@@ -14,13 +14,9 @@ public struct BeansModule {
             title: tr("Beans"),
             largeTitleDisplayMode: .always
         )
-        let addItem = UIBarButtonItem(
-            systemItem: .add,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapAdd() }
-        )
-        addItem.accessibilityLabel = tr("Add Bean")
-        addItem.accessibilityIdentifier = "beans.add"
-        controller.navigationItem.rightBarButtonItem = addItem
+        controller.setAddButton(accessibilityLabel: tr("Add Bean"), identifier: "beans.add") { [weak viewModel] in
+            viewModel?.didTapAdd()
+        }
         controller.view.accessibilityIdentifier = "beans.list"
         return controller
     }
@@ -29,12 +25,7 @@ public struct BeansModule {
     public func makeAddBean(router: any BeanFormRouting) -> UIViewController {
         let viewModel = BeanFormViewModel(mode: .add, router: router)
         let controller = HostingController(rootView: BeanFormView(viewModel: viewModel), title: tr("New Bean"))
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            systemItem: .cancel,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.cancel() }
-        )
-        // Don't lose typed details to an accidental swipe.
-        controller.isModalInPresentation = true
+        controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
         return controller
     }
 

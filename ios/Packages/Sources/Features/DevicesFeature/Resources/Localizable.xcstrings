@@ -209,38 +209,6 @@
         }
       }
     },
-    "Empty": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Empty"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Порожня"
-          }
-        }
-      }
-    },
-    "Error": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Помилка"
-          }
-        }
-      }
-    },
     "Espresso machines": {
       "localizations": {
         "en": {
@@ -481,22 +449,6 @@
         }
       }
     },
-    "OK": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "OK"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "OK"
-          }
-        }
-      }
-    },
     "Owned: %lld": {
       "localizations": {
         "en": {
@@ -657,22 +609,6 @@
         }
       }
     },
-    "Running low": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Running low"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Закінчуються"
-          }
-        }
-      }
-    },
     "Running low: %lld": {
       "localizations": {
         "en": {
@@ -685,22 +621,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Закінчуються: %lld"
-          }
-        }
-      }
-    },
-    "Save": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Зберегти"
           }
         }
       }

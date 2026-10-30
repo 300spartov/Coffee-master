@@ -1,17 +1,11 @@
 import Foundation
 import Observation
+import AppCore
 import Domain
 import FactoryKit
 @Observable
 final class BrewListViewModel {
-    enum State: Equatable {
-        case loading
-        case empty
-        case loaded([Brew])
-        case failed(String)
-    }
-
-    private(set) var state: State = .loading
+    private(set) var state: ListState<Brew> = .loading
     /// A failed action (e.g. delete), shown as an alert over the list.
     var alertMessage: String?
 
@@ -24,17 +18,12 @@ final class BrewListViewModel {
 
     /// Bound to the view's lifetime via `.task`: loads, then reloads on every repository change.
     func start() async {
-        let changes = await repository.changes()
-        await load()
-        for await _ in changes {
-            await load()
-        }
+        await repository.observe { await self.load() }
     }
 
     func load() async {
         do {
-            let brews = try await repository.fetchAll()
-            state = brews.isEmpty ? .empty : .loaded(brews)
+            state = ListState(try await repository.fetchAll())
         } catch {
             state = .failed(error.localizedDescription)
         }

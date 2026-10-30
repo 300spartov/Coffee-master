@@ -2,6 +2,7 @@ import FactoryKit
 import FactoryTesting
 import Testing
 import Domain
+import TestSupport
 @testable import BrewsFeature
 
 /// `.container` gives every test its own Factory container, so registrations don't leak
@@ -11,13 +12,13 @@ import Domain
 struct BrewListViewModelTests {
     private let router = SpyRouter()
 
-    private func makeViewModel(repository: MockBrewRepository) -> BrewListViewModel {
+    private func makeViewModel(repository: TestRepository<Brew>) -> BrewListViewModel {
         Container.shared.brewRepository.register { repository }
         return BrewListViewModel(router: router)
     }
 
     @Test func loadPublishesBrews() async {
-        let viewModel = makeViewModel(repository: MockBrewRepository(brews: Brew.samples))
+        let viewModel = makeViewModel(repository: TestRepository(brews: Brew.samples))
 
         await viewModel.load()
 
@@ -25,7 +26,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func loadWithNoBrewsIsEmpty() async {
-        let viewModel = makeViewModel(repository: MockBrewRepository())
+        let viewModel = makeViewModel(repository: TestRepository(brews: []))
 
         await viewModel.load()
 
@@ -33,7 +34,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func loadFailureShowsError() async {
-        let viewModel = makeViewModel(repository: MockBrewRepository(error: TestError()))
+        let viewModel = makeViewModel(repository: TestRepository(brews: [], failing: .everything))
 
         await viewModel.load()
 
@@ -41,7 +42,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func selectingBrewRoutesToDetail() {
-        let viewModel = makeViewModel(repository: MockBrewRepository())
+        let viewModel = makeViewModel(repository: TestRepository(brews: []))
 
         viewModel.didSelect(Brew.samples[1])
 
@@ -49,7 +50,7 @@ struct BrewListViewModelTests {
     }
 
     @Test func tappingAddRoutesToNewBrew() {
-        let viewModel = makeViewModel(repository: MockBrewRepository())
+        let viewModel = makeViewModel(repository: TestRepository(brews: []))
 
         viewModel.didTapAdd()
 
@@ -70,7 +71,7 @@ struct BrewListViewModelTests {
 @MainActor
 struct BrewListDeleteTests {
     @Test func failedDeleteKeepsListAndShowsAlert() async {
-        Container.shared.brewRepository.register { MockBrewRepository(brews: Brew.samples, deleteError: TestError()) }
+        Container.shared.brewRepository.register { TestRepository(brews: Brew.samples, failing: .writes) }
         let viewModel = BrewListViewModel(router: SpyRouter())
         await viewModel.load()
 

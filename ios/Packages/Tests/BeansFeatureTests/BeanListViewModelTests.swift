@@ -2,6 +2,7 @@ import FactoryKit
 import FactoryTesting
 import Testing
 import Domain
+import TestSupport
 @testable import BeansFeature
 
 /// `.container` gives every test its own Factory container, so registrations don't leak
@@ -11,13 +12,13 @@ import Domain
 struct BeanListViewModelTests {
     private let router = SpyRouter()
 
-    private func makeViewModel(repository: MockBeanRepository) -> BeanListViewModel {
+    private func makeViewModel(repository: TestRepository<Bean>) -> BeanListViewModel {
         Container.shared.beanRepository.register { repository }
         return BeanListViewModel(router: router)
     }
 
     @Test func loadPublishesBeans() async {
-        let viewModel = makeViewModel(repository: MockBeanRepository(beans: Bean.samples))
+        let viewModel = makeViewModel(repository: TestRepository(beans: Bean.samples))
 
         await viewModel.load()
 
@@ -25,7 +26,7 @@ struct BeanListViewModelTests {
     }
 
     @Test func loadWithNoBeansIsEmpty() async {
-        let viewModel = makeViewModel(repository: MockBeanRepository())
+        let viewModel = makeViewModel(repository: TestRepository(beans: []))
 
         await viewModel.load()
 
@@ -33,7 +34,7 @@ struct BeanListViewModelTests {
     }
 
     @Test func loadFailureShowsError() async {
-        let viewModel = makeViewModel(repository: MockBeanRepository(error: TestError()))
+        let viewModel = makeViewModel(repository: TestRepository(beans: [], failing: .everything))
 
         await viewModel.load()
 
@@ -41,7 +42,7 @@ struct BeanListViewModelTests {
     }
 
     @Test func selectingBeanRoutesToDetail() {
-        let viewModel = makeViewModel(repository: MockBeanRepository())
+        let viewModel = makeViewModel(repository: TestRepository(beans: []))
 
         viewModel.didSelect(Bean.samples[0])
 
@@ -49,7 +50,7 @@ struct BeanListViewModelTests {
     }
 
     @Test func tappingAddRoutesToAddBean() {
-        let viewModel = makeViewModel(repository: MockBeanRepository())
+        let viewModel = makeViewModel(repository: TestRepository(beans: []))
 
         viewModel.didTapAdd()
 
@@ -74,7 +75,7 @@ struct BeanListViewModelTests {
 @MainActor
 struct BeanListDeleteTests {
     @Test func failedDeleteKeepsListAndShowsAlert() async {
-        Container.shared.beanRepository.register { MockBeanRepository(beans: Bean.samples, deleteError: TestError()) }
+        Container.shared.beanRepository.register { TestRepository(beans: Bean.samples, failing: .writes) }
         let viewModel = BeanListViewModel(router: SpyRouter())
         await viewModel.load()
 
@@ -85,7 +86,7 @@ struct BeanListDeleteTests {
     }
 
     @Test func successfulDeleteDeletesFromRepository() async {
-        let repository = MockBeanRepository(beans: Bean.samples)
+        let repository = TestRepository(beans: Bean.samples)
         Container.shared.beanRepository.register { repository }
         let viewModel = BeanListViewModel(router: SpyRouter())
         await viewModel.load()

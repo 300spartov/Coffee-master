@@ -4,42 +4,15 @@ import DesignSystem
 
 struct BeanFormView: View {
     @Bindable var viewModel: BeanFormViewModel
-    @State private var isConfirmingDelete = false
 
     var body: some View {
-        content
-            .task { await viewModel.load() }
-            .alert(
-                tr("Error"),
-                isPresented: Binding(
-                    get: { viewModel.alertMessage != nil },
-                    set: { if !$0 { viewModel.alertMessage = nil } }
-                ),
-                presenting: viewModel.alertMessage
-            ) { _ in
-                Button(tr("OK"), role: .cancel) {}
-            } message: { message in
-                Text(verbatim: message)
-            }
-            .confirmationDialog(tr("Delete this bean?"), isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-                Button(tr("Delete"), role: .destructive) {
-                    Task { await viewModel.delete() }
-                }
-            }
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        switch viewModel.state {
-        case .loading:
-            LoadingView()
-        case .failed(let message):
-            ErrorStateView(message: message) {
-                Task { await viewModel.load() }
-            }
-        case .ready:
+        LoadStateView(viewModel.state) {
+            Task { await viewModel.load() }
+        } content: {
             form
         }
+        .task { await viewModel.load() }
+        .errorAlert($viewModel.alertMessage)
     }
 
     private var form: some View {
@@ -107,36 +80,25 @@ struct BeanFormView: View {
             }
             .themedRow()
 
-            Section {
-                Button {
-                    Task { await viewModel.save() }
-                } label: {
-                    if viewModel.isSaving {
-                        ProgressView()
-                    } else {
-                        Text(tr("Save"))
-                    }
-                }
-                .buttonStyle(.primary)
-                .disabled(!viewModel.isValid || viewModel.isSaving)
-                .accessibilityIdentifier("bean.save")
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-
-                if viewModel.isEditing {
-                    Button(tr("Delete Bean"), role: .destructive) {
-                        isConfirmingDelete = true
-                    }
-                    .foregroundStyle(.theme.error)
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                    .accessibilityIdentifier("bean.delete")
-                }
+            FormActions(
+                isSaving: viewModel.isSaving,
+                canSave: viewModel.isValid,
+                identifier: "bean",
+                destructive: deleteAction
+            ) {
+                Task { await viewModel.save() }
             }
         }
         .scrollDismissesKeyboard(.interactively)
         .themedGroupedBackground()
         .accessibilityIdentifier("bean.form")
+    }
+
+    private var deleteAction: FormActions.Destructive? {
+        guard viewModel.isEditing else { return nil }
+        return .init(tr("Delete Bean"), confirmation: tr("Delete this bean?"), confirmTitle: tr("Delete")) {
+            Task { await viewModel.delete() }
+        }
     }
 }
 

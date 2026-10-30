@@ -3,6 +3,7 @@ import FactoryKit
 import FactoryTesting
 import Testing
 import Domain
+import TestSupport
 @testable import DevicesFeature
 
 @MainActor
@@ -206,21 +207,6 @@ struct DeviceFormViewModelTests {
     }
 }
 
-struct TestError: LocalizedError {
-    var errorDescription: String? { "Boom" }
-}
-
-/// Repository whose reads fail, for error states.
-struct FailingDeviceRepository: DeviceRepository {
-    func fetchAll() async throws -> [Device] { throw TestError() }
-    func fetchAll(of type: DeviceType) async throws -> [Device] { throw TestError() }
-    func fetch(id: Device.ID) async throws -> Device { throw TestError() }
-    func contains(name: String, type: DeviceType) async throws -> Bool { throw TestError() }
-    func save(_ record: Device) async throws { throw TestError() }
-    func delete(id: Device.ID) async throws { throw TestError() }
-    func changes() async -> AsyncStream<Void> { AsyncStream { _ in } }
-}
-
 @Suite(.container)
 @MainActor
 struct DeviceReviewFixesTests {
@@ -267,7 +253,7 @@ struct DeviceReviewFixesTests {
     }
 
     @Test func formLoadErrorShowsRetryState() async {
-        Container.shared.deviceRepository.register { FailingDeviceRepository() }
+        Container.shared.deviceRepository.register { TestRepository(devices: [], failing: .everything) }
         let viewModel = DeviceFormViewModel(mode: .edit(.fixture(1)), router: router)
 
         await viewModel.load()

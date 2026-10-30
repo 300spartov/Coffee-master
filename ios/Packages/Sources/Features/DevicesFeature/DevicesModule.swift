@@ -29,13 +29,9 @@ public struct DevicesModule {
         controller.installSearch(placeholder: tr("Search devices")) { [weak viewModel] text in
             viewModel?.query = text
         }
-        let addItem = UIBarButtonItem(
-            systemItem: .add,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapAdd() }
-        )
-        addItem.accessibilityLabel = tr("Add Device")
-        addItem.accessibilityIdentifier = "devices.add"
-        controller.navigationItem.rightBarButtonItem = addItem
+        controller.setAddButton(accessibilityLabel: tr("Add Device"), identifier: "devices.add") { [weak viewModel] in
+            viewModel?.didTapAdd()
+        }
         return controller
     }
 
@@ -57,13 +53,9 @@ public struct DevicesModule {
             title: tr("Filter packs"),
             hidesBottomBarWhenPushed: true
         )
-        let addItem = UIBarButtonItem(
-            systemItem: .add,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapAdd() }
-        )
-        addItem.accessibilityLabel = tr("Add Filter Pack")
-        addItem.accessibilityIdentifier = "filters.add"
-        controller.navigationItem.rightBarButtonItem = addItem
+        controller.setAddButton(accessibilityLabel: tr("Add Filter Pack"), identifier: "filters.add") { [weak viewModel] in
+            viewModel?.didTapAdd()
+        }
         return controller
     }
 
@@ -78,23 +70,14 @@ public struct DevicesModule {
     private func makeFilterPackForm(mode: FilterPackFormViewModel.Mode, title: String, router: any FilterPackFormRouting) -> UIViewController {
         let viewModel = FilterPackFormViewModel(mode: mode, router: router)
         let controller = HostingController(rootView: FilterPackFormView(viewModel: viewModel), title: title)
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            systemItem: .cancel,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.cancel() }
-        )
-        controller.isModalInPresentation = true
+        controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
         return controller
     }
 
     private func makeForm(mode: DeviceFormViewModel.Mode, title: String, router: any DeviceFormRouting) -> UIViewController {
         let viewModel = DeviceFormViewModel(mode: mode, router: router)
         let controller = HostingController(rootView: DeviceFormView(viewModel: viewModel), title: title)
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            systemItem: .cancel,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.cancel() }
-        )
-        // Don't lose a typed name to an accidental swipe (like the New Bean sheet); Cancel closes it.
-        controller.isModalInPresentation = true
+        controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
         return controller
     }
 }

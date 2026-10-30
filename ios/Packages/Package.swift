@@ -105,6 +105,8 @@ let package = Package(
         ),
 
         // MARK: Tests
+        /// Shared test doubles for the feature tests (not shipped in the app).
+        .target(name: "TestSupport", dependencies: ["Domain"], path: "Tests/TestSupport"),
         .testTarget(name: "AppCoreTests", dependencies: ["AppCore"]),
         .testTarget(name: "DomainTests", dependencies: ["Domain"]),
         .testTarget(name: "LocalizationTests"),
@@ -118,15 +120,15 @@ let package = Package(
         ),
         .testTarget(
             name: "BrewsFeatureTests",
-            dependencies: ["BrewsFeature", "Domain", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+            dependencies: ["BrewsFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
         .testTarget(
             name: "DevicesFeatureTests",
-            dependencies: ["DevicesFeature", "Domain", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+            dependencies: ["DevicesFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
         .testTarget(
             name: "BeansFeatureTests",
-            dependencies: ["BeansFeature", "Domain", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+            dependencies: ["BeansFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
     ]
 )

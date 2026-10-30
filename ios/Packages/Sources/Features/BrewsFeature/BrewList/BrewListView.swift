@@ -3,31 +3,18 @@ import Domain
 import DesignSystem
 
 struct BrewListView: View {
-    let viewModel: BrewListViewModel
+    @Bindable var viewModel: BrewListViewModel
 
     var body: some View {
         content
             .task { await viewModel.start() }
-            .alert(
-                tr("Error"),
-                isPresented: Binding(
-                    get: { viewModel.alertMessage != nil },
-                    set: { if !$0 { viewModel.alertMessage = nil } }
-                ),
-                presenting: viewModel.alertMessage
-            ) { _ in
-                Button(tr("OK"), role: .cancel) {}
-            } message: { message in
-                Text(message)
-            }
+            .errorAlert($viewModel.alertMessage)
     }
 
-    @ViewBuilder
     private var content: some View {
-        switch viewModel.state {
-        case .loading:
-            LoadingView()
-        case .empty:
+        ListStateView(viewModel.state) {
+            Task { await viewModel.load() }
+        } empty: {
             EmptyStateView(
                 title: tr("No brews yet"),
                 systemImage: "cup.and.saucer",
@@ -36,11 +23,7 @@ struct BrewListView: View {
             ) {
                 viewModel.didTapAdd()
             }
-        case .failed(let message):
-            ErrorStateView(message: message) {
-                Task { await viewModel.load() }
-            }
-        case .loaded(let brews):
+        } content: { brews in
             List {
                 ForEach(brews) { brew in
                     Button {

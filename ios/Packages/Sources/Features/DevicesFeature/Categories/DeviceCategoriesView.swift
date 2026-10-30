@@ -14,11 +14,11 @@ struct DeviceCategoriesView: View {
                     Button {
                         viewModel.didSelect(type)
                     } label: {
-                        CategoryTile(
-                            type: type,
-                            owned: viewModel.ownedCount(type),
-                            inCatalog: viewModel.catalogCount(type)
-                        )
+                        CategoryTile(type: type) {
+                            let owned = viewModel.ownedCount(type)
+                            Text(owned > 0 ? tr("Owned: \(owned)") : tr("Catalog: \(viewModel.catalogCount(type))"))
+                                .foregroundStyle(owned > 0 ? Color.theme.accent : Color.theme.textSecondary)
+                        }
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("devices.category.\(type.rawValue)")
@@ -27,7 +27,9 @@ struct DeviceCategoriesView: View {
                 Button {
                     viewModel.didSelectFilters()
                 } label: {
-                    FilterPacksTile(packs: viewModel.filterPackCount, low: viewModel.lowFilterPackCount)
+                    CategoryTile(type: .filter, tint: viewModel.lowFilterPackCount > 0 ? .theme.warning : .theme.accent) {
+                        filterPacksSubtitle
+                    }
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("devices.category.filter")
@@ -37,42 +39,33 @@ struct DeviceCategoriesView: View {
         .themedGroupedBackground()
         .task { await viewModel.start() }
     }
-}
 
-private struct CategoryTile: View {
-    let type: DeviceType
-    let owned: Int
-    let inCatalog: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            IconBadge(type.systemImage, size: 40)
-            VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(type.title)
-                    .appTextStyle(.cardTitle)
-                    .lineLimit(2, reservesSpace: true)
-                    .multilineTextAlignment(.leading)
-                Text(owned > 0 ? tr("Owned: \(owned)") : tr("Catalog: \(inCatalog)"))
-                    .appTextStyle(.caption)
-                    .foregroundStyle(owned > 0 ? Color.theme.accent : Color.theme.textSecondary)
-            }
+    @ViewBuilder
+    private var filterPacksSubtitle: some View {
+        let packs = viewModel.filterPackCount
+        let low = viewModel.lowFilterPackCount
+        if packs == 0 {
+            Text(tr("No packs yet")).foregroundStyle(.theme.textSecondary)
+        } else if low > 0 {
+            Label(tr("Running low: \(low)"), systemImage: "exclamationmark.triangle.fill")
+                .foregroundStyle(.theme.warning)
+        } else {
+            Text(tr("Packs: \(packs)")).foregroundStyle(.theme.accent)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .cardStyle()
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
     }
 }
 
-private struct FilterPacksTile: View {
-    let packs: Int
-    let low: Int
+/// A category card: icon, title, and a one-line status.
+private struct CategoryTile<Subtitle: View>: View {
+    let type: DeviceType
+    var tint: Color = .theme.accent
+    @ViewBuilder let subtitle: Subtitle
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            IconBadge(DeviceType.filter.systemImage, tint: low > 0 ? .theme.warning : .theme.accent, size: 40)
+            IconBadge(type.systemImage, tint: tint, size: 40)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(DeviceType.filter.title)
+                Text(type.title)
                     .appTextStyle(.cardTitle)
                     .lineLimit(2, reservesSpace: true)
                     .multilineTextAlignment(.leading)
@@ -83,18 +76,6 @@ private struct FilterPacksTile: View {
         .cardStyle()
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
-    }
-
-    @ViewBuilder
-    private var subtitle: some View {
-        if packs == 0 {
-            Text(tr("No packs yet")).foregroundStyle(.theme.textSecondary)
-        } else if low > 0 {
-            Label(tr("Running low: \(low)"), systemImage: "exclamationmark.triangle.fill")
-                .foregroundStyle(.theme.warning)
-        } else {
-            Text(tr("Packs: \(packs)")).foregroundStyle(.theme.accent)
-        }
     }
 }
 

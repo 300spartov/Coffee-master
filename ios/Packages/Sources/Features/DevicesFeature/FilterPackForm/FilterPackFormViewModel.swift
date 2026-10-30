@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import AppCore
 import Domain
 import FactoryKit
 
@@ -11,12 +12,6 @@ final class FilterPackFormViewModel {
         case edit(FilterPack.ID)
     }
 
-    enum State: Equatable {
-        case loading
-        case ready
-        case failed(String)
-    }
-
     /// Pack sizes offered as chips (the web app's options).
     static let presetSizes = [25, 40, 50, 80, 100, 200, 350]
     static let sizeRange: ClosedRange<Double> = 1...1_000
@@ -26,7 +21,7 @@ final class FilterPackFormViewModel {
     var total = Double(FilterPack.defaultCount)
     /// Edit mode only.
     var remaining = Double(FilterPack.defaultCount)
-    private(set) var state: State
+    private(set) var state: LoadState
     private(set) var isSaving = false
     var alertMessage: String?
 

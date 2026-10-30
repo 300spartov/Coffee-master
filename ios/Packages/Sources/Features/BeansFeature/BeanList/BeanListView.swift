@@ -3,31 +3,18 @@ import Domain
 import DesignSystem
 
 struct BeanListView: View {
-    let viewModel: BeanListViewModel
+    @Bindable var viewModel: BeanListViewModel
 
     var body: some View {
         content
             .task { await viewModel.start() }
-            .alert(
-                tr("Error"),
-                isPresented: Binding(
-                    get: { viewModel.alertMessage != nil },
-                    set: { if !$0 { viewModel.alertMessage = nil } }
-                ),
-                presenting: viewModel.alertMessage
-            ) { _ in
-                Button(tr("OK"), role: .cancel) {}
-            } message: { message in
-                Text(verbatim: message)
-            }
+            .errorAlert($viewModel.alertMessage)
     }
 
-    @ViewBuilder
     private var content: some View {
-        switch viewModel.state {
-        case .loading:
-            LoadingView()
-        case .empty:
+        ListStateView(viewModel.state) {
+            Task { await viewModel.load() }
+        } empty: {
             EmptyStateView(
                 title: tr("No beans yet"),
                 systemImage: "leaf",
@@ -36,11 +23,7 @@ struct BeanListView: View {
             ) {
                 viewModel.didTapAdd()
             }
-        case .failed(let message):
-            ErrorStateView(message: message) {
-                Task { await viewModel.load() }
-            }
-        case .loaded(let beans):
+        } content: { beans in
             List {
                 ForEach(beans) { bean in
                     Button {
@@ -71,7 +54,7 @@ struct BeanRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             HStack(alignment: .top, spacing: Spacing.md) {
-                IconBadge("leaf.fill", tint: iconTint)
+                IconBadge("leaf.fill", tint: stockLevel.color)
 
                 VStack(alignment: .leading, spacing: Spacing.xxs) {
                     Text(verbatim: bean.name)
@@ -87,7 +70,7 @@ struct BeanRow: View {
 
                 Spacer()
 
-                statusBadge
+                StockBadge(level: stockLevel)
             }
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
@@ -98,7 +81,7 @@ struct BeanRow: View {
                     Spacer()
                     Text(bean.remainingFraction, format: .percent.precision(.fractionLength(0)))
                         .font(.caption.monospacedDigit())
-                        .foregroundStyle(stockLevel == .low ? .theme.warning : (bean.isEmpty ? .theme.error : .theme.textSecondary))
+                        .foregroundStyle(stockLevel == .normal ? .theme.textSecondary : stockLevel.color)
                 }
 
                 StockBar(fraction: bean.remainingFraction, level: stockLevel)
@@ -114,77 +97,35 @@ struct BeanRow: View {
         .contentShape(Rectangle())
     }
 
-    @ViewBuilder
-    private var statusBadge: some View {
-        if bean.isEmpty {
-            Text(tr("Empty"))
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.theme.error)
-                .padding(.horizontal, Spacing.sm)
-                .padding(.vertical, Spacing.xxs)
-                .background(Color.theme.error.opacity(0.12), in: Capsule())
-        } else if stockLevel == .low {
-            HStack(spacing: Spacing.xxs) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.caption2)
-                Text(tr("Running low"))
-                    .font(.caption2.weight(.semibold))
-            }
-            .foregroundStyle(.theme.warning)
-            .padding(.horizontal, Spacing.sm)
-            .padding(.vertical, Spacing.xxs)
-            .background(Color.theme.warning.opacity(0.12), in: Capsule())
-        }
-    }
-
-    private var iconTint: Color {
-        switch stockLevel {
-        case .empty: .theme.textSecondary
-        case .low: .theme.warning
-        case .normal: .theme.accent
-        }
-    }
-
     private var hasMetadata: Bool {
         bean.roastProfile != nil || bean.process != nil || !bean.country.isEmpty || bean.score != nil
     }
 
-    @ViewBuilder
     private var metadataChips: some View {
         HStack(spacing: Spacing.xs) {
             if let roast = bean.roastProfile {
-                Text(roastTitle(roast))
-                    .font(.caption2)
-                    .foregroundStyle(.theme.textSecondary)
-                    .padding(.horizontal, Spacing.xs + 2)
-                    .padding(.vertical, 2)
-                    .background(Color.theme.fill, in: Capsule())
+                tag(roastTitle(roast))
             }
             if let process = bean.process {
-                Text(verbatim: process.rawValue)
-                    .font(.caption2)
-                    .foregroundStyle(.theme.textSecondary)
-                    .padding(.horizontal, Spacing.xs + 2)
-                    .padding(.vertical, 2)
-                    .background(Color.theme.fill, in: Capsule())
+                tag(process.rawValue)
             }
             if !bean.country.isEmpty {
-                Text(verbatim: bean.country)
-                    .font(.caption2)
-                    .foregroundStyle(.theme.textSecondary)
-                    .padding(.horizontal, Spacing.xs + 2)
-                    .padding(.vertical, 2)
-                    .background(Color.theme.fill, in: Capsule())
+                tag(bean.country)
             }
             if let score = bean.score {
-                Text(verbatim: "\(formatted(score)) pts")
-                    .font(.caption2.weight(.medium))
-                    .foregroundStyle(.theme.accent)
-                    .padding(.horizontal, Spacing.xs + 2)
-                    .padding(.vertical, 2)
-                    .background(Color.theme.accentSoft, in: Capsule())
+                tag("\(formatted(score)) pts", highlighted: true)
             }
         }
+    }
+
+    /// Small capsule with a detail from the bag (data, so shown verbatim).
+    private func tag(_ text: String, highlighted: Bool = false) -> some View {
+        Text(verbatim: text)
+            .font(.caption2.weight(highlighted ? .medium : .regular))
+            .foregroundStyle(highlighted ? Color.theme.accent : Color.theme.textSecondary)
+            .padding(.horizontal, Spacing.xs + 2)
+            .padding(.vertical, 2)
+            .background(highlighted ? Color.theme.accentSoft : Color.theme.fill, in: Capsule())
     }
 
     private func roastTitle(_ profile: RoastProfile) -> String {

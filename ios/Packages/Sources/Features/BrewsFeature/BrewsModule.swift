@@ -33,10 +33,7 @@ public struct BrewsModule {
             rootView: NewBrewView(viewModel: viewModel),
             title: tr("New Brew")
         )
-        controller.navigationItem.leftBarButtonItem = UIBarButtonItem(
-            systemItem: .cancel,
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.cancel() }
-        )
+        controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
         return controller
     }
 }

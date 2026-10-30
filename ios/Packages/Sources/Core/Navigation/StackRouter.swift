@@ -2,16 +2,11 @@ import UIKit
 
 /// Thin wrapper around `UINavigationController`. All push / pop / present calls go through here,
 /// so flows never touch UIKit containers directly and navigation stays in one place.
-public final class StackRouter: NSObject {
+public final class StackRouter {
     public let navigationController: UINavigationController
-
-    /// Fired when this router's stack was presented modally and the user swiped it away,
-    /// so the owner can drop its reference.
-    public var onInteractiveDismiss: (() -> Void)?
 
     public init(navigationController: UINavigationController = UINavigationController()) {
         self.navigationController = navigationController
-        super.init()
         // Not an appearance-proxy property, so it's set per bar. Screens opt out via `largeTitleDisplayMode`.
         navigationController.navigationBar.prefersLargeTitles = true
     }
@@ -42,7 +37,7 @@ public final class StackRouter: NSObject {
     }
 
     /// Presents `root` in its own navigation stack above this one and returns the router driving it.
-    /// Keep the returned router for as long as the modal flow is alive.
+    /// Keep the returned router for as long as the modal flow is alive (see `ModalSlot`).
     @discardableResult
     public func presentStack(
         root: UIViewController,
@@ -63,7 +58,6 @@ public final class StackRouter: NSObject {
         let router = StackRouter()
         router.setRoot(root)
         router.navigationController.modalPresentationStyle = style
-        router.navigationController.presentationController?.delegate = router
         if let sheet = router.navigationController.sheetPresentationController {
             configureSheet?(sheet)
         }
@@ -73,7 +67,7 @@ public final class StackRouter: NSObject {
 
     /// Whether this stack is currently presented (for routers returned by `presentStack`).
     /// Becomes `false` however the sheet went away: Cancel, a swipe, or `AppRouter` dismissing
-    /// everything for a deep link. Flows check this rather than holding on to a reference.
+    /// everything for a deep link. `ModalSlot` relies on it.
     public var isPresented: Bool {
         navigationController.presentingViewController != nil && !navigationController.isBeingDismissed
     }
@@ -104,11 +98,5 @@ public final class StackRouter: NSObject {
             top = presented
         }
         return top
-    }
-}
-
-extension StackRouter: UIAdaptivePresentationControllerDelegate {
-    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        onInteractiveDismiss?()
     }
 }

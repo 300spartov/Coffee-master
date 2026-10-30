@@ -11,7 +11,8 @@ final class DevicesFlow: Flow {
     private let module: DevicesModule
     @Injected(\.toasts) private var toasts
     private let router = StackRouter()
-    private var modalRouter: StackRouter?
+    /// The add / edit sheet.
+    private let modal = ModalSlot()
     /// Whether the open form edits an existing item (picks "saved" over "added" for the toast).
     private var isEditingItem = false
 
@@ -38,30 +39,20 @@ final class DevicesFlow: Flow {
         router.popToRoot(animated: false)
     }
 
-    /// The open sheet, if it's really still on screen (`AppRouter` may have dismissed it for a deep link).
-    private var openModal: StackRouter? {
-        modalRouter?.isPresented == true ? modalRouter : nil
-    }
-
-    /// `detents`: the device form is short enough for half height; the filter pack form isn't.
+    /// Opens a form sheet unless one is already open. `detents`: the device form is short enough
+    /// for half height; the filter pack form isn't.
     private func presentForm(
-        _ form: UIViewController,
         editing: Bool,
-        detents: [UISheetPresentationController.Detent] = [.medium(), .large()]
+        detents: [UISheetPresentationController.Detent] = [.medium(), .large()],
+        _ makeForm: () -> UIViewController
     ) {
-        guard openModal == nil else { return }
-        isEditingItem = editing
-        let modal = router.presentStack(root: form) { sheet in
-            sheet.detents = detents
-            sheet.prefersGrabberVisible = true
+        modal.present {
+            isEditingItem = editing
+            return router.presentStack(root: makeForm()) { sheet in
+                sheet.detents = detents
+                sheet.prefersGrabberVisible = true
+            }
         }
-        modal.onInteractiveDismiss = { [weak self] in self?.modalRouter = nil }
-        modalRouter = modal
-    }
-
-    private func closeForm() {
-        modalRouter?.close()
-        modalRouter = nil
     }
 }
 
@@ -77,58 +68,58 @@ extension DevicesFlow: DeviceCategoriesRouting {
 
 extension DevicesFlow: DeviceCatalogRouting {
     func showAddDevice(type: DeviceType) {
-        presentForm(module.makeAddDevice(type: type, router: self), editing: false)
+        presentForm(editing: false) { module.makeAddDevice(type: type, router: self) }
     }
 
     func showEditDevice(id: Device.ID) {
-        presentForm(module.makeEditDevice(id: id, router: self), editing: true)
+        presentForm(editing: true) { module.makeEditDevice(id: id, router: self) }
     }
 }
 
 extension DevicesFlow: DeviceFormRouting {
     func deviceFormDidFinish(saved device: Device?) {
-        closeForm()
+        modal.close()
         if device != nil {
             toasts.show(isEditingItem ? tr("Device saved") : tr("Device added"), style: .success)
         }
     }
 
     func deviceFormDidDelete(id: Device.ID) {
-        closeForm()
+        modal.close()
         toasts.show(tr("Device removed"), style: .success)
     }
 
     func deviceFormNotFound(id: Device.ID) {
-        closeForm()
+        modal.close()
         toasts.show(tr("This device no longer exists."), style: .warning)
     }
 }
 
 extension DevicesFlow: FilterPacksRouting {
     func showAddFilterPack() {
-        presentForm(module.makeAddFilterPack(router: self), editing: false, detents: [.large()])
+        presentForm(editing: false, detents: [.large()]) { module.makeAddFilterPack(router: self) }
     }
 
     func showEditFilterPack(id: FilterPack.ID) {
-        presentForm(module.makeEditFilterPack(id: id, router: self), editing: true, detents: [.large()])
+        presentForm(editing: true, detents: [.large()]) { module.makeEditFilterPack(id: id, router: self) }
     }
 }
 
 extension DevicesFlow: FilterPackFormRouting {
     func filterPackFormDidFinish(saved pack: FilterPack?) {
-        closeForm()
+        modal.close()
         if pack != nil {
             toasts.show(isEditingItem ? tr("Filter pack saved") : tr("Filter pack added"), style: .success)
         }
     }
 
     func filterPackFormDidDelete(id: FilterPack.ID) {
-        closeForm()
+        modal.close()
         toasts.show(tr("Filter pack removed"), style: .success)
     }
 
     func filterPackFormNotFound(id: FilterPack.ID) {
-        closeForm()
+        modal.close()
         toasts.show(tr("This filter pack no longer exists."), style: .warning)
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import AppCore
 import Domain
 import FactoryKit
 
@@ -11,16 +12,10 @@ final class DeviceFormViewModel {
         case edit(Device.ID)
     }
 
-    enum State: Equatable {
-        case loading
-        case ready
-        case failed(String)
-    }
-
     let mode: Mode
     var name = ""
     var type: DeviceType
-    private(set) var state: State
+    private(set) var state: LoadState
     private(set) var isSaving = false
     var alertMessage: String?
 

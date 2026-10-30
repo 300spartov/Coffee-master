@@ -17,7 +17,8 @@ nonisolated public enum StockLevel: Equatable, Sendable {
         }
     }
 
-    var color: Color {
+    /// Accent when there's plenty, warning when low, error when empty.
+    public var color: Color {
         switch self {
         case .empty: .theme.error
         case .low: .theme.warning
@@ -53,8 +54,41 @@ public struct StockBar: View {
     }
 }
 
+/// "Running low" / "Empty" capsule for a stock level; nothing when there's plenty.
+public struct StockBadge: View {
+    private let level: StockLevel
+
+    public init(level: StockLevel) {
+        self.level = level
+    }
+
+    public var body: some View {
+        switch level {
+        case .empty: badge(tr("Empty"))
+        case .low: badge(tr("Running low"), systemImage: "exclamationmark.triangle.fill")
+        case .normal: EmptyView()
+        }
+    }
+
+    private func badge(_ title: String, systemImage: String? = nil) -> some View {
+        HStack(spacing: Spacing.xxs) {
+            if let systemImage {
+                Image(systemName: systemImage)
+            }
+            Text(title).fontWeight(.semibold)
+        }
+        .font(.caption2)
+        .foregroundStyle(level.color)
+        .padding(.horizontal, Spacing.sm)
+        .padding(.vertical, Spacing.xxs)
+        .background(level.color.opacity(0.12), in: Capsule())
+    }
+}
+
 #Preview {
     VStack(spacing: Spacing.lg) {
+        StockBadge(level: .low)
+        StockBadge(level: .empty)
         StockBar(fraction: 0.64)
         StockBar(fraction: 0.12)
         StockBar(fraction: 0)

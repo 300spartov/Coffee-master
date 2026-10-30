@@ -3,31 +3,18 @@ import Domain
 import DesignSystem
 
 struct FilterPacksView: View {
-    let viewModel: FilterPacksViewModel
+    @Bindable var viewModel: FilterPacksViewModel
 
     var body: some View {
         content
             .task { await viewModel.start() }
-            .alert(
-                tr("Error"),
-                isPresented: Binding(
-                    get: { viewModel.alertMessage != nil },
-                    set: { if !$0 { viewModel.alertMessage = nil } }
-                ),
-                presenting: viewModel.alertMessage
-            ) { _ in
-                Button(tr("OK"), role: .cancel) {}
-            } message: { message in
-                Text(verbatim: message)
-            }
+            .errorAlert($viewModel.alertMessage)
     }
 
-    @ViewBuilder
     private var content: some View {
-        switch viewModel.state {
-        case .loading:
-            LoadingView()
-        case .empty:
+        ListStateView(viewModel.state) {
+            Task { await viewModel.load() }
+        } empty: {
             EmptyStateView(
                 title: tr("No filter packs"),
                 systemImage: DeviceType.filter.systemImage,
@@ -37,11 +24,7 @@ struct FilterPacksView: View {
                 viewModel.didTapAdd()
             }
             .themedGroupedBackground()
-        case .failed(let message):
-            ErrorStateView(message: message) {
-                Task { await viewModel.load() }
-            }
-        case .loaded(let packs):
+        } content: { packs in
             List {
                 ForEach(packs) { pack in
                     FilterPackRow(
@@ -69,6 +52,7 @@ private struct FilterPackRow: View {
     let useOne: () -> Void
     let putBackOne: () -> Void
 
+    /// Filters run low at a fixed count (like the web app), not a share of the pack.
     private var level: StockLevel {
         pack.isEmpty ? .empty : (pack.isLow ? .low : .normal)
     }
@@ -77,7 +61,7 @@ private struct FilterPackRow: View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Button(action: open) {
                 HStack(alignment: .top, spacing: Spacing.md) {
-                    IconBadge(DeviceType.filter.systemImage, tint: level == .normal ? .theme.accent : level == .low ? .theme.warning : .theme.error)
+                    IconBadge(DeviceType.filter.systemImage, tint: level.color)
                     VStack(alignment: .leading, spacing: Spacing.xxs) {
                         Text(verbatim: pack.name)
                             .appTextStyle(.cardTitle)
@@ -85,7 +69,7 @@ private struct FilterPackRow: View {
                             .appTextStyle(.secondary)
                     }
                     Spacer()
-                    StatusBadge(level: level)
+                    StockBadge(level: level)
                 }
                 .contentShape(Rectangle())
             }
@@ -111,30 +95,6 @@ private struct FilterPackRow: View {
             .foregroundStyle(.theme.accent)
         }
         .padding(.vertical, Spacing.xs)
-    }
-}
-
-private struct StatusBadge: View {
-    let level: StockLevel
-
-    var body: some View {
-        switch level {
-        case .empty:
-            badge(tr("Empty"), color: .theme.error)
-        case .low:
-            badge(tr("Running low"), color: .theme.warning)
-        case .normal:
-            EmptyView()
-        }
-    }
-
-    private func badge(_ title: String, color: Color) -> some View {
-        Text(title)
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, Spacing.sm)
-            .padding(.vertical, Spacing.xxs)
-            .background(color.opacity(0.12), in: Capsule())
     }
 }
 

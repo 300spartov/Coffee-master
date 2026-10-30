@@ -28,8 +28,16 @@ Don't run the full test suite when a feature is done (the `CoffeeMaster` scheme 
   `xcodebuild -project ios/CoffeeMaster.xcodeproj -scheme CoffeeMaster -destination '<simulator>' test -only-testing:BeansFeatureTests`
   (repeat `-only-testing:` for each changed module: `DomainTests`, `DataLayerTests`, `DesignSystemTests`, …).
 - **String catalogs** (`*.xcstrings`) or `tr("…")` calls changed: also `-only-testing:LocalizationTests`.
-- **Screens or navigation changed:** only the UI test classes covering them, e.g. `-only-testing:CoffeeMasterUITests/BeanUITests`.
-- **App target code changed** (`ios/CoffeeMaster/`): build the app (`xcodebuild … build`), plus the UI test classes for the flows you touched.
+- **UI tests: same rule, only for what you modified.** Run only the UI test classes that cover the features or flows you changed, e.g. a change in `BeansFeature` or `BeansFlow` → `-only-testing:CoffeeMasterUITests/BeanUITests`. Map changes to classes like this:
+  - `BeansFeature`, `BeansFlow` → `BeanUITests`
+  - `DevicesFeature`, `DevicesFlow` → `DeviceUITests`, `FilterPackUITests` (only the one for the screens you touched)
+  - sheet handling in flows (`ModalSlot`, `presentStack`) → `SheetReopenUITests`
+  - `AppRouter`, tabs, the Brew button → `AppShellUITests`
+  - `DeepLinks`, `canHandle` / `handle(_:)` in flows → `DeepLinkUITests`
+  - shared code (`DesignSystem`, `Navigation`, `AppCore`) → only the classes for the screens that use the part you changed, not every UI test class.
+
+  Never run the whole `CoffeeMasterUITests` target, and don't add classes "just in case". No UI tests when no screen or navigation changed (e.g. Domain/DataLayer-only or test-only changes).
+- **App target code changed** (`ios/CoffeeMaster/`): build the app (`xcodebuild … build`), plus the UI test classes for the flows you touched (per the map above).
 - **New module:** add its test target, and run that target.
 
 The developer runs the full suite. Only run it yourself if the developer asks.

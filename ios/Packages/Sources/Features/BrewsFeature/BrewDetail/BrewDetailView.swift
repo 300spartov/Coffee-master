@@ -3,24 +3,13 @@ import Domain
 import DesignSystem
 
 struct BrewDetailView: View {
-    let viewModel: BrewDetailViewModel
+    @Bindable var viewModel: BrewDetailViewModel
     @State private var isConfirmingDelete = false
 
     var body: some View {
         content
             .task { await viewModel.load() }
-            .alert(
-                tr("Error"),
-                isPresented: Binding(
-                    get: { viewModel.alertMessage != nil },
-                    set: { if !$0 { viewModel.alertMessage = nil } }
-                ),
-                presenting: viewModel.alertMessage
-            ) { _ in
-                Button(tr("OK"), role: .cancel) {}
-            } message: { message in
-                Text(message)
-            }
+            .errorAlert($viewModel.alertMessage)
     }
 
     @ViewBuilder

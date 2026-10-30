@@ -11,6 +11,7 @@ public extension UUID {
 }
 
 public extension Bean {
+    /// Most recently updated first, the in-memory repository's order.
     static let samples: [Bean] = [
         Bean(
             id: .fixture(101), name: "Ethiopia Yirgacheffe", roaster: "Wonder&Full",
@@ -18,7 +19,7 @@ public extension Bean {
             score: 87, descriptors: "Jasmine, bergamot, black tea", roastProfile: .filter
         ),
         Bean(
-            id: .fixture(102), name: "Brazil Cerrado", roaster: "Penyora",
+            id: .fixture(102), updatedAt: .now.addingTimeInterval(-3_600), name: "Brazil Cerrado", roaster: "Penyora",
             totalGrams: 1_000, remainingGrams: 420, country: "Brazil", process: .natural,
             score: 84, descriptors: "Chocolate, hazelnut", roastProfile: .espresso
         ),
@@ -97,8 +98,9 @@ public extension Device {
 }
 
 public extension FilterPack {
+    /// Most recently updated first, the in-memory repository's order.
     static let samples: [FilterPack] = [
         FilterPack(id: .fixture(301), name: "Cafec Abaca 02", total: 100, remaining: 64),
-        FilterPack(id: .fixture(302), name: "Hario V60 Tabbed", total: 100, remaining: 8),
+        FilterPack(id: .fixture(302), updatedAt: .now.addingTimeInterval(-3_600), name: "Hario V60 Tabbed", total: 100, remaining: 8),
     ]
 }

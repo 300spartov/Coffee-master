@@ -57,11 +57,7 @@ final class DeviceCatalogViewModel {
     // MARK: - Loading
 
     func start() async {
-        let changes = await repository.changes()
-        await load()
-        for await _ in changes {
-            await load()
-        }
+        await repository.observe { await self.load() }
     }
 
     func load() async {

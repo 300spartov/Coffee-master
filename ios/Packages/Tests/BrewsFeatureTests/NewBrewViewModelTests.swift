@@ -2,6 +2,7 @@ import FactoryKit
 import FactoryTesting
 import Testing
 import Domain
+import TestSupport
 @testable import BrewsFeature
 
 @Suite(.container)
@@ -9,7 +10,7 @@ import Domain
 struct NewBrewViewModelTests {
     private let router = SpyRouter()
 
-    private func makeViewModel(repository: MockBrewRepository = MockBrewRepository()) -> NewBrewViewModel {
+    private func makeViewModel(repository: TestRepository<Brew> = TestRepository(brews: [])) -> NewBrewViewModel {
         Container.shared.brewRepository.register { repository }
         return NewBrewViewModel(router: router)
     }
@@ -22,14 +23,14 @@ struct NewBrewViewModelTests {
     }
 
     @Test func saveStoresBrewAndFinishes() async {
-        let repository = MockBrewRepository()
+        let repository = TestRepository(brews: [])
         let viewModel = makeViewModel(repository: repository)
         viewModel.beanName = "  Colombia Huila "
         viewModel.method = .chemex
 
         await viewModel.save()
 
-        let saved = await repository.savedBrews
+        let saved = await repository.saved
         #expect(saved.count == 1)
         #expect(saved.first?.bean?.name == "Colombia Huila")
         #expect(saved.first?.method == .chemex)
@@ -37,7 +38,7 @@ struct NewBrewViewModelTests {
     }
 
     @Test func saveFailureKeepsScreenOpen() async {
-        let viewModel = makeViewModel(repository: MockBrewRepository(error: TestError()))
+        let viewModel = makeViewModel(repository: TestRepository(brews: [], failing: .everything))
         viewModel.beanName = "Kenya"
 
         await viewModel.save()

@@ -1,18 +1,12 @@
 import Foundation
 import Observation
+import AppCore
 import Domain
 import FactoryKit
 
 @Observable
 final class BeanListViewModel {
-    enum State: Equatable {
-        case loading
-        case empty
-        case loaded([Bean])
-        case failed(String)
-    }
-
-    private(set) var state: State = .loading
+    private(set) var state: ListState<Bean> = .loading
     /// A failed action (e.g. delete), shown as an alert over the list.
     var alertMessage: String?
 
@@ -25,17 +19,12 @@ final class BeanListViewModel {
 
     /// Bound to the view's lifetime via `.task`: loads, then reloads on every repository change.
     func start() async {
-        let changes = await repository.changes()
-        await load()
-        for await _ in changes {
-            await load()
-        }
+        await repository.observe { await self.load() }
     }
 
     func load() async {
         do {
-            let beans = try await repository.fetchAll()
-            state = beans.isEmpty ? .empty : .loaded(beans)
+            state = ListState(try await repository.fetchAll())
         } catch {
             state = .failed(error.localizedDescription)
         }

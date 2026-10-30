@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import AppCore
 import Domain
 import FactoryKit
 
@@ -12,14 +13,8 @@ final class BeanFormViewModel {
         case edit(Bean.ID)
     }
 
-    enum State: Equatable {
-        case loading
-        case ready
-        case failed(String)
-    }
-
     let mode: Mode
-    private(set) var state: State
+    private(set) var state: LoadState
 
     // Fields
     var name = ""

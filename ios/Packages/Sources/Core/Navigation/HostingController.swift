@@ -26,6 +26,25 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
         fatalError("init(coder:) is not supported")
     }
 
+    // MARK: - Bar buttons
+
+    /// A "+" on the right of the navigation bar.
+    public func setAddButton(accessibilityLabel: String, identifier: String, action: @escaping () -> Void) {
+        let item = UIBarButtonItem(systemItem: .add, primaryAction: UIAction { _ in action() })
+        item.accessibilityLabel = accessibilityLabel
+        item.accessibilityIdentifier = identifier
+        navigationItem.rightBarButtonItem = item
+    }
+
+    /// Cancel on the left, for a form presented modally. The form also can't be swiped away, so typed
+    /// details aren't lost by accident; Cancel is the way out.
+    public func setCancelButton(action: @escaping () -> Void) {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(systemItem: .cancel, primaryAction: UIAction { _ in action() })
+        isModalInPresentation = true
+    }
+
+    // MARK: - Search
+
     private var searchUpdater: SearchUpdater?
     private var collapsesSearchWhileScrolling = false
 

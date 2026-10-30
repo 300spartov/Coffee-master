@@ -4,39 +4,15 @@ import DesignSystem
 
 struct DeviceFormView: View {
     @Bindable var viewModel: DeviceFormViewModel
-    @State private var isConfirmingDelete = false
 
     var body: some View {
-        Group {
-            switch viewModel.state {
-            case .loading:
-                LoadingView()
-            case .failed(let message):
-                ErrorStateView(message: message) {
-                    Task { await viewModel.load() }
-                }
-            case .ready:
-                form
-            }
+        LoadStateView(viewModel.state) {
+            Task { await viewModel.load() }
+        } content: {
+            form
         }
         .task { await viewModel.load() }
-        .alert(
-            tr("Error"),
-            isPresented: Binding(
-                get: { viewModel.alertMessage != nil },
-                set: { if !$0 { viewModel.alertMessage = nil } }
-            ),
-            presenting: viewModel.alertMessage
-        ) { _ in
-            Button(tr("OK"), role: .cancel) {}
-        } message: { message in
-            Text(verbatim: message)
-        }
-        .confirmationDialog(tr("Remove this device?"), isPresented: $isConfirmingDelete, titleVisibility: .visible) {
-            Button(tr("Remove"), role: .destructive) {
-                Task { await viewModel.delete() }
-            }
-        }
+        .errorAlert($viewModel.alertMessage)
     }
 
     private var form: some View {
@@ -53,31 +29,19 @@ struct DeviceFormView: View {
             }
             .themedRow()
 
-            Section {
-                Button {
-                    Task { await viewModel.save() }
-                } label: {
-                    if viewModel.isSaving { ProgressView() } else { Text(tr("Save")) }
-                }
-                .buttonStyle(.primary)
-                .disabled(!viewModel.isValid || viewModel.isSaving)
-                .accessibilityIdentifier("device.save")
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-
-                if viewModel.isEditing {
-                    Button(tr("Remove Device"), role: .destructive) {
-                        isConfirmingDelete = true
-                    }
-                    .foregroundStyle(.theme.error)
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                    .accessibilityIdentifier("device.delete")
-                }
+            FormActions(isSaving: viewModel.isSaving, canSave: viewModel.isValid, identifier: "device", destructive: removeAction) {
+                Task { await viewModel.save() }
             }
         }
         .scrollDismissesKeyboard(.interactively)
         .themedGroupedBackground()
+    }
+
+    private var removeAction: FormActions.Destructive? {
+        guard viewModel.isEditing else { return nil }
+        return .init(tr("Remove Device"), confirmation: tr("Remove this device?"), confirmTitle: tr("Remove")) {
+            Task { await viewModel.delete() }
+        }
     }
 }
 

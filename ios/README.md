@@ -184,7 +184,7 @@ struct BrewTimerLiveActivity: Widget {
 // Test (Swift Testing): an isolated container per test
 @Suite(.container) struct BrewListViewModelTests {
     @Test func loads() async {
-        Container.shared.brewRepository.register { MockBrewRepository(brews: Brew.samples) }
+        Container.shared.brewRepository.register { TestRepository(brews: Brew.samples) }
         let viewModel = BrewListViewModel(router: SpyRouter())
         …
     }
@@ -195,6 +195,7 @@ struct BrewTimerLiveActivity: Widget {
 - **Concurrency:** UI modules (Navigation, DesignSystem, features) and the app target run on the main actor by default (Swift 6.2 default isolation), so views, view models, routers and flows need no `@MainActor`. Mark pure value types used off the main actor `nonisolated` (see the theme types).
 - Routers are **not** injected. They're passed to `init` and held `weak`, because each screen has its own.
 - Previews need no setup, because the defaults resolve to fixtures.
+- Feature tests use `TestSupport` (`Packages/Tests/TestSupport`): `TestRepository` is the real in-memory repository plus failure injection (`failing: .everything` / `.writes`) and a log of saved records, and `TestError` ("Boom"). Spy routers stay in each test target.
 
 ## App shell
 
@@ -222,7 +223,10 @@ struct BrewTimerLiveActivity: Widget {
 
 - ViewModels are `@MainActor @Observable final class`. Mark dependencies and the router `@ObservationIgnored`, and hold
   the router `weak`.
-- Express screen state as an `enum State` (`loading / loaded / empty / failed`), rendered with `DesignSystem` state views.
+- Screen state uses the shared enums in `AppCore/ViewState.swift`: `ListState<Item>` for lists (`ListState(items)` picks `.empty` or `.loaded`) and `LoadState` for screens that load one record (forms). Render them with `ListStateView` / `LoadStateView` (spinner, error with Retry, content).
+- A failed action over usable content (delete, save) sets the view model's `alertMessage`; the view shows it with `.errorAlert($viewModel.alertMessage)`.
+- Forms end with `FormActions` (Save, plus a confirmed Delete / Remove when editing), so every form looks and behaves the same.
+- Lists that follow the store: `func start() async { await repository.observe { await self.load() } }`, called from `.task`.
 - Async work goes through `async` / `await` from `.task { }`, so it's cancelled automatically when the view disappears.
 - **Colors come only from the theme** (`Packages/Sources/Core/DesignSystem/Theme/`):
   - `ColorPalette.swift` lists every color role (backgrounds, text, accent, status, separator, bars).
@@ -231,11 +235,12 @@ struct BrewTimerLiveActivity: Widget {
   - Grouped screens: `.themedGroupedBackground()` on the `List`/`Form`, `.themedRow()` on rows. Plain screens: `.themedBackground()`.
   - UIKit chrome (window tint, nav bar, tab bar) is set by `ThemeAppearance`. On iOS 26 the bars stay Liquid Glass, so `navigationBar` / `tabBar` colors apply on iOS 17–18.
   - To add a color: add a property to `ColorPalette` and give it a value in both themes.
-- **Sheets in flows**: keep the router from `presentStack`, but decide whether a sheet is open with `router.isPresented`, not by checking a stored reference for `nil`. `AppRouter` can dismiss sheets for a deep link without telling the flow. `StackRouter.close()` / `pop()` are safe to call mid-animation; they wait for it to finish.
+- **Sheets in flows**: hold them in a `ModalSlot` (`modal.present { router.presentStack(…) }`, `modal.close()`). It opens at most one at a time, and `modal.current` / `isPresented` go `nil` / `false` however the sheet went away, including `AppRouter` dismissing it for a deep link without telling the flow. `StackRouter.close()` / `pop()` are safe to call mid-animation; they wait for it to finish.
+- **Bar buttons** in module builders: `HostingController.setAddButton(accessibilityLabel:identifier:action:)` for "+", and `setCancelButton(action:)` for modal forms (it also blocks swipe-to-dismiss, so typed details aren't lost).
 - **Search**: add the system search bar to a screen with `HostingController.installSearch(placeholder:onChange:)` in the module builder, passing the text to the view model (see `DevicesModule.makeCatalog`).
 - **UI components** live in `DesignSystem/Components` (cards, chips, stock bars, rating ring, metrics, number fields, buttons, states, text styles). Browse them in the Debug **Design System gallery** (Settings → Developer, or `coffeemaster://settings/design-system`), and add new components to the gallery too.
 - Toasts: flows get `any ToastPresenting` (backed by `ToastCenter`) and call `toasts.show(Toast("…", style: .success))`. View models report outcomes through their router, not by showing toasts.
 - **Persistence**: features see repository protocols only. `DataLayer` stores each record as indexed columns plus a JSON payload of the Domain struct (the payload is the source of truth). A new Domain field needs no model change; add a column in `CoreDataModel` only when you need to query by it.
 - **Debug launch arguments**: `-deeplink <url>` and `-importWebJSON <path>`. For example `xcrun simctl launch booted com.coffeemaster.app -importWebJSON /tmp/export.json`.
-- Previews use `PreviewBrewRepository` and `PreviewRouter.shared`.
-- Tests use Swift Testing (`import Testing`), with a mock repository and a spy router per feature test target.
+- Previews get the in-memory repositories with fixtures (the DI defaults) and a no-op preview router held by a `shared` instance (view models keep routers weakly).
+- Tests use Swift Testing (`import Testing`), with `TestSupport.TestRepository` and a spy router per feature test target.

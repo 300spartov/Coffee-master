@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import AppCore
 import Domain
 import FactoryKit
 
@@ -7,14 +8,7 @@ import FactoryKit
 /// (brews will use filters automatically once the brew flow saves them, ROADMAP 2.7).
 @Observable
 final class FilterPacksViewModel {
-    enum State: Equatable {
-        case loading
-        case empty
-        case loaded([FilterPack])
-        case failed(String)
-    }
-
-    private(set) var state: State = .loading
+    private(set) var state: ListState<FilterPack> = .loading
     var alertMessage: String?
 
     @ObservationIgnored @Injected(\.filterPackRepository) private var repository
@@ -25,17 +19,12 @@ final class FilterPacksViewModel {
     }
 
     func start() async {
-        let changes = await repository.changes()
-        await load()
-        for await _ in changes {
-            await load()
-        }
+        await repository.observe { await self.load() }
     }
 
     func load() async {
         do {
-            let packs = try await repository.fetchAll()
-            state = packs.isEmpty ? .empty : .loaded(packs)
+            state = ListState(try await repository.fetchAll())
         } catch {
             state = .failed(error.localizedDescription)
         }
