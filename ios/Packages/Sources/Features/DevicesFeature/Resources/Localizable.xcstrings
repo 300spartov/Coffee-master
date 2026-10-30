@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%lld of %lld left": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld of %lld left"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Залишилось %1$lld з %2$lld"
+          }
+        }
+      }
+    },
     "Accessories": {
       "localizations": {
         "en": {
@@ -45,6 +61,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Додати девайс"
+          }
+        }
+      }
+    },
+    "Add Filter Pack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Filter Pack"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати пачку фільтрів"
+          }
+        }
+      }
+    },
+    "Add the paper filters you have.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add the paper filters you have."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додайте паперові фільтри, які у вас є."
           }
         }
       }
@@ -145,6 +193,38 @@
         }
       }
     },
+    "Edit Filter Pack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Filter Pack"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Редагувати пачку"
+          }
+        }
+      }
+    },
+    "Empty": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Порожня"
+          }
+        }
+      }
+    },
     "Error": {
       "localizations": {
         "en": {
@@ -177,6 +257,22 @@
         }
       }
     },
+    "Filter packs": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter packs"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачки фільтрів"
+          }
+        }
+      }
+    },
     "Filters": {
       "localizations": {
         "en": {
@@ -189,6 +285,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Фільтри"
+          }
+        }
+      }
+    },
+    "Filters in pack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filters in pack"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фільтрів у пачці"
           }
         }
       }
@@ -225,6 +337,22 @@
         }
       }
     },
+    "Left": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Залишилось"
+          }
+        }
+      }
+    },
     "My devices": {
       "localizations": {
         "en": {
@@ -257,6 +385,22 @@
         }
       }
     },
+    "Name, e.g. Cafec Abaca 02": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name, e.g. Cafec Abaca 02"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Назва, напр. Cafec Abaca 02"
+          }
+        }
+      }
+    },
     "New Device": {
       "localizations": {
         "en": {
@@ -269,6 +413,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Новий девайс"
+          }
+        }
+      }
+    },
+    "New Filter Pack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Filter Pack"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нова пачка фільтрів"
+          }
+        }
+      }
+    },
+    "No filter packs": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No filter packs"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає пачок фільтрів"
+          }
+        }
+      }
+    },
+    "No packs yet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No packs yet"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачок ще немає"
           }
         }
       }
@@ -321,6 +513,54 @@
         }
       }
     },
+    "Pack size": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pack size"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Розмір пачки"
+          }
+        }
+      }
+    },
+    "Packs: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Packs: %lld"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачок: %lld"
+          }
+        }
+      }
+    },
+    "Put one back": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put one back"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повернути один"
+          }
+        }
+      }
+    },
     "Remove": {
       "localizations": {
         "en": {
@@ -369,6 +609,22 @@
         }
       }
     },
+    "Remove Filter Pack": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Filter Pack"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити пачку"
+          }
+        }
+      }
+    },
     "Remove this device?": {
       "localizations": {
         "en": {
@@ -381,6 +637,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Видалити цей девайс?"
+          }
+        }
+      }
+    },
+    "Remove this filter pack?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove this filter pack?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити цю пачку фільтрів?"
+          }
+        }
+      }
+    },
+    "Running low": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running low"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закінчуються"
+          }
+        }
+      }
+    },
+    "Running low: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running low: %lld"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Закінчуються: %lld"
           }
         }
       }
@@ -449,6 +753,22 @@
         }
       }
     },
+    "Use one filter": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use one filter"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Використати один фільтр"
+          }
+        }
+      }
+    },
     "You already have this device.": {
       "localizations": {
         "en": {
@@ -461,6 +781,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Цей девайс уже є у тебе."
+          }
+        }
+      }
+    },
+    "pcs": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pcs"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "шт"
           }
         }
       }

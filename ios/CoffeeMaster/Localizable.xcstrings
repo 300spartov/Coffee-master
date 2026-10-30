@@ -193,6 +193,54 @@
         }
       }
     },
+    "Filter pack added": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter pack added"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачку фільтрів додано"
+          }
+        }
+      }
+    },
+    "Filter pack removed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter pack removed"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачку фільтрів видалено"
+          }
+        }
+      }
+    },
+    "Filter pack saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter pack saved"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пачку фільтрів збережено"
+          }
+        }
+      }
+    },
     "Import failed. Please try again.": {
       "localizations": {
         "en": {
@@ -350,6 +398,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Цей файл не є експортом Coffee Master."
+          }
+        }
+      }
+    },
+    "This filter pack no longer exists.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This filter pack no longer exists."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цієї пачки фільтрів більше немає."
           }
         }
       }

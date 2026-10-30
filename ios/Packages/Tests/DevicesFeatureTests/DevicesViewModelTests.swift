@@ -13,8 +13,10 @@ final class SpyDevicesRouter: DeviceCategoriesRouting, DeviceCatalogRouting, Dev
     private(set) var finished: [Device?] = []
     private(set) var deletedIDs: [Device.ID] = []
     private(set) var notFoundIDs: [Device.ID] = []
+    private(set) var filterPacksShownCount = 0
 
     func showCategory(_ type: DeviceType) { shownCategories.append(type) }
+    func showFilterPacks() { filterPacksShownCount += 1 }
     func showAddDevice(type: DeviceType) { addedTypes.append(type) }
     func showEditDevice(id: Device.ID) { editedIDs.append(id) }
     func deviceFormDidFinish(saved device: Device?) { finished.append(device) }
