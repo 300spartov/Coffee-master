@@ -13,6 +13,17 @@ extension XCUIApplication {
     }
 
     var brewButton: XCUIElement { navigationBars.buttons["brew.button"] }
+
+    /// Opens `url` from outside the app (like a widget or notification tap) while it keeps running,
+    /// confirming the system "Open in …" prompt if it appears. Unlike `open(_:)`, the app's
+    /// in-memory state (open sheets, flows) is preserved.
+    func openFromOutside(_ url: URL) {
+        XCUIDevice.shared.system.open(url)
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        let confirm = springboard.buttons["Open"]
+        if confirm.waitForExistence(timeout: 3) { confirm.tap() }
+        _ = wait(for: .runningForeground, timeout: 5)
+    }
 }
 
 extension XCTestCase {

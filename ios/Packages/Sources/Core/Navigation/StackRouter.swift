@@ -27,11 +27,11 @@ public final class StackRouter: NSObject {
     }
 
     public func pop(animated: Bool = true) {
-        navigationController.popViewController(animated: animated)
+        afterTransition { $0.navigationController.popViewController(animated: animated) }
     }
 
     public func popToRoot(animated: Bool = true) {
-        navigationController.popToRootViewController(animated: animated)
+        afterTransition { $0.navigationController.popToRootViewController(animated: animated) }
     }
 
     // MARK: - Modal
@@ -71,9 +71,31 @@ public final class StackRouter: NSObject {
         return router
     }
 
-    /// Dismisses this stack itself (for routers returned by `presentStack`).
+    /// Whether this stack is currently presented (for routers returned by `presentStack`).
+    /// Becomes `false` however the sheet went away: Cancel, a swipe, or `AppRouter` dismissing
+    /// everything for a deep link. Flows check this rather than holding on to a reference.
+    public var isPresented: Bool {
+        navigationController.presentingViewController != nil && !navigationController.isBeingDismissed
+    }
+
+    /// Dismisses this stack itself (for routers returned by `presentStack`). Safe to call while the
+    /// sheet is still animating in: the dismissal waits for the presentation to finish.
     public func close(animated: Bool = true) {
-        navigationController.presentingViewController?.dismiss(animated: animated)
+        afterTransition { router in
+            router.navigationController.presentingViewController?.dismiss(animated: animated)
+        }
+    }
+
+    /// Runs `action` now, or after a running push / pop / present transition (UIKit ignores
+    /// navigation changes requested mid-transition).
+    private func afterTransition(_ action: @escaping (StackRouter) -> Void) {
+        guard let coordinator = navigationController.transitionCoordinator else {
+            action(self)
+            return
+        }
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            if let self { action(self) }
+        }
     }
 
     private var topPresenter: UIViewController {

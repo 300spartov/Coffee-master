@@ -138,8 +138,7 @@ extension InMemoryRecordRepository: DeviceRepository where Record == Device {
     }
 
     public func contains(name: String, type: DeviceType) async throws -> Bool {
-        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        return records(.exclude).contains { $0.type == type && $0.name.caseInsensitiveCompare(name) == .orderedSame }
+        records(.exclude).contains { $0.type == type && Device.namesMatch($0.name, name) }
     }
 }
 

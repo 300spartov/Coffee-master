@@ -181,3 +181,20 @@ struct UserProfileTests {
         #expect(UserProfile(name: "  ").initials == "?")
     }
 }
+
+struct DeviceNameTests {
+    @Test(arguments: [
+        ("Mahlkönig X54", "mahlkonig x54", true),
+        ("  Hario V60 02 ", "hario v60 02", true),
+        ("Hario V60 01", "Hario V60 02", false),
+    ])
+    func namesMatchIgnoringCaseAccentsAndSpaces(_ lhs: String, _ rhs: String, expected: Bool) {
+        #expect(Device.namesMatch(lhs, rhs) == expected)
+    }
+
+    @Test func inMemoryContainsIgnoresAccents() async throws {
+        let devices = InMemoryRecordRepository(devices: [Device(name: "Mahlkönig X54", type: .grinder)])
+
+        #expect(try await devices.contains(name: "mahlkonig x54", type: .grinder))
+    }
+}

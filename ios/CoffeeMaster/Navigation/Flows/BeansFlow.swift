@@ -52,8 +52,13 @@ extension BeansFlow: BeanListRouting {
         router.push(module.makeEditBean(id: id, router: self))
     }
 
+    /// The "New Bean" sheet, if it's really still on screen (`AppRouter` may have dismissed it for a deep link).
+    private var openModal: StackRouter? {
+        modalRouter?.isPresented == true ? modalRouter : nil
+    }
+
     func showAddBean() {
-        guard modalRouter == nil else { return }
+        guard openModal == nil else { return }
         let modal = router.presentStack(root: module.makeAddBean(router: self)) { sheet in
             sheet.detents = [.large()]
         }
@@ -64,9 +69,9 @@ extension BeansFlow: BeanListRouting {
 
 extension BeansFlow: BeanFormRouting {
     func beanFormDidFinish(saved bean: Bean?) {
-        if let modalRouter {
-            modalRouter.close()
-            self.modalRouter = nil
+        if let modal = openModal {
+            modal.close()
+            modalRouter = nil
             if bean != nil { toasts.show(tr("Bean added"), style: .success) }
         } else {
             router.pop()

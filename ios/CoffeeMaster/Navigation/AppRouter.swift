@@ -4,6 +4,7 @@ import AppCore
 import BeansFeature
 import BrewsFeature
 import DeepLinks
+import DevicesFeature
 import DesignSystem
 import Navigation
 import SettingsFeature
@@ -55,9 +56,7 @@ final class AppRouter {
         [
             JournalFlow(module: BrewsModule(), startBrew: { [weak self] in self?.startBrew() }),
             BeansFlow(module: BeansModule()),
-            PlaceholderFlow(title: tr("Devices"), systemImage: "wrench.and.screwdriver", message: tr("Your brewing equipment will live here.")) { link in
-                link == .devices
-            },
+            DevicesFlow(module: DevicesModule()),
             ProfileFlow(module: SettingsModule(), startBrew: { [weak self] in self?.startBrew() }),
         ]
     }

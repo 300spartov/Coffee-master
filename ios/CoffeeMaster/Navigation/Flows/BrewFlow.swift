@@ -18,10 +18,11 @@ final class BrewFlow {
         self.presenter = presenter
     }
 
-    var isPresented: Bool { router != nil }
+    /// Whether the brew screen is really still on screen (`AppRouter` may have dismissed it for a deep link).
+    var isPresented: Bool { router?.isPresented == true }
 
     func start() {
-        guard router == nil, let presenter else { return }
+        guard !isPresented, let presenter else { return }
         router = StackRouter.presentStack(root: module.makeNewBrew(router: self), from: presenter, style: .fullScreen)
     }
 }

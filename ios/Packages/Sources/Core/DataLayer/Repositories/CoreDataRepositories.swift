@@ -91,8 +91,7 @@ extension CoreDataRecordRepository: DeviceRepository where Record == Device {
     }
 
     func contains(name: String, type: DeviceType) async throws -> Bool {
-        let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        return try await fetchAll(of: type).contains { $0.name.caseInsensitiveCompare(name) == .orderedSame }
+        try await fetchAll(of: type).contains { Device.namesMatch($0.name, name) }
     }
 }
 

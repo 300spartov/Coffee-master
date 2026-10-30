@@ -25,6 +25,48 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not supported")
     }
+
+    private var searchUpdater: SearchUpdater?
+    private var collapsesSearchWhileScrolling = false
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Shown on first appearance, then let the system tuck it away while scrolling.
+        if collapsesSearchWhileScrolling {
+            navigationItem.hidesSearchBarWhenScrolling = true
+        }
+    }
+
+    /// Adds the system search bar (`UISearchController`) to this screen's navigation bar and reports
+    /// every text change to `onChange` (typically a view model's `query`).
+    ///
+    /// `collapsesWhileScrolling`: the bar is visible when the screen appears, collapses as the list
+    /// scrolls, and comes back when scrolling to the top.
+    public func installSearch(placeholder: String, collapsesWhileScrolling: Bool = true, onChange: @escaping (String) -> Void) {
+        let updater = SearchUpdater(onChange: onChange)
+        let search = UISearchController(searchResultsController: nil)
+        search.searchResultsUpdater = updater
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = placeholder
+        navigationItem.searchController = search
+        // Visible at first; `viewDidAppear` enables collapsing (setting it now would start hidden).
+        navigationItem.hidesSearchBarWhenScrolling = false
+        collapsesSearchWhileScrolling = collapsesWhileScrolling
+        definesPresentationContext = true
+        searchUpdater = updater
+    }
+}
+
+private final class SearchUpdater: NSObject, UISearchResultsUpdating {
+    let onChange: (String) -> Void
+
+    init(onChange: @escaping (String) -> Void) {
+        self.onChange = onChange
+    }
+
+    func updateSearchResults(for searchController: UISearchController) {
+        onChange(searchController.searchBar.text ?? "")
+    }
 }
 
 /// Applies the in-app language's locale to a screen, so dates, numbers and units format in that

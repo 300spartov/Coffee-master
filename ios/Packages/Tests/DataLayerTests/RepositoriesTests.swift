@@ -143,6 +143,9 @@ struct RepositoriesTests {
 
         try await devices.delete(id: Device.samples[0].id)
         #expect(try await !devices.contains(name: "Hario V60 02", type: .dripper))
+
+        try await devices.save(Device(name: "Mahlkönig X54", type: .grinder))
+        #expect(try await devices.contains(name: "mahlkonig x54", type: .grinder))
     }
 
     @Test func filterPackUseAndPutBack() async throws {

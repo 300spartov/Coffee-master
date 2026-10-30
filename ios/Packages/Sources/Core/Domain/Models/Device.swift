@@ -27,6 +27,15 @@ public struct Device: Syncable {
     }
 }
 
+public extension Device {
+    /// Whether two device names refer to the same device: ignores case, accents and surrounding
+    /// spaces ("mahlkonig x54 " matches "Mahlkönig X54"). Used for duplicate checks everywhere.
+    static func namesMatch(_ lhs: String, _ rhs: String) -> Bool {
+        lhs.trimmingCharacters(in: .whitespacesAndNewlines)
+            .compare(rhs.trimmingCharacters(in: .whitespacesAndNewlines), options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
+    }
+}
+
 /// Raw values match the web app (`acc` for accessories).
 public enum DeviceType: String, Codable, Sendable, CaseIterable {
     case dripper

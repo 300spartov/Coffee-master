@@ -41,7 +41,6 @@ final class BeanFormViewModel {
     private(set) var roasterSuggestions: [String] = []
     private(set) var nameSuggestions: [String] = []
 
-    @ObservationIgnored private var original: Bean?
     @ObservationIgnored @Injected(\.beanRepository) private var repository
     @ObservationIgnored @Injected(\.suggestionsRepository) private var suggestions
     @ObservationIgnored private weak var router: (any BeanFormRouting)?
@@ -84,11 +83,19 @@ final class BeanFormViewModel {
         isSaving = true
         defer { isSaving = false }
 
-        let bean = makeBean()
         do {
+            // Edit the bag as it is now (not as it was when the form opened), so a bag removed or
+            // changed elsewhere meanwhile isn't brought back or overwritten.
+            var current: Bean?
+            if case .edit(let id) = mode {
+                current = try await repository.fetch(id: id)
+            }
+            let bean = makeBean(from: current)
             try await repository.save(bean)
             try? await suggestions.remember(Suggestions(roasters: [bean.roaster], beanNames: [bean.name]))
             router?.beanFormDidFinish(saved: bean)
+        } catch RepositoryError.notFound {
+            if case .edit(let id) = mode { router?.beanFormNotFound(id: id) }
         } catch {
             alertMessage = error.localizedDescription
         }
@@ -118,7 +125,6 @@ final class BeanFormViewModel {
     }
 
     private func fill(from bean: Bean) {
-        original = bean
         name = bean.name
         roaster = bean.roaster
         totalGrams = bean.totalGrams
@@ -131,11 +137,11 @@ final class BeanFormViewModel {
         remainingGrams = bean.remainingGrams
     }
 
-    /// New bag (full), or the original with edits applied. A new bag size keeps the amount
+    /// New bag (full), or `current` with the edits applied. A new bag size keeps the amount
     /// already used, like the web app.
-    private func makeBean() -> Bean {
-        var bean = original ?? Bean(name: trimmed(name), totalGrams: totalGrams)
-        if original != nil, bean.totalGrams != totalGrams {
+    private func makeBean(from current: Bean?) -> Bean {
+        var bean = current ?? Bean(name: trimmed(name), totalGrams: totalGrams)
+        if current != nil, bean.totalGrams != totalGrams {
             bean.resize(totalGrams: totalGrams)
         }
         bean.name = trimmed(name)

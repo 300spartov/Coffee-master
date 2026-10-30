@@ -116,6 +116,20 @@ struct BeanFormViewModelTests {
         #expect(router.notFoundIDs == [.fixture(404)])
     }
 
+    /// Saving edits a bag as it is now: if it was removed meanwhile, it isn't brought back.
+    @Test func savingAfterConcurrentDeleteRoutesToNotFound() async {
+        let bean = Bean.samples[0]
+        let repository = MockBeanRepository(beans: [bean])
+        let viewModel = makeViewModel(.edit(bean.id), repository: repository)
+        await viewModel.load()
+
+        try? await repository.delete(id: bean.id) // e.g. deleted from another screen
+        await viewModel.save()
+
+        #expect(router.notFoundIDs == [bean.id])
+        #expect(await repository.savedBeans.isEmpty)
+    }
+
     @Test func deleteRoutesBack() async {
         let bean = Bean.samples[0]
         let repository = MockBeanRepository(beans: [bean])

@@ -113,18 +113,50 @@
         }
       }
     },
-    "Coming soon": {
+    "Device added": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Coming soon"
+            "value": "Device added"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Скоро"
+            "value": "Девайс додано"
+          }
+        }
+      }
+    },
+    "Device removed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device removed"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Девайс видалено"
+          }
+        }
+      }
+    },
+    "Device saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device saved"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Девайс збережено"
           }
         }
       }
@@ -290,6 +322,22 @@
         }
       }
     },
+    "This device no longer exists.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device no longer exists."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Цього девайса більше немає."
+          }
+        }
+      }
+    },
     "This file isn't a Coffee Master export.": {
       "localizations": {
         "en": {
@@ -302,39 +350,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Цей файл не є експортом Coffee Master."
-          }
-        }
-      }
-    },
-    "Your brewing equipment will live here.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your brewing equipment will live here."
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Тут житиме твоє обладнання."
-          }
-        }
-      }
-    },
-    "Your coffee bags will live here.": {
-      "extractionState": "stale",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your coffee bags will live here."
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Тут житимуть твої пачки кави."
           }
         }
       }
