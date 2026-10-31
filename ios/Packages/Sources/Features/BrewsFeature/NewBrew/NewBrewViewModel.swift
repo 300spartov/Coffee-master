@@ -4,7 +4,7 @@ import Domain
 import FactoryKit
 @Observable
 final class NewBrewViewModel {
-    var method: BrewMethod = .v60
+    var method: BrewMethod
     var beanName = ""
     var doseGrams: Double = 15
     var waterGrams: Double = 250
@@ -18,7 +18,9 @@ final class NewBrewViewModel {
     @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any NewBrewRouting)?
 
-    init(router: any NewBrewRouting) {
+    /// `method`: preselected by the brew wizard's method pick.
+    init(method: BrewMethod = .v60, router: any NewBrewRouting) {
+        self.method = method
         self.router = router
     }
 
@@ -41,14 +43,10 @@ final class NewBrewViewModel {
         )
         do {
             try await repository.save(brew)
-            router?.newBrewDidFinish(saved: brew)
+            router?.newBrewDidSave(brew)
         } catch {
             errorMessage = error.localizedDescription
         }
-    }
-
-    func cancel() {
-        router?.newBrewDidFinish(saved: nil)
     }
 
     private var trimmedBeanName: String {

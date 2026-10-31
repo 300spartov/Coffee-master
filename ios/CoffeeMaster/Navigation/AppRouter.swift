@@ -2,6 +2,7 @@ import UIKit
 import FactoryKit
 import AppCore
 import BeansFeature
+import BrewFeature
 import BrewsFeature
 import DeepLinks
 import DevicesFeature
@@ -65,7 +66,7 @@ final class AppRouter {
         flows = makeFlows()
         flows.forEach { $0.start() }
         tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
-        brewFlow = BrewFlow(module: BrewsModule(), presenter: tabBarController)
+        brewFlow = BrewFlow(module: BrewModule(), brewsModule: BrewsModule(), presenter: tabBarController)
         installBrewAction()
     }
 

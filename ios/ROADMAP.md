@@ -53,7 +53,7 @@ Size: **S** ≈ 1–2 days, **M** ≈ 3–5 days, **L** ≈ 1–2 weeks.
 
 | Step | What | Web source | Module | Size |
 |---|---|---|---|---|
-| 2.1 | **Method pick**: Alternative → V60, AeroPress, Chemex, French Press, Drip, Cold Brew, Batch Brewing. Espresso → Espresso, Cappuccino, Flat White, Latte, Bumble, Espresso Tonic. | `brew/method`, `setup.js` (`ALT_SUBS` / `ESP_SUBS`) | `BrewFeature` | S |
+| 2.1 ✅ | **Method pick**: Alternative → V60, AeroPress, Chemex, French Press, Drip, Cold Brew, Batch Brewing. Espresso → Espresso, Cappuccino, Flat White, Latte, Bumble, Espresso Tonic. Done: new `BrewFeature`; the Brew action opens step 1 (two group cards, Cancel), a group pushes its methods as a grid, and a method pushes the template brew form with that method preselected until setup (2.2) replaces it. Tests: view model, group lists vs the web, icons exist, `BrewUITests`. | `brew/method`, `setup.js` (`ALT_SUBS` / `ESP_SUBS`) | `BrewFeature` | S |
 | 2.2 | **Setup (alternative)**: pick bean / dripper / filter / grinder (inline add), grinder clicks, temperature, dose, ratio, number of pours, wet filter, AeroPress inverted and filter count. Live calculation (`bCalc`), ratio validation, dripper art. | `brew/setup`, `brew/pickers` | `BrewFeature` | L |
 | 2.3 | **Active brew (pour-over timer)**: main timer + phase timer, pour/pause actions, per-pour target hints, live paused state, AeroPress press, editing poured ml, steps log. Survives backgrounding (timestamps, not intervals). | `brew/active/active.js` | `BrewFeature` | L |
 | 2.4 | **Live Activity: brew timer** on the Lock Screen / Dynamic Island, showing the current phase and the next pour target. Adds the Widget Extension target (see `README.md`). | — | `WidgetsShared`, `CoffeeMasterWidgets` | M |

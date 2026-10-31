@@ -9,6 +9,6 @@ final class PreviewRouter: BrewListRouting, BrewDetailRouting, NewBrewRouting {
     func showNewBrew() {}
     func brewDetailDidDelete(id: Brew.ID) {}
     func brewDetailNotFound(id: Brew.ID) {}
-    func newBrewDidFinish(saved brew: Brew?) {}
+    func newBrewDidSave(_ brew: Brew) {}
 }
 #endif

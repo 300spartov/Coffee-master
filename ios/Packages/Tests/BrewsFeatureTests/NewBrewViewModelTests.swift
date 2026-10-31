@@ -34,7 +34,7 @@ struct NewBrewViewModelTests {
         #expect(saved.count == 1)
         #expect(saved.first?.bean?.name == "Colombia Huila")
         #expect(saved.first?.method == .chemex)
-        #expect(router.finishedNewBrews == [saved.first])
+        #expect(router.savedNewBrews == saved)
     }
 
     @Test func saveFailureKeepsScreenOpen() async {
@@ -44,14 +44,14 @@ struct NewBrewViewModelTests {
         await viewModel.save()
 
         #expect(viewModel.errorMessage == "Boom")
-        #expect(router.finishedNewBrews.isEmpty)
+        #expect(router.savedNewBrews.isEmpty)
     }
 
-    @Test func cancelFinishesWithoutBrew() {
-        let viewModel = makeViewModel()
+    @Test func startsWithMethodPickedInWizard() {
+        Container.shared.brewRepository.register { TestRepository(brews: []) }
 
-        viewModel.cancel()
+        let viewModel = NewBrewViewModel(method: .latte, router: router)
 
-        #expect(router.finishedNewBrews == [nil])
+        #expect(viewModel.method == .latte)
     }
 }

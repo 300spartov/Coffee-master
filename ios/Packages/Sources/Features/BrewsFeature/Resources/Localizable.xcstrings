@@ -1,310 +1,311 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "Bean name": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bean name"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Bean name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bean name"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Назва зерна"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назва зерна"
           }
         }
       }
     },
-    "Coffee": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Coffee"
+    "Coffee" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coffee"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Кава"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кава"
           }
         }
       }
     },
-    "Delete": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete"
+    "Delete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Видалити"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити"
           }
         }
       }
     },
-    "Delete Brew": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete Brew"
+    "Delete Brew" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Brew"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Видалити рецепт"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити рецепт"
           }
         }
       }
     },
-    "Delete this brew?": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete this brew?"
+    "Delete this brew?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this brew?"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Видалити цей рецепт?"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити цей рецепт?"
           }
         }
       }
     },
-    "Dose": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dose"
+    "Dose" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dose"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Доза"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доза"
           }
         }
       }
     },
-    "Journal": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Journal"
+    "Journal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Журнал"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Журнал"
           }
         }
       }
     },
-    "Method": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Method"
+    "Method" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Method"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Метод"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Метод"
           }
         }
       }
     },
-    "New Brew": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New Brew"
+    "New Brew" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Brew"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Новий рецепт"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новий рецепт"
           }
         }
       }
     },
-    "No brews yet": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No brews yet"
+    "No brews yet" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No brews yet"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ще немає рецептів"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ще немає рецептів"
           }
         }
       }
     },
-    "Rating": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rating"
+    "Rating" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rating"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Оцінка"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оцінка"
           }
         }
       }
     },
-    "Ratio": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ratio"
+    "Ratio" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ratio"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пропорція"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пропорція"
           }
         }
       }
     },
-    "Recipe": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recipe"
+    "Recipe" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recipe"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Рецепт"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рецепт"
           }
         }
       }
     },
-    "Start Brew Timer": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start Brew Timer"
+    "Start a Brew" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start a Brew"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Запустити таймер"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Почати заварювання"
           }
         }
       }
     },
-    "Start a Brew": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a Brew"
+    "Start Brew Timer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Brew Timer"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Почати заварювання"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запустити таймер"
           }
         }
       }
     },
-    "Stop Timer": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop Timer"
+    "Stop Timer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop Timer"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Зупинити таймер"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зупинити таймер"
           }
         }
       }
     },
-    "Time": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Time"
+    "Time" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Час"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час"
           }
         }
       }
     },
-    "Water": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Water"
+    "Water" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Water"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Вода"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вода"
           }
         }
       }
     },
-    "Your brews will appear here.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your brews will appear here."
+    "Your brews will appear here." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your brews will appear here."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Тут з'являться твої рецепти."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тут з'являться твої рецепти."
           }
         }
       }
     }
   },
-  "version": "1.1"
+  "version" : "1.1"
 }

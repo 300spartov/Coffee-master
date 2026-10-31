@@ -34,7 +34,7 @@ let package = Package(
             name: "AppModules",
             targets: [
                 "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport",
-                "BrewsFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
+                "BrewsFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
             ]
         ),
         // Lightweight subset for app extensions (Widget Extension, Live Activities).
@@ -83,6 +83,13 @@ let package = Package(
             swiftSettings: mainActorByDefault
         ),
         .target(
+            name: "BrewFeature",
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation"],
+            path: "Sources/Features/BrewFeature",
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
+        ),
+        .target(
             name: "SettingsFeature",
             dependencies: ["AppCore", "DesignSystem", "Navigation", factoryKit],
             path: "Sources/Features/SettingsFeature",
@@ -122,6 +129,7 @@ let package = Package(
             name: "BrewsFeatureTests",
             dependencies: ["BrewsFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
+        .testTarget(name: "BrewFeatureTests", dependencies: ["BrewFeature", "Domain"]),
         .testTarget(
             name: "DevicesFeatureTests",
             dependencies: ["DevicesFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]

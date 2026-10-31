@@ -30,9 +30,12 @@ ios/
     │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
     │   └── WebImport/            # one-time import of the web app's JSON export → Domain models
     ├── Sources/Features/
-    │   ├── BrewsFeature/         # list → detail, new brew (modal)
+    │   ├── BrewFeature/          # brew wizard (Phase 2): method pick → …
+    │   ├── BrewsFeature/         # journal list → detail; template brew form (until 2.2–2.7)
+    │   ├── BeansFeature/         # bean list → add / edit
+    │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
     │   └── SettingsFeature/      # settings → about
-    └── Tests/
+    └── Tests/                    # one test target per module, plus TestSupport (shared doubles)
 ```
 
 Dependency rules (enforced by `Package.swift`):

@@ -12,6 +12,6 @@ public protocol BrewDetailRouting: AnyObject {
     func brewDetailNotFound(id: Brew.ID)
 }
 public protocol NewBrewRouting: AnyObject {
-    /// `brew` is `nil` when the user cancelled.
-    func newBrewDidFinish(saved brew: Brew?)
+    /// The brew was saved. (Leaving without saving is the navigation bar's Back / Cancel, handled by the flow.)
+    func newBrewDidSave(_ brew: Brew)
 }

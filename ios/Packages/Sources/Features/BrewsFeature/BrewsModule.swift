@@ -27,13 +27,10 @@ public struct BrewsModule {
         )
     }
 
-    public func makeNewBrew(router: any NewBrewRouting) -> UIViewController {
-        let viewModel = NewBrewViewModel(router: router)
-        let controller = HostingController(
-            rootView: NewBrewView(viewModel: viewModel),
-            title: tr("New Brew")
-        )
-        controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
-        return controller
+    /// The template brew form, pushed by the brew wizard after the method pick until the wizard's
+    /// own setup and rating steps (ROADMAP 2.2–2.7) replace it.
+    public func makeNewBrew(method: BrewMethod, router: any NewBrewRouting) -> UIViewController {
+        let viewModel = NewBrewViewModel(method: method, router: router)
+        return HostingController(rootView: NewBrewView(viewModel: viewModel), title: method.rawValue)
     }
 }
