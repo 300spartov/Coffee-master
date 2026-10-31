@@ -66,7 +66,13 @@ final class AppRouter {
         flows = makeFlows()
         flows.forEach { $0.start() }
         tabBarController.setViewControllers(flows.map(\.rootViewController), animated: false)
-        brewFlow = BrewFlow(module: BrewModule(), brewsModule: BrewsModule(), presenter: tabBarController)
+        brewFlow = BrewFlow(
+            module: BrewModule(),
+            brewsModule: BrewsModule(),
+            beansModule: BeansModule(),
+            devicesModule: DevicesModule(),
+            presenter: tabBarController
+        )
         installBrewAction()
     }
 

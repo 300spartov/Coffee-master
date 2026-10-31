@@ -18,6 +18,7 @@ public struct FormActions: View {
         }
     }
 
+    private let title: String?
     private let isSaving: Bool
     private let canSave: Bool
     private let identifier: String?
@@ -25,14 +26,17 @@ public struct FormActions: View {
     private let destructive: Destructive?
     @State private var isConfirming = false
 
+    /// `title`: the primary button's title (default "Save").
     /// `identifier`: accessibility prefix, giving `<identifier>.save` and `<identifier>.delete`.
     public init(
+        title: String? = nil,
         isSaving: Bool,
         canSave: Bool,
         identifier: String? = nil,
         destructive: Destructive? = nil,
         save: @escaping () -> Void
     ) {
+        self.title = title
         self.isSaving = isSaving
         self.canSave = canSave
         self.identifier = identifier
@@ -43,7 +47,7 @@ public struct FormActions: View {
     public var body: some View {
         Section {
             Button(action: save) {
-                if isSaving { ProgressView() } else { Text(tr("Save")) }
+                if isSaving { ProgressView() } else { Text(title ?? tr("Save")) }
             }
             .buttonStyle(.primary)
             .disabled(!canSave || isSaving)

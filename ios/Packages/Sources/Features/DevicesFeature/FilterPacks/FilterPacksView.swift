@@ -54,7 +54,7 @@ private struct FilterPackRow: View {
 
     /// Filters run low at a fixed count (like the web app), not a share of the pack.
     private var level: StockLevel {
-        pack.isEmpty ? .empty : (pack.isLow ? .low : .normal)
+        StockLevel(isEmpty: pack.isEmpty, isLow: pack.isLow)
     }
 
     var body: some View {
@@ -65,7 +65,7 @@ private struct FilterPackRow: View {
                     VStack(alignment: .leading, spacing: Spacing.xxs) {
                         Text(verbatim: pack.name)
                             .appTextStyle(.cardTitle)
-                        Text(tr("\(pack.remaining) of \(pack.total) left"))
+                        Text(verbatim: [pack.shape?.displayName, tr("\(pack.remaining) of \(pack.total) left")].compactMap { $0 }.joined(separator: " · "))
                             .appTextStyle(.secondary)
                     }
                     Spacer()
@@ -76,7 +76,7 @@ private struct FilterPackRow: View {
             .buttonStyle(.plain)
 
             HStack(spacing: Spacing.md) {
-                StockBar(fraction: pack.total > 0 ? Double(pack.remaining) / Double(pack.total) : 0, level: level)
+                StockBar(fraction: pack.remainingFraction, level: level)
                 Button(action: useOne) {
                     Image(systemName: "minus.circle")
                 }

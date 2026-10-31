@@ -1,4 +1,5 @@
 import UIKit
+import Foundation
 import Domain
 import Navigation
 
@@ -20,5 +21,21 @@ public struct BrewModule {
     public func makeMethods(in group: MethodGroup, router: any MethodPickRouting) -> UIViewController {
         let viewModel = MethodPickViewModel(group: group, router: router)
         return HostingController(rootView: MethodGridView(viewModel: viewModel), title: group.title)
+    }
+
+    /// Step 3 (push it) for alternative methods: gear and recipe.
+    public func makeSetup(method: BrewMethod, router: any BrewSetupRouting) -> UIViewController {
+        let viewModel = BrewSetupViewModel(method: method, router: router)
+        return HostingController(rootView: BrewSetupView(viewModel: viewModel), title: method.rawValue)
+    }
+
+    /// Picker sheet for a setup row, with "+" to add a new item.
+    public func makeGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, router: any GearPickerRouting) -> UIViewController {
+        let viewModel = GearPickerViewModel(kind: kind, method: method, selectedID: selectedID, router: router)
+        let controller = HostingController(rootView: GearPickerView(viewModel: viewModel), title: viewModel.title)
+        controller.setAddButton(accessibilityLabel: tr("Add"), identifier: "picker.add") { [weak viewModel] in
+            viewModel?.didTapAdd()
+        }
+        return controller
     }
 }

@@ -1,3 +1,4 @@
+import Foundation
 import Domain
 
 // Navigation intents emitted by the brew wizard's view models.
@@ -9,4 +10,17 @@ public protocol MethodPickRouting: AnyObject {
     func methodPickDidSelect(_ method: BrewMethod)
     /// Cancel on step 1 closes the wizard.
     func methodPickDidCancel()
+}
+
+public protocol BrewSetupRouting: AnyObject {
+    /// Opens the picker for `kind`; the flow calls `onPick` with the chosen (or newly added) item.
+    func showGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, onPick: @escaping (GearPick) -> Void)
+    /// "Start Brewing".
+    func brewSetupDidStart(_ setup: BrewSetup)
+}
+
+public protocol GearPickerRouting: AnyObject {
+    func gearPickerDidPick(_ pick: GearPick)
+    /// "+": add a new bag / device / filter pack, then pick it.
+    func gearPickerDidTapAdd(_ kind: GearKind)
 }

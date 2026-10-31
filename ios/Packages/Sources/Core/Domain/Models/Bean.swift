@@ -64,6 +64,12 @@ public extension Bean {
         totalGrams > 0 ? min(max(remainingGrams / totalGrams, 0), 1) : 0
     }
 
+    /// A bag runs low at 20 % left (filter packs: at a fixed count, `FilterPack.isLow`).
+    static let lowStockFraction = 0.2
+
+    /// Running low, or empty.
+    var isLow: Bool { remainingFraction <= Self.lowStockFraction }
+
     /// Takes coffee out of the bag (a brew was saved). Never goes below zero.
     mutating func consume(grams: Double, at date: Date = .now) {
         remainingGrams = max(0, remainingGrams - max(grams, 0))

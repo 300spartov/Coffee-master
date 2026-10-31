@@ -48,7 +48,7 @@ struct BeanRow: View {
     let bean: Bean
 
     private var stockLevel: StockLevel {
-        StockLevel(fraction: bean.remainingFraction)
+        StockLevel(isEmpty: bean.isEmpty, isLow: bean.isLow)
     }
 
     var body: some View {

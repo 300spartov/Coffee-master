@@ -173,6 +173,25 @@ struct FilterPackFormViewModelTests {
         #expect(try await repository.fetchAll().map(\.id) == [FilterPack.samples[1].id])
     }
 
+    @Test func shapeIsPresetForNewPacksAndEditable() async throws {
+        let (add, repository) = makeViewModel(.add, packs: [])
+        let preset = FilterPackFormViewModel(mode: .add, shape: .chemex, router: router)
+        #expect(preset.shape == .chemex)
+
+        add.name = "Hario Tabbed"
+        add.shape = .cone
+        await add.save()
+        let saved = try #require(try await repository.fetchAll().first)
+        #expect(saved.shape == .cone)
+
+        let edit = FilterPackFormViewModel(mode: .edit(saved.id), router: router)
+        await edit.load()
+        #expect(edit.shape == .cone)
+        edit.shape = nil
+        await edit.save()
+        #expect(try await repository.fetch(id: saved.id).shape == nil)
+    }
+
     @Test func cancelFinishesWithoutSaving() {
         let (viewModel, _) = makeViewModel(.add)
 

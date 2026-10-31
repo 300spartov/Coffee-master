@@ -6,6 +6,11 @@ nonisolated public enum StockLevel: Equatable, Sendable {
     case low
     case normal
 
+    /// From the item's own rules (`Bean.isLow`, `FilterPack.isLow`, …).
+    public init(isEmpty: Bool, isLow: Bool) {
+        self = isEmpty ? .empty : (isLow ? .low : .normal)
+    }
+
     /// `low` at or below `lowThreshold` of the total (default 20 %).
     public init(fraction: Double, lowThreshold: Double = 0.2) {
         if fraction <= 0 {

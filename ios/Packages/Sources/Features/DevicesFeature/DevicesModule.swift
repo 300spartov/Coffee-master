@@ -59,16 +59,17 @@ public struct DevicesModule {
         return controller
     }
 
-    public func makeAddFilterPack(router: any FilterPackFormRouting) -> UIViewController {
-        makeFilterPackForm(mode: .add, title: tr("New Filter Pack"), router: router)
+    /// `shape`: preselected brewer, e.g. when adding from a Chemex brew.
+    public func makeAddFilterPack(shape: FilterShape? = nil, router: any FilterPackFormRouting) -> UIViewController {
+        makeFilterPackForm(mode: .add, shape: shape, title: tr("New Filter Pack"), router: router)
     }
 
     public func makeEditFilterPack(id: FilterPack.ID, router: any FilterPackFormRouting) -> UIViewController {
         makeFilterPackForm(mode: .edit(id), title: tr("Edit Filter Pack"), router: router)
     }
 
-    private func makeFilterPackForm(mode: FilterPackFormViewModel.Mode, title: String, router: any FilterPackFormRouting) -> UIViewController {
-        let viewModel = FilterPackFormViewModel(mode: mode, router: router)
+    private func makeFilterPackForm(mode: FilterPackFormViewModel.Mode, shape: FilterShape? = nil, title: String, router: any FilterPackFormRouting) -> UIViewController {
+        let viewModel = FilterPackFormViewModel(mode: mode, shape: shape, router: router)
         let controller = HostingController(rootView: FilterPackFormView(viewModel: viewModel), title: title)
         controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
         return controller

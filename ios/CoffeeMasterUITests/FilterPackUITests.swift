@@ -24,10 +24,12 @@ final class FilterPackUITests: XCTestCase {
         nameField.tap()
         nameField.typeText(name)
         app.buttons["50"].tap()
+        app.buttons["filterPack.shape"].tap()
+        app.buttons["Chemex"].firstMatch.tap()
         attachScreenshot(named: "new-filter-pack")
         app.buttons["filterPack.save"].tap()
         XCTAssertTrue(app.staticTexts["Filter pack added"].waitForExistence(timeout: 5))
-        XCTAssertTrue(element(app, containing: "50 of 50 left").waitForExistence(timeout: 5))
+        XCTAssertTrue(element(app, containing: "Chemex · 50 of 50 left").waitForExistence(timeout: 5))
 
         // −/+ adjust the count, within the pack
         let putBack = app.buttons["filters.putBackOne.\(name)"]

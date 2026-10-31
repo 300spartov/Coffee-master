@@ -21,6 +21,13 @@ struct FilterPackFormView: View {
                 TextField(tr("Name, e.g. Cafec Abaca 02"), text: $viewModel.name)
                     .textInputAutocapitalization(.words)
                     .accessibilityIdentifier("filterPack.name")
+                Picker(tr("Fits"), selection: $viewModel.shape) {
+                    Text(tr("Any brewer")).tag(FilterShape?.none)
+                    ForEach(FilterShape.allCases, id: \.self) { shape in
+                        Text(verbatim: shape.displayName).tag(FilterShape?.some(shape))
+                    }
+                }
+                .accessibilityIdentifier("filterPack.shape")
             }
             .themedRow()
 

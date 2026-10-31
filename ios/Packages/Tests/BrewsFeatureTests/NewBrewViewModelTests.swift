@@ -47,11 +47,24 @@ struct NewBrewViewModelTests {
         #expect(router.savedNewBrews.isEmpty)
     }
 
-    @Test func startsWithMethodPickedInWizard() {
-        Container.shared.brewRepository.register { TestRepository(brews: []) }
+    @Test func prefillsFromWizardSetupAndKeepsItsGear() async throws {
+        let repository = TestRepository(brews: [])
+        Container.shared.brewRepository.register { repository }
+        var setup = BrewSetup(method: .chemex)
+        setup.bean = BeanReference(beanID: .fixture(1), name: "Kenya")
+        setup.dripper = GearReference(id: .fixture(2), name: "Chemex 6-cup")
+        setup.waterTemperature = 94
+        let viewModel = NewBrewViewModel(setup: setup, router: router)
 
-        let viewModel = NewBrewViewModel(method: .latte, router: router)
+        #expect(viewModel.method == .chemex)
+        #expect(viewModel.beanName == "Kenya")
+        #expect(viewModel.waterGrams == 256)
 
-        #expect(viewModel.method == .latte)
+        await viewModel.save()
+
+        let saved = try #require(await repository.saved.first)
+        #expect(saved.bean?.beanID == .fixture(1))
+        #expect(saved.dripper?.name == "Chemex 6-cup")
+        #expect(saved.waterTemperature == 94)
     }
 }

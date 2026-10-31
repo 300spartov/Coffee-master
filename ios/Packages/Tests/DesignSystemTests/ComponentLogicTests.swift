@@ -3,6 +3,12 @@ import Testing
 @testable import DesignSystem
 
 struct StockLevelTests {
+    @Test func levelFromItemRules() {
+        #expect(StockLevel(isEmpty: true, isLow: true) == .empty)
+        #expect(StockLevel(isEmpty: false, isLow: true) == .low)
+        #expect(StockLevel(isEmpty: false, isLow: false) == .normal)
+    }
+
     @Test(arguments: [
         (0.0, StockLevel.empty), (-1, .empty), (0.05, .low), (0.2, .low), (0.21, .normal), (1, .normal),
     ])

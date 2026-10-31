@@ -27,6 +27,29 @@ extension XCUIApplication {
 }
 
 extension XCTestCase {
+    /// Forms are long and the keyboard may be up: dismisses it and scrolls the form (accessibility id
+    /// `formID`) until `element` is tappable. With a sheet open there are two lists on screen, so the
+    /// form is named rather than guessed.
+    @MainActor
+    @discardableResult
+    func scrollTo(_ element: XCUIElement, inForm formID: String, of app: XCUIApplication) -> XCUIElement {
+        let form = app.collectionViews[formID]
+        XCTAssertTrue(form.waitForExistence(timeout: 5), "Form \(formID) not found")
+        if app.keyboards.buttons["Return"].exists { app.keyboards.buttons["Return"].tap() }
+        for _ in 0..<6 where !(element.exists && element.isHittable) {
+            form.swipeUp(velocity: .slow)
+        }
+        if !element.isHittable {
+            attachScreenshot(named: "unreachable")
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "hierarchy"
+            tree.lifetime = .keepAlways
+            add(tree)
+        }
+        XCTAssertTrue(element.isHittable, "\(element) isn't reachable")
+        return element
+    }
+
     @MainActor
     func attachScreenshot(named name: String) {
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())

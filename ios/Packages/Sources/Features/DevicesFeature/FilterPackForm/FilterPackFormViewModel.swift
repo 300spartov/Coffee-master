@@ -4,7 +4,7 @@ import AppCore
 import Domain
 import FactoryKit
 
-/// Add a pack of paper filters, or correct one you have (name, pack size, how many are left).
+/// Add a pack of paper filters, or correct one you have (name, brewer it fits, pack size, how many are left).
 @Observable
 final class FilterPackFormViewModel {
     enum Mode: Equatable {
@@ -18,6 +18,8 @@ final class FilterPackFormViewModel {
 
     let mode: Mode
     var name = ""
+    /// The brewer the filters are for; `nil` = any.
+    var shape: FilterShape?
     var total = Double(FilterPack.defaultCount)
     /// Edit mode only.
     var remaining = Double(FilterPack.defaultCount)
@@ -28,8 +30,10 @@ final class FilterPackFormViewModel {
     @ObservationIgnored @Injected(\.filterPackRepository) private var repository
     @ObservationIgnored private weak var router: (any FilterPackFormRouting)?
 
-    init(mode: Mode, router: any FilterPackFormRouting) {
+    /// `shape`: preselected for a new pack (e.g. Chemex when adding from a Chemex brew).
+    init(mode: Mode, shape: FilterShape? = nil, router: any FilterPackFormRouting) {
         self.mode = mode
+        self.shape = shape
         self.router = router
         state = mode == .add ? .ready : .loading
     }
@@ -57,6 +61,7 @@ final class FilterPackFormViewModel {
         do {
             let pack = try await repository.fetch(id: id)
             name = pack.name
+            shape = pack.shape
             total = Double(pack.total)
             remaining = Double(pack.remaining)
             state = .ready
@@ -77,10 +82,11 @@ final class FilterPackFormViewModel {
                 // Edit the pack as it is now, so one removed elsewhere meanwhile isn't brought back.
                 pack = try await repository.fetch(id: id)
                 pack.name = trimmedName
+                pack.shape = shape
                 pack.total = Int(total)
                 pack.remaining = min(max(Int(remaining), 0), pack.total)
             } else {
-                pack = FilterPack(name: trimmedName, total: Int(total))
+                pack = FilterPack(name: trimmedName, total: Int(total), shape: shape)
             }
             try await repository.save(pack)
             router?.filterPackFormDidFinish(saved: pack)

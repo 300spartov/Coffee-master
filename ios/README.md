@@ -30,7 +30,7 @@ ios/
     │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
     │   └── WebImport/            # one-time import of the web app's JSON export → Domain models
     ├── Sources/Features/
-    │   ├── BrewFeature/          # brew wizard (Phase 2): method pick → …
+    │   ├── BrewFeature/          # brew wizard (Phase 2): method pick → setup (gear pickers) → …
     │   ├── BrewsFeature/         # journal list → detail; template brew form (until 2.2–2.7)
     │   ├── BeansFeature/         # bean list → add / edit
     │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
@@ -176,7 +176,7 @@ struct BrewTimerLiveActivity: Widget {
 
 | What | Where |
 |---|---|
-| Key for a shared protocol, with a **preview-safe default** | The module that owns the protocol, e.g. `Domain/DI/Container+Domain.swift` → `brewRepository`, `trashRepository`, `beanRepository`, `deviceRepository`, `filterPackRepository`, `profileRepository`, `suggestionsRepository` (defaults: in-memory repositories with fixtures), `DesignSystem/DI` → `toasts` (default: silent) |
+| Key for a shared protocol, with a **preview-safe default** | The module that owns the protocol, e.g. `Domain/DI/Container+Domain.swift` → `brewRepository`, `trashRepository`, `beanRepository`, `deviceRepository`, `filterPackRepository`, `profileRepository`, `suggestionsRepository`, `brewSetupHistory` (defaults: in-memory, with fixtures for repositories; the app uses Core Data and, for the setup history, UserDefaults), `DesignSystem/DI` → `toasts` (default: silent) |
 | Real implementations | `CoffeeMaster/DI/Container+App.swift` → `autoRegister()` |
 | App-only services (store, import, toast center) | Also `Container+App.swift` |
 

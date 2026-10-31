@@ -39,7 +39,7 @@ final class BeanUITests: XCTestCase {
         // Delete
         app.staticTexts[name].tap()
         XCTAssertTrue(app.navigationBars["Edit Bean"].waitForExistence(timeout: 5))
-        let delete = scrollTo(app.buttons["bean.delete"], in: app)
+        let delete = scrollTo(app.buttons["bean.delete"], inForm: "bean.form", of: app)
         delete.tap()
         app.buttons["Delete"].firstMatch.tap()
         XCTAssertTrue(app.staticTexts["Bean deleted"].waitForExistence(timeout: 5))
@@ -47,27 +47,6 @@ final class BeanUITests: XCTestCase {
     }
 
     private func tapSave(in app: XCUIApplication) {
-        scrollTo(app.buttons["bean.save"], in: app).tap()
-    }
-
-    /// The form is long and the keyboard may be up; dismiss it and scroll until `element` is tappable.
-    @discardableResult
-    private func scrollTo(_ element: XCUIElement, in app: XCUIApplication) -> XCUIElement {
-        // With the sheet open there are two lists on screen; scroll the form, not the list behind it.
-        let form = app.collectionViews["bean.form"]
-        XCTAssertTrue(form.waitForExistence(timeout: 5), "Bean form not found")
-        if app.keyboards.buttons["Return"].exists { app.keyboards.buttons["Return"].tap() }
-        for _ in 0..<6 where !(element.exists && element.isHittable) {
-            form.swipeUp(velocity: .slow)
-        }
-        if !element.isHittable {
-            attachScreenshot(named: "unreachable")
-            let tree = XCTAttachment(string: app.debugDescription)
-            tree.name = "hierarchy"
-            tree.lifetime = .keepAlways
-            add(tree)
-        }
-        XCTAssertTrue(element.isHittable, "\(element) isn't reachable")
-        return element
+        scrollTo(app.buttons["bean.save"], inForm: "bean.form", of: app).tap()
     }
 }

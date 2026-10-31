@@ -84,7 +84,7 @@ let package = Package(
         ),
         .target(
             name: "BrewFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation"],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
             path: "Sources/Features/BrewFeature",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
@@ -129,7 +129,10 @@ let package = Package(
             name: "BrewsFeatureTests",
             dependencies: ["BrewsFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
-        .testTarget(name: "BrewFeatureTests", dependencies: ["BrewFeature", "Domain"]),
+        .testTarget(
+            name: "BrewFeatureTests",
+            dependencies: ["BrewFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+        ),
         .testTarget(
             name: "DevicesFeatureTests",
             dependencies: ["DevicesFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]

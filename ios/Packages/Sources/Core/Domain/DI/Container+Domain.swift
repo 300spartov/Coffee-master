@@ -44,3 +44,10 @@ extension Container {
         self { InMemoryRecordRepository(brews: Brew.samples) }.cached
     }
 }
+
+public extension Container {
+    /// Last setups per method, for prefilling the brew wizard.
+    var brewSetupHistory: Factory<any BrewSetupHistory> {
+        self { InMemoryBrewSetupHistory() }.cached
+    }
+}

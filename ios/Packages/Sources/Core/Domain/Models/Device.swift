@@ -56,6 +56,8 @@ public struct FilterPack: Syncable {
     public var name: String
     public var total: Int
     public var remaining: Int
+    /// The brewer it's for; `nil` = not set (fits any).
+    public var shape: FilterShape?
 
     public init(
         id: UUID = UUID(),
@@ -64,7 +66,8 @@ public struct FilterPack: Syncable {
         deletedAt: Date? = nil,
         name: String,
         total: Int = FilterPack.defaultCount,
-        remaining: Int? = nil
+        remaining: Int? = nil,
+        shape: FilterShape? = nil
     ) {
         self.id = id
         self.legacyID = legacyID
@@ -73,6 +76,7 @@ public struct FilterPack: Syncable {
         self.name = name
         self.total = max(total, 0)
         self.remaining = min(max(remaining ?? total, 0), max(total, 0))
+        self.shape = shape
     }
 }
 
@@ -83,6 +87,11 @@ public extension FilterPack {
 
     var isEmpty: Bool { remaining <= 0 }
     var isLow: Bool { remaining <= Self.lowStockThreshold }
+
+    /// 0...1, for progress bars.
+    var remainingFraction: Double {
+        total > 0 ? min(max(Double(remaining) / Double(total), 0), 1) : 0
+    }
 
     mutating func use(count: Int = 1, at date: Date = .now) {
         remaining = max(0, remaining - max(count, 0))

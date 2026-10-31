@@ -4,10 +4,11 @@ import Domain
 import FactoryKit
 @Observable
 final class NewBrewViewModel {
+    let setup: BrewSetup
     var method: BrewMethod
-    var beanName = ""
-    var doseGrams: Double = 15
-    var waterGrams: Double = 250
+    var beanName: String
+    var doseGrams: Double
+    var waterGrams: Double
     var brewTime: TimeInterval = 180
     /// 0...10, like the web app.
     var rating: Double = 8
@@ -18,9 +19,13 @@ final class NewBrewViewModel {
     @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any NewBrewRouting)?
 
-    /// `method`: preselected by the brew wizard's method pick.
-    init(method: BrewMethod = .v60, router: any NewBrewRouting) {
-        self.method = method
+    /// `setup`: what the brew wizard chose so far (method, gear, recipe); its values prefill the form.
+    init(setup: BrewSetup = BrewSetup(method: .v60), router: any NewBrewRouting) {
+        self.setup = setup
+        method = setup.method
+        beanName = setup.bean?.name ?? ""
+        doseGrams = setup.doseGrams
+        waterGrams = Double(setup.waterMilliliters)
         self.router = router
     }
 
@@ -33,14 +38,12 @@ final class NewBrewViewModel {
         isSaving = true
         defer { isSaving = false }
 
-        let brew = Brew(
-            method: method,
-            bean: BeanReference(name: trimmedBeanName),
-            doseGrams: doseGrams,
-            ratio: waterGrams / doseGrams,
-            totalTime: brewTime,
-            rating: rating
-        )
+        // The setup's gear and recipe, with what was edited here.
+        var brew = setup.makeBrew(totalTime: brewTime, rating: rating)
+        brew.method = method
+        brew.bean = setup.bean?.name == trimmedBeanName ? setup.bean : BeanReference(name: trimmedBeanName)
+        brew.doseGrams = doseGrams
+        brew.ratio = waterGrams / doseGrams
         do {
             try await repository.save(brew)
             router?.newBrewDidSave(brew)
