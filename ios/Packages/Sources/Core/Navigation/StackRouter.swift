@@ -21,6 +21,13 @@ public final class StackRouter {
         navigationController.pushViewController(viewController, animated: animated)
     }
 
+    /// Replaces the top screen with `viewController` (a wizard step you shouldn't go back to).
+    public func replaceTop(with viewController: UIViewController, animated: Bool = true) {
+        var stack = navigationController.viewControllers
+        if !stack.isEmpty { stack.removeLast() }
+        navigationController.setViewControllers(stack + [viewController], animated: animated)
+    }
+
     public func pop(animated: Bool = true) {
         afterTransition { $0.navigationController.popViewController(animated: animated) }
     }

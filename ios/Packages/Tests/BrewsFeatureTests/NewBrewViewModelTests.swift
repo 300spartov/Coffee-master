@@ -47,6 +47,22 @@ struct NewBrewViewModelTests {
         #expect(router.savedNewBrews.isEmpty)
     }
 
+    @Test func timerResultsPrefillTimeWaterAndSteps() async throws {
+        let repository = TestRepository(brews: [])
+        Container.shared.brewRepository.register { repository }
+        let steps = [BrewStep(kind: .pour(milliliters: 60), start: 0, duration: 10), BrewStep(kind: .pour(milliliters: 190), start: 40, duration: 30)]
+        let viewModel = NewBrewViewModel(setup: BrewSetup(method: .v60), steps: steps, totalTime: 154.6, router: router)
+        viewModel.beanName = "Kenya"
+
+        #expect(viewModel.waterGrams == 250)
+        #expect(viewModel.brewTime == 155)
+        await viewModel.save()
+
+        let saved = try #require(await repository.saved.first)
+        #expect(saved.steps == steps)
+        #expect(saved.totalTime == 155)
+    }
+
     @Test func prefillsFromWizardSetupAndKeepsItsGear() async throws {
         let repository = TestRepository(brews: [])
         Container.shared.brewRepository.register { repository }

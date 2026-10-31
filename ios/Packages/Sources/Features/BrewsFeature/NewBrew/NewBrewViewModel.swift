@@ -5,6 +5,8 @@ import FactoryKit
 @Observable
 final class NewBrewViewModel {
     let setup: BrewSetup
+    /// From the brew timer (empty when the form is opened without it).
+    let steps: [BrewStep]
     var method: BrewMethod
     var beanName: String
     var doseGrams: Double
@@ -19,13 +21,17 @@ final class NewBrewViewModel {
     @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any NewBrewRouting)?
 
-    /// `setup`: what the brew wizard chose so far (method, gear, recipe); its values prefill the form.
-    init(setup: BrewSetup = BrewSetup(method: .v60), router: any NewBrewRouting) {
+    /// `setup`: what the brew wizard chose (method, gear, recipe); `steps` and `totalTime`: what the
+    /// brew timer recorded. They prefill the form; water is what was poured, if it was weighed.
+    init(setup: BrewSetup = BrewSetup(method: .v60), steps: [BrewStep] = [], totalTime: TimeInterval? = nil, router: any NewBrewRouting) {
         self.setup = setup
+        self.steps = steps
         method = setup.method
         beanName = setup.bean?.name ?? ""
         doseGrams = setup.doseGrams
-        waterGrams = Double(setup.waterMilliliters)
+        let poured = steps.totalPouredMilliliters
+        waterGrams = poured > 0 ? poured : Double(setup.waterMilliliters)
+        if let totalTime, totalTime > 0 { brewTime = totalTime.rounded() }
         self.router = router
     }
 
@@ -39,7 +45,7 @@ final class NewBrewViewModel {
         defer { isSaving = false }
 
         // The setup's gear and recipe, with what was edited here.
-        var brew = setup.makeBrew(totalTime: brewTime, rating: rating)
+        var brew = setup.makeBrew(totalTime: brewTime, rating: rating, steps: steps)
         brew.method = method
         brew.bean = setup.bean?.name == trimmedBeanName ? setup.bean : BeanReference(name: trimmedBeanName)
         brew.doseGrams = doseGrams

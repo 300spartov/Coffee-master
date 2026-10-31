@@ -63,8 +63,9 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(element(app, containing: "320").waitForExistence(timeout: 5))
         attachScreenshot(named: "setup")
 
-        // Start → brew form prefilled with the bag
+        // Start → timer → Stop → brew form prefilled with the bag
         scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        brewThroughTimer(app)
         XCTAssertTrue(app.navigationBars["V60"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.textFields["Bean name"].value as? String, bean)
 
@@ -125,7 +126,15 @@ final class BrewUITests: XCTestCase {
         field.doubleTap()
         field.typeText(dose)
         scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        brewThroughTimer(app)
         XCTAssertTrue(app.textFields["Bean name"].waitForExistence(timeout: 5))
+    }
+
+    /// The shortest brew: one pour, then Stop.
+    private func brewThroughTimer(_ app: XCUIApplication) {
+        XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
+        app.buttons["active.pour"].tap()
+        app.buttons["active.stop"].tap()
     }
 
     /// From the template brew form: back to setup, methods, step 1, then Cancel.
@@ -136,6 +145,66 @@ final class BrewUITests: XCTestCase {
         app.navigationBars["Alternative"].buttons.firstMatch.tap()
         app.navigationBars["New Brew"].buttons["Cancel"].tap()
         XCTAssertTrue(app.navigationBars["New Brew"].waitForNonExistence(timeout: 5))
+    }
+
+    /// The brew timer: pour (typed amount) → pause → stir → pour → stop, with the log and the
+    /// form prefilled from it. Back before the first pour leaves without asking.
+    func testActiveBrewLogsPoursAndActions() {
+        let app = XCUIApplication.launched()
+        openSetup(app, group: "alternative", method: "V60")
+        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        let pour = app.buttons["active.pour"]
+        XCTAssertTrue(pour.waitForExistence(timeout: 5))
+
+        // Back before starting: straight to the setup
+        app.navigationBars["V60"].buttons["active.back"].tap()
+        XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
+        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        XCTAssertTrue(pour.waitForExistence(timeout: 5))
+        attachScreenshot(named: "active-ready")
+
+        // Bloom: 60 ml
+        pour.tap()
+        let amount = app.textFields["active.pourMilliliters"]
+        XCTAssertTrue(amount.waitForExistence(timeout: 5))
+        amount.typeText("60")
+        sleep(1)
+        app.buttons["active.pause"].tap()
+        XCTAssertTrue(element(app, containing: "60").waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["active.action.stir"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "active-pause")
+
+        // Stir, second pour, stop
+        app.buttons["active.action.stir"].tap()
+        sleep(1)
+        app.buttons["active.action.stir"].tap()
+        pour.tap()
+        XCTAssertEqual(app.staticTexts["active.pours"].label, "2 / 3")
+        app.buttons["active.pause"].tap()
+        XCTAssertTrue(app.otherElements["active.log"].exists || element(app, containing: "Stir").exists)
+        attachScreenshot(named: "active-log")
+        app.swipeUp()
+        app.buttons["active.stop"].tap()
+
+        // The form replaces the timer; Back goes to the setup
+        XCTAssertTrue(app.textFields["Bean name"].waitForExistence(timeout: 5))
+        app.navigationBars["V60"].buttons.firstMatch.tap()
+        XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
+    }
+
+    /// Back after the first pour asks before discarding.
+    func testLeavingAStartedBrewAsks() {
+        let app = XCUIApplication.launched()
+        openSetup(app, group: "alternative", method: "V60")
+        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
+        app.buttons["active.pour"].tap()
+
+        app.navigationBars["V60"].buttons["active.back"].tap()
+        XCTAssertTrue(app.staticTexts["Discard this brew?"].waitForExistence(timeout: 5))
+        app.buttons["Discard"].tap()
+
+        XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
     }
 
     private func openSetup(_ app: XCUIApplication, group: String, method: String) {

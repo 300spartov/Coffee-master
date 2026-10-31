@@ -24,3 +24,10 @@ public protocol GearPickerRouting: AnyObject {
     /// "+": add a new bag / device / filter pack, then pick it.
     func gearPickerDidTapAdd(_ kind: GearKind)
 }
+
+public protocol ActiveBrewRouting: AnyObject {
+    /// Stop: the session is finished (time, steps).
+    func activeBrewDidFinish(_ session: PourOverSession)
+    /// Back (confirmed if the brew had started): return to the setup.
+    func activeBrewDidLeave()
+}

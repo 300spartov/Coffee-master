@@ -29,6 +29,21 @@ public struct BrewModule {
         return HostingController(rootView: BrewSetupView(viewModel: viewModel), title: method.rawValue)
     }
 
+    /// Step 4 (it replaces the setup) for pour-over: the brew timer. Back is the screen's own, so a
+    /// started brew isn't lost by accident.
+    public func makeActiveBrew(setup: BrewSetup, router: any ActiveBrewRouting) -> UIViewController {
+        let viewModel = ActiveBrewViewModel(setup: setup, router: router)
+        let controller = HostingController(rootView: ActiveBrewView(viewModel: viewModel), title: setup.method.rawValue)
+        let back = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.backward"),
+            primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapBack() }
+        )
+        back.accessibilityLabel = tr("Back")
+        back.accessibilityIdentifier = "active.back"
+        controller.navigationItem.leftBarButtonItem = back
+        return controller
+    }
+
     /// Picker sheet for a setup row, with "+" to add a new item.
     public func makeGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, router: any GearPickerRouting) -> UIViewController {
         let viewModel = GearPickerViewModel(kind: kind, method: method, selectedID: selectedID, router: router)
