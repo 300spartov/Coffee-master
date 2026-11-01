@@ -52,19 +52,13 @@ final class RateBrewViewModel {
 
     /// Corrects one pour (index into `steps`).
     func setPour(at index: Int, milliliters: Double) {
-        guard steps.indices.contains(index), steps[index].isPour else { return }
-        steps[index].kind = .pour(milliliters: max(milliliters, 0))
+        steps.setPour(at: index, milliliters: milliliters)
     }
 
     /// The total poured; setting it spreads the water evenly over the pours (like the web app).
     var totalPoured: Double {
         get { pouredMilliliters }
-        set {
-            let pours = steps.indices.filter { steps[$0].isPour }
-            guard !pours.isEmpty else { return }
-            let each = (max(newValue, 0) / Double(pours.count) * 10).rounded() / 10
-            pours.forEach { steps[$0].kind = .pour(milliliters: each) }
-        }
+        set { steps.spreadPours(newValue) }
     }
 
     func save() async {

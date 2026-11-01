@@ -93,8 +93,7 @@ public struct PourOverSession: Equatable, Codable, Sendable {
 
     /// Corrects how much a logged pour was.
     public mutating func editPour(at index: Int, milliliters: Double) {
-        guard steps.indices.contains(index), steps[index].isPour else { return }
-        steps[index].kind = .pour(milliliters: max(milliliters, 0))
+        steps.setPour(at: index, milliliters: milliliters)
     }
 
     /// Runs time-based transitions: an action that hit `actionLimit` finishes by itself.
@@ -117,6 +116,27 @@ public struct PourOverSession: Equatable, Codable, Sendable {
         }
     }
 
+    public var isPouring: Bool {
+        if case .pouring = phase { true } else { false }
+    }
+
+    public var isPressing: Bool {
+        if case .pressing = phase { true } else { false }
+    }
+
+    /// The timed action running now, if any.
+    public var runningAction: BrewAction? {
+        if case .action(let action, _) = phase { action } else { nil }
+    }
+
+    /// When the current pour / pause / action / plunge began; `nil` before the start and after the end.
+    public var phaseStartedAt: Date? {
+        switch phase {
+        case .pouring(let since), .paused(let since), .action(_, let since), .pressing(let since): since
+        case .ready, .finished: nil
+        }
+    }
+
     /// Total brew time.
     public func elapsed(at now: Date) -> TimeInterval {
         guard let startedAt else { return 0 }
@@ -126,14 +146,9 @@ public struct PourOverSession: Equatable, Codable, Sendable {
 
     /// Time in the current pour / pause / action / plunge; `nil` before the start and after the end.
     public func phaseElapsed(at now: Date) -> TimeInterval? {
-        switch phase {
-        case .pouring(let since), .paused(let since), .pressing(let since):
-            max(now.timeIntervalSince(since), 0)
-        case .action(_, let since):
-            min(max(now.timeIntervalSince(since), 0), Self.actionLimit)
-        case .ready, .finished:
-            nil
-        }
+        guard let phaseStartedAt else { return nil }
+        let elapsed = max(now.timeIntervalSince(phaseStartedAt), 0)
+        return runningAction == nil ? elapsed : min(elapsed, Self.actionLimit)
     }
 
     /// How long a pause usually takes, for the pause ring: a minute for fast drippers (V60, Chemex,
@@ -188,8 +203,9 @@ public struct PourOverSession: Equatable, Codable, Sendable {
         return nextPourMarks.first ?? totalMilliliters
     }
 
-    public var isPouring: Bool {
-        if case .pouring = phase { true } else { false }
+    /// `milliliters` as a share of the total water (0...1).
+    public func share(of milliliters: Double) -> Double {
+        totalMilliliters > 0 ? min(milliliters / totalMilliliters, 1) : 0
     }
 
     /// The water-to-coffee ratio actually poured, when it's above the plan (web: shown in orange).

@@ -71,10 +71,8 @@ struct RateBrewView: View {
                 range: 0...2_000,
                 fractionDigits: 1
             )
-        case .pause:
-            LabeledContent(tr("Pause"), value: range).foregroundStyle(.theme.textSecondary)
-        case .action(let action):
-            LabeledContent(action.title, value: range).foregroundStyle(.theme.success)
+        case .pause, .action:
+            LabeledContent(step.title, value: range).foregroundStyle(step.tint)
         }
     }
 }

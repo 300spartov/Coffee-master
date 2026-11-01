@@ -51,8 +51,11 @@ public struct BrewModule {
 
     /// Espresso step 1 (push it): gear and recipe. The next steps come from `makeEspressoStep`.
     public func makeEspressoSetup(method: BrewMethod, router: any EspressoRouting) -> UIViewController {
-        let viewModel = EspressoViewModel(method: method, router: router)
-        return HostingController(rootView: EspressoSetupView(viewModel: viewModel), title: method.rawValue)
+        makeEspressoSetup(EspressoViewModel(method: method, router: router))
+    }
+
+    private func makeEspressoSetup(_ viewModel: EspressoViewModel) -> UIViewController {
+        HostingController(rootView: EspressoSetupView(viewModel: viewModel), title: viewModel.method.rawValue)
     }
 
     /// The shot, milk / ice and result screens of `brew` (push them).
@@ -93,8 +96,7 @@ public struct BrewModule {
             return [start, makeRateBrew(RateBrewViewModel(session: session, steps: steps, tasting: tasting, router: router))]
         case .espresso(let progress):
             let brew = EspressoBrew(viewModel: EspressoViewModel(progress: progress, router: router))
-            let setup = HostingController(rootView: EspressoSetupView(viewModel: brew.viewModel), title: progress.draft.recipe.method.rawValue)
-            return [start, setup, makeEspressoStep(progress.step, of: brew)]
+            return [start, makeEspressoSetup(brew.viewModel), makeEspressoStep(progress.step, of: brew)]
         }
     }
 

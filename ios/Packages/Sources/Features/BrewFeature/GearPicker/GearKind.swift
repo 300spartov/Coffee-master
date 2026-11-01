@@ -39,6 +39,34 @@ nonisolated public enum GearKind: String, Sendable, CaseIterable {
     }
 }
 
+extension GearKind {
+    var systemImage: String {
+        switch self {
+        case .bean: "leaf.fill"
+        case .dripper: "drop"
+        case .filter: "line.3.horizontal.decrease"
+        case .grinder: "gearshape.2"
+        case .espressoMachine: "cup.and.saucer.fill"
+        }
+    }
+
+    var emptyTitle: String {
+        switch self {
+        case .bean: tr("No beans yet")
+        case .filter: tr("No filter packs")
+        case .dripper, .grinder, .espressoMachine: tr("No devices yet")
+        }
+    }
+
+    var emptyMessage: String {
+        switch self {
+        case .bean: tr("Add the coffee you have at home.")
+        case .filter: tr("Add the paper filters you have.")
+        case .dripper, .grinder, .espressoMachine: tr("Add the one you use.")
+        }
+    }
+}
+
 /// A picked item, handed from the picker back to the setup.
 public enum GearPick: Equatable, Sendable {
     case bean(Bean)

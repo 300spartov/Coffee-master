@@ -114,7 +114,6 @@ extension BrewFlow: GearPickerPresenting {
             }
         }
     }
-
 }
 
 // These two refine `GearPickerPresenting` (conformed above); Swift 6 needs the isolation spelled out.
@@ -128,7 +127,6 @@ extension BrewFlow: @MainActor EspressoRouting {
     func espresso(_ brew: EspressoBrew, didAdvanceTo step: EspressoStep) {
         modal.current?.push(module.makeEspressoStep(step, of: brew))
     }
-
 }
 
 extension BrewFlow: @MainActor BrewSavingRouting {

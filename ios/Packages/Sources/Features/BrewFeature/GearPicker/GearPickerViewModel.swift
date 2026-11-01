@@ -132,7 +132,7 @@ final class GearPickerViewModel {
         if fitting.isEmpty {
             suggestions = DeviceCatalog.devices(of: type)
                 .filter { fits(name: $0.name) }
-                .map { Row(source: .catalog(name: $0.name), title: $0.name, subtitle: $0.details, stock: nil, dripperKind: kind == .dripper ? DripperKind(deviceName: $0.name) : nil) }
+                .map { Row(catalog: $0, kind: kind) }
         }
     }
 
@@ -156,7 +156,6 @@ final class GearPickerViewModel {
     private func fits(name: String) -> Bool {
         kind != .dripper || DripperKind(deviceName: name).fits(method)
     }
-
 }
 
 // MARK: - Rows (also used by the setup screen for what's picked)
@@ -189,5 +188,11 @@ extension GearPickerViewModel.Row {
     init(device: Device, kind: GearKind) {
         let dripperKind = kind == .dripper ? DripperKind(deviceName: device.name) : nil
         self.init(source: .owned(device.id), title: device.name, subtitle: dripperKind?.displayName, stock: nil, dripperKind: dripperKind)
+    }
+
+    /// A catalog model you don't own yet (tapping adds it).
+    init(catalog device: CatalogDevice, kind: GearKind) {
+        let dripperKind = kind == .dripper ? DripperKind(deviceName: device.name) : nil
+        self.init(source: .catalog(name: device.name), title: device.name, subtitle: device.details, stock: nil, dripperKind: dripperKind)
     }
 }

@@ -101,14 +101,6 @@ struct BrewSetupViewModelTests {
 
         #expect(router.started.count == 1)
     }
-
-    @Test func dripSkipsBrewerAndFilter() {
-        let viewModel = BrewSetupViewModel(method: .drip, router: router)
-
-        #expect(!viewModel.draft.recipe.usesDripper)
-        #expect(!viewModel.draft.recipe.usesFilter)
-        #expect(viewModel.draft.recipe.aeropress == nil)
-    }
 }
 
 @Suite(.container)

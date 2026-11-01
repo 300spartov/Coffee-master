@@ -94,13 +94,21 @@ struct PourOverSessionTests {
         // 16 g × 16 = 256 ml: bloom ~25 %, then two equal pours.
         #expect(brew.plannedPours == [64, 96, 96])
         #expect(brew.nextPourMarks.isEmpty)
+        #expect(brew.nextPourTarget == 64)
+        #expect(session(pours: 1).plannedPours == [256])
 
         brew.pour(at: at(0))
         brew.pause(poured: 64, at: at(10))
-
         #expect(brew.nextPourMarks == [160])
+        #expect(brew.nextPourTarget == 160)
         #expect(brew.currentPourNumber == 2)
-        #expect(session(pours: 1).plannedPours == [256])
+
+        brew.pour(at: at(40))
+        brew.pause(poured: 96, at: at(60))
+        #expect(brew.nextPourTarget == 256)
+        brew.pour(at: at(80))
+        brew.pause(poured: 96, at: at(100))
+        #expect(brew.nextPourTarget == nil)
     }
 
     @Test func ratioOverPlanAndEdits() {
@@ -118,27 +126,5 @@ struct PourOverSessionTests {
     @Test func pauseTargetFollowsTheDripper() {
         #expect(session(dripper: "Hario V60 02").pauseTarget == 60)
         #expect(session(dripper: "Kalita Wave 185").pauseTarget == 30)
-    }
-}
-
-struct NextPourTargetTests {
-    private let t0 = Date(timeIntervalSince1970: 1_000)
-
-    @Test func bloomThenTheMarksThenNothing() {
-        var setup = BrewSetup(method: .v60)
-        setup.pours = 3
-        var brew = PourOverSession(setup: setup)
-        #expect(brew.nextPourTarget == 64)
-
-        brew.pour(at: t0)
-        #expect(brew.nextPourTarget == 64)
-        brew.pause(poured: 64, at: t0.addingTimeInterval(10))
-        #expect(brew.nextPourTarget == 160)
-        brew.pour(at: t0.addingTimeInterval(40))
-        brew.pause(poured: 96, at: t0.addingTimeInterval(60))
-        #expect(brew.nextPourTarget == 256)
-        brew.pour(at: t0.addingTimeInterval(80))
-        brew.pause(poured: 96, at: t0.addingTimeInterval(100))
-        #expect(brew.nextPourTarget == nil)
     }
 }

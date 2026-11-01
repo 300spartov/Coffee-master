@@ -49,8 +49,18 @@ public extension Array where Element == BrewStep {
         reduce(0) { $0 + $1.pouredMilliliters }
     }
 
-    var pourCount: Int {
-        filter { $0.pouredMilliliters > 0 }.count
+    /// Corrects one pour (index into the steps); other steps are left alone.
+    mutating func setPour(at index: Int, milliliters: Double) {
+        guard indices.contains(index), self[index].isPour else { return }
+        self[index].kind = .pour(milliliters: Swift.max(milliliters, 0))
+    }
+
+    /// Spreads `total` ml evenly over the pours (to 0.1 ml, like the web app).
+    mutating func spreadPours(_ total: Double) {
+        let pours = indices.filter { self[$0].isPour }
+        guard !pours.isEmpty else { return }
+        let each = (Swift.max(total, 0) / Double(pours.count) * 10).rounded() / 10
+        pours.forEach { self[$0].kind = .pour(milliliters: each) }
     }
 }
 

@@ -39,7 +39,7 @@ struct BrewInProgressTests {
         let restored = ActiveBrewViewModel(session: session, currentPour: currentPour, router: router, clock: { clock.now })
         restored.refresh()
         #expect(restored.session.elapsed(at: restored.now) == 90)
-        #expect(restored.isPouring)
+        #expect(restored.session.isPouring)
     }
 
     @Test func ratingIsKeptWithEditsAndTasting() throws {

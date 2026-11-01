@@ -69,8 +69,6 @@ final class ActiveBrewViewModel {
 
     // MARK: - What to show
 
-    var isPouring: Bool { session.isPouring }
-
     /// "Bloom", "Pour 2", "Pause", "Stir", "Press" (the screen's phase label and the Live Activity's).
     var phaseTitle: String {
         switch session.phase {
@@ -85,13 +83,12 @@ final class ActiveBrewViewModel {
     /// The brew as the Live Activity shows it, from the first pour until Stop.
     var liveStatus: BrewTimerStatus? {
         guard let startedAt = session.startedAt, !session.isFinished else { return nil }
-        let symbol: String, phaseStart: Date?
-        switch session.phase {
-        case .pouring(let since): (symbol, phaseStart) = ("drop.fill", since)
-        case .paused(let since): (symbol, phaseStart) = ("pause.fill", since)
-        case .action(let action, let since): (symbol, phaseStart) = (action.systemImage, since)
-        case .pressing(let since): (symbol, phaseStart) = ("arrow.down.circle.fill", since)
-        case .ready, .finished: (symbol, phaseStart) = ("drop", nil)
+        let symbol = switch session.phase {
+        case .pouring: "drop.fill"
+        case .paused: "pause.fill"
+        case .action(let action, _): action.systemImage
+        case .pressing: "arrow.down.circle.fill"
+        case .ready, .finished: "drop"
         }
         let target = session.nextPourTarget.map { decimal($0) }
         return BrewTimerStatus(
@@ -99,32 +96,22 @@ final class ActiveBrewViewModel {
             phaseTitle: phaseTitle,
             phaseSymbol: symbol,
             startedAt: startedAt,
-            phaseStartedAt: phaseStart,
-            progress: session.totalMilliliters > 0 ? min(session.pouredMilliliters / session.totalMilliliters, 1) : 0,
+            phaseStartedAt: session.phaseStartedAt,
+            progress: session.share(of: session.pouredMilliliters),
             target: target.map { tr("→ \($0) ml") }
         )
     }
 
-    var isPressing: Bool {
-        if case .pressing = session.phase { true } else { false }
-    }
-
     var isAeropress: Bool { session.setup.aeropress != nil }
-
-    func isRunning(_ action: BrewAction) -> Bool {
-        if case .action(let running, _) = session.phase { running == action } else { false }
-    }
 
     /// Poured so far, including the running pour as typed.
     var pouredMilliliters: Double {
-        session.pouredMilliliters + (isPouring ? currentPour ?? 0 : 0)
+        session.pouredMilliliters + (session.isPouring ? currentPour ?? 0 : 0)
     }
 
     var remainingMilliliters: Double { max(session.totalMilliliters - pouredMilliliters, 0) }
 
-    var pouredFraction: Double {
-        session.totalMilliliters > 0 ? min(pouredMilliliters / session.totalMilliliters, 1) : 0
-    }
+    var pouredFraction: Double { session.share(of: pouredMilliliters) }
 
     /// The planned target of the running (or next) pour, shown as the ml field's placeholder.
     var currentPourTarget: Double? {
@@ -171,7 +158,7 @@ final class ActiveBrewViewModel {
 
     /// Starts `action`, or finishes it if it's running.
     func toggle(_ action: BrewAction) {
-        if isRunning(action) {
+        if session.runningAction == action {
             session.finishAction(at: clock())
         } else {
             session.startAction(action, at: clock())
@@ -181,7 +168,7 @@ final class ActiveBrewViewModel {
 
     /// AeroPress: starts the plunge; tapping again finishes the brew.
     func togglePress() {
-        if isPressing {
+        if session.isPressing {
             stop()
         } else {
             session.startPress(at: clock())

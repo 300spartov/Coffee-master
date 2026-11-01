@@ -14,7 +14,7 @@ struct EspressoResultView: View {
                 LabeledContent(tr("Dose"), value: "\(decimal(viewModel.draft.setup.doseGrams)) g")
                 NumberField(tr("Actual yield"), value: $viewModel.actualYield, unit: "g", placeholder: decimal(viewModel.draft.setup.targetYieldGrams), range: 0...200)
                     .accessibilityIdentifier("espresso.actualYield")
-                LabeledContent(tr("Actual ratio"), value: viewModel.actualRatio.map { "1:\($0.formatted(.number.precision(.fractionLength(1))))" } ?? "—")
+                LabeledContent(tr("Actual ratio"), value: viewModel.actualRatio.map(ratioText) ?? "—")
             }
             .themedRow()
 

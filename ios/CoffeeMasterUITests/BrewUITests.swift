@@ -1,6 +1,7 @@
 import XCTest
 
-/// Brew wizard, step 1–2: Brew → Alternative / Espresso → a method → the brew form for that method.
+/// The brew wizard: method pick, setup, pour-over timer, rating and result, espresso, the brew in
+/// progress and its Live Activity.
 @MainActor
 final class BrewUITests: XCTestCase {
     override func setUp() async throws {
@@ -69,10 +70,7 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts[bean].waitForExistence(timeout: 5))
 
         // Close the wizard (without saving) and remove the bag
-        leaveRating(app)
-        app.navigationBars["V60"].buttons.firstMatch.tap()
-        app.navigationBars["Alternative"].buttons.firstMatch.tap()
-        app.navigationBars["New Brew"].buttons["Cancel"].tap()
+        closeWizardFromBrewForm(app)
         app.tabBars.buttons["Beans"].tap()
         let row = element(app, containing: bean)
         XCTAssertTrue(row.waitForExistence(timeout: 5))
@@ -143,7 +141,7 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Rate & Save"].waitForExistence(timeout: 5))
     }
 
-    /// From the rating (not saved): back to setup, methods, step 1, then Cancel.
+    /// From the rating (not saved): back to setup, methods, step 1, then Cancel closes the wizard.
     private func closeWizardFromBrewForm(_ app: XCUIApplication) {
         leaveRating(app)
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
@@ -259,7 +257,7 @@ final class BrewUITests: XCTestCase {
     }
 
     /// ROADMAP 2.4: a started brew shows its Live Activity outside the app (screenshot of the Home Screen
-    /// with the Dynamic Island). Discards the brew afterwards.
+    /// with the Dynamic Island). Back on the started brew then asks before discarding it.
     func testLiveActivityShowsOutsideTheApp() {
         let app = XCUIApplication.launched()
         openSetup(app, group: "alternative", method: "V60")
@@ -274,21 +272,8 @@ final class BrewUITests: XCTestCase {
         app.activate()
         XCTAssertTrue(app.buttons["active.pause"].waitForExistence(timeout: 5))
         app.navigationBars["V60"].buttons["active.back"].tap()
-        app.buttons["Discard"].tap()
-    }
-
-    /// Back after the first pour asks before discarding.
-    func testLeavingAStartedBrewAsks() {
-        let app = XCUIApplication.launched()
-        openSetup(app, group: "alternative", method: "V60")
-        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
-        XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
-        app.buttons["active.pour"].tap()
-
-        app.navigationBars["V60"].buttons["active.back"].tap()
         XCTAssertTrue(app.staticTexts["Discard this brew?"].waitForExistence(timeout: 5))
         app.buttons["Discard"].tap()
-
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
     }
 
@@ -348,16 +333,5 @@ final class BrewUITests: XCTestCase {
 
     private func element(_ app: XCUIApplication, containing text: String) -> XCUIElement {
         app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch
-    }
-
-    func testCancelClosesWizard() {
-        let app = XCUIApplication.launched()
-        app.brewButton.tap()
-        XCTAssertTrue(app.navigationBars["New Brew"].waitForExistence(timeout: 5))
-
-        app.navigationBars["New Brew"].buttons["Cancel"].tap()
-
-        XCTAssertTrue(app.navigationBars["New Brew"].waitForNonExistence(timeout: 5))
-        XCTAssertTrue(app.brewButton.waitForExistence(timeout: 5))
     }
 }

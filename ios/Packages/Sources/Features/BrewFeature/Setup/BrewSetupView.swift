@@ -55,7 +55,7 @@ struct BrewSetupView: View {
             Section(tr("Grinder & grind")) {
                 GearRowButton(kind: .grinder, model: viewModel)
                 NumberField(tr("Clicks"), value: $viewModel.draft.recipe.grindSetting, range: BrewSetup.grindRange, step: 1)
-                .accessibilityIdentifier("setup.clicks")
+                    .accessibilityIdentifier("setup.clicks")
             }
             .themedRow()
 
@@ -95,8 +95,6 @@ struct BrewSetupView: View {
         .themedGroupedBackground()
         .accessibilityIdentifier("setup.form")
     }
-
-
 }
 
 private extension Binding where Value == BrewSetup {

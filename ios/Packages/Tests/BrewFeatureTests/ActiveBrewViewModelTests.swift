@@ -63,11 +63,11 @@ struct ActiveBrewViewModelTests {
         viewModel.pause()
 
         viewModel.toggle(.stir)
-        #expect(viewModel.isRunning(.stir))
+        #expect(viewModel.session.runningAction == .stir)
         clock.advance(20)
         viewModel.refresh()
 
-        #expect(!viewModel.isRunning(.stir))
+        #expect(viewModel.session.runningAction == nil)
         #expect(viewModel.session.steps.last?.duration == 15)
     }
 
@@ -79,7 +79,7 @@ struct ActiveBrewViewModelTests {
         viewModel.pause()
 
         viewModel.togglePress()
-        #expect(viewModel.isPressing)
+        #expect(viewModel.session.isPressing)
         clock.advance(30)
         viewModel.togglePress()
 

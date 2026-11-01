@@ -14,10 +14,10 @@ struct ActiveBrewView: View {
                 timers
                 water
                 mainButtons
-                if viewModel.isPouring {
+                if session.isPouring {
                     pourField
                 }
-                if session.isBetweenPours || viewModel.isPressing {
+                if session.isBetweenPours || session.isPressing {
                     pauseActions
                 }
                 Button {
@@ -42,7 +42,7 @@ struct ActiveBrewView: View {
         .confirmationDialog(tr("Discard this brew?"), isPresented: $viewModel.isConfirmingLeave, titleVisibility: .visible) {
             Button(tr("Discard"), role: .destructive) { viewModel.leave() }
         }
-        .onChange(of: viewModel.isPouring) { _, pouring in isPourFieldFocused = pouring }
+        .onChange(of: session.isPouring) { _, pouring in isPourFieldFocused = pouring }
     }
 
     // MARK: - Timers
@@ -82,7 +82,7 @@ struct ActiveBrewView: View {
 
     /// Pours started so far (the running one counts).
     private var pourCount: Int {
-        session.completedPours + (viewModel.isPouring ? 1 : 0)
+        session.completedPours + (session.isPouring ? 1 : 0)
     }
 
     private var phaseColor: Color {
@@ -115,7 +115,7 @@ struct ActiveBrewView: View {
                     .foregroundStyle(.theme.accent)
                 Spacer()
                 if let ratio = session.ratioOverPlan(poured: viewModel.pouredMilliliters) {
-                    Text(verbatim: "1:\(ratio.formatted(.number.precision(.fractionLength(1))))")
+                    Text(verbatim: ratioText(ratio))
                         .foregroundStyle(.theme.warning)
                 }
                 Spacer()
@@ -137,15 +137,15 @@ struct ActiveBrewView: View {
     private var mainButtons: some View {
         HStack(spacing: Spacing.md) {
             BigButton(
-                title: viewModel.isPouring ? tr("Pouring…") : tr("Pour"),
+                title: session.isPouring ? tr("Pouring…") : tr("Pour"),
                 subtitle: pourSubtitle,
                 systemImage: "drop.fill",
                 tint: .theme.info,
-                isActive: viewModel.isPouring
+                isActive: session.isPouring
             ) {
                 viewModel.pour()
             }
-            .disabled(viewModel.isPouring || viewModel.isPressing || session.isFinished)
+            .disabled(session.isPouring || session.isPressing || session.isFinished)
             .accessibilityIdentifier("active.pour")
 
             BigButton(
@@ -160,7 +160,7 @@ struct ActiveBrewView: View {
             }
             // Only a pour can be paused; between pours the button shows the drawdown (not greyed out).
             .disabled(session.startedAt == nil || session.isFinished)
-            .allowsHitTesting(viewModel.isPouring)
+            .allowsHitTesting(session.isPouring)
             .accessibilityIdentifier("active.pause")
         }
     }
@@ -205,15 +205,16 @@ struct ActiveBrewView: View {
             Text(tr("During the pause")).appTextStyle(.caption)
             HStack(spacing: Spacing.sm) {
                 ForEach([BrewAction.stir, .swirl, .shake], id: \.self) { action in
+                    let isRunning = session.runningAction == action
                     ActionButton(
                         title: action.title,
                         systemImage: action.systemImage,
-                        isRunning: viewModel.isRunning(action),
-                        progress: viewModel.isRunning(action) ? (session.phaseElapsed(at: viewModel.now) ?? 0) / PourOverSession.actionLimit : 0
+                        isRunning: isRunning,
+                        progress: isRunning ? (session.phaseElapsed(at: viewModel.now) ?? 0) / PourOverSession.actionLimit : 0
                     ) {
                         viewModel.toggle(action)
                     }
-                    .disabled(viewModel.isPressing)
+                    .disabled(session.isPressing)
                     .accessibilityIdentifier("active.action.\(action.rawValue)")
                 }
             }
@@ -221,7 +222,7 @@ struct ActiveBrewView: View {
                 Button {
                     viewModel.togglePress()
                 } label: {
-                    Label(viewModel.isPressing ? tr("Stop press") : tr("Press"), systemImage: "arrow.down.circle.fill")
+                    Label(session.isPressing ? tr("Stop press") : tr("Press"), systemImage: "arrow.down.circle.fill")
                 }
                 .buttonStyle(.primary)
                 .accessibilityIdentifier("active.press")
@@ -249,10 +250,6 @@ struct ActiveBrewView: View {
         guard case .pour(let milliliters) = session.steps[index].kind else { return nil }
         return Binding(get: { milliliters }, set: { viewModel.editPour(at: index, milliliters: $0) })
     }
-
-    // MARK: - Formatting
-
-
 }
 
 /// "12 s", counted like the clocks (whole seconds gone).
@@ -293,10 +290,7 @@ private struct ActionButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: Spacing.xs) {
-                ZStack {
-                    Circle().stroke(Color.theme.success.opacity(0.2), lineWidth: 3)
-                    Circle().trim(from: 0, to: progress).stroke(Color.theme.success, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
+                ProgressRing(progress: progress, tint: .theme.success) {
                     Image(systemName: systemImage).font(.body.weight(.semibold))
                 }
                 .frame(width: 36, height: 36)
@@ -319,9 +313,9 @@ private struct StepRow: View {
 
     var body: some View {
         HStack(spacing: Spacing.sm) {
-            Text(title)
+            Text(step.title)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(color)
+                .foregroundStyle(step.tint)
                 .frame(width: 96, alignment: .leading)
             Text(verbatim: "\(clockText(step.start))–\(clockText(step.end))")
                 .font(.caption.monospacedDigit())
@@ -340,44 +334,6 @@ private struct StepRow: View {
             }
         }
         .padding(.vertical, Spacing.sm)
-    }
-
-    private var title: String {
-        switch step.kind {
-        case .pour: tr("Pour")
-        case .pause: tr("Pause")
-        case .action(let action): action.title
-        }
-    }
-
-    private var color: Color {
-        switch step.kind {
-        case .pour: .theme.info
-        case .pause: .theme.textSecondary
-        case .action: .theme.success
-        }
-    }
-
-}
-
-extension BrewAction {
-    var title: String {
-        switch self {
-        case .stir: tr("Stir")
-        case .swirl: tr("Swirl")
-        case .shake: tr("Shake")
-        case .press: tr("Press")
-        default: rawValue
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .stir: "arrow.clockwise"
-        case .swirl: "arrow.triangle.2.circlepath"
-        case .shake: "waveform.path"
-        default: "bolt"
-        }
     }
 }
 

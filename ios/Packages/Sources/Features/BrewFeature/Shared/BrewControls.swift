@@ -79,6 +79,11 @@ func decimal(_ value: Double) -> String {
     value.formatted(.number.precision(.fractionLength(0...1)))
 }
 
+/// "1:2.0", "1:16.5": a brew ratio with one decimal.
+func ratioText(_ ratio: Double) -> String {
+    "1:\(ratio.formatted(.number.precision(.fractionLength(1))))"
+}
+
 /// Calls `refresh` a few times a second until the task is cancelled (bind it to a screen with `.task`):
 /// the brew clocks, which keep timestamps and only need redrawing.
 func refreshWhileVisible(_ refresh: () -> Void) async {
@@ -131,10 +136,7 @@ struct BigButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: Spacing.xs) {
-                ZStack {
-                    Circle().stroke(tint.opacity(0.2), lineWidth: 3)
-                    Circle().trim(from: 0, to: progress).stroke(isActive ? Color.white : tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
+                ProgressRing(progress: progress, tint: tint, ringColor: isActive ? .white : tint) {
                     Image(systemName: systemImage).font(.title3)
                 }
                 .frame(width: 44, height: 44)
@@ -150,3 +152,60 @@ struct BigButton: View {
     }
 }
 
+/// An icon inside a ring that fills clockwise with `progress` (0...1).
+struct ProgressRing<Content: View>: View {
+    let progress: Double
+    let tint: Color
+    /// The filled part (default: `tint`).
+    var ringColor: Color?
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        ZStack {
+            Circle().stroke(tint.opacity(0.2), lineWidth: 3)
+            Circle().trim(from: 0, to: progress).stroke(ringColor ?? tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            content
+        }
+    }
+}
+
+extension BrewStep {
+    /// "Pour", "Pause", "Stir", … (the steps lists of the timer and the rating).
+    var title: String {
+        switch kind {
+        case .pour: tr("Pour")
+        case .pause: tr("Pause")
+        case .action(let action): action.title
+        }
+    }
+
+    var tint: Color {
+        switch kind {
+        case .pour: .theme.info
+        case .pause: .theme.textSecondary
+        case .action: .theme.success
+        }
+    }
+}
+
+extension BrewAction {
+    var title: String {
+        switch self {
+        case .stir: tr("Stir")
+        case .swirl: tr("Swirl")
+        case .shake: tr("Shake")
+        case .press: tr("Press")
+        default: rawValue
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .stir: "arrow.clockwise"
+        case .swirl: "arrow.triangle.2.circlepath"
+        case .shake: "waveform.path"
+        default: "bolt"
+        }
+    }
+}

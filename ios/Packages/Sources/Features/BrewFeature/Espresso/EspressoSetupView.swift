@@ -52,7 +52,7 @@ struct EspressoSetupView: View {
                     MetricView(value: "\(decimal(viewModel.draft.setup.doseGrams)) / \(decimal(viewModel.draft.setup.targetYieldGrams))", unit: "g", label: tr("Dose / Yield"), size: .large)
                         .accessibilityIdentifier("espresso.yield")
                     Spacer()
-                    MetricView(value: "1:\(viewModel.draft.setup.ratio.formatted(.number.precision(.fractionLength(1))))", label: tr("Ratio"))
+                    MetricView(value: ratioText(viewModel.draft.setup.ratio), label: tr("Ratio"))
                 }
             }
             .themedRow()
@@ -66,6 +66,4 @@ struct EspressoSetupView: View {
         .task { await viewModel.prefill() }
         .accessibilityIdentifier("espresso.form")
     }
-
-
 }

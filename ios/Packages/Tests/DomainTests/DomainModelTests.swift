@@ -59,7 +59,6 @@ struct BrewTests {
 
         #expect(recipeOnly.volumeMilliliters == 240)
         #expect(poured.volumeMilliliters == 230)
-        #expect(poured.steps.pourCount == 2)
         #expect(espresso.volumeMilliliters == 40)
         #expect(manual.volumeMilliliters == 300)
     }

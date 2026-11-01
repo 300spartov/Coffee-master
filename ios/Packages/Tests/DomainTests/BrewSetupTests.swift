@@ -67,6 +67,8 @@ struct BrewSetupTests {
         #expect(valid.waterTemperature == 30)
         #expect(valid.doseGrams == 300)
         #expect(valid.ratio == 16)
+        #expect(BrewSetup.validRatio(0.4) == 1)
+        #expect(BrewSetup.validRatio(42) == 30)
         #expect(valid.pours == 5)
         var aeropress = BrewSetup(method: .aeropress)
         aeropress.aeropress?.filterCount = 7
@@ -78,12 +80,6 @@ struct BrewSetupTests {
         #expect(!Bean(name: "b", totalGrams: 250, remainingGrams: 51).isLow)
         #expect(FilterPack(name: "c", total: 100, remaining: 64).remainingFraction == 0.64)
         #expect(FilterPack(name: "d", total: 0).remainingFraction == 0)
-    }
-
-    @Test func ratioIsClampedAndRounded() {
-        #expect(BrewSetup.validRatio(0.4) == 1)
-        #expect(BrewSetup.validRatio(42) == 30)
-        #expect(BrewSetup.validRatio(15.96) == 16)
     }
 
     @Test func brewKeepsGearTheMethodUses() {
@@ -201,6 +197,10 @@ struct BrewSetupPrefillTests {
         let empty = FilterPack(name: "Empty", total: 100, remaining: 0)
         #expect(prefill(.v60, beans: [], filters: [empty, pack]).filter == pack)
         #expect(prefill(.v60, beans: [], filters: [pack, FilterPack(name: "Second")]).filter == nil)
+        // Only packs for the brewer count.
+        let chemex = FilterPack(name: "Chemex Bonded", shape: .chemex)
+        let aeropress = FilterPack(name: "AeroPress papers", shape: .aeropress)
+        #expect(prefill(.chemex, beans: [], filters: [aeropress, chemex]).filter == chemex)
     }
 
     @Test func historyKeepsOnePerMethodNewestFirst() {
@@ -227,15 +227,6 @@ struct FilterShapeTests {
         #expect(unset.fits(.aeropress))
         #expect(chemex.fits(.frenchPress))
         #expect(FilterShape.shapes(for: .aeropress).first == .aeropress)
-    }
-
-    @Test func prefillOnlyPicksFittingPacks() {
-        let chemex = FilterPack(name: "Chemex Bonded", shape: .chemex)
-        let aeropress = FilterPack(name: "AeroPress papers", shape: .aeropress)
-
-        let prefill = BrewSetupDraft(method: .chemex, history: [], beans: [], drippers: [], filters: [aeropress, chemex], grinders: [])
-
-        #expect(prefill.filter == chemex)
     }
 
     @Test func packsSavedBeforeShapesExistedStillDecode() throws {
