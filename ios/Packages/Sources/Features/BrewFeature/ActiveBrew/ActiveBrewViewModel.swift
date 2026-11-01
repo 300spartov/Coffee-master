@@ -19,22 +19,33 @@ final class ActiveBrewViewModel {
         var id: Int { number }
     }
 
-    private(set) var session: PourOverSession
+    private(set) var session: PourOverSession {
+        didSet { if session != oldValue { persist() } }
+    }
     private(set) var now: Date
     /// Ml of the running pour, as typed (empty = not weighed; logged as 0 like the web app).
-    var currentPour: Double?
+    var currentPour: Double? {
+        didSet { if currentPour != oldValue { persist() } }
+    }
     /// Back was tapped on a started brew.
     var isConfirmingLeave = false
 
     @ObservationIgnored private let clock: () -> Date
     @ObservationIgnored private weak var router: (any ActiveBrewRouting)?
 
-    /// `clock`: the time source (tests pass a fixed one).
-    init(setup: BrewSetup, router: any ActiveBrewRouting, clock: @escaping () -> Date = Date.init) {
-        session = PourOverSession(setup: setup)
+    /// `clock`: the time source (tests pass a fixed one). `session` / `currentPour`: a brew in progress
+    /// restored after an app kill.
+    init(session: PourOverSession, currentPour: Double? = nil, router: any ActiveBrewRouting, clock: @escaping () -> Date = Date.init) {
+        self.session = session
+        self.currentPour = currentPour
         self.router = router
         self.clock = clock
         now = clock()
+    }
+
+    /// A new brew with `setup`.
+    convenience init(setup: BrewSetup, router: any ActiveBrewRouting, clock: @escaping () -> Date = Date.init) {
+        self.init(session: PourOverSession(setup: setup), router: router, clock: clock)
     }
 
     /// Bound to the screen via `.task`.
@@ -159,5 +170,11 @@ final class ActiveBrewViewModel {
 
     func leave() {
         router?.activeBrewDidLeave()
+    }
+
+    /// Keeps the brew across app kills once it has started; a finished one is the rating's to keep.
+    private func persist() {
+        guard session.startedAt != nil, !session.isFinished else { return }
+        BrewInProgress.save(.timer(session, currentPour: currentPour))
     }
 }

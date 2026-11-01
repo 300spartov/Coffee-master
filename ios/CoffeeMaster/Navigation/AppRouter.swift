@@ -41,6 +41,8 @@ final class AppRouter {
         if let link = pendingDeepLink {
             pendingDeepLink = nil
             handle(link)
+        } else {
+            brewFlow?.resumeIfNeeded()
         }
 
         languageObserver = Task { [weak self] in
@@ -112,6 +114,8 @@ final class AppRouter {
         tabBarController.dismiss(animated: false)
         buildTabs()
         tabBarController.selectedIndex = selectedIndex
+        // A brew in progress comes back in the new language.
+        brewFlow?.resumeIfNeeded()
     }
 
     // MARK: - Brew action

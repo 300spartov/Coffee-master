@@ -46,3 +46,20 @@ struct UserDefaultsEspressoHistoryTests {
         #expect(await history.recentSetups().map(\.method) == [.v60])
     }
 }
+
+struct UserDefaultsDraftStoreTests {
+    @Test func savesLoadsAndRemoves() throws {
+        let suite = "DraftStoreTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = UserDefaultsDraftStore(defaults: defaults)
+
+        store.save(BrewTasting(rating: 9, notes: "Juicy"), key: "draft")
+        #expect(UserDefaultsDraftStore(defaults: defaults).load(BrewTasting.self, key: "draft")?.rating == 9)
+
+        store.remove("draft")
+        #expect(store.load(BrewTasting.self, key: "draft") == nil)
+        defaults.set(Data("nope".utf8), forKey: "draft")
+        #expect(store.load(BrewTasting.self, key: "draft") == nil)
+    }
+}

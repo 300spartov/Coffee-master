@@ -69,7 +69,7 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts[bean].waitForExistence(timeout: 5))
 
         // Close the wizard (without saving) and remove the bag
-        app.navigationBars["Rate & Save"].buttons.firstMatch.tap()
+        leaveRating(app)
         app.navigationBars["V60"].buttons.firstMatch.tap()
         app.navigationBars["Alternative"].buttons.firstMatch.tap()
         app.navigationBars["New Brew"].buttons["Cancel"].tap()
@@ -128,6 +128,13 @@ final class BrewUITests: XCTestCase {
         brewThroughTimer(app)
     }
 
+    /// Back from the rating discards the brew, after asking.
+    private func leaveRating(_ app: XCUIApplication) {
+        app.navigationBars["Rate & Save"].buttons["rate.back"].tap()
+        XCTAssertTrue(app.buttons["Discard"].waitForExistence(timeout: 5))
+        app.buttons["Discard"].tap()
+    }
+
     /// The shortest brew: one pour, then Stop; ends on the rating.
     private func brewThroughTimer(_ app: XCUIApplication) {
         XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
@@ -138,7 +145,7 @@ final class BrewUITests: XCTestCase {
 
     /// From the rating (not saved): back to setup, methods, step 1, then Cancel.
     private func closeWizardFromBrewForm(_ app: XCUIApplication) {
-        app.navigationBars["Rate & Save"].buttons.firstMatch.tap()
+        leaveRating(app)
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
         app.navigationBars["V60"].buttons.firstMatch.tap()
         app.navigationBars["Alternative"].buttons.firstMatch.tap()
@@ -193,7 +200,7 @@ final class BrewUITests: XCTestCase {
         fruit.tap()
         XCTAssertTrue(app.buttons["wheel.Citrus"].waitForExistence(timeout: 5))
         attachScreenshot(named: "pour-over-wheel")
-        app.navigationBars["Rate & Save"].buttons.firstMatch.tap()
+        leaveRating(app)
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
     }
 
@@ -225,6 +232,30 @@ final class BrewUITests: XCTestCase {
         top.swipeLeft()
         app.buttons["Delete"].firstMatch.tap()
         XCTAssertTrue(ours.waitForNonExistence(timeout: 5))
+    }
+
+    /// ROADMAP 2.8: a brew killed mid-pour comes back at launch, at the timer, with its clock running.
+    func testBrewInProgressSurvivesAnAppKill() {
+        let app = XCUIApplication.launched()
+        openSetup(app, group: "alternative", method: "V60")
+        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
+        app.buttons["active.pour"].tap()
+        sleep(2)
+
+        app.terminate()
+        let relaunched = XCUIApplication.launched(keepsBrewInProgress: true)
+
+        XCTAssertTrue(relaunched.buttons["active.pause"].waitForExistence(timeout: 10), "The timer should be back")
+        let time = relaunched.staticTexts["active.time"]
+        XCTAssertTrue(time.waitForExistence(timeout: 5))
+        XCTAssertNotEqual(time.label, "0:00", "The clock kept running while the app was closed")
+        attachScreenshot(named: "restored-timer")
+
+        // Discard it (a restored brew goes back to the method pick), so nothing is left for later launches.
+        relaunched.navigationBars["V60"].buttons["active.back"].tap()
+        relaunched.buttons["Discard"].tap()
+        XCTAssertTrue(relaunched.buttons["brew.group.alternative"].waitForExistence(timeout: 5))
     }
 
     /// Back after the first pour asks before discarding.

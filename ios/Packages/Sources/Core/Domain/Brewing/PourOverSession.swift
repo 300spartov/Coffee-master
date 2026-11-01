@@ -3,8 +3,8 @@ import Foundation
 /// A pour-over brew in progress: pour → pause (stir / swirl / shake) → pour … → stop, as on the
 /// web's active screen. Everything is stored as timestamps, never as running timers, so the brew keeps
 /// time correctly when the app is in the background: callers pass `now`, views redraw from it.
-public struct PourOverSession: Equatable, Sendable {
-    public enum Phase: Equatable, Sendable {
+public struct PourOverSession: Equatable, Codable, Sendable {
+    public enum Phase: Equatable, Codable, Sendable {
         /// Set up, nothing poured yet.
         case ready
         case pouring(since: Date)

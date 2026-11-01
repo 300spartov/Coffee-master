@@ -37,7 +37,7 @@ public protocol ActiveBrewRouting: AnyObject {
 }
 
 /// The espresso steps after the setup.
-public enum EspressoStep: Sendable {
+public enum EspressoStep: Codable, Sendable {
     case shot
     /// Milk drinks and iced drinks only.
     case milk

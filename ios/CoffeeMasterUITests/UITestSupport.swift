@@ -2,11 +2,13 @@ import XCTest
 
 extension XCUIApplication {
     /// Launches the app in English, optionally opening `deepLink` (the Debug `-deeplink` argument,
-    /// the same path as a cold-start URL).
+    /// the same path as a cold-start URL). A brew left in progress by an earlier test is discarded
+    /// unless `keepsBrewInProgress` (so one failed test doesn't reopen a brew in the next).
     @MainActor
-    static func launched(deepLink: String? = nil) -> XCUIApplication {
+    static func launched(deepLink: String? = nil, keepsBrewInProgress: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments += ["-app.language", "en"]
+        if !keepsBrewInProgress { app.launchArguments += ["-discardBrewDraft", "YES"] }
         if let deepLink { app.launchArguments += ["-deeplink", deepLink] }
         app.launch()
         return app

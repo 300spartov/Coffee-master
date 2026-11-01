@@ -51,6 +51,10 @@ struct RateBrewView: View {
         .scrollDismissesKeyboard(.interactively)
         .themedGroupedBackground()
         .errorAlert($viewModel.alertMessage)
+        .navigationBarBackButtonHidden()
+        .confirmationDialog(tr("Discard this brew?"), isPresented: $viewModel.isConfirmingLeave, titleVisibility: .visible) {
+            Button(tr("Discard"), role: .destructive) { viewModel.leave() }
+        }
         .accessibilityIdentifier("rate.form")
     }
 

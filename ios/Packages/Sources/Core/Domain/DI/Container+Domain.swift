@@ -50,4 +50,9 @@ public extension Container {
     var brewSetupHistory: Factory<any BrewSetupHistory> {
         self { InMemoryBrewSetupHistory() }.cached
     }
+
+    /// The brew in progress, kept across app kills.
+    var draftStore: Factory<any DraftStore> {
+        self { InMemoryDraftStore() }.cached
+    }
 }

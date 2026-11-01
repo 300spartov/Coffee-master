@@ -1,7 +1,7 @@
 import Foundation
 
 /// How a brew tasted, from the rating screen: rating, flavor-wheel notes (Ukrainian names) and free notes.
-public struct BrewTasting: Hashable, Sendable {
+public struct BrewTasting: Hashable, Codable, Sendable {
     /// 0...10 (the web app's default is 8).
     public var rating: Double
     public var flavors: [String]

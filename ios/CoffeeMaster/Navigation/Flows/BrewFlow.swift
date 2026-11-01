@@ -39,11 +39,20 @@ final class BrewFlow {
     /// Whether the brew screen is really still on screen (`AppRouter` may have dismissed it for a deep link).
     var isPresented: Bool { modal.isPresented }
 
+    /// Opens the wizard, or the brew left unfinished (app killed mid-brew) at its step.
     func start() {
         guard let presenter else { return }
         modal.present {
-            StackRouter.presentStack(root: module.makeMethodGroups(router: self), from: presenter, style: .fullScreen)
+            let screens = module.makeBrewInProgress(router: self) ?? [module.makeMethodGroups(router: self)]
+            let stack = StackRouter.presentStack(root: screens[0], from: presenter, style: .fullScreen)
+            screens.dropFirst().forEach { stack.push($0, animated: false) }
+            return stack
         }
+    }
+
+    /// At launch: back into a brew left unfinished.
+    func resumeIfNeeded() {
+        if module.hasBrewInProgress { start() }
     }
 
     // MARK: - Picker
@@ -89,6 +98,7 @@ extension BrewFlow: MethodPickRouting {
     }
 
     func methodPickDidCancel() {
+        module.discardBrewInProgress()
         modal.close()
     }
 }
@@ -124,6 +134,7 @@ extension BrewFlow: @MainActor EspressoRouting {
 extension BrewFlow: @MainActor BrewSavingRouting {
     /// The result becomes the only screen (no going back into a saved brew), with stock warnings.
     func brewDidSave(_ brew: Brew, usage: StockUsage) {
+        module.discardBrewInProgress()
         modal.current?.setRoot(module.makeBrewResult(brew, router: self), animated: true)
         if let bean = usage.bean {
             if bean.isEmpty {
@@ -156,7 +167,9 @@ extension BrewFlow: ActiveBrewRouting {
         modal.current?.replaceTop(with: module.makeRateBrew(session: session, router: self))
     }
 
+    /// Back on a started timer or the rating (confirmed): the brew is discarded.
     func activeBrewDidLeave() {
+        module.discardBrewInProgress()
         modal.current?.pop()
     }
 }

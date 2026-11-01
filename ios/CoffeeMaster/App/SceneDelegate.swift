@@ -1,4 +1,5 @@
 import UIKit
+import BrewFeature
 
 /// Converts every system entry point into a URL and hands it to `AppRouter`:
 /// custom-scheme URLs, universal links, widget / Live Activity taps (both arrive as URLs),
@@ -16,6 +17,12 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let window = UIWindow(windowScene: windowScene)
         let router = AppRouter(window: window)
+        #if DEBUG
+        // `-discardBrewDraft YES`: start without a brew in progress (UI tests start from a clean slate).
+        if UserDefaults.standard.bool(forKey: "discardBrewDraft") {
+            BrewModule().discardBrewInProgress()
+        }
+        #endif
         router.start()
         self.window = window
         appRouter = router

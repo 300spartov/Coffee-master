@@ -2,7 +2,7 @@ import Foundation
 import FactoryKit
 
 /// An espresso being set up: the picked gear (full items) and the recipe; `setup` is what's pulled.
-public struct EspressoDraft: Equatable, Sendable {
+public struct EspressoDraft: Equatable, Codable, Sendable {
     public var bean: Bean?
     public var machine: Device?
     public var grinder: Device?

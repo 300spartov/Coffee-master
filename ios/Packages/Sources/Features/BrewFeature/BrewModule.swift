@@ -32,16 +32,21 @@ public struct BrewModule {
     /// Step 4 (it replaces the setup) for pour-over: the brew timer. Back is the screen's own, so a
     /// started brew isn't lost by accident.
     public func makeActiveBrew(setup: BrewSetup, router: any ActiveBrewRouting) -> UIViewController {
-        let viewModel = ActiveBrewViewModel(setup: setup, router: router)
-        let controller = HostingController(rootView: ActiveBrewView(viewModel: viewModel), title: setup.method.rawValue)
-        let back = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.backward"),
-            primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapBack() }
-        )
-        back.accessibilityLabel = tr("Back")
-        back.accessibilityIdentifier = "active.back"
-        controller.navigationItem.leftBarButtonItem = back
+        makeActiveBrew(ActiveBrewViewModel(setup: setup, router: router))
+    }
+
+    private func makeActiveBrew(_ viewModel: ActiveBrewViewModel) -> UIViewController {
+        let controller = HostingController(rootView: ActiveBrewView(viewModel: viewModel), title: viewModel.session.setup.method.rawValue)
+        controller.navigationItem.leftBarButtonItem = backButton(identifier: "active.back") { [weak viewModel] in viewModel?.didTapBack() }
         return controller
+    }
+
+    /// The module's own Back for steps that ask before discarding a brew.
+    private func backButton(identifier: String, action: @escaping () -> Void) -> UIBarButtonItem {
+        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), primaryAction: UIAction { _ in action() })
+        back.accessibilityLabel = tr("Back")
+        back.accessibilityIdentifier = identifier
+        return back
     }
 
     /// Espresso step 1 (push it): gear and recipe. The next steps come from `makeEspressoStep`.
@@ -64,8 +69,40 @@ public struct BrewModule {
     }
 
     /// Pour-over's last step (it replaces the timer): steps, rating, taste; saves the brew.
-    public func makeRateBrew(session: PourOverSession, router: any BrewSavingRouting) -> UIViewController {
-        HostingController(rootView: RateBrewView(viewModel: RateBrewViewModel(session: session, router: router)), title: tr("Rate & Save"))
+    public func makeRateBrew(session: PourOverSession, router: any BrewSavingRouting & ActiveBrewRouting) -> UIViewController {
+        makeRateBrew(RateBrewViewModel(session: session, router: router))
+    }
+
+    private func makeRateBrew(_ viewModel: RateBrewViewModel) -> UIViewController {
+        let controller = HostingController(rootView: RateBrewView(viewModel: viewModel), title: tr("Rate & Save"))
+        controller.navigationItem.leftBarButtonItem = backButton(identifier: "rate.back") { [weak viewModel] in viewModel?.didTapBack() }
+        return controller
+    }
+
+    // MARK: - Brew in progress (ROADMAP 2.8)
+
+    /// The screens of a brew left unfinished (e.g. the app was killed), the method pick first; nil if
+    /// there's none (or it's too old). Present them as one stack.
+    public func makeBrewInProgress(router: any MethodPickRouting & ActiveBrewRouting & BrewSavingRouting & EspressoRouting) -> [UIViewController]? {
+        guard let draft = BrewInProgress.current() else { return nil }
+        let start = makeMethodGroups(router: router)
+        switch draft.stage {
+        case .timer(let session, let currentPour):
+            return [start, makeActiveBrew(ActiveBrewViewModel(session: session, currentPour: currentPour, router: router))]
+        case .rating(let session, let steps, let tasting):
+            return [start, makeRateBrew(RateBrewViewModel(session: session, steps: steps, tasting: tasting, router: router))]
+        case .espresso(let progress):
+            let brew = EspressoBrew(viewModel: EspressoViewModel(progress: progress, router: router))
+            let setup = HostingController(rootView: EspressoSetupView(viewModel: brew.viewModel), title: progress.draft.recipe.method.rawValue)
+            return [start, setup, makeEspressoStep(progress.step, of: brew)]
+        }
+    }
+
+    public var hasBrewInProgress: Bool { BrewInProgress.current() != nil }
+
+    /// Forgets the brew in progress (saved, discarded, or the wizard was closed).
+    public func discardBrewInProgress() {
+        BrewInProgress.discard()
     }
 
     /// After saving (pour-over or espresso); make it the stack's root so there's no going back.

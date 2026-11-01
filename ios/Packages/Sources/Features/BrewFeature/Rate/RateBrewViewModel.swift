@@ -10,19 +10,42 @@ final class RateBrewViewModel {
     let setup: BrewSetup
     let totalTime: TimeInterval
     /// The timer's log; pours can be corrected here.
-    private(set) var steps: [BrewStep]
-    var tasting = BrewTasting()
+    private(set) var steps: [BrewStep] {
+        didSet { persist() }
+    }
+    var tasting = BrewTasting() {
+        didSet { persist() }
+    }
+    /// Back was tapped: leaving discards the brew.
+    var isConfirmingLeave = false
+    @ObservationIgnored private let session: PourOverSession
     private(set) var isSaving = false
     var alertMessage: String?
 
     @ObservationIgnored @Injected(\.brewRepository) private var brews
-    @ObservationIgnored private weak var router: (any BrewSavingRouting)?
+    @ObservationIgnored private weak var router: (any BrewSavingRouting & ActiveBrewRouting)?
 
-    init(session: PourOverSession, router: any BrewSavingRouting) {
+    /// `steps` / `tasting`: a rating in progress restored after an app kill.
+    init(session: PourOverSession, steps: [BrewStep]? = nil, tasting: BrewTasting = BrewTasting(), router: any BrewSavingRouting & ActiveBrewRouting) {
+        self.session = session
         setup = session.setup
         totalTime = session.elapsed(at: .now).rounded(.down)
-        steps = session.steps
+        self.steps = steps ?? session.steps
+        self.tasting = tasting
         self.router = router
+        persist()
+    }
+
+    func didTapBack() {
+        isConfirmingLeave = true
+    }
+
+    func leave() {
+        router?.activeBrewDidLeave()
+    }
+
+    private func persist() {
+        BrewInProgress.save(.rating(session, steps: steps, tasting: tasting))
     }
 
     var pouredMilliliters: Double { steps.totalPouredMilliliters }

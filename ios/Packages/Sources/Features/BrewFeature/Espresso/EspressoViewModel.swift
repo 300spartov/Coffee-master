@@ -15,21 +15,23 @@ final class EspressoViewModel: GearPickingModel {
     private(set) var mixerSuggestions: [String] = []
 
     // Shot
-    private(set) var shotStartedAt: Date?
-    private(set) var shotStoppedAt: Date?
+    private(set) var shotStartedAt: Date? { didSet { persist() } }
+    private(set) var shotStoppedAt: Date? { didSet { persist() } }
+    /// The step on screen after the setup (nil on the setup); from then on the brew is kept.
+    private(set) var step: EspressoStep? { didSet { persist() } }
     private(set) var now: Date
 
     // Milk / ice (web defaults)
-    var milk = MilkInfo(name: "", temperature: 60, volumeMilliliters: 150, frother: "")
-    var ice = IceInfo(cubes: 4, mixer: "")
+    var milk = MilkInfo(name: "", temperature: 60, volumeMilliliters: 150, frother: "") { didSet { persist() } }
+    var ice = IceInfo(cubes: 4, mixer: "") { didSet { persist() } }
 
     // Result
     /// Seconds, editable (the timer's value).
-    var shotTime: Double = 0
-    var actualYield: Double?
-    var targetTDS: Double? = 9
-    var actualTDS: Double?
-    var tasting = BrewTasting()
+    var shotTime: Double = 0 { didSet { persist() } }
+    var actualYield: Double? { didSet { persist() } }
+    var targetTDS: Double? = 9 { didSet { persist() } }
+    var actualTDS: Double? { didSet { persist() } }
+    var tasting = BrewTasting() { didSet { persist() } }
     private(set) var isSaving = false
     var alertMessage: String?
 
@@ -47,6 +49,46 @@ final class EspressoViewModel: GearPickingModel {
         self.clock = clock
         draft = EspressoDraft(method: method)
         now = clock()
+    }
+
+    /// A brew in progress restored after an app kill (prefill is skipped: the gear was already picked).
+    convenience init(progress: EspressoProgress, router: any EspressoRouting, clock: @escaping () -> Date = Date.init) {
+        self.init(method: progress.draft.recipe.method, router: router, clock: clock)
+        didPrefill = true
+        draft = progress.draft
+        shotStartedAt = progress.shotStartedAt
+        shotStoppedAt = progress.shotStoppedAt
+        milk = progress.milk
+        ice = progress.ice
+        shotTime = progress.shotTime
+        actualYield = progress.actualYield
+        targetTDS = progress.targetTDS
+        actualTDS = progress.actualTDS
+        tasting = progress.tasting
+        step = progress.step
+    }
+
+    /// Shows `step` (the flow pushes its screen) and keeps the brew from then on.
+    private func advance(to step: EspressoStep) {
+        self.step = step
+        if let router { router.espresso(EspressoBrew(viewModel: self), didAdvanceTo: step) }
+    }
+
+    private func persist() {
+        guard let step else { return }
+        BrewInProgress.save(.espresso(EspressoProgress(
+            step: step,
+            draft: draft,
+            shotStartedAt: shotStartedAt,
+            shotStoppedAt: shotStoppedAt,
+            milk: milk,
+            ice: ice,
+            shotTime: shotTime,
+            actualYield: actualYield,
+            targetTDS: targetTDS,
+            actualTDS: actualTDS,
+            tasting: tasting
+        )))
     }
 
     // MARK: - Setup
@@ -91,7 +133,7 @@ final class EspressoViewModel: GearPickingModel {
     /// Remembers the recipe for next time and goes to the shot.
     func startShotStep() async {
         await history.remember(draft.setup)
-        if let router { router.espresso(EspressoBrew(viewModel: self), didAdvanceTo: .shot) }
+        advance(to: .shot)
     }
 
     // MARK: - Shot
@@ -124,9 +166,7 @@ final class EspressoViewModel: GearPickingModel {
         shotStoppedAt = clock()
         now = clock()
         shotTime = shotElapsed.rounded(.down)
-        if let router {
-            router.espresso(EspressoBrew(viewModel: self), didAdvanceTo: draft.recipe.needsMilk || draft.recipe.needsIce ? .milk : .result)
-        }
+        advance(to: draft.recipe.needsMilk || draft.recipe.needsIce ? .milk : .result)
     }
 
     // MARK: - Milk / ice
@@ -138,7 +178,7 @@ final class EspressoViewModel: GearPickingModel {
 
     func continueToResult() {
         if milk.frother.isEmpty { milk.frother = tr("Steam wand") }
-        if let router { router.espresso(EspressoBrew(viewModel: self), didAdvanceTo: .result) }
+        advance(to: .result)
     }
 
     // MARK: - Result

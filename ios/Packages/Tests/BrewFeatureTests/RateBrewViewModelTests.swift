@@ -7,9 +7,12 @@ import TestSupport
 @testable import BrewFeature
 
 @MainActor
-final class SpySavingRouter: BrewSavingRouting {
+final class SpySavingRouter: BrewSavingRouting, ActiveBrewRouting {
     private(set) var saved: [(brew: Brew, usage: StockUsage)] = []
+    private(set) var leaveCount = 0
     func brewDidSave(_ brew: Brew, usage: StockUsage) { saved.append((brew, usage)) }
+    func activeBrewDidFinish(_ session: PourOverSession) {}
+    func activeBrewDidLeave() { leaveCount += 1 }
 }
 
 @Suite(.container)
