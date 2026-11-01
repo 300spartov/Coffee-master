@@ -54,7 +54,7 @@ struct ActiveBrewView: View {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(tr("Total time")).appTextStyle(.caption)
-                    Text(clock(session.elapsed(at: viewModel.now)))
+                    Text(clockText(session.elapsed(at: viewModel.now)))
                         .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
                         .foregroundStyle(.theme.textPrimary)
                         .accessibilityIdentifier("active.time")
@@ -62,7 +62,7 @@ struct ActiveBrewView: View {
                 HStack(spacing: Spacing.xl) {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(phaseTitle).appTextStyle(.caption)
-                        Text(session.phaseElapsed(at: viewModel.now).map(clock) ?? "—")
+                        Text(session.phaseElapsed(at: viewModel.now).map(clockText) ?? "—")
                             .font(.title3.weight(.semibold).monospacedDigit())
                             .foregroundStyle(phaseColor)
                     }
@@ -109,13 +109,15 @@ struct ActiveBrewView: View {
     private var water: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack(alignment: .lastTextBaseline) {
-                MetricView(value: milliliters(viewModel.pouredMilliliters), unit: tr("ml"), label: tr("Poured"), size: .large)
+                MetricView(value: decimal(viewModel.pouredMilliliters), unit: tr("ml"), label: tr("Poured"), size: .large)
                     .accessibilityIdentifier("active.poured")
                 Spacer()
-                MetricView(value: milliliters(viewModel.remainingMilliliters), unit: tr("ml"), label: tr("Remaining"))
+                MetricView(value: decimal(viewModel.remainingMilliliters), unit: tr("ml"), label: tr("Remaining"))
             }
-            WaterBar(
+            // Marks where the next pours should end.
+            ProgressBar(
                 fraction: viewModel.pouredFraction,
+                color: .theme.info,
                 marks: session.nextPourMarks.map { $0 / max(session.totalMilliliters, 1) }
             )
             HStack {
@@ -127,13 +129,13 @@ struct ActiveBrewView: View {
                         .foregroundStyle(.theme.warning)
                 }
                 Spacer()
-                Text(verbatim: "\(milliliters(session.totalMilliliters)) \(tr("ml"))")
+                Text(verbatim: "\(decimal(session.totalMilliliters)) \(tr("ml"))")
                     .foregroundStyle(.theme.textSecondary)
             }
             .font(.caption.weight(.semibold).monospacedDigit())
             HStack(spacing: Spacing.sm) {
                 ForEach(viewModel.hints) { hint in
-                    HintChip(title: hint.number == 1 ? tr("Bloom") : pourTitle(hint.number), milliliters: milliliters(hint.milliliters), state: hint.state)
+                    HintChip(title: hint.number == 1 ? tr("Bloom") : pourTitle(hint.number), milliliters: decimal(hint.milliliters), state: hint.state)
                 }
             }
         }
@@ -189,7 +191,7 @@ struct ActiveBrewView: View {
             Text(tr("This pour")).foregroundStyle(.theme.textSecondary)
             Spacer()
             TextField(
-                viewModel.currentPourTarget.map(milliliters) ?? "0",
+                viewModel.currentPourTarget.map(decimal) ?? "0",
                 value: $viewModel.currentPour,
                 format: .number.precision(.fractionLength(0...1))
             )
@@ -264,13 +266,7 @@ struct ActiveBrewView: View {
         number == 1 ? tr("Bloom") : tr("Pour \(number)")
     }
 
-    private func clock(_ seconds: TimeInterval) -> String {
-        Duration.seconds(seconds.rounded(.down)).formatted(.time(pattern: .minuteSecond))
-    }
 
-    private func milliliters(_ value: Double) -> String {
-        value.formatted(.number.precision(.fractionLength(0...1)))
-    }
 }
 
 /// "12 s", counted like the clocks (whole seconds gone).
@@ -280,30 +276,6 @@ private func seconds(_ value: TimeInterval) -> String {
 }
 
 // MARK: - Pieces
-
-/// Progress of the water poured, with marks where the next pours should end.
-private struct WaterBar: View {
-    let fraction: Double
-    let marks: [Double]
-
-    var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .leading) {
-                Capsule().fill(.theme.fill)
-                Capsule().fill(.theme.info).frame(width: proxy.size.width * fraction)
-                ForEach(marks, id: \.self) { mark in
-                    Rectangle()
-                        .fill(mark <= fraction ? Color.theme.textTertiary : Color.theme.info.opacity(0.6))
-                        .frame(width: 2)
-                        .offset(x: proxy.size.width * mark)
-                }
-            }
-        }
-        .frame(height: 10)
-        .animation(.smooth, value: fraction)
-        .accessibilityHidden(true)
-    }
-}
 
 private struct HintChip: View {
     let title: String
@@ -321,38 +293,6 @@ private struct HintChip: View {
         .background(state == .active ? Color.theme.info : Color.theme.fill, in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
         .opacity(state == .done ? 0.6 : 1)
         .accessibilityElement(children: .combine)
-    }
-}
-
-/// Pour / Pause: large, with an optional progress ring around the icon.
-private struct BigButton: View {
-    let title: String
-    let subtitle: String
-    let systemImage: String
-    let tint: Color
-    let isActive: Bool
-    var progress: Double = 0
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: Spacing.xs) {
-                ZStack {
-                    Circle().stroke(tint.opacity(0.2), lineWidth: 3)
-                    Circle().trim(from: 0, to: progress).stroke(isActive ? Color.white : tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
-                    Image(systemName: systemImage).font(.title3)
-                }
-                .frame(width: 44, height: 44)
-                Text(title).font(.headline)
-                Text(subtitle).font(.caption).lineLimit(1).minimumScaleFactor(0.8)
-            }
-            .foregroundStyle(isActive ? Color.white : tint)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.lg)
-            .background(isActive ? tint : tint.opacity(0.12), in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -397,7 +337,7 @@ private struct StepRow: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(color)
                 .frame(width: 96, alignment: .leading)
-            Text(verbatim: "\(clock(step.start))–\(clock(step.end))")
+            Text(verbatim: "\(clockText(step.start))–\(clockText(step.end))")
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(.theme.textPrimary)
             Text(seconds(step.duration))
@@ -405,7 +345,7 @@ private struct StepRow: View {
                 .foregroundStyle(.theme.textSecondary)
             Spacer()
             if let milliliters {
-                TextField("0", value: milliliters, format: .number.precision(.fractionLength(0...1)))
+                TextField(String("0"), value: milliliters, format: .number.precision(.fractionLength(0...1)))
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
                     .font(.caption.weight(.semibold).monospacedDigit())
@@ -432,9 +372,6 @@ private struct StepRow: View {
         }
     }
 
-    private func clock(_ seconds: TimeInterval) -> String {
-        Duration.seconds(seconds.rounded(.down)).formatted(.time(pattern: .minuteSecond))
-    }
 }
 
 extension BrewAction {

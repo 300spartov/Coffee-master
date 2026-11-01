@@ -269,7 +269,7 @@ package enum WebImporter {
 
     private static func mapIce(_ web: WebIce) -> IceInfo? {
         guard web.amount != nil || nonEmpty(web.mixer) != nil else { return nil }
-        return IceInfo(amountGrams: positive(web.amount), mixer: web.mixer ?? "")
+        return IceInfo(cubes: positive(web.amount), mixer: web.mixer ?? "")
     }
 
     private static func mapBean(_ web: WebBean) -> Bean {

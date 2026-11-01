@@ -50,12 +50,19 @@ public struct MilkInfo: Hashable, Codable, Sendable {
 
 /// Ice / mixer component of cold drinks (Bumble, Espresso Tonic, …).
 public struct IceInfo: Hashable, Codable, Sendable {
-    public var amountGrams: Double?
+    /// Ice cubes (the web app's `amount`).
+    public var cubes: Double?
     /// Juice, tonic, etc.
     public var mixer: String
 
-    public init(amountGrams: Double? = nil, mixer: String = "") {
-        self.amountGrams = amountGrams
+    public init(cubes: Double? = nil, mixer: String = "") {
+        self.cubes = cubes
         self.mixer = mixer
+    }
+
+    // Stored as `amountGrams` before it was known to be a cube count; the key stays so saved brews load.
+    private enum CodingKeys: String, CodingKey {
+        case cubes = "amountGrams"
+        case mixer
     }
 }

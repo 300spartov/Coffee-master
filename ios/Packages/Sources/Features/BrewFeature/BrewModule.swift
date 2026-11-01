@@ -44,6 +44,25 @@ public struct BrewModule {
         return controller
     }
 
+    /// Espresso step 1 (push it): gear and recipe. The next steps come from `makeEspressoStep`.
+    public func makeEspressoSetup(method: BrewMethod, router: any EspressoRouting) -> UIViewController {
+        let viewModel = EspressoViewModel(method: method, router: router)
+        return HostingController(rootView: EspressoSetupView(viewModel: viewModel), title: method.rawValue)
+    }
+
+    /// The shot, milk / ice and result screens of `brew` (push them).
+    public func makeEspressoStep(_ step: EspressoStep, of brew: EspressoBrew) -> UIViewController {
+        let viewModel = brew.viewModel
+        let title = viewModel.method.rawValue
+        switch step {
+        case .shot: return HostingController(rootView: EspressoShotView(viewModel: viewModel), title: title)
+        case .milk:
+            let milk = viewModel.draft.recipe.needsIce ? tr("Ice & mixer") : tr("Milk")
+            return HostingController(rootView: EspressoMilkView(viewModel: viewModel), title: milk)
+        case .result: return HostingController(rootView: EspressoResultView(viewModel: viewModel), title: tr("Shot result"))
+        }
+    }
+
     /// Picker sheet for a setup row, with "+" to add a new item.
     public func makeGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, router: any GearPickerRouting) -> UIViewController {
         let viewModel = GearPickerViewModel(kind: kind, method: method, selectedID: selectedID, router: router)

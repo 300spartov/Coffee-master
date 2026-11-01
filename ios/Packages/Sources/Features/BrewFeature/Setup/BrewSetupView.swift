@@ -8,7 +8,7 @@ struct BrewSetupView: View {
     var body: some View {
         Form {
             Section(tr("Coffee")) {
-                gearRow(.bean)
+                GearRowButton(kind: .bean, model: viewModel)
             }
             .themedRow()
 
@@ -27,14 +27,14 @@ struct BrewSetupView: View {
 
             if viewModel.draft.recipe.usesDripper {
                 Section(tr("Brewer")) {
-                    gearRow(.dripper)
+                    GearRowButton(kind: .dripper, model: viewModel)
                 }
                 .themedRow()
             }
 
             if viewModel.draft.recipe.usesFilter {
                 Section(tr("Filter")) {
-                    gearRow(.filter)
+                    GearRowButton(kind: .filter, model: viewModel)
                     if viewModel.draft.recipe.aeropress != nil {
                         let filters = $viewModel.draft.recipe.aeropressOption(\.filterCount, default: 1)
                         Stepper(value: filters, in: BrewSetup.aeropressFilterRange) {
@@ -53,12 +53,8 @@ struct BrewSetupView: View {
             }
 
             Section(tr("Grinder & grind")) {
-                gearRow(.grinder)
-                HStack {
-                    NumberField(tr("Clicks"), value: $viewModel.draft.recipe.grindSetting.asDouble, range: grindRange, fractionDigits: 0)
-                    Stepper(tr("Clicks"), value: $viewModel.draft.recipe.grindSetting, in: BrewSetup.grindRange)
-                        .labelsHidden()
-                }
+                GearRowButton(kind: .grinder, model: viewModel)
+                NumberField(tr("Clicks"), value: $viewModel.draft.recipe.grindSetting, range: BrewSetup.grindRange, step: 1)
                 .accessibilityIdentifier("setup.clicks")
             }
             .themedRow()
@@ -72,7 +68,8 @@ struct BrewSetupView: View {
                     ForEach(Array(BrewSetup.poursRange), id: \.self) { Text(verbatim: "\($0)").tag($0) }
                 }
                 .accessibilityIdentifier("setup.pours")
-                temperature
+                SliderRow(title: tr("Temperature"), value: $viewModel.draft.recipe.waterTemperature, range: viewModel.temperatureRange, unit: "°C")
+                    .accessibilityIdentifier("setup.temperature")
             }
             .themedRow()
 
@@ -99,50 +96,7 @@ struct BrewSetupView: View {
         .accessibilityIdentifier("setup.form")
     }
 
-    private var grindRange: ClosedRange<Double> {
-        Double(BrewSetup.grindRange.lowerBound)...Double(BrewSetup.grindRange.upperBound)
-    }
 
-    private var temperature: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            Stepper(value: $viewModel.draft.recipe.waterTemperature, in: viewModel.temperatureRange, step: 1) {
-                LabeledContent(tr("Temperature"), value: "\(Int(viewModel.draft.recipe.waterTemperature)) °C")
-            }
-            Slider(value: $viewModel.draft.recipe.waterTemperature, in: viewModel.temperatureRange, step: 1)
-                .accessibilityLabel(tr("Temperature"))
-        }
-        .accessibilityIdentifier("setup.temperature")
-    }
-
-    /// The picked item, or the "Choose …" prompt; tapping opens the picker.
-    private func gearRow(_ kind: GearKind) -> some View {
-        let picked = viewModel.picked(kind)
-        return Button {
-            viewModel.choose(kind)
-        } label: {
-            HStack {
-                GearRowLabel(
-                    title: picked?.title ?? kind.prompt(for: viewModel.method),
-                    subtitle: picked == nil ? tr("Tap to choose") : picked?.subtitle,
-                    kind: kind,
-                    dripperKind: picked?.dripperKind,
-                    stock: picked?.stock,
-                    isPlaceholder: picked == nil
-                )
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.theme.textTertiary)
-            }
-        }
-        .accessibilityIdentifier("setup.\(kind.rawValue)")
-    }
-}
-
-private extension Binding where Value == Int {
-    /// For number fields, which edit `Double`s.
-    var asDouble: Binding<Double> {
-        Binding<Double>(get: { Double(wrappedValue) }, set: { wrappedValue = Int($0.rounded()) })
-    }
 }
 
 private extension Binding where Value == BrewSetup {

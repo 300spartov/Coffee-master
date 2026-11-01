@@ -179,7 +179,8 @@ final class BrewUITests: XCTestCase {
         sleep(1)
         app.buttons["active.action.stir"].tap()
         pour.tap()
-        XCTAssertEqual(app.staticTexts["active.pours"].label, "2 / 3")
+        // The planned count comes from the remembered setup, so only the pour number is fixed.
+        XCTAssertTrue(app.staticTexts["active.pours"].label.hasPrefix("2 / "))
         app.buttons["active.pause"].tap()
         XCTAssertTrue(app.otherElements["active.log"].exists || element(app, containing: "Stir").exists)
         attachScreenshot(named: "active-log")
@@ -205,6 +206,42 @@ final class BrewUITests: XCTestCase {
         app.buttons["Discard"].tap()
 
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
+    }
+
+    /// Latte: setup → shot timer → milk → result. Doesn't save (saving is covered by unit tests),
+    /// so the journal isn't touched.
+    func testEspressoLatteGoesThroughShotMilkAndResult() {
+        let app = XCUIApplication.launched()
+        app.brewButton.tap()
+        app.buttons["brew.group.espresso"].tap()
+        app.buttons["brew.method.Latte"].tap()
+        XCTAssertTrue(app.navigationBars["Latte"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["setup.espressoMachine"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "espresso-setup")
+        scrollTo(app.buttons["espresso.save"], inForm: "espresso.form", of: app).tap()
+
+        // Shot
+        let start = app.buttons["espresso.start"]
+        XCTAssertTrue(start.waitForExistence(timeout: 5))
+        start.tap()
+        sleep(2)
+        attachScreenshot(named: "espresso-shot")
+        app.buttons["espresso.stop"].tap()
+
+        // Milk
+        XCTAssertTrue(app.navigationBars["Milk"].waitForExistence(timeout: 5))
+        let milk = app.textFields["espresso.milk"]
+        milk.tap()
+        milk.typeText("Oat")
+        scrollTo(app.buttons["espresso.milk.save"], inForm: "espresso.milkForm", of: app).tap()
+
+        // Result: the timer's seconds carried over
+        XCTAssertTrue(app.navigationBars["Shot result"].waitForExistence(timeout: 5))
+        let shotTime = app.textFields["espresso.shotTime"]
+        XCTAssertTrue(shotTime.waitForExistence(timeout: 5))
+        XCTAssertNotEqual(shotTime.value as? String, "0")
+        XCTAssertTrue(app.buttons["espresso.result.save"].exists || app.collectionViews["espresso.resultForm"].exists)
+        attachScreenshot(named: "espresso-result")
     }
 
     private func openSetup(_ app: XCUIApplication, group: String, method: String) {

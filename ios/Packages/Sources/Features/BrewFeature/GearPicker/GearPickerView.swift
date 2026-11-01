@@ -127,6 +127,7 @@ extension GearKind {
         case .dripper: "drop"
         case .filter: "line.3.horizontal.decrease"
         case .grinder: "gearshape.2"
+        case .espressoMachine: "cup.and.saucer.fill"
         }
     }
 
@@ -134,7 +135,7 @@ extension GearKind {
         switch self {
         case .bean: tr("No beans yet")
         case .filter: tr("No filter packs")
-        case .dripper, .grinder: tr("No devices yet")
+        case .dripper, .grinder, .espressoMachine: tr("No devices yet")
         }
     }
 
@@ -142,7 +143,7 @@ extension GearKind {
         switch self {
         case .bean: tr("Add the coffee you have at home.")
         case .filter: tr("Add the paper filters you have.")
-        case .dripper, .grinder: tr("Add the one you use.")
+        case .dripper, .grinder, .espressoMachine: tr("Add the one you use.")
         }
     }
 }

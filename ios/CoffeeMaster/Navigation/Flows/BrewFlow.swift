@@ -9,8 +9,8 @@ import BeansFeature
 import DevicesFeature
 
 /// The brew action's modal flow, presented full screen over the tabs: the brew wizard.
-/// Method pick (2.1) → setup (2.2, alternative methods) → brew timer (2.3) → the template "New Brew"
-/// form, until rating (2.7) replaces it. Espresso drinks skip setup until 2.5.
+/// Pour-over: method pick (2.1) → setup (2.2) → brew timer (2.3) → the template "New Brew" form, until
+/// rating (2.7) replaces it. Espresso (2.5): setup → shot → milk / ice → result, saved there.
 ///
 /// Setup rows open a picker sheet; its "+" pushes the Beans / Devices add forms into the sheet, so a
 /// missing bag or device can be added without leaving the brew.
@@ -27,8 +27,6 @@ final class BrewFlow {
     /// shape) and how to hand the pick back to the setup screen that opened it.
     private var pickerSession: (method: BrewMethod, deliver: (GearPick) -> Void)?
     private weak var presenter: UIViewController?
-    /// An espresso drink's form is being prepared (prefill is async), so a double tap opens it once.
-    private var isOpeningEspressoForm = false
 
     init(module: BrewModule, brewsModule: BrewsModule, beansModule: BeansModule, devicesModule: DevicesModule, presenter: UIViewController) {
         self.module = module
@@ -84,14 +82,7 @@ extension BrewFlow: MethodPickRouting {
 
     func methodPickDidSelect(_ method: BrewMethod) {
         if method.isEspressoBased {
-            // Until the espresso setup (2.5): the template form, with the bag prefilled.
-            guard !isOpeningEspressoForm else { return }
-            isOpeningEspressoForm = true
-            Task {
-                let setup = await BrewSetupDraft.prefilled(for: method).setup
-                isOpeningEspressoForm = false
-                modal.current?.push(brewsModule.makeNewBrew(setup: setup, router: self))
-            }
+            modal.current?.push(module.makeEspressoSetup(method: method, router: self))
         } else {
             modal.current?.push(module.makeSetup(method: method, router: self))
         }
@@ -102,7 +93,7 @@ extension BrewFlow: MethodPickRouting {
     }
 }
 
-extension BrewFlow: BrewSetupRouting {
+extension BrewFlow: GearPickerPresenting {
     func showGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, onPick: @escaping (GearPick) -> Void) {
         guard let brewStack = modal.current else { return }
         picker.present {
@@ -114,8 +105,23 @@ extension BrewFlow: BrewSetupRouting {
         }
     }
 
+}
+
+// These two refine `GearPickerPresenting` (conformed above); Swift 6 needs the isolation spelled out.
+extension BrewFlow: @MainActor BrewSetupRouting {
     func brewSetupDidStart(_ setup: BrewSetup) {
         modal.current?.push(module.makeActiveBrew(setup: setup, router: self))
+    }
+}
+
+extension BrewFlow: @MainActor EspressoRouting {
+    func espresso(_ brew: EspressoBrew, didAdvanceTo step: EspressoStep) {
+        modal.current?.push(module.makeEspressoStep(step, of: brew))
+    }
+
+    func espressoDidSave(_ brew: Brew) {
+        modal.close()
+        toasts.show(tr("Shot saved"), style: .success)
     }
 }
 
@@ -141,6 +147,7 @@ extension BrewFlow: GearPickerRouting {
         case .bean: pushAddForm(beansModule.makeAddBean(router: self))
         case .dripper: pushAddForm(devicesModule.makeAddDevice(type: .dripper, router: self))
         case .grinder: pushAddForm(devicesModule.makeAddDevice(type: .grinder, router: self))
+        case .espressoMachine: pushAddForm(devicesModule.makeAddDevice(type: .espressoMachine, router: self))
         case .filter:
             let shape = pickerSession.flatMap { FilterShape.shapes(for: $0.method).first }
             pushAddForm(devicesModule.makeAddFilterPack(shape: shape, router: self))

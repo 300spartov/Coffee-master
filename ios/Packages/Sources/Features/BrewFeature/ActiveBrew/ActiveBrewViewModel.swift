@@ -39,10 +39,7 @@ final class ActiveBrewViewModel {
 
     /// Bound to the screen via `.task`.
     func run() async {
-        while !Task.isCancelled {
-            refresh()
-            try? await Task.sleep(for: .milliseconds(200))
-        }
+        await refreshWhileVisible { refresh() }
     }
 
     func refresh() {

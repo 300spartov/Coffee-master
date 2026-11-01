@@ -338,6 +338,22 @@
         }
       }
     },
+    "Shot saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shot saved"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Шот збережено!"
+          }
+        }
+      }
+    },
     "Start a Brew": {
       "localizations": {
         "en": {

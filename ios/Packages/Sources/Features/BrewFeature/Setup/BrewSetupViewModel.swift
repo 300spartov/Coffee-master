@@ -5,7 +5,7 @@ import FactoryKit
 
 /// Wizard step 3 for alternative methods: gear and recipe, with the live water calculation.
 @Observable
-final class BrewSetupViewModel {
+final class BrewSetupViewModel: GearPickingModel {
     let method: BrewMethod
     /// The screen edits `draft.recipe`; the picker sets the gear.
     var draft: BrewSetupDraft
@@ -40,16 +40,13 @@ final class BrewSetupViewModel {
         case .dripper: draft.dripper.map { .init(device: $0, kind: .dripper) }
         case .filter: draft.filter.map(GearPickerViewModel.Row.init(filterPack:))
         case .grinder: draft.grinder.map { .init(device: $0, kind: .grinder) }
+        case .espressoMachine: nil
         }
     }
 
     // MARK: - Actions
 
-    func choose(_ kind: GearKind) {
-        router?.showGearPicker(kind, method: method, selectedID: picked(kind)?.ownedID) { [weak self] pick in
-            self?.apply(pick)
-        }
-    }
+    var gearPresenter: (any GearPickerPresenting)? { router }
 
     func apply(_ pick: GearPick) {
         switch pick {

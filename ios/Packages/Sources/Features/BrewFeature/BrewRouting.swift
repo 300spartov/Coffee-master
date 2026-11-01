@@ -12,9 +12,13 @@ public protocol MethodPickRouting: AnyObject {
     func methodPickDidCancel()
 }
 
-public protocol BrewSetupRouting: AnyObject {
+/// Setup screens (pour-over and espresso) open the gear picker through this.
+public protocol GearPickerPresenting: AnyObject {
     /// Opens the picker for `kind`; the flow calls `onPick` with the chosen (or newly added) item.
     func showGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, onPick: @escaping (GearPick) -> Void)
+}
+
+public protocol BrewSetupRouting: GearPickerPresenting {
     /// "Start Brewing".
     func brewSetupDidStart(_ setup: BrewSetup)
 }
@@ -30,4 +34,18 @@ public protocol ActiveBrewRouting: AnyObject {
     func activeBrewDidFinish(_ session: PourOverSession)
     /// Back (confirmed if the brew had started): return to the setup.
     func activeBrewDidLeave()
+}
+
+/// The espresso steps after the setup.
+public enum EspressoStep: Sendable {
+    case shot
+    /// Milk drinks and iced drinks only.
+    case milk
+    case result
+}
+
+public protocol EspressoRouting: GearPickerPresenting {
+    /// Push `step` for `brew` (`BrewModule.makeEspressoStep`).
+    func espresso(_ brew: EspressoBrew, didAdvanceTo step: EspressoStep)
+    func espressoDidSave(_ brew: Brew)
 }

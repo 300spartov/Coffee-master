@@ -6,6 +6,7 @@ nonisolated public enum GearKind: String, Sendable, CaseIterable {
     case dripper
     case filter
     case grinder
+    case espressoMachine
 
     /// Placeholder on the setup row and the picker's title. The dripper wording follows the method
     /// ("Choose Aeropress"), like the web app.
@@ -14,6 +15,7 @@ nonisolated public enum GearKind: String, Sendable, CaseIterable {
         case .bean: tr("Choose a bag")
         case .filter: tr("Choose a filter")
         case .grinder: tr("Choose a grinder")
+        case .espressoMachine: tr("Choose an espresso machine")
         case .dripper:
             switch DripperKind.required(for: method) {
             case .aeropress: tr("Choose Aeropress")
@@ -31,6 +33,7 @@ nonisolated public enum GearKind: String, Sendable, CaseIterable {
         switch self {
         case .dripper: .dripper
         case .grinder: .grinder
+        case .espressoMachine: .espressoMachine
         case .bean, .filter: nil
         }
     }

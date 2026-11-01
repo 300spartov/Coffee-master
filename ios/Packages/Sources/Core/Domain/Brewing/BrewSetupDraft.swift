@@ -47,13 +47,7 @@ public struct BrewSetupDraft: Equatable, Sendable {
         recipe.grinder = nil
         self.recipe = recipe
 
-        // Bag
-        let withCoffee = beans.filter { !$0.isEmpty }
-        let fitting = withCoffee.filter { $0.roastProfile.fits(espresso: method.isEspressoBased) }
-        let lastBeanID = sameKind.lazy.compactMap { $0.bean?.beanID }.first
-        bean = fitting.first { $0.id == lastBeanID }
-            ?? (fitting.count == 1 ? fitting.first : nil)
-            ?? (withCoffee.count == 1 ? withCoffee.first : nil)
+        bean = Self.bag(from: beans, lastID: sameKind.lazy.compactMap { $0.bean?.beanID }.first, espresso: method.isEspressoBased)
 
         // Brewer
         if recipe.usesDripper {
@@ -93,6 +87,18 @@ public extension BrewSetupDraft {
         merged.filter = filter ?? other.filter
         merged.grinder = grinder ?? other.grinder
         return merged
+    }
+}
+
+extension BrewSetupDraft {
+    /// The bag rule, shared with espresso: the last one used if it still has coffee and fits; otherwise
+    /// the only bag that fits the roast; otherwise the only bag there is.
+    static func bag(from beans: [Bean], lastID: UUID?, espresso: Bool) -> Bean? {
+        let withCoffee = beans.filter { !$0.isEmpty }
+        let fitting = withCoffee.filter { $0.roastProfile.fits(espresso: espresso) }
+        return fitting.first { $0.id == lastID }
+            ?? (fitting.count == 1 ? fitting.first : nil)
+            ?? (withCoffee.count == 1 ? withCoffee.first : nil)
     }
 }
 

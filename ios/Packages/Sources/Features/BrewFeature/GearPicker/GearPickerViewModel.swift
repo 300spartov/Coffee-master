@@ -75,7 +75,7 @@ final class GearPickerViewModel {
         switch kind {
         case .bean: await beans.observe { await self.load() }
         case .filter: await filterPacks.observe { await self.load() }
-        case .dripper, .grinder: await devices.observe { await self.load() }
+        case .dripper, .grinder, .espressoMachine: await devices.observe { await self.load() }
         }
     }
 
@@ -84,7 +84,7 @@ final class GearPickerViewModel {
             switch kind {
             case .bean: show(try await beans.fetchAll(), row: Row.init(bean:), pick: GearPick.bean)
             case .filter: show(try await filterPacks.fetchAll(), row: Row.init(filterPack:), pick: GearPick.filterPack) { $0.fits(method) }
-            case .dripper, .grinder: try await loadDevices()
+            case .dripper, .grinder, .espressoMachine: try await loadDevices()
             }
             state = .ready
         } catch {
@@ -164,8 +164,7 @@ final class GearPickerViewModel {
 extension GearPickerViewModel.Row {
     /// "Roaster · 160 / 250 g", with the bag's stock.
     init(bean: Bean) {
-        let grams = { (value: Double) in value.formatted(.number.precision(.fractionLength(0...1))) }
-        let amounts = "\(grams(bean.remainingGrams)) / \(grams(bean.totalGrams)) g"
+        let amounts = "\(decimal(bean.remainingGrams)) / \(decimal(bean.totalGrams)) g"
         self.init(
             source: .owned(bean.id),
             title: bean.name,

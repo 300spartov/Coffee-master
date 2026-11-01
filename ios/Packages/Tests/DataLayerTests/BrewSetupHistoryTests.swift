@@ -29,3 +29,20 @@ struct UserDefaultsBrewSetupHistoryTests {
         defaults.removePersistentDomain(forName: suite)
     }
 }
+
+struct UserDefaultsEspressoHistoryTests {
+    @Test func espressoSetupsAreKeptSeparately() async throws {
+        let suite = "EspressoHistoryTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        var shot = EspressoSetup(method: .latte)
+        shot.doseGrams = 19
+        let history = UserDefaultsBrewSetupHistory(defaults: defaults)
+
+        await history.remember(shot)
+        await history.remember(BrewSetup(method: .v60))
+
+        #expect(await UserDefaultsBrewSetupHistory(defaults: defaults).recentEspressoSetups() == [shot])
+        #expect(await history.recentSetups().map(\.method) == [.v60])
+    }
+}
