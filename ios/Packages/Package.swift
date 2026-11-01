@@ -68,9 +68,8 @@ let package = Package(
         ),
         .target(
             name: "WidgetsShared",
-            dependencies: ["AppCore", "Domain", "DeepLinks"],
-            path: "Sources/Core/WidgetsShared",
-            resources: [.process("Resources")]
+            dependencies: ["AppCore", "Domain", "DeepLinks", "DesignSystem"],
+            path: "Sources/Core/WidgetsShared"
         ),
         .target(name: "WebImport", dependencies: ["Domain"], path: "Sources/Core/WebImport"),
         /// The flavor wheel (shared: brew rating, later the journal's brew editor).

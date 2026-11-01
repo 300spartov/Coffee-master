@@ -11,12 +11,10 @@ final class BrewDetailViewModel {
     }
 
     private(set) var state: State = .loading
-    private(set) var isTimerRunning = false
     var alertMessage: String?
 
     @ObservationIgnored private let brewID: Brew.ID
     @ObservationIgnored @Injected(\.brewRepository) private var repository
-    @ObservationIgnored @Injected(\.brewTimer) private var brewTimer
     @ObservationIgnored private weak var router: (any BrewDetailRouting)?
 
     init(brewID: Brew.ID, router: any BrewDetailRouting) {
@@ -34,24 +32,8 @@ final class BrewDetailViewModel {
         }
     }
 
-    func toggleTimer() async {
-        guard case .loaded(let brew) = state else { return }
-        if isTimerRunning {
-            await brewTimer.stop()
-            isTimerRunning = false
-        } else {
-            do {
-                try await brewTimer.start(for: brew)
-                isTimerRunning = true
-            } catch {
-                alertMessage = error.localizedDescription
-            }
-        }
-    }
-
     func delete() async {
         do {
-            if isTimerRunning { await brewTimer.stop() }
             try await repository.delete(id: brewID)
             router?.brewDetailDidDelete(id: brewID)
         } catch {

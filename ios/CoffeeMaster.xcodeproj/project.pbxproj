@@ -8,9 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		C0FFEE000000000000000001 /* AppModules in Frameworks */ = {isa = PBXBuildFile; productRef = C0FFEE000000000000000020 /* AppModules */; };
+		C0FFEE000000000000000043 /* ExtensionModules in Frameworks */ = {isa = PBXBuildFile; productRef = C0FFEE000000000000000044 /* ExtensionModules */; };
+		C0FFEE00000000000000004B /* CoffeeMasterWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C0FFEE000000000000000040 /* CoffeeMasterWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C0FFEE00000000000000004D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0FFEE00000000000000000C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0FFEE000000000000000047;
+			remoteInfo = CoffeeMasterWidgets;
+		};
 		C0FFEE000000000000000031 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C0FFEE00000000000000000C /* Project object */;
@@ -20,10 +29,25 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C0FFEE00000000000000004C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C0FFEE00000000000000004B /* CoffeeMasterWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		C0FFEE000000000000000002 /* CoffeeMaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoffeeMaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0FFEE000000000000000003 /* Packages */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Packages; sourceTree = "<group>"; };
 		C0FFEE000000000000000030 /* CoffeeMasterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoffeeMasterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0FFEE000000000000000040 /* CoffeeMasterWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CoffeeMasterWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -42,9 +66,22 @@
 			path = CoffeeMasterUITests;
 			sourceTree = "<group>";
 		};
+		C0FFEE000000000000000041 /* CoffeeMasterWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CoffeeMasterWidgets;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C0FFEE000000000000000042 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0FFEE000000000000000043 /* ExtensionModules in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0FFEE000000000000000006 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -69,6 +106,7 @@
 				C0FFEE000000000000000004 /* CoffeeMaster */,
 				C0FFEE000000000000000005 /* Config */,
 				C0FFEE000000000000000032 /* CoffeeMasterUITests */,
+				C0FFEE000000000000000041 /* CoffeeMasterWidgets */,
 				C0FFEE000000000000000003 /* Packages */,
 				C0FFEE000000000000000008 /* Products */,
 			);
@@ -79,6 +117,7 @@
 			children = (
 				C0FFEE000000000000000002 /* CoffeeMaster.app */,
 				C0FFEE000000000000000030 /* CoffeeMasterUITests.xctest */,
+				C0FFEE000000000000000040 /* CoffeeMasterWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,6 +125,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C0FFEE000000000000000047 /* CoffeeMasterWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0FFEE000000000000000048 /* Build configuration list for PBXNativeTarget "CoffeeMasterWidgets" */;
+			buildPhases = (
+				C0FFEE000000000000000045 /* Sources */,
+				C0FFEE000000000000000042 /* Frameworks */,
+				C0FFEE000000000000000046 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C0FFEE000000000000000041 /* CoffeeMasterWidgets */,
+			);
+			name = CoffeeMasterWidgets;
+			packageProductDependencies = (
+				C0FFEE000000000000000044 /* ExtensionModules */,
+			);
+			productName = CoffeeMasterWidgets;
+			productReference = C0FFEE000000000000000040 /* CoffeeMasterWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C0FFEE000000000000000009 /* CoffeeMaster */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C0FFEE000000000000000010 /* Build configuration list for PBXNativeTarget "CoffeeMaster" */;
@@ -93,10 +155,12 @@
 				C0FFEE00000000000000000A /* Sources */,
 				C0FFEE000000000000000006 /* Frameworks */,
 				C0FFEE00000000000000000B /* Resources */,
+				C0FFEE00000000000000004C /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C0FFEE00000000000000004E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				C0FFEE000000000000000004 /* CoffeeMaster */,
@@ -147,6 +211,9 @@
 						CreatedOnToolsVersion = 26.0;
 						TestTargetID = C0FFEE000000000000000009;
 					};
+					C0FFEE000000000000000047 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 				};
 			};
 			buildConfigurationList = C0FFEE00000000000000000D /* Build configuration list for PBXProject "CoffeeMaster" */;
@@ -169,11 +236,19 @@
 			targets = (
 				C0FFEE000000000000000009 /* CoffeeMaster */,
 				C0FFEE000000000000000034 /* CoffeeMasterUITests */,
+				C0FFEE000000000000000047 /* CoffeeMasterWidgets */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C0FFEE000000000000000046 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0FFEE00000000000000000B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -191,6 +266,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C0FFEE000000000000000045 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C0FFEE00000000000000000A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -208,6 +290,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		C0FFEE00000000000000004E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0FFEE000000000000000047 /* CoffeeMasterWidgets */;
+			targetProxy = C0FFEE00000000000000004D /* PBXContainerItemProxy */;
+		};
 		C0FFEE000000000000000038 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C0FFEE000000000000000009 /* CoffeeMaster */;
@@ -216,6 +303,50 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		C0FFEE000000000000000049 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/WidgetsInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Coffee Master";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		C0FFEE00000000000000004A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/WidgetsInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Coffee Master";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		C0FFEE00000000000000000E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -356,6 +487,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C0FFEE000000000000000048 /* Build configuration list for PBXNativeTarget "CoffeeMasterWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0FFEE000000000000000049 /* Debug */,
+				C0FFEE00000000000000004A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C0FFEE00000000000000000D /* Build configuration list for PBXProject "CoffeeMaster" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -393,6 +533,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C0FFEE000000000000000044 /* ExtensionModules */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ExtensionModules;
+		};
 		C0FFEE000000000000000020 /* AppModules */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppModules;

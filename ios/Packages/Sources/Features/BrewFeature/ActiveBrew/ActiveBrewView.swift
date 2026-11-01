@@ -61,7 +61,7 @@ struct ActiveBrewView: View {
                 }
                 HStack(spacing: Spacing.xl) {
                     VStack(alignment: .leading, spacing: 0) {
-                        Text(phaseTitle).appTextStyle(.caption)
+                        Text(viewModel.phaseTitle).appTextStyle(.caption)
                         Text(session.phaseElapsed(at: viewModel.now).map(clockText) ?? "—")
                             .font(.title3.weight(.semibold).monospacedDigit())
                             .foregroundStyle(phaseColor)
@@ -83,16 +83,6 @@ struct ActiveBrewView: View {
     /// Pours started so far (the running one counts).
     private var pourCount: Int {
         session.completedPours + (viewModel.isPouring ? 1 : 0)
-    }
-
-    private var phaseTitle: String {
-        switch session.phase {
-        case .ready, .finished: tr("Phase")
-        case .pouring: pourTitle(session.currentPourNumber)
-        case .paused: tr("Pause")
-        case .action(let action, _): action.title
-        case .pressing: tr("Press")
-        }
     }
 
     private var phaseColor: Color {
@@ -135,7 +125,7 @@ struct ActiveBrewView: View {
             .font(.caption.weight(.semibold).monospacedDigit())
             HStack(spacing: Spacing.sm) {
                 ForEach(viewModel.hints) { hint in
-                    HintChip(title: hint.number == 1 ? tr("Bloom") : pourTitle(hint.number), milliliters: decimal(hint.milliliters), state: hint.state)
+                    HintChip(title: pourTitle(hint.number), milliliters: decimal(hint.milliliters), state: hint.state)
                 }
             }
         }
@@ -261,10 +251,6 @@ struct ActiveBrewView: View {
     }
 
     // MARK: - Formatting
-
-    private func pourTitle(_ number: Int) -> String {
-        number == 1 ? tr("Bloom") : tr("Pour \(number)")
-    }
 
 
 }

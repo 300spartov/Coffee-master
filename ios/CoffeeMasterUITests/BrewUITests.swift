@@ -258,6 +258,25 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(relaunched.buttons["brew.group.alternative"].waitForExistence(timeout: 5))
     }
 
+    /// ROADMAP 2.4: a started brew shows its Live Activity outside the app (screenshot of the Home Screen
+    /// with the Dynamic Island). Discards the brew afterwards.
+    func testLiveActivityShowsOutsideTheApp() {
+        let app = XCUIApplication.launched()
+        openSetup(app, group: "alternative", method: "V60")
+        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
+        app.buttons["active.pour"].tap()
+
+        XCUIDevice.shared.press(.home)
+        sleep(3)
+        attachScreenshot(named: "live-activity-island")
+
+        app.activate()
+        XCTAssertTrue(app.buttons["active.pause"].waitForExistence(timeout: 5))
+        app.navigationBars["V60"].buttons["active.back"].tap()
+        app.buttons["Discard"].tap()
+    }
+
     /// Back after the first pour asks before discarding.
     func testLeavingAStartedBrewAsks() {
         let app = XCUIApplication.launched()

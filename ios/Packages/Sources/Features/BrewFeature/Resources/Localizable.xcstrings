@@ -2176,6 +2176,22 @@
           }
         }
       }
+    },
+    "→ %@ ml": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "→ %@ ml"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "→ %@ мл"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

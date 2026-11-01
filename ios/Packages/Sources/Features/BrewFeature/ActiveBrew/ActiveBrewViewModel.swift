@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import Domain
+import FactoryKit
 
 /// Wizard step 4 for pour-over: the brew timer. The session keeps timestamps; `run()` refreshes
 /// `now` a few times a second while the screen is visible, so the clocks move and an action
@@ -20,7 +21,11 @@ final class ActiveBrewViewModel {
     }
 
     private(set) var session: PourOverSession {
-        didSet { if session != oldValue { persist() } }
+        didSet {
+            guard session != oldValue else { return }
+            persist()
+            syncLiveActivity()
+        }
     }
     private(set) var now: Date
     /// Ml of the running pour, as typed (empty = not weighed; logged as 0 like the web app).
@@ -31,6 +36,9 @@ final class ActiveBrewViewModel {
     var isConfirmingLeave = false
 
     @ObservationIgnored private let clock: () -> Date
+    /// The Live Activity's updates, in order (each waits for the previous one).
+    @ObservationIgnored private var liveActivityUpdate: Task<Void, Never>?
+    @ObservationIgnored @Injected(\.brewTimer) private var liveActivity
     @ObservationIgnored private weak var router: (any ActiveBrewRouting)?
 
     /// `clock`: the time source (tests pass a fixed one). `session` / `currentPour`: a brew in progress
@@ -41,6 +49,7 @@ final class ActiveBrewViewModel {
         self.router = router
         self.clock = clock
         now = clock()
+        syncLiveActivity()
     }
 
     /// A new brew with `setup`.
@@ -60,8 +69,40 @@ final class ActiveBrewViewModel {
 
     // MARK: - What to show
 
-    var isPouring: Bool {
-        if case .pouring = session.phase { true } else { false }
+    var isPouring: Bool { session.isPouring }
+
+    /// "Bloom", "Pour 2", "Pause", "Stir", "Press" (the screen's phase label and the Live Activity's).
+    var phaseTitle: String {
+        switch session.phase {
+        case .ready, .finished: tr("Phase")
+        case .pouring: pourTitle(session.currentPourNumber)
+        case .paused: tr("Pause")
+        case .action(let action, _): action.title
+        case .pressing: tr("Press")
+        }
+    }
+
+    /// The brew as the Live Activity shows it, from the first pour until Stop.
+    var liveStatus: BrewTimerStatus? {
+        guard let startedAt = session.startedAt, !session.isFinished else { return nil }
+        let symbol: String, phaseStart: Date?
+        switch session.phase {
+        case .pouring(let since): (symbol, phaseStart) = ("drop.fill", since)
+        case .paused(let since): (symbol, phaseStart) = ("pause.fill", since)
+        case .action(let action, let since): (symbol, phaseStart) = (action.systemImage, since)
+        case .pressing(let since): (symbol, phaseStart) = ("arrow.down.circle.fill", since)
+        case .ready, .finished: (symbol, phaseStart) = ("drop", nil)
+        }
+        let target = session.nextPourTarget.map { decimal($0) }
+        return BrewTimerStatus(
+            title: [session.setup.method.rawValue, session.setup.bean?.name].compactMap { $0 }.joined(separator: " · "),
+            phaseTitle: phaseTitle,
+            phaseSymbol: symbol,
+            startedAt: startedAt,
+            phaseStartedAt: phaseStart,
+            progress: session.totalMilliliters > 0 ? min(session.pouredMilliliters / session.totalMilliliters, 1) : 0,
+            target: target.map { tr("→ \($0) ml") }
+        )
     }
 
     var isPressing: Bool {
@@ -169,7 +210,18 @@ final class ActiveBrewViewModel {
     }
 
     func leave() {
+        Task { [liveActivity] in await liveActivity.end() }
         router?.activeBrewDidLeave()
+    }
+
+    /// Mirrors the brew in the Live Activity; ends it once the brew is over.
+    private func syncLiveActivity() {
+        let status = liveStatus
+        let previous = liveActivityUpdate
+        liveActivityUpdate = Task { [liveActivity] in
+            await previous?.value
+            if let status { await liveActivity.show(status) } else { await liveActivity.end() }
+        }
     }
 
     /// Keeps the brew across app kills once it has started; a finished one is the rating's to keep.

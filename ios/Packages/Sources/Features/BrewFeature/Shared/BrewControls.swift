@@ -69,6 +69,11 @@ struct SliderRow: View {
     }
 }
 
+/// "Bloom" for the first pour, then "Pour 2", "Pour 3", ….
+func pourTitle(_ number: Int) -> String {
+    number == 1 ? tr("Bloom") : tr("Pour \(number)")
+}
+
 /// A number with up to one decimal: "16", "15.5".
 func decimal(_ value: Double) -> String {
     value.formatted(.number.precision(.fractionLength(0...1)))

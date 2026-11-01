@@ -112,64 +112,13 @@ handle it in the owning flow's `canHandle` / `handle`. The round-trip tests will
    new `Flow` (for a new tab) to `AppRouter.makeFlows()`, or make an existing flow conform to the new routing protocol.
 4. Add any deep links (see above).
 
-## Widgets and Live Activities (prepared, not yet added)
+## Widgets and Live Activities
 
-Already in place:
-
-- `WidgetsShared.BrewTimerAttributes` is the `ActivityAttributes` for a brew timer. It includes `deepLinkURL`.
-- `WidgetsShared.LiveActivityBrewTimerService` starts and ends activities. It's wired to the **Start Brew Timer** button.
-- `WidgetsShared.WidgetSnapshot` / `WidgetSnapshotStore` hold the data widgets read from the App Group. The app
-  keeps it current through `WidgetSyncService`, which listens to the brew repository's change stream (every write path).
-- `DeepLink.url` is the tap target for widgets and Live Activities. Taps arrive in `SceneDelegate` as URLs.
-- `NSSupportsLiveActivities = YES` is already in `Info.plist`.
-
-To turn them on:
-
-1. **File → New → Target → Widget Extension** (check *Include Live Activity*). Name it `CoffeeMasterWidgets`.
-2. Extension target → *Frameworks and Libraries* → add `ExtensionModules` from the `Packages` package.
-3. Add the **App Groups** capability with `group.com.coffeemaster.app` (`AppConfiguration.appGroupID`) to **both**
-   targets.
-4. Replace the generated code with configurations that use the shared types:
-
-```swift
-import WidgetKit
-import SwiftUI
-import ActivityKit
-import WidgetsShared
-
-struct LatestBrewsProvider: TimelineProvider {
-    let store = WidgetSnapshotStore()
-    func placeholder(in context: Context) -> Entry { Entry(date: .now, snapshot: .placeholder) }
-    func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {
-        completion(Entry(date: .now, snapshot: store.load() ?? .placeholder))
-    }
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-        completion(Timeline(entries: [Entry(date: .now, snapshot: store.load() ?? .placeholder)], policy: .never))
-    }
-    struct Entry: TimelineEntry { let date: Date; let snapshot: WidgetSnapshot }
-}
-
-struct LatestBrewsWidget: Widget {
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: WidgetKind.latestBrews, provider: LatestBrewsProvider()) { entry in
-            // render entry.snapshot.items; tap → .widgetURL(entry.snapshot.items.first?.deepLinkURL)
-        }
-    }
-}
-
-struct BrewTimerLiveActivity: Widget {
-    var body: some WidgetConfiguration {
-        ActivityConfiguration(for: BrewTimerAttributes.self) { context in
-            Text(timerInterval: context.state.timerRange, countsDown: true)
-                .widgetURL(context.attributes.deepLinkURL)
-        } dynamicIsland: { context in
-            DynamicIsland { /* expanded regions */ } compactLeading: { Image(systemName: "timer") }
-            compactTrailing: { Text(timerInterval: context.state.timerRange, countsDown: true) }
-            minimal: { Image(systemName: "timer") }
-        }
-    }
-}
-```
+- **`CoffeeMasterWidgets`** (Widget Extension target, folder `CoffeeMasterWidgets/`, Info.plist `Config/WidgetsInfo.plist`) is embedded in the app and links `ExtensionModules`. It declares the brew timer's Live Activity; its views live in `WidgetsShared` (`BrewTimerLockScreenView`, `BrewTimerPhase`, `BrewTimerClock`) so they can be previewed.
+- `BrewTimerAttributes.ContentState` is `Domain.BrewTimerStatus`: title, phase (title + SF Symbol, localized by the app, since the extension can't read the in-app language), start dates, water poured and the next pour target. Clocks are `Text(timerInterval:)` from the start dates, so they tick without updates; the app updates only when the phase changes.
+- The pour-over timer (`ActiveBrewViewModel`) shows / updates the activity through `BrewTimerService` (`LiveActivityBrewTimerService` in the app, a no-op by default) and ends it on Stop or discard. A restored brew (2.8) updates the same activity. Tapping it opens `brew/new`, which resumes the brew in progress.
+- `NSSupportsLiveActivities = YES` is in the app's `Info.plist`. If Live Activities are off in Settings, the brew simply runs without one.
+- Not yet: home-screen widgets. `WidgetSnapshot` / `WidgetSnapshotStore` (kept current by `WidgetSyncService`) are ready for a "latest brews" widget; it needs the **App Groups** capability (`group.com.coffeemaster.app`, `AppConfiguration.appGroupID`) on both targets, which needs a signing team.
 
 ## Dependency injection (Factory)
 

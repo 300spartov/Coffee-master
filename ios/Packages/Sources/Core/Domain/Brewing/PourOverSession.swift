@@ -180,6 +180,18 @@ public struct PourOverSession: Equatable, Codable, Sendable {
         return (1..<left).map { pouredMilliliters + step * Double($0) }.filter { $0 < totalMilliliters }
     }
 
+    /// Where the running (or next) pour should end, in ml from the start: the bloom's share first, then
+    /// the next mark (the last pour ends at the total). Nil once every planned pour is done.
+    public var nextPourTarget: Double? {
+        guard completedPours < setup.pours else { return nil }
+        if completedPours == 0 { return plannedPours.first }
+        return nextPourMarks.first ?? totalMilliliters
+    }
+
+    public var isPouring: Bool {
+        if case .pouring = phase { true } else { false }
+    }
+
     /// The water-to-coffee ratio actually poured, when it's above the plan (web: shown in orange).
     public func ratioOverPlan(poured milliliters: Double) -> Double? {
         guard setup.doseGrams > 0 else { return nil }

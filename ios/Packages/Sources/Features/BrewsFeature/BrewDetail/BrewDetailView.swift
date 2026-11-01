@@ -37,16 +37,6 @@ struct BrewDetailView: View {
                 }
 
                 VStack(spacing: Spacing.md) {
-                    Button {
-                        Task { await viewModel.toggleTimer() }
-                    } label: {
-                        Label(
-                            viewModel.isTimerRunning ? tr("Stop Timer") : tr("Start Brew Timer"),
-                            systemImage: viewModel.isTimerRunning ? "stop.fill" : "timer"
-                        )
-                    }
-                    .buttonStyle(.primary)
-
                     Button(tr("Delete Brew"), role: .destructive) {
                         isConfirmingDelete = true
                     }

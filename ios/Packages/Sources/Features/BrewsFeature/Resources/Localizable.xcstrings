@@ -113,22 +113,6 @@
         }
       }
     },
-    "Start Brew Timer": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start Brew Timer"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Запустити таймер"
-          }
-        }
-      }
-    },
     "Start a Brew": {
       "localizations": {
         "en": {
@@ -141,22 +125,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Почати заварювання"
-          }
-        }
-      }
-    },
-    "Stop Timer": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop Timer"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Зупинити таймер"
           }
         }
       }

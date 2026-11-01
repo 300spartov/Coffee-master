@@ -65,7 +65,7 @@ struct RateBrewView: View {
         case .pour(let milliliters):
             let number = viewModel.steps[..<index].pours.count + 1
             NumberField(
-                "\(number == 1 ? tr("Bloom") : tr("Pour \(number)")) · \(range)",
+                "\(pourTitle(number)) · \(range)",
                 value: Binding(get: { milliliters }, set: { viewModel.setPour(at: index, milliliters: $0) }),
                 unit: tr("ml"),
                 range: 0...2_000,
