@@ -10,9 +10,12 @@ enum BrewStockEffects {
         case takeFromStock
     }
 
-    static func apply(_ direction: Direction, for brew: Brew, in context: NSManagedObjectContext) throws {
+    /// Returns the bag and pack after the change.
+    @discardableResult
+    static func apply(_ direction: Direction, for brew: Brew, in context: NSManagedObjectContext) throws -> StockUsage {
+        var usage = StockUsage()
         if let beanID = brew.bean?.beanID, brew.doseGrams > 0 {
-            try ignoringMissing {
+            usage.bean = try ignoringMissing {
                 try RecordStore<Bean>.mutate(id: beanID, in: context) { bean in
                     switch direction {
                     case .returnToStock: bean.restock(grams: brew.doseGrams)
@@ -22,7 +25,7 @@ enum BrewStockEffects {
             }
         }
         if let packID = brew.filter?.id {
-            try ignoringMissing {
+            usage.filterPack = try ignoringMissing {
                 try RecordStore<FilterPack>.mutate(id: packID, in: context) { pack in
                     switch direction {
                     case .returnToStock: pack.putBack()
@@ -31,14 +34,15 @@ enum BrewStockEffects {
                 }
             }
         }
+        return usage
     }
 
     /// The bag or pack may have been deleted since; that's fine, there's nothing to adjust.
-    private static func ignoringMissing(_ body: () throws -> Void) throws {
+    private static func ignoringMissing<T>(_ body: () throws -> T) throws -> T? {
         do {
-            try body()
+            return try body()
         } catch RepositoryError.notFound {
-            return
+            return nil
         }
     }
 }

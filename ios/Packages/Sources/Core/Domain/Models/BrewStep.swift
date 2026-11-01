@@ -21,10 +21,14 @@ public struct BrewStep: Hashable, Codable, Sendable {
 
     public var end: TimeInterval { start + duration }
 
-    public var pouredMilliliters: Double {
-        if case .pour(let milliliters) = kind { return milliliters }
-        return 0
+    /// The pour's ml, or nil for pauses and actions.
+    public var pourMilliliters: Double? {
+        if case .pour(let milliliters) = kind { milliliters } else { nil }
     }
+
+    public var isPour: Bool { pourMilliliters != nil }
+
+    public var pouredMilliliters: Double { pourMilliliters ?? 0 }
 }
 
 /// Open set of in-brew actions; unknown labels from imported data are preserved.
@@ -48,4 +52,9 @@ public extension Array where Element == BrewStep {
     var pourCount: Int {
         filter { $0.pouredMilliliters > 0 }.count
     }
+}
+
+public extension Sequence where Element == BrewStep {
+    /// Each pour's ml, in order.
+    var pours: [Double] { compactMap(\.pourMilliliters) }
 }

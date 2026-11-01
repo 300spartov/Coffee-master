@@ -19,7 +19,23 @@ public protocol RecordRepository<Record>: Sendable {
 
 /// Brews, newest first. `delete` moves a brew to the trash and returns its coffee and filter
 /// to stock (like the web app); see `TrashRepository` to restore or purge.
-public protocol BrewRepository: RecordRepository where Record == Brew {}
+public protocol BrewRepository: RecordRepository where Record == Brew {
+    /// Saves a brew just made and takes its dose from the bag and one filter from the pack, in one
+    /// transaction (the web's `saveBrew`). Returns the bag and pack as they are now, for warnings.
+    @discardableResult
+    func record(_ brew: Brew) async throws -> StockUsage
+}
+
+/// The bag and filter pack after a brew took from them (nil when not used, or gone).
+public struct StockUsage: Equatable, Sendable {
+    public var bean: Bean?
+    public var filterPack: FilterPack?
+
+    public init(bean: Bean? = nil, filterPack: FilterPack? = nil) {
+        self.bean = bean
+        self.filterPack = filterPack
+    }
+}
 
 public enum RepositoryError: Error, Equatable {
     case notFound

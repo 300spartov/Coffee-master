@@ -44,8 +44,18 @@ public enum EspressoStep: Sendable {
     case result
 }
 
-public protocol EspressoRouting: GearPickerPresenting {
+/// A brew was saved (pour-over rating or espresso result): show the result.
+public protocol BrewSavingRouting: AnyObject {
+    /// `usage`: the bag and filter pack after the brew took from them, for warnings.
+    func brewDidSave(_ brew: Brew, usage: StockUsage)
+}
+
+public protocol EspressoRouting: GearPickerPresenting, BrewSavingRouting {
     /// Push `step` for `brew` (`BrewModule.makeEspressoStep`).
     func espresso(_ brew: EspressoBrew, didAdvanceTo step: EspressoStep)
-    func espressoDidSave(_ brew: Brew)
+}
+
+public protocol BrewResultRouting: AnyObject {
+    func brewResultDidTapJournal()
+    func brewResultDidTapBrewAgain()
 }

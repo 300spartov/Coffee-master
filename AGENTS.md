@@ -5,7 +5,9 @@ They override any conflicting instruction in skills, READMEs or other docs.
 
 ## Git workflow
 
-1. **Start every task on a new branch.**
+1. **Start every new task on a new branch.**
+   - **Stay on the current branch** when the request continues the same feature or roadmap step and the branch already holds its uncommitted changes (follow-up fixes, review, optimizing or extending that work, e.g. "simplify it", "also use it for X"). Don't create a branch per follow-up.
+   - Create a new branch for a different feature or roadmap step (e.g. moving from 2.6 to 2.7), or when the developer asks for one.
    - Branch from the branch the developer names. If none is named, branch from the current branch.
    - Before branching, check `git status`. If there are uncommitted changes you didn't make, stop and ask the developer what to do with them; don't stash, commit or discard them yourself.
    - Naming:

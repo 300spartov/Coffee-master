@@ -78,6 +78,35 @@ struct RepositoriesTests {
         }
     }
 
+    @Test func recordingANewBrewTakesItsDoseAndAFilter() async throws {
+        let bean = Bean(name: "Kenya", totalGrams: 250, remainingGrams: 20)
+        let pack = FilterPack(name: "Cafec", total: 100, remaining: 11)
+        try await beans.save(bean)
+        try await filters.save(pack)
+        let brew = Brew(method: .v60, bean: BeanReference(bean), filter: GearReference(pack), doseGrams: 16, ratio: 16, rating: 8)
+
+        let usage = try await brews.record(brew)
+
+        #expect(usage.bean?.remainingGrams == 4)
+        #expect(usage.filterPack?.remaining == 10)
+        #expect(try await beans.fetch(id: bean.id).remainingGrams == 4)
+        #expect(try await brews.fetchAll().map(\.id) == [brew.id])
+
+        // Trashing it gives the stock back (the other half of the same rule).
+        try await brews.delete(id: brew.id)
+        #expect(try await beans.fetch(id: bean.id).remainingGrams == 20)
+        #expect(try await filters.fetch(id: pack.id).remaining == 11)
+    }
+
+    @Test func recordingWithGoneGearStillSaves() async throws {
+        let brew = Brew(method: .v60, bean: BeanReference(beanID: UUID(), name: "Gone"), filter: GearReference(id: UUID(), name: "Gone"), doseGrams: 16, ratio: 16, rating: 8)
+
+        let usage = try await brews.record(brew)
+
+        #expect(usage == StockUsage())
+        #expect(try await brews.fetchAll().count == 1)
+    }
+
     // MARK: - Trash lifecycle
 
     @Test func purgeRemovesOnlyExpired() async throws {

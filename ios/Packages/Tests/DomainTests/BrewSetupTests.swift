@@ -93,7 +93,7 @@ struct BrewSetupTests {
         setup.grinder = GearReference(name: "Comandante")
         setup.grindSetting = 24
 
-        let brew = setup.makeBrew(rating: 8)
+        let brew = setup.makeBrew()
 
         #expect(brew.dripper == nil)
         #expect(brew.filter == nil)

@@ -10,10 +10,11 @@ import TestSupport
 final class SpyEspressoRouter: EspressoRouting {
     private(set) var steps: [EspressoStep] = []
     private(set) var saved: [Brew] = []
+    private(set) var usages: [StockUsage] = []
 
     func showGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, onPick: @escaping (GearPick) -> Void) {}
     func espresso(_ brew: EspressoBrew, didAdvanceTo step: EspressoStep) { steps.append(step) }
-    func espressoDidSave(_ brew: Brew) { saved.append(brew) }
+    func brewDidSave(_ brew: Brew, usage: StockUsage) { saved.append(brew); usages.append(usage) }
 }
 
 @Suite(.container)
@@ -66,7 +67,7 @@ struct EspressoViewModelTests {
         latte.shotTime = 27
         latte.actualYield = 38
         latte.milk.name = "  Oat "
-        latte.rating = 9
+        latte.tasting.rating = 9
 
         await latte.save()
 

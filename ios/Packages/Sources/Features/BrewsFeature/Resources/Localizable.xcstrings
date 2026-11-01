@@ -1,38 +1,6 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "Bean name": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bean name"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Назва зерна"
-          }
-        }
-      }
-    },
-    "Coffee": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Coffee"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Кава"
-          }
-        }
-      }
-    },
     "Delete": {
       "localizations": {
         "en": {
@@ -113,39 +81,6 @@
         }
       }
     },
-    "Method": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Method"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Метод"
-          }
-        }
-      }
-    },
-    "New Brew": {
-      "extractionState": "stale",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New Brew"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Новий рецепт"
-          }
-        }
-      }
-    },
     "No brews yet": {
       "localizations": {
         "en": {
@@ -162,38 +97,6 @@
         }
       }
     },
-    "Notes": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Notes"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Нотатки"
-          }
-        }
-      }
-    },
-    "Rating": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rating"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Оцінка"
-          }
-        }
-      }
-    },
     "Ratio": {
       "localizations": {
         "en": {
@@ -206,22 +109,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Пропорція"
-          }
-        }
-      }
-    },
-    "Recipe": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recipe"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Рецепт"
           }
         }
       }
@@ -270,22 +157,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Зупинити таймер"
-          }
-        }
-      }
-    },
-    "Taste": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Taste"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Смак"
           }
         }
       }

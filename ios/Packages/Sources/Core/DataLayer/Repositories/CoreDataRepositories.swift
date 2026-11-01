@@ -53,7 +53,14 @@ struct CoreDataRecordRepository<Record: StoredRecord>: RecordRepository {
 
 // MARK: - Brews & trash
 
-extension CoreDataRecordRepository: BrewRepository where Record == Brew {}
+extension CoreDataRecordRepository: BrewRepository where Record == Brew {
+    @discardableResult
+    func record(_ brew: Brew) async throws -> StockUsage {
+        try await store.save(brew) { saved, context in
+            try BrewStockEffects.apply(.takeFromStock, for: saved, in: context)
+        }
+    }
+}
 
 extension CoreDataRecordRepository: TrashRepository where Record == Brew {
     func trashedBrews() async throws -> [Brew] {

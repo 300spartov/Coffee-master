@@ -8,9 +8,6 @@ extension BrewMethod {
         case .espresso: "cup.and.saucer.fill"
         }
     }
-
-    /// Methods offered in the template's "New Brew" form.
-    static let formPresets: [BrewMethod] = alternativePresets + espressoPresets
 }
 
 extension Brew {

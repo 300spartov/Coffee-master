@@ -63,10 +63,7 @@ public extension EspressoSetup {
         actualTDS: Double?,
         milk: MilkInfo?,
         ice: IceInfo?,
-        rating: Double,
-        flavors: [String] = [],
-        aromas: [String] = [],
-        notes: String
+        tasting: BrewTasting
     ) -> Brew {
         let shot = EspressoShot(
             doseGrams: doseGrams,
@@ -77,7 +74,7 @@ public extension EspressoSetup {
             actualTDS: actualTDS,
             pressureBar: pressureBar
         )
-        return Brew(
+        return tasting.applied(to: Brew(
             date: date,
             method: method,
             bean: bean,
@@ -92,10 +89,7 @@ public extension EspressoSetup {
             espresso: shot,
             milk: needsMilk ? milk : nil,
             ice: needsIce ? ice : nil,
-            rating: rating,
-            flavors: flavors,
-            aromas: aromas,
-            notes: notes
-        )
+            rating: tasting.rating
+        ))
     }
 }

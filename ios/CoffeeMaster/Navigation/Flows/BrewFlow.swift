@@ -4,19 +4,17 @@ import Domain
 import DesignSystem
 import Navigation
 import BrewFeature
-import BrewsFeature
 import BeansFeature
 import DevicesFeature
 
 /// The brew action's modal flow, presented full screen over the tabs: the brew wizard.
-/// Pour-over: method pick (2.1) → setup (2.2) → brew timer (2.3) → the template "New Brew" form, until
-/// rating (2.7) replaces it. Espresso (2.5): setup → shot → milk / ice → result, saved there.
+/// Pour-over: method pick (2.1) → setup (2.2) → brew timer (2.3) → rate & save (2.7).
+/// Espresso (2.5): setup → shot → milk / ice → result. Both end on the saved-brew result.
 ///
 /// Setup rows open a picker sheet; its "+" pushes the Beans / Devices add forms into the sheet, so a
 /// missing bag or device can be added without leaving the brew.
 final class BrewFlow {
     private let module: BrewModule
-    private let brewsModule: BrewsModule
     private let beansModule: BeansModule
     private let devicesModule: DevicesModule
     @Injected(\.toasts) private var toasts
@@ -27,10 +25,12 @@ final class BrewFlow {
     /// shape) and how to hand the pick back to the setup screen that opened it.
     private var pickerSession: (method: BrewMethod, deliver: (GearPick) -> Void)?
     private weak var presenter: UIViewController?
+    /// "Go to Journal" on the result: closes the brew and shows the Journal tab.
+    private let showJournal: () -> Void
 
-    init(module: BrewModule, brewsModule: BrewsModule, beansModule: BeansModule, devicesModule: DevicesModule, presenter: UIViewController) {
+    init(module: BrewModule, beansModule: BeansModule, devicesModule: DevicesModule, presenter: UIViewController, showJournal: @escaping () -> Void) {
         self.module = module
-        self.brewsModule = brewsModule
+        self.showJournal = showJournal
         self.beansModule = beansModule
         self.devicesModule = devicesModule
         self.presenter = presenter
@@ -119,17 +119,41 @@ extension BrewFlow: @MainActor EspressoRouting {
         modal.current?.push(module.makeEspressoStep(step, of: brew))
     }
 
-    func espressoDidSave(_ brew: Brew) {
+}
+
+extension BrewFlow: @MainActor BrewSavingRouting {
+    /// The result becomes the only screen (no going back into a saved brew), with stock warnings.
+    func brewDidSave(_ brew: Brew, usage: StockUsage) {
+        modal.current?.setRoot(module.makeBrewResult(brew, router: self), animated: true)
+        if let bean = usage.bean {
+            if bean.isEmpty {
+                toasts.show(tr("\(bean.name) is used up"), style: .warning)
+            } else if bean.isLow {
+                toasts.show(tr("\(bean.name) is running low"), style: .warning)
+            }
+        }
+        if let pack = usage.filterPack, pack.isLow {
+            let left = pack.remaining
+            toasts.show(pack.isEmpty ? tr("No filters left in \(pack.name)") : tr("Only \(left) filters left in \(pack.name)"), style: .warning)
+        }
+    }
+}
+
+extension BrewFlow: BrewResultRouting {
+    func brewResultDidTapJournal() {
         modal.close()
-        toasts.show(tr("Shot saved"), style: .success)
+        showJournal()
+    }
+
+    func brewResultDidTapBrewAgain() {
+        modal.current?.setRoot(module.makeMethodGroups(router: self), animated: true)
     }
 }
 
 extension BrewFlow: ActiveBrewRouting {
-    /// The finished brew replaces the timer, so Back from the form doesn't return to a stopped timer.
+    /// Rating replaces the timer, so Back from it doesn't return to a stopped timer.
     func activeBrewDidFinish(_ session: PourOverSession) {
-        let form = brewsModule.makeNewBrew(setup: session.setup, steps: session.steps, totalTime: session.elapsed(at: .now), router: self)
-        modal.current?.replaceTop(with: form)
+        modal.current?.replaceTop(with: module.makeRateBrew(session: session, router: self))
     }
 
     func activeBrewDidLeave() {
@@ -182,11 +206,4 @@ extension BrewFlow: FilterPackFormRouting {
 
     func filterPackFormDidDelete(id: FilterPack.ID) { backToPicker() }
     func filterPackFormNotFound(id: FilterPack.ID) { backToPicker() }
-}
-
-extension BrewFlow: NewBrewRouting {
-    func newBrewDidSave(_ brew: Brew) {
-        modal.close()
-        toasts.show(tr("Brew saved"), style: .success)
-    }
 }

@@ -26,11 +26,4 @@ public struct BrewsModule {
             hidesBottomBarWhenPushed: true
         )
     }
-
-    /// The template brew form, pushed by the brew wizard after the method pick until the wizard's
-    /// own setup and rating steps (ROADMAP 2.2–2.7) replace it.
-    public func makeNewBrew(setup: BrewSetup, steps: [BrewStep] = [], totalTime: TimeInterval? = nil, router: any NewBrewRouting) -> UIViewController {
-        let viewModel = NewBrewViewModel(setup: setup, steps: steps, totalTime: totalTime, router: router)
-        return HostingController(rootView: NewBrewView(viewModel: viewModel), title: setup.method.rawValue)
-    }
 }

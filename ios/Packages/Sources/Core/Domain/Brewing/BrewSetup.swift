@@ -93,8 +93,8 @@ public extension BrewSetup {
 
 public extension BrewSetup {
     /// A brew made with this setup. Gear the method doesn't use is left out.
-    func makeBrew(date: Date = .now, totalTime: TimeInterval? = nil, rating: Double, steps: [BrewStep] = []) -> Brew {
-        Brew(
+    func makeBrew(date: Date = .now, totalTime: TimeInterval? = nil, steps: [BrewStep] = [], tasting: BrewTasting = BrewTasting()) -> Brew {
+        tasting.applied(to: Brew(
             date: date,
             method: method,
             bean: bean,
@@ -109,7 +109,7 @@ public extension BrewSetup {
             waterTemperature: waterTemperature,
             steps: steps,
             totalTime: totalTime,
-            rating: rating
-        )
+            rating: tasting.rating
+        ))
     }
 }

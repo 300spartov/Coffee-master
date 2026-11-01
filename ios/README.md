@@ -31,8 +31,8 @@ ios/
     │   ├── WebImport/            # one-time import of the web app's JSON export → Domain models
     │   └── FlavorWheel/          # the flavor wheel (taxonomy, picks, Canvas wheel), shared by brew screens
     ├── Sources/Features/
-    │   ├── BrewFeature/          # brew wizard (Phase 2): method pick → setup (gear pickers) → …
-    │   ├── BrewsFeature/         # journal list → detail; template brew form (until 2.2–2.7)
+    │   ├── BrewFeature/          # brew wizard: method pick → setup → timer / espresso shot → rate & save → result
+    │   ├── BrewsFeature/         # journal list → detail
     │   ├── BeansFeature/         # bean list → add / edit
     │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
     │   └── SettingsFeature/      # settings → about

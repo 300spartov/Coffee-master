@@ -32,7 +32,7 @@ struct EspressoSetupTests {
         setup.accessories = [GearReference(id: .fixture(9), name: "WDT")]
         let milk = MilkInfo(name: "Oat", temperature: 60, volumeMilliliters: 150, frother: "Steam wand")
 
-        let brew = setup.makeBrew(shotTime: 28, actualYieldGrams: 40, targetTDS: 9, actualTDS: nil, milk: milk, ice: IceInfo(cubes: 4), rating: 8.5, notes: "Sweet")
+        let brew = setup.makeBrew(shotTime: 28, actualYieldGrams: 40, targetTDS: 9, actualTDS: nil, milk: milk, ice: IceInfo(cubes: 4), tasting: BrewTasting(rating: 8.5, notes: " Sweet "))
 
         #expect(brew.method == .cappuccino)
         #expect(brew.espresso?.actualYieldGrams == 40)
@@ -44,10 +44,12 @@ struct EspressoSetupTests {
         #expect(brew.espressoMachine?.name == "Gaggia Classic Pro")
         #expect(brew.accessoryIDs == [.fixture(9)])
         #expect(brew.category == .espresso)
+        #expect(brew.rating == 8.5)
+        #expect(brew.notes == "Sweet")
     }
 
     @Test func unweighedShotKeepsThePlannedRatio() {
-        let brew = EspressoSetup().makeBrew(shotTime: 25, actualYieldGrams: 0, targetTDS: nil, actualTDS: nil, milk: nil, ice: nil, rating: 7, notes: "")
+        let brew = EspressoSetup().makeBrew(shotTime: 25, actualYieldGrams: 0, targetTDS: nil, actualTDS: nil, milk: nil, ice: nil, tasting: BrewTasting(rating: 7))
         #expect(brew.espresso?.actualYieldGrams == nil)
         #expect(brew.ratio == 2)
     }

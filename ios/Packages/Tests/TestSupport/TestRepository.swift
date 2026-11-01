@@ -22,6 +22,8 @@ public actor TestRepository<Record: Syncable>: RecordRepository {
     private let failing: TestFailure
     /// Records as passed to `save`, oldest first.
     public private(set) var saved: [Record] = []
+    /// What `record(_:)` reports (brews only).
+    var usage = StockUsage()
 
     public init(_ base: InMemoryRecordRepository<Record>, failing: TestFailure = .none) {
         self.base = base
@@ -66,6 +68,14 @@ extension TestRepository: BrewRepository where Record == Brew {
     public init(brews: [Brew] = [], failing: TestFailure = .none) {
         self.init(InMemoryRecordRepository(brews: brews), failing: failing)
     }
+
+    /// Saves (logged in `saved`) and returns `usage`.
+    public func record(_ brew: Brew) async throws -> StockUsage {
+        try await save(brew)
+        return usage
+    }
+
+    public func setUsage(_ usage: StockUsage) { self.usage = usage }
 }
 
 extension TestRepository: BeanRepository where Record == Bean {

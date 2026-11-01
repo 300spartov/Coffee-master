@@ -29,11 +29,7 @@ final class EspressoViewModel: GearPickingModel {
     var actualYield: Double?
     var targetTDS: Double? = 9
     var actualTDS: Double?
-    var rating: Double = 8
-    /// From the flavor wheel (Ukrainian names).
-    var flavors: [String] = []
-    var aromas: [String] = []
-    var notes = ""
+    var tasting = BrewTasting()
     private(set) var isSaving = false
     var alertMessage: String?
 
@@ -172,21 +168,14 @@ final class EspressoViewModel: GearPickingModel {
             actualTDS: actualTDS,
             milk: trimmedMilk,
             ice: trimmedIce,
-            rating: rating,
-            flavors: flavors,
-            aromas: aromas,
-            notes: notes.trimmingCharacters(in: .whitespacesAndNewlines)
+            tasting: tasting
         )
-        do {
-            try await brews.save(brew)
-            try? await suggestions.remember(Suggestions(
-                milks: setup.needsMilk ? [trimmedMilk.name] : [],
-                mixers: setup.needsIce ? [trimmedIce.mixer] : []
-            ))
-            router?.espressoDidSave(brew)
-        } catch {
-            alertMessage = error.localizedDescription
-        }
+        alertMessage = await record(brew, in: brews, then: router)
+        guard alertMessage == nil else { return }
+        try? await suggestions.remember(Suggestions(
+            milks: setup.needsMilk ? [trimmedMilk.name] : [],
+            mixers: setup.needsIce ? [trimmedIce.mixer] : []
+        ))
     }
 }
 

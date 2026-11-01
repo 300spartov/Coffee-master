@@ -63,6 +63,16 @@ public struct BrewModule {
         }
     }
 
+    /// Pour-over's last step (it replaces the timer): steps, rating, taste; saves the brew.
+    public func makeRateBrew(session: PourOverSession, router: any BrewSavingRouting) -> UIViewController {
+        HostingController(rootView: RateBrewView(viewModel: RateBrewViewModel(session: session, router: router)), title: tr("Rate & Save"))
+    }
+
+    /// After saving (pour-over or espresso); make it the stack's root so there's no going back.
+    public func makeBrewResult(_ brew: Brew, router: any BrewResultRouting) -> UIViewController {
+        HostingController(rootView: BrewResultView(brew: brew, router: router), title: brew.method.rawValue)
+    }
+
     /// Picker sheet for a setup row, with "+" to add a new item.
     public func makeGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, router: any GearPickerRouting) -> UIViewController {
         let viewModel = GearPickerViewModel(kind: kind, method: method, selectedID: selectedID, router: router)

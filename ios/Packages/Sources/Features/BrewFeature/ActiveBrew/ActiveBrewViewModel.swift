@@ -88,9 +88,7 @@ final class ActiveBrewViewModel {
     }
 
     var hints: [PourHint] {
-        let poured = session.steps.compactMap { step -> Double? in
-            if case .pour(let milliliters) = step.kind { milliliters } else { nil }
-        }
+        let poured = session.steps.pours
         let completed = session.completedPours
         let active: Int? = session.isFinished ? nil : session.currentPourNumber
         return session.plannedPours.enumerated().map { index, planned in

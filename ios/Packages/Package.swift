@@ -85,7 +85,7 @@ let package = Package(
         // MARK: Features
         .target(
             name: "BrewsFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "FlavorWheel", "Navigation", factoryKit],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
             path: "Sources/Features/BrewsFeature",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault

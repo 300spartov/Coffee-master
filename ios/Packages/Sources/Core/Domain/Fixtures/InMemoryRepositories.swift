@@ -84,6 +84,13 @@ extension InMemoryRecordRepository: BrewRepository where Record == Brew {
     public convenience init(brews: [Brew]) {
         self.init(brews) { $0.date > $1.date }
     }
+
+    /// Saves only: the in-memory stores don't model stock across entities (see the top of the file).
+    @discardableResult
+    public func record(_ brew: Brew) async throws -> StockUsage {
+        try await save(brew)
+        return StockUsage()
+    }
 }
 
 extension InMemoryRecordRepository: TrashRepository where Record == Brew {

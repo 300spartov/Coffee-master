@@ -63,14 +63,13 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(element(app, containing: "320").waitForExistence(timeout: 5))
         attachScreenshot(named: "setup")
 
-        // Start → timer → Stop → brew form prefilled with the bag
+        // Start → timer → Stop → rating, for this bag
         scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
         brewThroughTimer(app)
-        XCTAssertTrue(app.navigationBars["V60"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.textFields["Bean name"].value as? String, bean)
+        XCTAssertTrue(app.staticTexts[bean].waitForExistence(timeout: 5))
 
-        // Close the wizard and remove the bag
-        app.navigationBars["V60"].buttons.firstMatch.tap()
+        // Close the wizard (without saving) and remove the bag
+        app.navigationBars["Rate & Save"].buttons.firstMatch.tap()
         app.navigationBars["V60"].buttons.firstMatch.tap()
         app.navigationBars["Alternative"].buttons.firstMatch.tap()
         app.navigationBars["New Brew"].buttons["Cancel"].tap()
@@ -127,19 +126,19 @@ final class BrewUITests: XCTestCase {
         field.typeText(dose)
         scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
         brewThroughTimer(app)
-        XCTAssertTrue(app.textFields["Bean name"].waitForExistence(timeout: 5))
     }
 
-    /// The shortest brew: one pour, then Stop.
+    /// The shortest brew: one pour, then Stop; ends on the rating.
     private func brewThroughTimer(_ app: XCUIApplication) {
         XCTAssertTrue(app.buttons["active.pour"].waitForExistence(timeout: 5))
         app.buttons["active.pour"].tap()
         app.buttons["active.stop"].tap()
+        XCTAssertTrue(app.navigationBars["Rate & Save"].waitForExistence(timeout: 5))
     }
 
-    /// From the template brew form: back to setup, methods, step 1, then Cancel.
+    /// From the rating (not saved): back to setup, methods, step 1, then Cancel.
     private func closeWizardFromBrewForm(_ app: XCUIApplication) {
-        app.navigationBars["V60"].buttons.firstMatch.tap()
+        app.navigationBars["Rate & Save"].buttons.firstMatch.tap()
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
         app.navigationBars["V60"].buttons.firstMatch.tap()
         app.navigationBars["Alternative"].buttons.firstMatch.tap()
@@ -187,16 +186,45 @@ final class BrewUITests: XCTestCase {
         app.swipeUp()
         app.buttons["active.stop"].tap()
 
-        // The form replaces the timer and has the flavor wheel; Back goes to the setup
-        XCTAssertTrue(app.textFields["Bean name"].waitForExistence(timeout: 5))
+        // The rating replaces the timer and has the flavor wheel; Back goes to the setup
+        XCTAssertTrue(app.navigationBars["Rate & Save"].waitForExistence(timeout: 5))
         let fruit = app.buttons["wheel.Fruit"]
-        for _ in 0..<6 where !fruit.isHittable { app.swipeUp(velocity: .slow) }
+        for _ in 0..<6 where !fruit.isHittable { app.collectionViews["rate.form"].swipeUp(velocity: .slow) }
         fruit.tap()
         XCTAssertTrue(app.buttons["wheel.Citrus"].waitForExistence(timeout: 5))
         attachScreenshot(named: "pour-over-wheel")
-        for _ in 0..<6 where !app.navigationBars["V60"].buttons.firstMatch.isHittable { app.swipeDown(velocity: .fast) }
-        app.navigationBars["V60"].buttons.firstMatch.tap()
+        app.navigationBars["Rate & Save"].buttons.firstMatch.tap()
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
+    }
+
+    /// Rate & save: the brew is saved, the result shows it, and "Go to Journal" lands on it there.
+    /// Deletes the brew afterwards (no bag, so no stock changes).
+    func testSavedBrewShowsResultAndJournal() {
+        let app = XCUIApplication.launched()
+        openSetup(app, group: "alternative", method: "Drip")
+        scrollTo(app.buttons["setup.save"], inForm: "setup.form", of: app).tap()
+        brewThroughTimer(app)
+        let notes = app.textFields["tasting.notes"]
+        let note = "UI brew \(Int.random(in: 1000...9999))"
+        scrollTo(notes, inForm: "rate.form", of: app).tap()
+        notes.typeText(note)
+        scrollTo(app.buttons["rate.save"], inForm: "rate.form", of: app).tap()
+
+        XCTAssertTrue(app.staticTexts["Saved!"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "brew-result")
+        app.buttons["result.journal"].tap()
+
+        // Newest first: our brew is the top row. Delete it (trashing returns any stock it took), but only
+        // if it really is ours, so a real brew is never touched.
+        XCTAssertTrue(app.navigationBars["Journal"].waitForExistence(timeout: 5))
+        let top = app.collectionViews.firstMatch.cells.firstMatch
+        XCTAssertTrue(top.waitForExistence(timeout: 5))
+        let ours = top.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Drip ·'")).firstMatch
+        XCTAssertTrue(ours.exists, "The saved Drip brew should be the newest")
+        guard ours.exists else { return }
+        top.swipeLeft()
+        app.buttons["Delete"].firstMatch.tap()
+        XCTAssertTrue(ours.waitForNonExistence(timeout: 5))
     }
 
     /// Back after the first pour asks before discarding.

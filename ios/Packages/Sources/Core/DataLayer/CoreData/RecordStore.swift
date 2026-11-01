@@ -73,6 +73,17 @@ struct RecordStore<Record: StoredRecord>: Sendable {
         try await upsert([record], policy: .overwrite)
     }
 
+    /// A local edit plus side effects that must land in the same transaction (a new brew taking stock).
+    func save<T: Sendable>(_ record: Record, then effects: @escaping @Sendable (Record, NSManagedObjectContext) throws -> T) async throws -> T {
+        var record = record
+        record.touch()
+        let saved = record
+        return try await persistence.write { context in
+            try Self.upsert([saved], policy: .overwrite, in: context)
+            return try effects(saved, context)
+        }
+    }
+
     @discardableResult
     func upsert(_ records: [Record], policy: UpsertPolicy, author: PersistenceController.TransactionAuthor = .app) async throws -> UpsertResult {
         try await persistence.write(author: author) { context in

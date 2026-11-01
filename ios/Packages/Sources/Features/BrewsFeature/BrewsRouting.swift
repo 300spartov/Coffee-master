@@ -11,7 +11,3 @@ public protocol BrewDetailRouting: AnyObject {
     /// The brew doesn't exist (anymore), e.g. a stale deep link.
     func brewDetailNotFound(id: Brew.ID)
 }
-public protocol NewBrewRouting: AnyObject {
-    /// The brew was saved. (Leaving without saving is the navigation bar's Back / Cancel, handled by the flow.)
-    func newBrewDidSave(_ brew: Brew)
-}

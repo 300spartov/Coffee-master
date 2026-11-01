@@ -93,7 +93,7 @@ public struct PourOverSession: Equatable, Sendable {
 
     /// Corrects how much a logged pour was.
     public mutating func editPour(at index: Int, milliliters: Double) {
-        guard steps.indices.contains(index), case .pour = steps[index].kind else { return }
+        guard steps.indices.contains(index), steps[index].isPour else { return }
         steps[index].kind = .pour(milliliters: max(milliliters, 0))
     }
 
@@ -151,7 +151,7 @@ public struct PourOverSession: Equatable, Sendable {
     public var pouredMilliliters: Double { steps.totalPouredMilliliters }
 
     public var completedPours: Int {
-        steps.filter { if case .pour = $0.kind { true } else { false } }.count
+        steps.pours.count
     }
 
     /// The pour being poured, or the next one (1-based).

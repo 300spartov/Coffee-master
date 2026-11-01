@@ -209,6 +209,22 @@
         }
       }
     },
+    "Bad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bad"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погано"
+          }
+        }
+      }
+    },
     "Bloom": {
       "localizations": {
         "en": {
@@ -241,6 +257,22 @@
         }
       }
     },
+    "Body, aftertaste, acidity…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Body, aftertaste, acidity…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тіло, післясмак, кислотність…"
+          }
+        }
+      }
+    },
     "Body, bitterness, sweetness, balance…": {
       "localizations": {
         "en": {
@@ -253,6 +285,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Тіло, гіркота, солодкість, баланс…"
+          }
+        }
+      }
+    },
+    "Brew Again": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew Again"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нове заварювання"
+          }
+        }
+      }
+    },
+    "Brew steps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew steps"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кроки заварювання"
           }
         }
       }
@@ -529,6 +593,22 @@
         }
       }
     },
+    "Descriptors": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descriptors"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дескрипторів"
+          }
+        }
+      }
+    },
     "Discard": {
       "localizations": {
         "en": {
@@ -765,6 +845,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Спосіб збивання"
+          }
+        }
+      }
+    },
+    "Go to Journal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go to Journal"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перейти до Стрічки"
           }
         }
       }
@@ -1025,6 +1121,22 @@
         }
       }
     },
+    "Perfect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perfect"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ідеально"
+          }
+        }
+      }
+    },
     "Phase": {
       "localizations": {
         "en": {
@@ -1185,6 +1297,22 @@
         }
       }
     },
+    "Rate & Save": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rate & Save"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оцінка"
+          }
+        }
+      }
+    },
     "Rating": {
       "localizations": {
         "en": {
@@ -1265,6 +1393,22 @@
         }
       }
     },
+    "Save Recipe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Recipe"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зберегти рецепт"
+          }
+        }
+      }
+    },
     "Save Shot": {
       "localizations": {
         "en": {
@@ -1277,6 +1421,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Зберегти шот"
+          }
+        }
+      }
+    },
+    "Saved!": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved!"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Збережено!"
           }
         }
       }
@@ -1649,6 +1809,38 @@
         }
       }
     },
+    "Time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Час"
+          }
+        }
+      }
+    },
+    "Total": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Загалом"
+          }
+        }
+      }
+    },
     "Total time": {
       "localizations": {
         "en": {
@@ -1713,6 +1905,38 @@
         }
       }
     },
+    "Water": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Water"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вода"
+          }
+        }
+      }
+    },
+    "Water poured": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Water poured"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вилито води"
+          }
+        }
+      }
+    },
     "Wet": {
       "localizations": {
         "en": {
@@ -1741,6 +1965,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Що сьогодні?"
+          }
+        }
+      }
+    },
+    "Yield": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yield"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вихід"
           }
         }
       }
