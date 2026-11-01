@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// Espresso step 4: what came out (time, yield, TDS), the rating and notes; saves the shot.

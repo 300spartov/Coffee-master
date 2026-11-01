@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// After saving (web: `bv-result`): what was brewed, then the Journal or another brew.

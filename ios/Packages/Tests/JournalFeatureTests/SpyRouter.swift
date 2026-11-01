@@ -1,9 +1,9 @@
 import Foundation
 import Domain
-@testable import BrewsFeature
+@testable import JournalFeature
 
 @MainActor
-final class SpyRouter: BrewListRouting, BrewDetailRouting {
+final class SpyRouter: FeedRouting, BrewDetailRouting {
     private(set) var shownDetailIDs: [Brew.ID] = []
     private(set) var newBrewShownCount = 0
     private(set) var deletedIDs: [Brew.ID] = []

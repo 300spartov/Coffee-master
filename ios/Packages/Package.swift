@@ -33,8 +33,8 @@ let package = Package(
         .library(
             name: "AppModules",
             targets: [
-                "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport", "FlavorWheel",
-                "BrewsFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
+                "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport", "FlavorWheel", "BrewKit",
+                "JournalFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
             ]
         ),
         // Lightweight subset for app extensions (Widget Extension, Live Activities).
@@ -80,18 +80,26 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
+        /// Brew text and views shared by the brew wizard and the journal: times, amounts, step labels.
+        .target(
+            name: "BrewKit",
+            dependencies: ["AppCore", "Domain", "DesignSystem"],
+            path: "Sources/Core/BrewKit",
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
+        ),
 
         // MARK: Features
         .target(
-            name: "BrewsFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
-            path: "Sources/Features/BrewsFeature",
+            name: "JournalFeature",
+            dependencies: ["AppCore", "Domain", "DesignSystem", "BrewKit", "FlavorWheel", "Navigation", factoryKit],
+            path: "Sources/Features/JournalFeature",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
         .target(
             name: "BrewFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "FlavorWheel", "Navigation", factoryKit],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "BrewKit", "FlavorWheel", "Navigation", factoryKit],
             path: "Sources/Features/BrewFeature",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
@@ -129,13 +137,14 @@ let package = Package(
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(name: "FlavorWheelTests", dependencies: ["FlavorWheel", "AppCore"]),
+        .testTarget(name: "BrewKitTests", dependencies: ["BrewKit", "Domain", "AppCore"]),
         .testTarget(
             name: "SettingsFeatureTests",
             dependencies: ["SettingsFeature", "AppCore", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
         .testTarget(
-            name: "BrewsFeatureTests",
-            dependencies: ["BrewsFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+            name: "JournalFeatureTests",
+            dependencies: ["JournalFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
         .testTarget(
             name: "BrewFeatureTests",

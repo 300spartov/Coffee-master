@@ -1,6 +1,7 @@
 import SwiftUI
 import Domain
 import DesignSystem
+import BrewKit
 
 struct BrewDetailView: View {
     @Bindable var viewModel: BrewDetailViewModel
@@ -32,8 +33,8 @@ struct BrewDetailView: View {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: Spacing.md) {
                     StatTile(title: tr("Dose"), value: "\(brew.doseGrams.formatted()) g")
                     StatTile(title: tr("Water"), value: "\(brew.waterGrams.formatted()) g")
-                    StatTile(title: tr("Ratio"), value: "1:\(brew.ratio.formatted(.number.precision(.fractionLength(1))))")
-                    StatTile(title: tr("Time"), value: brew.totalTime.map { Duration.seconds($0).formatted(.time(pattern: .minuteSecond)) } ?? "—")
+                    StatTile(title: tr("Ratio"), value: ratioText(brew.ratio))
+                    StatTile(title: tr("Time"), value: brew.totalTime.map(clockText) ?? "—")
                 }
 
                 VStack(spacing: Spacing.md) {

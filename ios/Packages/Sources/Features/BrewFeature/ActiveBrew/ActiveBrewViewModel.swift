@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import Domain
+import BrewKit
 import FactoryKit
 
 /// Wizard step 4 for pour-over: the brew timer. The session keeps timestamps; `run()` refreshes
@@ -87,7 +88,7 @@ final class ActiveBrewViewModel {
         case .pouring: "drop.fill"
         case .paused: "pause.fill"
         case .action(let action, _): action.systemImage
-        case .pressing: "arrow.down.circle.fill"
+        case .pressing: BrewAction.press.systemImage
         case .ready, .finished: "drop"
         }
         let target = session.nextPourTarget.map { decimal($0) }

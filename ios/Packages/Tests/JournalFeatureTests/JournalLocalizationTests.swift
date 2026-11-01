@@ -1,7 +1,7 @@
 import Testing
-@testable import BrewsFeature
+@testable import JournalFeature
 
-struct BrewsLocalizationTests {
+struct JournalLocalizationTests {
     @Test func resolvesInBothLanguages() {
         #expect(tr("No brews yet", language: .ukrainian) == "Ще немає рецептів")
         #expect(tr("No brews yet", language: .english) == "No brews yet")

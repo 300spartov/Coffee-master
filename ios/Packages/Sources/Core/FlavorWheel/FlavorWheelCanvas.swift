@@ -87,7 +87,7 @@ struct FlavorWheelCanvas: View {
         )
         guard !segment.isDimmed else { return }
 
-        let textColor: Color = FlavorColor.wantsDarkText(segment.color) ? Color(hex: 0x1a1206) : .white
+        let textColor = Color(hex: FlavorColor.text(on: segment.color))
         let arc = (segment.endAngle - segment.startAngle) * segment.midRadius
         let size = max(8.5, min(13, arc / (Double(segment.label.count) * 0.6)))
         drawText(segment.label, at: point(segment.midRadius, segment.midAngle), size: size, color: textColor, rotation: tangent(segment.midAngle), in: &context)

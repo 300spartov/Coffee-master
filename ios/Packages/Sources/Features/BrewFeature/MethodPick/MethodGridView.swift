@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// Step 2: the group's methods as a two-column grid.

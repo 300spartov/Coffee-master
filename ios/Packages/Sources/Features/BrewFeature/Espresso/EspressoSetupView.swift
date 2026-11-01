@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// Espresso step 1: bag, machine, grinder, accessories and the shot's recipe.

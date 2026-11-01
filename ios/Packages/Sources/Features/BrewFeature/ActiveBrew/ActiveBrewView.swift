@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 struct ActiveBrewView: View {
@@ -150,7 +151,7 @@ struct ActiveBrewView: View {
 
             BigButton(
                 title: session.isBetweenPours ? tr("Drawdown") : tr("Pause"),
-                subtitle: session.isBetweenPours ? seconds(session.phaseElapsed(at: viewModel.now) ?? 0) : tr("filter drawdown"),
+                subtitle: session.isBetweenPours ? secondsText(session.phaseElapsed(at: viewModel.now) ?? 0) : tr("filter drawdown"),
                 systemImage: "pause.fill",
                 tint: .theme.success,
                 isActive: session.isBetweenPours,
@@ -235,13 +236,8 @@ struct ActiveBrewView: View {
     private var log: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             Text(tr("Steps")).appTextStyle(.caption)
-            VStack(spacing: 0) {
-                ForEach(Array(session.steps.enumerated()), id: \.offset) { index, step in
-                    StepRow(step: step, milliliters: pourBinding(index))
-                    if index < session.steps.count - 1 { Divider() }
-                }
-            }
-            .cardStyle(padding: Spacing.md)
+            BrewStepList(session.steps, milliliters: pourBinding)
+                .cardStyle(padding: Spacing.md)
         }
         .accessibilityIdentifier("active.log")
     }
@@ -250,12 +246,6 @@ struct ActiveBrewView: View {
         guard case .pour(let milliliters) = session.steps[index].kind else { return nil }
         return Binding(get: { milliliters }, set: { viewModel.editPour(at: index, milliliters: $0) })
     }
-}
-
-/// "12 s", counted like the clocks (whole seconds gone).
-private func seconds(_ value: TimeInterval) -> String {
-    let seconds = Int(value.rounded(.down))
-    return tr("\(seconds) s")
 }
 
 // MARK: - Pieces
@@ -303,37 +293,6 @@ private struct ActionButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isRunning ? .isSelected : [])
-    }
-}
-
-/// A logged step: what, when (mm:ss–mm:ss), how long; pours can be corrected.
-private struct StepRow: View {
-    let step: BrewStep
-    let milliliters: Binding<Double>?
-
-    var body: some View {
-        HStack(spacing: Spacing.sm) {
-            Text(step.title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(step.tint)
-                .frame(width: 96, alignment: .leading)
-            Text(verbatim: "\(clockText(step.start))–\(clockText(step.end))")
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.theme.textPrimary)
-            Text(seconds(step.duration))
-                .font(.caption)
-                .foregroundStyle(.theme.textSecondary)
-            Spacer()
-            if let milliliters {
-                TextField(String("0"), value: milliliters, format: .number.precision(.fractionLength(0...1)))
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .font(.caption.weight(.semibold).monospacedDigit())
-                    .frame(width: 56)
-                Text(tr("ml")).font(.caption).foregroundStyle(.theme.textSecondary)
-            }
-        }
-        .padding(.vertical, Spacing.sm)
     }
 }
 

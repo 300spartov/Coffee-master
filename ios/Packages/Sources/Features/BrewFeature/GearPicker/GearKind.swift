@@ -1,4 +1,5 @@
 import Domain
+import BrewKit
 
 /// What a setup row picks.
 nonisolated public enum GearKind: String, Sendable, CaseIterable {

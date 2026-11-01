@@ -125,6 +125,11 @@ struct WheelLayoutTests {
         #expect(FlavorColor.shade(0xffffff, -1) == 0x000000)
         #expect(FlavorColor.wantsDarkText(0xd99a3a))
         #expect(!FlavorColor.wantsDarkText(0x5a3420))
+        // A saved note gets its block's color on the wheel (the journal's tags).
+        let mango = try! #require(FlavorTaxonomy.path(forLabel: "Манго"))
+        let layout = WheelLayout(position: WheelPosition(category: mango.categoryID, group: mango.groupID), selection: FlavorSelection(), search: nil)
+        #expect(layout.segments.first { $0.path == mango }?.color == mango.color)
+        #expect(FlavorPath(category: "fruit").color == FlavorTaxonomy.category("fruit")?.color)
     }
 }
 

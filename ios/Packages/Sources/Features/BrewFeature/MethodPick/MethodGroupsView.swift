@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// Step 1: two big cards, Alternative and Espresso.

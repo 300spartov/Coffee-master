@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 // Controls shared by the brew wizard's screens (pour-over and espresso).
@@ -69,21 +70,6 @@ struct SliderRow: View {
     }
 }
 
-/// "Bloom" for the first pour, then "Pour 2", "Pour 3", ….
-func pourTitle(_ number: Int) -> String {
-    number == 1 ? tr("Bloom") : tr("Pour \(number)")
-}
-
-/// A number with up to one decimal: "16", "15.5".
-func decimal(_ value: Double) -> String {
-    value.formatted(.number.precision(.fractionLength(0...1)))
-}
-
-/// "1:2.0", "1:16.5": a brew ratio with one decimal.
-func ratioText(_ ratio: Double) -> String {
-    "1:\(ratio.formatted(.number.precision(.fractionLength(1))))"
-}
-
 /// Calls `refresh` a few times a second until the task is cancelled (bind it to a screen with `.task`):
 /// the brew clocks, which keep timestamps and only need redrawing.
 func refreshWhileVisible(_ refresh: () -> Void) async {
@@ -116,11 +102,6 @@ struct ProgressBar: View {
         .animation(.smooth, value: fraction)
         .accessibilityHidden(true)
     }
-}
-
-/// "2:05" from seconds (whole seconds gone, like a stopwatch).
-func clockText(_ seconds: TimeInterval) -> String {
-    Duration.seconds(seconds.rounded(.down)).formatted(.time(pattern: .minuteSecond))
 }
 
 /// Pour / Pause: large, with an optional progress ring around the icon.
@@ -166,46 +147,6 @@ struct ProgressRing<Content: View>: View {
             Circle().trim(from: 0, to: progress).stroke(ringColor ?? tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             content
-        }
-    }
-}
-
-extension BrewStep {
-    /// "Pour", "Pause", "Stir", … (the steps lists of the timer and the rating).
-    var title: String {
-        switch kind {
-        case .pour: tr("Pour")
-        case .pause: tr("Pause")
-        case .action(let action): action.title
-        }
-    }
-
-    var tint: Color {
-        switch kind {
-        case .pour: .theme.info
-        case .pause: .theme.textSecondary
-        case .action: .theme.success
-        }
-    }
-}
-
-extension BrewAction {
-    var title: String {
-        switch self {
-        case .stir: tr("Stir")
-        case .swirl: tr("Swirl")
-        case .shake: tr("Shake")
-        case .press: tr("Press")
-        default: rawValue
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .stir: "arrow.clockwise"
-        case .swirl: "arrow.triangle.2.circlepath"
-        case .shake: "waveform.path"
-        default: "bolt"
         }
     }
 }

@@ -13,19 +13,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C0FFEE00000000000000004D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C0FFEE00000000000000000C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C0FFEE000000000000000047;
-			remoteInfo = CoffeeMasterWidgets;
-		};
 		C0FFEE000000000000000031 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C0FFEE00000000000000000C /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = C0FFEE000000000000000009;
 			remoteInfo = CoffeeMaster;
+		};
+		C0FFEE00000000000000004D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C0FFEE00000000000000000C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0FFEE000000000000000047;
+			remoteInfo = CoffeeMasterWidgets;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -74,14 +74,6 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C0FFEE000000000000000042 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C0FFEE000000000000000043 /* ExtensionModules in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C0FFEE000000000000000006 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -94,6 +86,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0FFEE000000000000000042 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0FFEE000000000000000043 /* ExtensionModules in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,29 +125,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C0FFEE000000000000000047 /* CoffeeMasterWidgets */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C0FFEE000000000000000048 /* Build configuration list for PBXNativeTarget "CoffeeMasterWidgets" */;
-			buildPhases = (
-				C0FFEE000000000000000045 /* Sources */,
-				C0FFEE000000000000000042 /* Frameworks */,
-				C0FFEE000000000000000046 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				C0FFEE000000000000000041 /* CoffeeMasterWidgets */,
-			);
-			name = CoffeeMasterWidgets;
-			packageProductDependencies = (
-				C0FFEE000000000000000044 /* ExtensionModules */,
-			);
-			productName = CoffeeMasterWidgets;
-			productReference = C0FFEE000000000000000040 /* CoffeeMasterWidgets.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		C0FFEE000000000000000009 /* CoffeeMaster */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C0FFEE000000000000000010 /* Build configuration list for PBXNativeTarget "CoffeeMaster" */;
@@ -193,6 +170,29 @@
 			productName = CoffeeMasterUITests;
 			productReference = C0FFEE000000000000000030 /* CoffeeMasterUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		C0FFEE000000000000000047 /* CoffeeMasterWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0FFEE000000000000000048 /* Build configuration list for PBXNativeTarget "CoffeeMasterWidgets" */;
+			buildPhases = (
+				C0FFEE000000000000000045 /* Sources */,
+				C0FFEE000000000000000042 /* Frameworks */,
+				C0FFEE000000000000000046 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C0FFEE000000000000000041 /* CoffeeMasterWidgets */,
+			);
+			name = CoffeeMasterWidgets;
+			packageProductDependencies = (
+				C0FFEE000000000000000044 /* ExtensionModules */,
+			);
+			productName = CoffeeMasterWidgets;
+			productReference = C0FFEE000000000000000040 /* CoffeeMasterWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -242,13 +242,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		C0FFEE000000000000000046 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C0FFEE00000000000000000B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -263,16 +256,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXSourcesBuildPhase section */
-		C0FFEE000000000000000045 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
+		C0FFEE000000000000000046 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
 		C0FFEE00000000000000000A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -287,66 +280,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0FFEE000000000000000045 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C0FFEE00000000000000004E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C0FFEE000000000000000047 /* CoffeeMasterWidgets */;
-			targetProxy = C0FFEE00000000000000004D /* PBXContainerItemProxy */;
-		};
 		C0FFEE000000000000000038 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C0FFEE000000000000000009 /* CoffeeMaster */;
 			targetProxy = C0FFEE000000000000000031 /* PBXContainerItemProxy */;
 		};
+		C0FFEE00000000000000004E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C0FFEE000000000000000047 /* CoffeeMasterWidgets */;
+			targetProxy = C0FFEE00000000000000004D /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		C0FFEE000000000000000049 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Config/WidgetsInfo.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Coffee Master";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.widgets;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		C0FFEE00000000000000004A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Config/WidgetsInfo.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Coffee Master";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.widgets;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
-		};
 		C0FFEE00000000000000000E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -484,18 +440,53 @@
 			};
 			name = Release;
 		};
+		C0FFEE000000000000000049 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/WidgetsInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Coffee Master";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		C0FFEE00000000000000004A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/WidgetsInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Coffee Master";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.coffeemaster.app.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C0FFEE000000000000000048 /* Build configuration list for PBXNativeTarget "CoffeeMasterWidgets" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C0FFEE000000000000000049 /* Debug */,
-				C0FFEE00000000000000004A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		C0FFEE00000000000000000D /* Build configuration list for PBXProject "CoffeeMaster" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -523,6 +514,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		C0FFEE000000000000000048 /* Build configuration list for PBXNativeTarget "CoffeeMasterWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0FFEE000000000000000049 /* Debug */,
+				C0FFEE00000000000000004A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -533,13 +533,13 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C0FFEE000000000000000044 /* ExtensionModules */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ExtensionModules;
-		};
 		C0FFEE000000000000000020 /* AppModules */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppModules;
+		};
+		C0FFEE000000000000000044 /* ExtensionModules */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ExtensionModules;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

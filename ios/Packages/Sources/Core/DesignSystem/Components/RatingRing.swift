@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Circular 0–10 score, used on brew cards and the brew result screen.
+/// Circular 0–10 score in its rating color, used on brew cards and the rating screens.
 public struct RatingRing: View {
     private let rating: Double
     private let size: CGFloat
@@ -17,7 +17,7 @@ public struct RatingRing: View {
             Circle().stroke(.theme.fill, lineWidth: lineWidth)
             Circle()
                 .trim(from: 0, to: rating / 10)
-                .stroke(.theme.accent, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .stroke(Color.rating(rating), style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
             Text(RatingFormat.value(rating))
                 .font(.system(size: size * 0.3, weight: .bold, design: .rounded))
@@ -28,6 +28,13 @@ public struct RatingRing: View {
         .animation(.smooth, value: rating)
         .accessibilityElement()
         .accessibilityLabel(Text(RatingFormat.accessibilityLabel(rating)))
+    }
+}
+
+public extension Color {
+    /// The web's rating colors: green from 8, amber from 5, red below.
+    static func rating(_ rating: Double) -> Color {
+        rating >= 8 ? .theme.success : (rating >= 5 ? .theme.warning : .theme.error)
     }
 }
 

@@ -1,178 +1,162 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "Delete": {
+    "%lld s": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Delete"
+            "value": "%lld s"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Видалити"
+            "value": "%lld с"
           }
         }
       }
     },
-    "Delete Brew": {
+    "Bloom": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Delete Brew"
+            "value": "Bloom"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Видалити рецепт"
+            "value": "Блум"
           }
         }
       }
     },
-    "Delete this brew?": {
+    "ml": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Delete this brew?"
+            "value": "ml"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Видалити цей рецепт?"
+            "value": "мл"
           }
         }
       }
     },
-    "Dose": {
+    "Pause": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dose"
+            "value": "Pause"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Доза"
+            "value": "Пауза"
           }
         }
       }
     },
-    "Journal": {
+    "Pour": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Journal"
+            "value": "Pour"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Журнал"
+            "value": "Влив"
           }
         }
       }
     },
-    "No brews yet": {
+    "Pour %lld": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No brews yet"
+            "value": "Pour %lld"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ще немає рецептів"
+            "value": "Влив %lld"
           }
         }
       }
     },
-    "Ratio": {
+    "Press": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ratio"
+            "value": "Press"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Пропорція"
+            "value": "Чавимо"
           }
         }
       }
     },
-    "Start a Brew": {
+    "Shake": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start a Brew"
+            "value": "Shake"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Почати заварювання"
+            "value": "Збовтування"
           }
         }
       }
     },
-    "Time": {
+    "Stir": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Time"
+            "value": "Stir"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Час"
+            "value": "Перемішування"
           }
         }
       }
     },
-    "Water": {
+    "Swirl": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Water"
+            "value": "Swirl"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Вода"
-          }
-        }
-      }
-    },
-    "Your brews will appear here.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your brews will appear here."
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Тут з'являться твої рецепти."
+            "value": "Свьорл"
           }
         }
       }

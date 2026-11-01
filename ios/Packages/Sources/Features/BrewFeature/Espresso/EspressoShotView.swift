@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// Espresso step 2: the shot timer, aiming for 27 s.

@@ -3,7 +3,7 @@ import FactoryTesting
 import Testing
 import Domain
 import TestSupport
-@testable import BrewsFeature
+@testable import JournalFeature
 
 @Suite(.container)
 @MainActor

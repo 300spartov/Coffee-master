@@ -4,13 +4,14 @@ import Navigation
 
 /// Public entry point of the feature. Builds screens and wires each ViewModel to its router.
 /// Services are injected into ViewModels by Factory (`@Injected`). Views and ViewModels stay `internal`.
-public struct BrewsModule {
+public struct JournalModule {
     public init() {}
 
-    public func makeBrewList(router: any BrewListRouting) -> UIViewController {
-        let viewModel = BrewListViewModel(router: router)
+    /// The Journal tab's root: the feed.
+    public func makeFeed(router: any FeedRouting) -> UIViewController {
+        let viewModel = FeedViewModel(router: router)
         let controller = HostingController(
-            rootView: BrewListView(viewModel: viewModel),
+            rootView: FeedView(viewModel: viewModel),
             title: tr("Journal"),
             largeTitleDisplayMode: .always
         )

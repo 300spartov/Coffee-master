@@ -1,4 +1,5 @@
 import Domain
+import BrewKit
 
 /// The two ways to brew, as on the web's first wizard screen.
 nonisolated public enum MethodGroup: String, CaseIterable, Sendable {
@@ -40,28 +41,6 @@ nonisolated public enum MethodGroup: String, CaseIterable, Sendable {
         switch self {
         case .alternative: "line.3.horizontal.decrease"
         case .espresso: "cup.and.saucer.fill"
-        }
-    }
-}
-
-nonisolated extension BrewMethod {
-    /// Icon on the method tile (the web's per-method icons, in SF Symbols).
-    var systemImage: String {
-        switch self {
-        case .v60: "line.3.horizontal.decrease"
-        case .aeropress: "cylinder"
-        case .chemex: "flask"
-        case .frenchPress: "cylinder.split.1x2"
-        case .drip: "drop"
-        case .coldBrew: "snowflake"
-        case .batchBrewing: "mug"
-        case .espresso: "cup.and.saucer.fill"
-        case .cappuccino: "cup.and.saucer"
-        case .flatWhite: "cup.and.heat.waves"
-        case .latte: "mug.fill"
-        case .bumble: "drop.halffull"
-        case .espressoTonic: "wineglass"
-        default: isEspressoBased ? "cup.and.saucer" : "drop"
         }
     }
 }

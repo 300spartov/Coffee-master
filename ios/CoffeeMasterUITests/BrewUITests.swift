@@ -202,8 +202,9 @@ final class BrewUITests: XCTestCase {
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
     }
 
-    /// Rate & save: the brew is saved, the result shows it, and "Go to Journal" lands on it there.
-    /// Deletes the brew afterwards (no bag, so no stock changes).
+    /// Rate & save: the brew is saved, the result shows it, and "Go to Journal" lands on its card under
+    /// Today (ROADMAP 3.1): details with the notes tab, like. Deletes the brew afterwards: setup may have
+    /// picked your only bag, and the trash gives its coffee back.
     func testSavedBrewShowsResultAndJournal() {
         let app = XCUIApplication.launched()
         openSetup(app, group: "alternative", method: "Drip")
@@ -219,15 +220,25 @@ final class BrewUITests: XCTestCase {
         attachScreenshot(named: "brew-result")
         app.buttons["result.journal"].tap()
 
-        // Newest first: our brew is the top row. Delete it (trashing returns any stock it took), but only
-        // if it really is ours, so a real brew is never touched.
+        // Newest first: our brew is the top card, under Today.
         XCTAssertTrue(app.navigationBars["Journal"].waitForExistence(timeout: 5))
-        let top = app.collectionViews.firstMatch.cells.firstMatch
+        // Day headers are cells too: take the first card.
+        let top = app.collectionViews.firstMatch.cells.containing(.button, identifier: "journal.brew").firstMatch
         XCTAssertTrue(top.waitForExistence(timeout: 5))
-        let ours = top.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Drip ·'")).firstMatch
-        XCTAssertTrue(ours.exists, "The saved Drip brew should be the newest")
+        XCTAssertTrue(app.staticTexts.matching(identifier: "journal.day").firstMatch.label.hasPrefix("Today"))
+        top.buttons["journal.details"].tap()
+        app.segmentedControls["journal.tabs"].buttons["Notes"].tap()
+        // Only touch the card if it really is ours, so a real brew is never changed.
+        let ours = top.staticTexts[note]
+        XCTAssertTrue(ours.waitForExistence(timeout: 5), "The saved Drip brew should be the newest")
         guard ours.exists else { return }
-        top.swipeLeft()
+        let like = top.buttons["journal.like"]
+        like.tap()
+        XCTAssertTrue(like.wait(for: \.isSelected, toEqual: true, timeout: 5))
+        attachScreenshot(named: "journal-card")
+
+        // Delete it (trashing returns any stock it took).
+        top.buttons["journal.brew"].swipeLeft()
         app.buttons["Delete"].firstMatch.tap()
         XCTAssertTrue(ours.waitForNonExistence(timeout: 5))
     }

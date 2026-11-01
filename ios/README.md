@@ -29,10 +29,11 @@ ios/
     │   ├── Navigation/           # Flow, StackRouter, HostingController (UIKit)
     │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
     │   ├── WebImport/            # one-time import of the web app's JSON export → Domain models
-    │   └── FlavorWheel/          # the flavor wheel (taxonomy, picks, Canvas wheel), shared by brew screens
+    │   ├── FlavorWheel/          # the flavor wheel (taxonomy, picks, Canvas wheel, flavor tags), shared by brew screens
+    │   └── BrewKit/              # brew text and views shared by the wizard and the journal (times, ratios, step rows)
     ├── Sources/Features/
     │   ├── BrewFeature/          # brew wizard: method pick → setup → timer / espresso shot → rate & save → result
-    │   ├── BrewsFeature/         # journal list → detail
+    │   ├── JournalFeature/       # journal feed (day groups, brew cards, like, swipe delete) → detail
     │   ├── BeansFeature/         # bean list → add / edit
     │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
     │   └── SettingsFeature/      # settings → about
@@ -41,7 +42,7 @@ ios/
 
 Dependency rules (enforced by `Package.swift`):
 
-- **Features never import other features.** They import `Domain`, `DesignSystem` and `Navigation` only.
+- **Features never import other features.** They import Core modules only (`Domain`, `DesignSystem`, `Navigation`, and the shared `BrewKit` / `FlavorWheel`).
 - **Only the app target knows concrete types.** They're registered with Factory in `DI/Container+App.swift`.
 - `ExtensionModules` (`AppCore`, `Domain`, `DesignSystem`, `DeepLinks`, `WidgetsShared`) must not need
   UIKit navigation, because widget and Live Activity extensions link them.

@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import AppCore
 import Domain
+import BrewKit
 import DesignSystem
 import FactoryKit
 

@@ -52,6 +52,16 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BrewKitTests"
+               BuildableName = "BrewKitTests"
+               BlueprintName = "BrewKitTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "DevicesFeatureTests"
                BuildableName = "DevicesFeatureTests"
                BlueprintName = "DevicesFeatureTests"
@@ -152,9 +162,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BrewsFeatureTests"
-               BuildableName = "BrewsFeatureTests"
-               BlueprintName = "BrewsFeatureTests"
+               BlueprintIdentifier = "JournalFeatureTests"
+               BuildableName = "JournalFeatureTests"
+               BlueprintName = "JournalFeatureTests"
                ReferencedContainer = "container:Packages">
             </BuildableReference>
          </TestableReference>

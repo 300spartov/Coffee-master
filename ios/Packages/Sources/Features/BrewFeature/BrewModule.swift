@@ -1,6 +1,7 @@
 import UIKit
 import Foundation
 import Domain
+import BrewKit
 import Navigation
 
 /// Public entry point of the brew wizard (ROADMAP Phase 2). Builds screens and wires each ViewModel

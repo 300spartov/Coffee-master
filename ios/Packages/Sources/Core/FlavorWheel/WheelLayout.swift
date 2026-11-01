@@ -156,6 +156,11 @@ nonisolated enum FlavorColor {
         }
     }
 
+    /// Text on `color`: dark on light colors, otherwise white.
+    static func text(on color: UInt32) -> UInt32 {
+        wantsDarkText(color) ? 0x1a1206 : 0xffffff
+    }
+
     /// Whether text on `color` should be dark (light backgrounds) rather than white.
     static func wantsDarkText(_ color: UInt32) -> Bool {
         let r = Double((color >> 16) & 0xff), g = Double((color >> 8) & 0xff), b = Double(color & 0xff)

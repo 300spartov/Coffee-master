@@ -4,18 +4,18 @@ import Domain
 import DeepLinks
 import DesignSystem
 import Navigation
-import BrewsFeature
+import JournalFeature
 
-/// Journal tab: brew list → detail. Starting a brew goes through the app-wide Brew action.
+/// Journal tab: the feed → brew detail. Starting a brew goes through the app-wide Brew action.
 final class JournalFlow: Flow {
-    private let module: BrewsModule
+    private let module: JournalModule
     private let startBrew: () -> Void
     @Injected(\.toasts) private var toasts
     private let router = StackRouter()
 
     var rootViewController: UIViewController { router.navigationController }
 
-    init(module: BrewsModule, startBrew: @escaping () -> Void) {
+    init(module: JournalModule, startBrew: @escaping () -> Void) {
         self.module = module
         self.startBrew = startBrew
         router.navigationController.tabBarItem = UITabBarItem(
@@ -26,7 +26,7 @@ final class JournalFlow: Flow {
     }
 
     func start() {
-        router.setRoot(module.makeBrewList(router: self))
+        router.setRoot(module.makeFeed(router: self))
     }
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
@@ -47,7 +47,7 @@ final class JournalFlow: Flow {
     }
 }
 
-extension JournalFlow: BrewListRouting {
+extension JournalFlow: FeedRouting {
     func showBrewDetail(id: Brew.ID) {
         router.push(module.makeBrewDetail(id: id, router: self))
     }

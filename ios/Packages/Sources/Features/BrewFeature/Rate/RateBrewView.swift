@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import BrewKit
 import DesignSystem
 
 /// Rate & save for pour-over: the brew's numbers, its steps (pours can be corrected), the rating, the
