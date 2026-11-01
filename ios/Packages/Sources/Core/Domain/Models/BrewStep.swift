@@ -55,6 +55,18 @@ public extension Array where Element == BrewStep {
         self[index].kind = .pour(milliliters: Swift.max(milliliters, 0))
     }
 
+    /// The steps one after another from the first one's start, in their order (after editing).
+    func resequenced() -> [BrewStep] {
+        var start = first?.start ?? 0
+        return map { step in
+            var step = step
+            step.start = start
+            step.duration = Swift.max(step.duration, 0)
+            start = step.end
+            return step
+        }
+    }
+
     /// Spreads `total` ml evenly over the pours (to 0.1 ml, like the web app).
     mutating func spreadPours(_ total: Double) {
         let pours = indices.filter { self[$0].isPour }

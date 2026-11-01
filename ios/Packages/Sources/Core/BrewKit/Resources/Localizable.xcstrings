@@ -17,6 +17,22 @@
         }
       }
     },
+    "Bad": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bad"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Погано"
+          }
+        }
+      }
+    },
     "Bloom": {
       "localizations": {
         "en": {
@@ -61,6 +77,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Пауза"
+          }
+        }
+      }
+    },
+    "Perfect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perfect"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ідеально"
           }
         }
       }
@@ -113,6 +145,22 @@
         }
       }
     },
+    "Rating": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rating"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оцінка"
+          }
+        }
+      }
+    },
     "Shake": {
       "localizations": {
         "en": {
@@ -157,6 +205,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Свьорл"
+          }
+        }
+      }
+    },
+    "Taste": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taste"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Смак"
           }
         }
       }

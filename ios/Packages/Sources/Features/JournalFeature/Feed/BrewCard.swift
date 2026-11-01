@@ -5,7 +5,7 @@ import BrewKit
 import FlavorWheel
 
 /// A brew in the feed (web: `brew-card`): bag, method and rating ring, the key numbers, like; "Details"
-/// opens the recipe, the steps and the tasting notes in tabs. Tapping the top opens the brew.
+/// opens the recipe, the steps and the tasting notes in tabs. Tapping the top opens the brew to edit.
 struct BrewCard: View {
     enum Tab: CaseIterable {
         case recipe, steps, notes

@@ -145,6 +145,22 @@
         }
       }
     },
+    "Brew updated": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew updated"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рецепт оновлено"
+          }
+        }
+      }
+    },
     "Device added": {
       "localizations": {
         "en": {

@@ -193,22 +193,6 @@
         }
       }
     },
-    "Bad": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bad"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Погано"
-          }
-        }
-      }
-    },
     "Bloom ~": {
       "localizations": {
         "en": {
@@ -1089,22 +1073,6 @@
         }
       }
     },
-    "Perfect": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Perfect"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ідеально"
-          }
-        }
-      }
-    },
     "Phase": {
       "localizations": {
         "en": {
@@ -1645,22 +1613,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Бажана TDS"
-          }
-        }
-      }
-    },
-    "Taste": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Taste"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Смак"
           }
         }
       }

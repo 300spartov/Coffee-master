@@ -37,10 +37,10 @@ public struct BrewSetup: Hashable, Codable, Sendable {
 // MARK: - Limits
 
 public extension BrewSetup {
-    static let doseRange: ClosedRange<Double> = 1...300
-    static let ratioRange: ClosedRange<Double> = 1...30
+    public static let doseRange: ClosedRange<Double> = 1...300
+    public static let ratioRange: ClosedRange<Double> = 1...30
     static let poursRange: ClosedRange<Int> = 1...5
-    static let grindRange: ClosedRange<Int> = 1...200
+    public static let grindRange: ClosedRange<Int> = 1...200
     static let aeropressFilterRange: ClosedRange<Int> = 1...4
 
     /// Cold brew steeps cold (10–30 °C); everything else uses hot water (80–100 °C).

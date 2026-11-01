@@ -203,8 +203,9 @@ final class BrewUITests: XCTestCase {
     }
 
     /// Rate & save: the brew is saved, the result shows it, and "Go to Journal" lands on its card under
-    /// Today (ROADMAP 3.1): details with the notes tab, like. Deletes the brew afterwards: setup may have
-    /// picked your only bag, and the trash gives its coffee back.
+    /// Today (ROADMAP 3.1): details with the notes tab, like; then it's edited (3.2: the dose changed in
+    /// the form, saved). Deletes the brew afterwards: setup may have picked your only bag, and the trash gives
+    /// its coffee back.
     func testSavedBrewShowsResultAndJournal() {
         let app = XCUIApplication.launched()
         openSetup(app, group: "alternative", method: "Drip")
@@ -236,6 +237,17 @@ final class BrewUITests: XCTestCase {
         like.tap()
         XCTAssertTrue(like.wait(for: \.isSelected, toEqual: true, timeout: 5))
         attachScreenshot(named: "journal-card")
+
+        // Edit: the card opens the form; the new dose shows on the card after saving.
+        top.buttons["journal.brew"].tap()
+        XCTAssertTrue(app.navigationBars["Edit Brew"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "brew-form")
+        let dose = app.textFields["brewForm.dose"]
+        dose.doubleTap()
+        dose.typeText("19")
+        scrollTo(app.buttons["brewForm.save"], inForm: "brewForm", of: app).tap()
+        XCTAssertTrue(app.staticTexts["Brew updated"].waitForExistence(timeout: 5))
+        XCTAssertTrue(top.staticTexts["19, g, Dose"].waitForExistence(timeout: 5), "The card should show the edited dose")
 
         // Delete it (trashing returns any stock it took).
         top.buttons["journal.brew"].swipeLeft()

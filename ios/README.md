@@ -30,10 +30,10 @@ ios/
     │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
     │   ├── WebImport/            # one-time import of the web app's JSON export → Domain models
     │   ├── FlavorWheel/          # the flavor wheel (taxonomy, picks, Canvas wheel, flavor tags), shared by brew screens
-    │   └── BrewKit/              # brew text and views shared by the wizard and the journal (times, ratios, step rows)
+    │   └── BrewKit/              # brew text and views shared by the wizard and the journal (times, ratios, step rows, tasting)
     ├── Sources/Features/
     │   ├── BrewFeature/          # brew wizard: method pick → setup → timer / espresso shot → rate & save → result
-    │   ├── JournalFeature/       # journal feed (day groups, brew cards, like, swipe delete) → detail
+    │   ├── JournalFeature/       # journal feed (day groups, brew cards, like, swipe delete) → brew form (edit, delete)
     │   ├── BeansFeature/         # bean list → add / edit
     │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
     │   └── SettingsFeature/      # settings → about

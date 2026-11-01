@@ -49,6 +49,22 @@
         }
       }
     },
+    "Add Step": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Step"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати крок"
+          }
+        }
+      }
+    },
     "Aroma": {
       "localizations": {
         "en": {
@@ -81,6 +97,22 @@
         }
       }
     },
+    "Body, aftertaste, acidity…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Body, aftertaste, acidity…"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тіло, післясмак, кислотність…"
+          }
+        }
+      }
+    },
     "Brewer": {
       "localizations": {
         "en": {
@@ -109,6 +141,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Кав’ярня"
+          }
+        }
+      }
+    },
+    "Clicks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clicks"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кліків"
+          }
+        }
+      }
+    },
+    "Coffee": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coffee"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кава"
+          }
+        }
+      }
+    },
+    "Date & time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date & time"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дата та час"
           }
         }
       }
@@ -205,6 +285,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "сухий"
+          }
+        }
+      }
+    },
+    "Edit Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Редагувати рецепт"
           }
         }
       }
@@ -321,6 +417,22 @@
         }
       }
     },
+    "Method": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Method"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спосіб"
+          }
+        }
+      }
+    },
     "Milk": {
       "localizations": {
         "en": {
@@ -433,6 +545,38 @@
         }
       }
     },
+    "Pause": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пауза"
+          }
+        }
+      }
+    },
+    "Pour": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Влив"
+          }
+        }
+      }
+    },
     "Pressure": {
       "localizations": {
         "en": {
@@ -465,6 +609,22 @@
         }
       }
     },
+    "Ratio (1 : X)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ratio (1 : X)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Коефіцієнт (1 : X)"
+          }
+        }
+      }
+    },
     "Recipe": {
       "localizations": {
         "en": {
@@ -477,6 +637,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Рецепт"
+          }
+        }
+      }
+    },
+    "s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "s"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "с"
+          }
+        }
+      }
+    },
+    "Save Changes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save Changes"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Зберегти зміни"
           }
         }
       }
@@ -509,6 +701,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Почати заварювання"
+          }
+        }
+      }
+    },
+    "Step": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Крок"
           }
         }
       }
@@ -589,6 +797,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Сьогодні"
+          }
+        }
+      }
+    },
+    "Total %@ · %@ ml": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total %@ · %@ ml"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разом %1$@ · %2$@ мл"
           }
         }
       }

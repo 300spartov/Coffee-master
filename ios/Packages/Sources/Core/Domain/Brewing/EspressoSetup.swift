@@ -28,7 +28,7 @@ public struct EspressoSetup: Hashable, Codable, Sendable {
 }
 
 public extension EspressoSetup {
-    static let doseRange: ClosedRange<Double> = 1...30
+    public static let doseRange: ClosedRange<Double> = 1...30
     static let ratioRange: ClosedRange<Double> = 1...5
     static let temperatureRange: ClosedRange<Double> = 84...100
     static let pressureRange: ClosedRange<Double> = 6...12

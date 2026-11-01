@@ -6,7 +6,7 @@ import DesignSystem
 import Navigation
 import JournalFeature
 
-/// Journal tab: the feed → brew detail. Starting a brew goes through the app-wide Brew action.
+/// Journal tab: the feed → a brew to edit. Starting a brew goes through the app-wide Brew action.
 final class JournalFlow: Flow {
     private let module: JournalModule
     private let startBrew: () -> Void
@@ -43,13 +43,13 @@ final class JournalFlow: Flow {
             toasts.show(tr("This brew no longer exists."), style: .warning)
             return
         }
-        router.push(module.makeBrewDetail(id: id, router: self), animated: false)
+        router.push(module.makeBrewForm(id: id, router: self), animated: false)
     }
 }
 
 extension JournalFlow: FeedRouting {
-    func showBrewDetail(id: Brew.ID) {
-        router.push(module.makeBrewDetail(id: id, router: self))
+    func showBrew(id: Brew.ID) {
+        router.push(module.makeBrewForm(id: id, router: self))
     }
 
     func showNewBrew() {
@@ -57,14 +57,19 @@ extension JournalFlow: FeedRouting {
     }
 }
 
-extension JournalFlow: BrewDetailRouting {
-    func brewDetailDidDelete(id: Brew.ID) {
+extension JournalFlow: BrewFormRouting {
+    func brewFormDidSave(_ brew: Brew) {
+        router.pop()
+        toasts.show(tr("Brew updated"), style: .success)
+    }
+
+    func brewFormDidDelete(id: Brew.ID) {
         router.pop()
         toasts.show(tr("Brew deleted"), style: .success)
     }
 
     /// Same outcome as a malformed brew link: back on the Journal with a warning.
-    func brewDetailNotFound(id: Brew.ID) {
+    func brewFormNotFound(id: Brew.ID) {
         router.popToRoot(animated: false)
         toasts.show(tr("This brew no longer exists."), style: .warning)
     }

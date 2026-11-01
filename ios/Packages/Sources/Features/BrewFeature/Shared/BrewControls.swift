@@ -150,3 +150,15 @@ struct ProgressRing<Content: View>: View {
         }
     }
 }
+
+/// Saves a brew just made (taking its dose and a filter from stock) and hands it to the router.
+/// Returns the error message if it failed.
+func record(_ brew: Brew, in brews: any BrewRepository, then router: (any BrewSavingRouting)?) async -> String? {
+    do {
+        let usage = try await brews.record(brew)
+        router?.brewDidSave(brew, usage: usage)
+        return nil
+    } catch {
+        return error.localizedDescription
+    }
+}

@@ -3,13 +3,18 @@ import Domain
 import DesignSystem
 import FlavorWheel
 
-/// The rating and taste part of a brew's last screen (pour-over rating, espresso result): rating ring
-/// and slider, the flavor wheel and notes. Place inside a `Form`.
-struct TastingSections: View {
-    @Binding var tasting: BrewTasting
-    let notesPlaceholder: String
+/// The rating and taste part of a brew's form (pour-over rating, espresso result, journal edit): rating
+/// ring and slider, the flavor wheel and notes. Place inside a `Form`.
+public struct TastingSections: View {
+    @Binding private var tasting: BrewTasting
+    private let notesPlaceholder: String
 
-    var body: some View {
+    public init(tasting: Binding<BrewTasting>, notesPlaceholder: String) {
+        _tasting = tasting
+        self.notesPlaceholder = notesPlaceholder
+    }
+
+    public var body: some View {
         Section(tr("Rating")) {
             HStack {
                 RatingRing(rating: tasting.rating, size: 52)
@@ -35,17 +40,5 @@ struct TastingSections: View {
                 .accessibilityIdentifier("tasting.notes")
         }
         .themedRow()
-    }
-}
-
-/// Saves a brew just made (taking its dose and a filter from stock) and hands it to the router.
-/// Returns the error message if it failed.
-func record(_ brew: Brew, in brews: any BrewRepository, then router: (any BrewSavingRouting)?) async -> String? {
-    do {
-        let usage = try await brews.record(brew)
-        router?.brewDidSave(brew, usage: usage)
-        return nil
-    } catch {
-        return error.localizedDescription
     }
 }

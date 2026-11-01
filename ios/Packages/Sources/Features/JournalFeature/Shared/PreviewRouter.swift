@@ -2,12 +2,13 @@
 import Domain
 
 /// No-op router for SwiftUI previews. Retained by `shared` because view models hold routers weakly.
-final class PreviewRouter: FeedRouting, BrewDetailRouting {
+final class PreviewRouter: FeedRouting, BrewFormRouting {
     static let shared = PreviewRouter()
 
-    func showBrewDetail(id: Brew.ID) {}
+    func showBrew(id: Brew.ID) {}
     func showNewBrew() {}
-    func brewDetailDidDelete(id: Brew.ID) {}
-    func brewDetailNotFound(id: Brew.ID) {}
+    func brewFormDidSave(_ brew: Brew) {}
+    func brewFormDidDelete(id: Brew.ID) {}
+    func brewFormNotFound(id: Brew.ID) {}
 }
 #endif

@@ -80,10 +80,10 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
-        /// Brew text and views shared by the brew wizard and the journal: times, amounts, step labels.
+        /// Brew text and views shared by the brew wizard and the journal: times, amounts, step rows, tasting.
         .target(
             name: "BrewKit",
-            dependencies: ["AppCore", "Domain", "DesignSystem"],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "FlavorWheel"],
             path: "Sources/Core/BrewKit",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault

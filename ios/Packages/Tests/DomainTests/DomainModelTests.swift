@@ -73,6 +73,26 @@ struct BrewTests {
         #expect(brew.category == .espresso)
     }
 
+    /// Journal edit (web `saveEditBrew`): steps back to back, total time from them, notes trimmed; an
+    /// unweighed espresso keeps its planned ratio.
+    @Test func editedBrewRunsItsStepsBackToBack() {
+        var brew = Brew(method: .v60, doseGrams: 16, ratio: 16, steps: [
+            BrewStep(kind: .pour(milliliters: 60), start: 0, duration: 10),
+            BrewStep(kind: .pause, start: 14, duration: 30),
+            BrewStep(kind: .pour(milliliters: 200), start: 50, duration: -5),
+        ], totalTime: 200, rating: 8, notes: " Sweet \n")
+
+        brew = brew.edited()
+
+        #expect(brew.steps.map(\.start) == [0, 10, 40])
+        #expect(brew.steps.last?.duration == 0)
+        #expect(brew.totalTime == 40)
+        #expect(brew.notes == "Sweet")
+        let shot = Brew(method: .espresso, doseGrams: 18, ratio: 2, espresso: EspressoShot(doseGrams: 18, targetYieldGrams: 36, actualYieldGrams: 0, shotTime: 27), rating: 8)
+        #expect(shot.edited().ratio == 2)
+        #expect(shot.edited().espresso?.actualYieldGrams == nil)
+    }
+
     @Test func cafeOrigin() {
         #expect(Brew(method: .latte, doseGrams: 18, ratio: 2, rating: 8, origin: .cafe(place: "")).isCafeVisit)
         #expect(!Brew(method: .latte, doseGrams: 18, ratio: 2, rating: 8).isCafeVisit)

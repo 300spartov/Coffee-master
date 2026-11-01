@@ -83,7 +83,7 @@ struct FeedViewModelTests {
         viewModel.didSelect(Brew.samples[1])
         viewModel.didTapAdd()
 
-        #expect(router.shownDetailIDs == [Brew.samples[1].id])
+        #expect(router.shownIDs == [Brew.samples[1].id])
         #expect(router.newBrewShownCount == 1)
     }
 }

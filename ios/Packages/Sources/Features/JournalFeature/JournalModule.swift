@@ -20,10 +20,12 @@ public struct JournalModule {
         return controller
     }
 
-    public func makeBrewDetail(id: Brew.ID, router: any BrewDetailRouting) -> UIViewController {
-        let viewModel = BrewDetailViewModel(brewID: id, router: router)
+    /// A brew to look at and edit (push it); deleting it is there too.
+    public func makeBrewForm(id: Brew.ID, router: any BrewFormRouting) -> UIViewController {
+        let viewModel = BrewFormViewModel(brewID: id, router: router)
         return HostingController(
-            rootView: BrewDetailView(viewModel: viewModel),
+            rootView: BrewFormView(viewModel: viewModel),
+            title: tr("Edit Brew"),
             hidesBottomBarWhenPushed: true
         )
     }

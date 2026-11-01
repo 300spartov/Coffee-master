@@ -55,7 +55,7 @@ final class FeedViewModel {
     }
 
     func didSelect(_ brew: Brew) {
-        router?.showBrewDetail(id: brew.id)
+        router?.showBrew(id: brew.id)
     }
 
     func didTapAdd() {
