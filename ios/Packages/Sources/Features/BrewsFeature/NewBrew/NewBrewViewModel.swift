@@ -14,6 +14,10 @@ final class NewBrewViewModel {
     var brewTime: TimeInterval = 180
     /// 0...10, like the web app.
     var rating: Double = 8
+    /// From the flavor wheel (Ukrainian names).
+    var flavors: [String] = []
+    var aromas: [String] = []
+    var notes = ""
 
     private(set) var isSaving = false
     private(set) var errorMessage: String?
@@ -50,6 +54,9 @@ final class NewBrewViewModel {
         brew.bean = setup.bean?.name == trimmedBeanName ? setup.bean : BeanReference(name: trimmedBeanName)
         brew.doseGrams = doseGrams
         brew.ratio = waterGrams / doseGrams
+        brew.flavors = flavors
+        brew.aromas = aromas
+        brew.notes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
         do {
             try await repository.save(brew)
             router?.newBrewDidSave(brew)

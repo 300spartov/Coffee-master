@@ -30,6 +30,9 @@ final class EspressoViewModel: GearPickingModel {
     var targetTDS: Double? = 9
     var actualTDS: Double?
     var rating: Double = 8
+    /// From the flavor wheel (Ukrainian names).
+    var flavors: [String] = []
+    var aromas: [String] = []
     var notes = ""
     private(set) var isSaving = false
     var alertMessage: String?
@@ -170,6 +173,8 @@ final class EspressoViewModel: GearPickingModel {
             milk: trimmedMilk,
             ice: trimmedIce,
             rating: rating,
+            flavors: flavors,
+            aromas: aromas,
             notes: notes.trimmingCharacters(in: .whitespacesAndNewlines)
         )
         do {

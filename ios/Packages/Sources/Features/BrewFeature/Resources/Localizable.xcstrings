@@ -1585,6 +1585,22 @@
         }
       }
     },
+    "Taste": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taste"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Смак"
+          }
+        }
+      }
+    },
     "Temperature": {
       "localizations": {
         "en": {

@@ -33,7 +33,7 @@ let package = Package(
         .library(
             name: "AppModules",
             targets: [
-                "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport",
+                "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport", "FlavorWheel",
                 "BrewsFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
             ]
         ),
@@ -73,18 +73,26 @@ let package = Package(
             resources: [.process("Resources")]
         ),
         .target(name: "WebImport", dependencies: ["Domain"], path: "Sources/Core/WebImport"),
+        /// The flavor wheel (shared: brew rating, later the journal's brew editor).
+        .target(
+            name: "FlavorWheel",
+            dependencies: ["AppCore", "DesignSystem"],
+            path: "Sources/Core/FlavorWheel",
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
+        ),
 
         // MARK: Features
         .target(
             name: "BrewsFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "FlavorWheel", "Navigation", factoryKit],
             path: "Sources/Features/BrewsFeature",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
         .target(
             name: "BrewFeature",
-            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
+            dependencies: ["AppCore", "Domain", "DesignSystem", "FlavorWheel", "Navigation", factoryKit],
             path: "Sources/Features/BrewFeature",
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
@@ -121,6 +129,7 @@ let package = Package(
         .testTarget(name: "DataLayerTests", dependencies: ["DataLayer", "Domain", "WebImport"]),
         .testTarget(name: "WebImportTests", dependencies: ["WebImport", "Domain"], resources: [.copy("Fixtures")]),
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
+        .testTarget(name: "FlavorWheelTests", dependencies: ["FlavorWheel", "AppCore"]),
         .testTarget(
             name: "SettingsFeatureTests",
             dependencies: ["SettingsFeature", "AppCore", factoryKit, .product(name: "FactoryTesting", package: "Factory")]

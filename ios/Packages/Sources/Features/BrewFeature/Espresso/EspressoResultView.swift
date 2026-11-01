@@ -1,6 +1,7 @@
 import SwiftUI
 import Domain
 import DesignSystem
+import FlavorWheel
 
 /// Espresso step 4: what came out (time, yield, TDS), the rating and notes; saves the shot.
 struct EspressoResultView: View {
@@ -30,6 +31,12 @@ struct EspressoResultView: View {
                     Slider(value: $viewModel.rating, in: Brew.ratingRange, step: 0.1)
                         .accessibilityIdentifier("espresso.rating")
                 }
+            }
+            .themedRow()
+
+            Section(tr("Taste")) {
+                FlavorWheelView(flavors: $viewModel.flavors, aromas: $viewModel.aromas)
+                    .padding(.vertical, Spacing.sm)
                 TextField(tr("Body, bitterness, sweetness, balance…"), text: $viewModel.notes, axis: .vertical)
                     .lineLimit(2...6)
             }

@@ -64,6 +64,8 @@ public extension EspressoSetup {
         milk: MilkInfo?,
         ice: IceInfo?,
         rating: Double,
+        flavors: [String] = [],
+        aromas: [String] = [],
         notes: String
     ) -> Brew {
         let shot = EspressoShot(
@@ -91,6 +93,8 @@ public extension EspressoSetup {
             milk: needsMilk ? milk : nil,
             ice: needsIce ? ice : nil,
             rating: rating,
+            flavors: flavors,
+            aromas: aromas,
             notes: notes
         )
     }

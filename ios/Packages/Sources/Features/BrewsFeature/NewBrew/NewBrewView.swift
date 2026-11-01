@@ -1,6 +1,7 @@
 import SwiftUI
 import Domain
 import DesignSystem
+import FlavorWheel
 
 struct NewBrewView: View {
     @Bindable var viewModel: NewBrewViewModel
@@ -35,6 +36,13 @@ struct NewBrewView: View {
             Section(tr("Rating")) {
                 LabeledContent(tr("Rating"), value: viewModel.rating.formatted(.number.precision(.fractionLength(1))))
                 Slider(value: $viewModel.rating, in: Brew.ratingRange, step: 0.5)
+            }
+
+            Section(tr("Taste")) {
+                FlavorWheelView(flavors: $viewModel.flavors, aromas: $viewModel.aromas)
+                    .padding(.vertical, Spacing.sm)
+                TextField(tr("Notes"), text: $viewModel.notes, axis: .vertical)
+                    .lineLimit(2...6)
             }
 
             if let errorMessage = viewModel.errorMessage {

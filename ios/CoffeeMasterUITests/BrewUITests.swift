@@ -187,8 +187,14 @@ final class BrewUITests: XCTestCase {
         app.swipeUp()
         app.buttons["active.stop"].tap()
 
-        // The form replaces the timer; Back goes to the setup
+        // The form replaces the timer and has the flavor wheel; Back goes to the setup
         XCTAssertTrue(app.textFields["Bean name"].waitForExistence(timeout: 5))
+        let fruit = app.buttons["wheel.Fruit"]
+        for _ in 0..<6 where !fruit.isHittable { app.swipeUp(velocity: .slow) }
+        fruit.tap()
+        XCTAssertTrue(app.buttons["wheel.Citrus"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "pour-over-wheel")
+        for _ in 0..<6 where !app.navigationBars["V60"].buttons.firstMatch.isHittable { app.swipeDown(velocity: .fast) }
         app.navigationBars["V60"].buttons.firstMatch.tap()
         XCTAssertTrue(app.collectionViews["setup.form"].waitForExistence(timeout: 5))
     }
@@ -242,6 +248,15 @@ final class BrewUITests: XCTestCase {
         XCTAssertNotEqual(shotTime.value as? String, "0")
         XCTAssertTrue(app.buttons["espresso.result.save"].exists || app.collectionViews["espresso.resultForm"].exists)
         attachScreenshot(named: "espresso-result")
+
+        // Flavor wheel: Fruit → Tropical → Mango is picked as a chip
+        let fruit = app.buttons["wheel.Fruit"]
+        for _ in 0..<6 where !fruit.isHittable { app.collectionViews["espresso.resultForm"].swipeUp(velocity: .slow) }
+        fruit.tap()
+        app.buttons["wheel.Tropical"].tap()
+        app.buttons["wheel.Mango"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["wheel.pick.Манго"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "flavor-wheel")
     }
 
     private func openSetup(_ app: XCUIApplication, group: String, method: String) {

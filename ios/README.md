@@ -28,7 +28,8 @@ ios/
     │   ├── DeepLinks/            # DeepLink enum + URL parser (Foundation-only)
     │   ├── Navigation/           # Flow, StackRouter, HostingController (UIKit)
     │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
-    │   └── WebImport/            # one-time import of the web app's JSON export → Domain models
+    │   ├── WebImport/            # one-time import of the web app's JSON export → Domain models
+    │   └── FlavorWheel/          # the flavor wheel (taxonomy, picks, Canvas wheel), shared by brew screens
     ├── Sources/Features/
     │   ├── BrewFeature/          # brew wizard (Phase 2): method pick → setup (gear pickers) → …
     │   ├── BrewsFeature/         # journal list → detail; template brew form (until 2.2–2.7)

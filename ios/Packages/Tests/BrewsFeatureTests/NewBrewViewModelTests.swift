@@ -53,6 +53,9 @@ struct NewBrewViewModelTests {
         let steps = [BrewStep(kind: .pour(milliliters: 60), start: 0, duration: 10), BrewStep(kind: .pour(milliliters: 190), start: 40, duration: 30)]
         let viewModel = NewBrewViewModel(setup: BrewSetup(method: .v60), steps: steps, totalTime: 154.6, router: router)
         viewModel.beanName = "Kenya"
+        viewModel.flavors = ["Манго"]
+        viewModel.aromas = ["Жасмин"]
+        viewModel.notes = " Juicy "
 
         #expect(viewModel.waterGrams == 250)
         #expect(viewModel.brewTime == 155)
@@ -61,6 +64,9 @@ struct NewBrewViewModelTests {
         let saved = try #require(await repository.saved.first)
         #expect(saved.steps == steps)
         #expect(saved.totalTime == 155)
+        #expect(saved.flavors == ["Манго"])
+        #expect(saved.aromas == ["Жасмин"])
+        #expect(saved.notes == "Juicy")
     }
 
     @Test func prefillsFromWizardSetupAndKeepsItsGear() async throws {
