@@ -44,11 +44,9 @@ struct InMemoryRepositoryTests {
     }
 
     @Test func inventoryOperations() async throws {
-        let beans = InMemoryRecordRepository(beans: [Bean(id: .fixture(1), name: "Kenya", totalGrams: 250, remainingGrams: 10)])
         let devices = InMemoryRecordRepository(devices: Device.samples)
         let packs = InMemoryRecordRepository(filterPacks: FilterPack.samples)
 
-        #expect(try await beans.consume(beanID: .fixture(1), grams: 15).remainingGrams == 0)
         #expect(try await devices.contains(name: "comandante c40 mk4", type: .grinder))
         #expect(try await devices.fetchAll(of: .kettle).map(\.name) == ["Fellow Stagg EKG"])
         #expect(try await packs.use(packID: FilterPack.samples[1].id, count: 1).remaining == 7)

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import Observation
 import Domain
 import FactoryKit
@@ -6,7 +7,7 @@ import FactoryKit
 /// One espresso from setup to saved shot, shared by its four screens (setup → shot → milk / ice →
 /// result), like the web app's single brew state. The shot clock keeps timestamps.
 @Observable
-final class EspressoViewModel: GearPickingModel {
+final class EspressoViewModel: GearPickingModel, SavingViewModel {
     let method: BrewMethod
     var draft: EspressoDraft
     /// Owned accessories, for the accessory chips and the milk frother.
@@ -14,25 +15,12 @@ final class EspressoViewModel: GearPickingModel {
     private(set) var milkSuggestions: [String] = []
     private(set) var mixerSuggestions: [String] = []
 
-    // Shot
-    private(set) var shotStartedAt: Date? { didSet { persist() } }
-    private(set) var shotStoppedAt: Date? { didSet { persist() } }
     /// The step on screen after the setup (nil on the setup); from then on the brew is kept.
     private(set) var step: EspressoStep? { didSet { persist() } }
+    /// The shot, milk / ice and the result, kept with every change.
+    var shot = EspressoShotState() { didSet { persist() } }
     private(set) var now: Date
-
-    // Milk / ice (web defaults)
-    var milk = MilkInfo(name: "", temperature: 60, volumeMilliliters: 150, frother: "") { didSet { persist() } }
-    var ice = IceInfo(cubes: 4, mixer: "") { didSet { persist() } }
-
-    // Result
-    /// Seconds, editable (the timer's value).
-    var shotTime: Double = 0 { didSet { persist() } }
-    var actualYield: Double? { didSet { persist() } }
-    var targetTDS: Double? = 9 { didSet { persist() } }
-    var actualTDS: Double? { didSet { persist() } }
-    var tasting = BrewTasting() { didSet { persist() } }
-    private(set) var isSaving = false
+    var isSaving = false
     var alertMessage: String?
 
     @ObservationIgnored private var didPrefill = false
@@ -56,39 +44,19 @@ final class EspressoViewModel: GearPickingModel {
         self.init(method: progress.draft.recipe.method, router: router, clock: clock)
         didPrefill = true
         draft = progress.draft
-        shotStartedAt = progress.shotStartedAt
-        shotStoppedAt = progress.shotStoppedAt
-        milk = progress.milk
-        ice = progress.ice
-        shotTime = progress.shotTime
-        actualYield = progress.actualYield
-        targetTDS = progress.targetTDS
-        actualTDS = progress.actualTDS
-        tasting = progress.tasting
+        shot = progress.shot
         step = progress.step
     }
 
     /// Shows `step` (the flow pushes its screen) and keeps the brew from then on.
     private func advance(to step: EspressoStep) {
         self.step = step
-        if let router { router.espresso(EspressoBrew(viewModel: self), didAdvanceTo: step) }
+        router?.espresso(EspressoBrew(viewModel: self), didAdvanceTo: step)
     }
 
     private func persist() {
         guard let step else { return }
-        BrewInProgress.save(.espresso(EspressoProgress(
-            step: step,
-            draft: draft,
-            shotStartedAt: shotStartedAt,
-            shotStoppedAt: shotStoppedAt,
-            milk: milk,
-            ice: ice,
-            shotTime: shotTime,
-            actualYield: actualYield,
-            targetTDS: targetTDS,
-            actualTDS: actualTDS,
-            tasting: tasting
-        )))
+        BrewInProgress.save(.espresso(EspressoProgress(step: step, draft: draft, shot: shot)))
     }
 
     // MARK: - Setup
@@ -130,6 +98,15 @@ final class EspressoViewModel: GearPickingModel {
         set { draft.accessories = ownedAccessories.filter { newValue.contains($0.id) } }
     }
 
+    /// Back on the setup from the shot: like pour-over, a brew left before it's done is dropped (the
+    /// shot starts over and nothing is kept for an app kill).
+    func didReturnToSetup() {
+        guard step != nil else { return }
+        step = nil
+        shot = EspressoShotState()
+        BrewInProgress.discard()
+    }
+
     /// Remembers the recipe for next time and goes to the shot.
     func startShotStep() async {
         await history.remember(draft.setup)
@@ -138,11 +115,11 @@ final class EspressoViewModel: GearPickingModel {
 
     // MARK: - Shot
 
-    var isShotRunning: Bool { shotStartedAt != nil && shotStoppedAt == nil }
+    var isShotRunning: Bool { shot.startedAt != nil && shot.stoppedAt == nil }
 
     var shotElapsed: TimeInterval {
-        guard let shotStartedAt else { return 0 }
-        return max((shotStoppedAt ?? now).timeIntervalSince(shotStartedAt), 0)
+        guard let startedAt = shot.startedAt else { return 0 }
+        return max((shot.stoppedAt ?? now).timeIntervalSince(startedAt), 0)
     }
 
     var shotProgress: Double { min(shotElapsed / EspressoSetup.targetShotTime, 1) }
@@ -155,17 +132,19 @@ final class EspressoViewModel: GearPickingModel {
 
     func startShot() {
         guard !isShotRunning else { return }
-        shotStartedAt = clock()
-        shotStoppedAt = nil
+        shot.startedAt = clock()
+        shot.stoppedAt = nil
         now = clock()
     }
 
-    /// Stops the shot and moves on: milk / ice for drinks that need it, otherwise the result.
+    /// Stops the shot and moves on: milk / ice for drinks that need it (the frother starts as the steam
+    /// wand), otherwise the result.
     func stopShot() {
         guard isShotRunning else { return }
-        shotStoppedAt = clock()
+        shot.stoppedAt = clock()
         now = clock()
-        shotTime = shotElapsed.rounded(.down)
+        shot.shotTime = shotElapsed.rounded(.down)
+        if shot.milk.frother.isEmpty { shot.milk.frother = frotherChoices[0] }
         advance(to: draft.recipe.needsMilk || draft.recipe.needsIce ? .milk : .result)
     }
 
@@ -177,7 +156,6 @@ final class EspressoViewModel: GearPickingModel {
     }
 
     func continueToResult() {
-        if milk.frother.isEmpty { milk.frother = tr("Steam wand") }
         advance(to: .result)
     }
 
@@ -185,37 +163,25 @@ final class EspressoViewModel: GearPickingModel {
 
     /// The actual ratio once the shot was weighed.
     var actualRatio: Double? {
-        guard let actualYield, actualYield > 0, draft.recipe.doseGrams > 0 else { return nil }
+        guard let actualYield = shot.actualYield, actualYield > 0, draft.recipe.doseGrams > 0 else { return nil }
         return actualYield / draft.recipe.doseGrams
     }
 
     func save() async {
-        guard !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-        let setup = draft.setup
-        let trimmedMilk = MilkInfo(
-            name: milk.name.trimmingCharacters(in: .whitespacesAndNewlines),
-            temperature: milk.temperature,
-            volumeMilliliters: milk.volumeMilliliters,
-            frother: milk.frother
-        )
-        let trimmedIce = IceInfo(cubes: ice.cubes, mixer: ice.mixer.trimmingCharacters(in: .whitespacesAndNewlines))
-        let brew = setup.makeBrew(
-            shotTime: max(shotTime, 0),
-            actualYieldGrams: actualYield,
-            targetTDS: targetTDS,
-            actualTDS: actualTDS,
-            milk: trimmedMilk,
-            ice: trimmedIce,
-            tasting: tasting
-        )
-        alertMessage = await record(brew, in: brews, then: router)
-        guard alertMessage == nil else { return }
-        try? await suggestions.remember(Suggestions(
-            milks: setup.needsMilk ? [trimmedMilk.name] : [],
-            mixers: setup.needsIce ? [trimmedIce.mixer] : []
-        ))
+        await whileSaving {
+            let setup = draft.setup
+            let brew = setup.makeBrew(
+                shotTime: max(shot.shotTime, 0),
+                actualYieldGrams: shot.actualYield,
+                targetTDS: shot.targetTDS,
+                actualTDS: shot.actualTDS,
+                milk: shot.milk,
+                ice: shot.ice,
+                tasting: shot.tasting
+            )
+            guard await record(brew, in: brews, then: router) else { return }
+            try? await suggestions.remember(Suggestions(milks: brew.milk.map { [$0.name] } ?? [], mixers: brew.ice.map { [$0.mixer] } ?? []))
+        }
     }
 }
 

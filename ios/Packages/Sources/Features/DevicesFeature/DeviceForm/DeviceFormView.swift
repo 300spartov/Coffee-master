@@ -6,12 +6,9 @@ struct DeviceFormView: View {
     @Bindable var viewModel: DeviceFormViewModel
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, load: viewModel.load) {
             form
         }
-        .task { await viewModel.load() }
         .errorAlert($viewModel.alertMessage)
     }
 
@@ -22,7 +19,7 @@ struct DeviceFormView: View {
                     .textInputAutocapitalization(.words)
                     .accessibilityIdentifier("device.name")
                 Picker(tr("Type"), selection: $viewModel.type) {
-                    ForEach(viewModel.types, id: \.self) { type in
+                    ForEach(DeviceType.browsable, id: \.self) { type in
                         Label(type.title, systemImage: type.systemImage).tag(type)
                     }
                 }
@@ -46,14 +43,7 @@ struct DeviceFormView: View {
 }
 
 #if DEBUG
-private final class PreviewDeviceFormRouter: DeviceFormRouting {
-    static let shared = PreviewDeviceFormRouter()
-    func deviceFormDidFinish(saved device: Device?) {}
-    func deviceFormDidDelete(id: Device.ID) {}
-    func deviceFormNotFound(id: Device.ID) {}
-}
-
 #Preview {
-    DeviceFormView(viewModel: DeviceFormViewModel(mode: .add(.grinder), router: PreviewDeviceFormRouter.shared))
+    DeviceFormView(viewModel: DeviceFormViewModel(mode: .add(.grinder), router: PreviewRouter.shared))
 }
 #endif

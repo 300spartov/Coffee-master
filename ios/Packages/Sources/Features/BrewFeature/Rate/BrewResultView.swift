@@ -26,7 +26,7 @@ struct BrewResultView: View {
                         title: brew.espresso == nil ? tr("Water") : tr("Yield"),
                         value: "\(decimal(brew.volumeMilliliters)) \(brew.espresso == nil ? tr("ml") : "g")"
                     )
-                    StatTile(title: tr("Rating"), value: brew.rating.formatted(.number.precision(.fractionLength(1))))
+                    StatTile(title: tr("Rating"), value: ratingText(brew.rating))
                     StatTile(title: tr("Descriptors"), value: "\(brew.flavors.count + brew.aromas.count)")
                 }
 

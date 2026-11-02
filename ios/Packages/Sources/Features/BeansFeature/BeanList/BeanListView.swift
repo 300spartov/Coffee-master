@@ -7,14 +7,11 @@ struct BeanListView: View {
 
     var body: some View {
         content
-            .task { await viewModel.start() }
             .errorAlert($viewModel.alertMessage)
     }
 
     private var content: some View {
-        ListStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } empty: {
+        ListStateView(viewModel.state, observe: viewModel.start, reload: viewModel.load) {
             EmptyStateView(
                 title: tr("No beans yet"),
                 systemImage: "leaf",
@@ -47,9 +44,7 @@ struct BeanListView: View {
 struct BeanRow: View {
     let bean: Bean
 
-    private var stockLevel: StockLevel {
-        StockLevel(isEmpty: bean.isEmpty, isLow: bean.isLow)
-    }
+    private var stockLevel: StockLevel { StockLevel(bean) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -75,7 +70,7 @@ struct BeanRow: View {
 
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 HStack {
-                    Text(verbatim: "\(formatted(bean.remainingGrams)) / \(formatted(bean.totalGrams)) g")
+                    Text(verbatim: "\(decimal(bean.remainingGrams)) / \(gramsText(bean.totalGrams))")
                         .font(.caption)
                         .foregroundStyle(.theme.textSecondary)
                     Spacer()
@@ -84,7 +79,7 @@ struct BeanRow: View {
                         .foregroundStyle(stockLevel == .normal ? .theme.textSecondary : stockLevel.color)
                 }
 
-                StockBar(fraction: bean.remainingFraction, level: stockLevel)
+                StockBar(bean)
             }
             .padding(.top, Spacing.xxs)
 
@@ -104,53 +99,23 @@ struct BeanRow: View {
     private var metadataChips: some View {
         HStack(spacing: Spacing.xs) {
             if let roast = bean.roastProfile {
-                tag(roastTitle(roast))
+                Chip(roast.title, size: .small)
             }
             if let process = bean.process {
-                tag(process.rawValue)
+                Chip(process.rawValue, size: .small)
             }
             if !bean.country.isEmpty {
-                tag(bean.country)
+                Chip(bean.country, size: .small)
             }
             if let score = bean.score {
-                tag("\(formatted(score)) pts", highlighted: true)
+                Chip("\(decimal(score)) pts", isSelected: true, size: .small)
             }
         }
-    }
-
-    /// Small capsule with a detail from the bag (data, so shown verbatim).
-    private func tag(_ text: String, highlighted: Bool = false) -> some View {
-        Text(verbatim: text)
-            .font(.caption2.weight(highlighted ? .medium : .regular))
-            .foregroundStyle(highlighted ? Color.theme.accent : Color.theme.textSecondary)
-            .padding(.horizontal, Spacing.xs + 2)
-            .padding(.vertical, 2)
-            .background(highlighted ? Color.theme.accentSoft : Color.theme.fill, in: Capsule())
-    }
-
-    private func roastTitle(_ profile: RoastProfile) -> String {
-        switch profile {
-        case .filter: tr("Filter")
-        case .espresso: tr("Espresso")
-        case .omni: tr("Omni")
-        }
-    }
-
-    private func formatted(_ value: Double) -> String {
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return "\(Int(value))"
-        }
-        return value.formatted(.number.precision(.fractionLength(1)))
     }
 }
 
 #if DEBUG
-private final class PreviewRouter: BeanListRouting {
-    func showBeanDetail(id: Bean.ID) {}
-    func showAddBean() {}
-}
-
 #Preview {
-    BeanListView(viewModel: BeanListViewModel(router: PreviewRouter()))
+    BeanListView(viewModel: BeanListViewModel(router: PreviewRouter.shared))
 }
 #endif

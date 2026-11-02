@@ -6,9 +6,7 @@ struct ProfileFormView: View {
     @Bindable var viewModel: ProfileFormViewModel
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, load: viewModel.load) {
             Form {
                 Section {
                     field(tr("Name"), prompt: tr("Name or nickname"), text: $viewModel.name, identifier: "profileForm.name")
@@ -28,14 +26,13 @@ struct ProfileFormView: View {
                 }
                 .themedRow()
 
-                FormActions(isSaving: viewModel.isSaving, canSave: true, identifier: "profileForm") {
+                FormActions(isSaving: viewModel.isSaving, identifier: "profileForm") {
                     Task { await viewModel.save() }
                 }
             }
             .scrollDismissesKeyboard(.interactively)
         }
         .themedGroupedBackground()
-        .task { await viewModel.load() }
         .errorAlert($viewModel.alertMessage)
         .accessibilityIdentifier("profileForm")
     }

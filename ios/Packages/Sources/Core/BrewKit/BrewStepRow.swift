@@ -12,6 +12,9 @@ public extension BrewStep {
         }
     }
 
+    /// "0:10–0:45".
+    var rangeText: String { "\(clockText(start))–\(clockText(end))" }
+
     var tint: Color {
         switch kind {
         case .pour: .theme.info
@@ -38,7 +41,7 @@ public struct BrewStepRow: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(step.tint)
                 .frame(width: 96, alignment: .leading)
-            Text(verbatim: "\(clockText(step.start))–\(clockText(step.end))")
+            Text(verbatim: step.rangeText)
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(.theme.textPrimary)
             Text(secondsText(step.duration))

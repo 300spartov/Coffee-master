@@ -23,8 +23,7 @@ public struct ProfileModule {
     public func makeAvatarPicker(router: any AvatarPickerRouting) -> UIViewController {
         let viewModel = AvatarPickerViewModel(router: router)
         let controller = HostingController(rootView: AvatarPickerView(viewModel: viewModel), title: tr("Avatar"))
-        controller.navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { [weak viewModel] _ in viewModel?.done() })
-        controller.navigationItem.rightBarButtonItem?.accessibilityIdentifier = "avatar.done"
+        controller.setDoneButton(identifier: "avatar.done") { [weak viewModel] in viewModel?.done() }
         return controller
     }
 }

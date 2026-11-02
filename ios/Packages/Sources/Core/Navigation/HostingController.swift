@@ -14,7 +14,7 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
         largeTitleDisplayMode: UINavigationItem.LargeTitleDisplayMode = .never,
         hidesBottomBarWhenPushed: Bool = false
     ) {
-        super.init(rootView: LocalizedRoot(content: rootView, locale: LanguageSettings.shared.current.locale))
+        super.init(rootView: LocalizedRoot(rootView))
         view.backgroundColor = .theme.background
         self.title = title
         navigationItem.largeTitleDisplayMode = largeTitleDisplayMode
@@ -43,6 +43,22 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
         isModalInPresentation = true
     }
 
+    /// Done on the right, for a sheet whose changes are already saved (e.g. a picker).
+    public func setDoneButton(identifier: String, action: @escaping () -> Void) {
+        let item = UIBarButtonItem(systemItem: .done, primaryAction: UIAction { _ in action() })
+        item.accessibilityIdentifier = identifier
+        navigationItem.rightBarButtonItem = item
+    }
+
+    /// The screen's own Back, in place of the system one, for screens that ask before leaving
+    /// (e.g. discarding a started brew).
+    public func setBackButton(accessibilityLabel: String, identifier: String, action: @escaping () -> Void) {
+        let item = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), primaryAction: UIAction { _ in action() })
+        item.accessibilityLabel = accessibilityLabel
+        item.accessibilityIdentifier = identifier
+        navigationItem.leftBarButtonItem = item
+    }
+
     // MARK: - Search
 
     private var searchUpdater: SearchUpdater?
@@ -59,7 +75,7 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
     @available(iOS 26, *)
     public func setTabAccessory<Accessory: View>(_ content: Accessory?) {
         tabAccessoryHost = content.map { content in
-            let host = UIHostingController(rootView: LocalizedRoot(content: content, locale: LanguageSettings.shared.current.locale))
+            let host = UIHostingController(rootView: LocalizedRoot(content))
             host.view.backgroundColor = .clear
             return host
         }
@@ -126,6 +142,12 @@ private final class SearchUpdater: NSObject, UISearchResultsUpdating {
 public struct LocalizedRoot<Content: View>: View {
     let content: Content
     let locale: Locale
+
+    /// In the current in-app language.
+    init(_ content: Content) {
+        self.content = content
+        locale = LanguageSettings.shared.current.locale
+    }
 
     public var body: some View {
         content.environment(\.locale, locale)

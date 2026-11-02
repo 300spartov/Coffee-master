@@ -55,7 +55,7 @@ extension Container: @retroactive AutoRegistering {
         profileRepository.register { CoreDataRepositories.profile(self.persistence()) }
         suggestionsRepository.register { CoreDataRepositories.suggestions(self.persistence()) }
         brewTimer.register { LiveActivityBrewTimerService() }
-        brewSetupHistory.register { UserDefaultsBrewSetupHistory() }
+        brewSetupHistory.register { StoredBrewSetupHistory(store: self.draftStore()) }
         draftStore.register { UserDefaultsDraftStore() }
         toasts.register { @MainActor in self.toastCenter() }
     }

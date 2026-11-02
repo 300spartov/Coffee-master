@@ -81,9 +81,14 @@ final class BrewFlow {
         sheet.push(form)
     }
 
-    /// The add form was cancelled (or something unexpected happened): back to the list.
-    private func backToPicker() {
-        picker.current?.pop()
+    /// An add form opened from the picker finished: a new item is picked; otherwise (cancelled; delete
+    /// and not-found can't happen, the forms only add) back to the list.
+    private func finishAdding<Item>(_ result: FormResult<Item>, pick: (Item) -> GearPick, name: KeyPath<Item, String>) {
+        if case .added(let item) = result {
+            finishPicking(pick(item), added: item[keyPath: name])
+        } else {
+            picker.current?.pop()
+        }
     }
 }
 
@@ -114,18 +119,13 @@ extension BrewFlow: MethodPickRouting {
 
 extension BrewFlow: GearPickerPresenting {
     func showGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, onPick: @escaping (GearPick) -> Void) {
-        guard let brewStack = modal.current else { return }
-        picker.present {
-            pickerSession = (method, onPick)
-            return brewStack.presentStack(root: module.makeGearPicker(kind, method: method, selectedID: selectedID, router: self)) { sheet in
-                sheet.detents = [.medium(), .large()]
-                sheet.prefersGrabberVisible = true
-            }
-        }
+        guard let brewStack = modal.current, !picker.isPresented else { return }
+        pickerSession = (method, onPick)
+        picker.presentSheet(module.makeGearPicker(kind, method: method, selectedID: selectedID, router: self), over: brewStack, size: .resizable)
     }
 }
 
-// These two refine `GearPickerPresenting` (conformed above); Swift 6 needs the isolation spelled out.
+// These refine other routing protocols; Swift 6 needs the isolation spelled out.
 extension BrewFlow: @MainActor BrewSetupRouting {
     func brewSetupDidStart(_ setup: BrewSetup) {
         modal.current?.push(module.makeActiveBrew(setup: setup, router: self))
@@ -143,17 +143,7 @@ extension BrewFlow: @MainActor BrewSavingRouting {
     func brewDidSave(_ brew: Brew, usage: StockUsage) {
         module.discardBrewInProgress()
         modal.current?.setRoot(module.makeBrewResult(brew, router: self), animated: true)
-        if let bean = usage.bean {
-            if bean.isEmpty {
-                toasts.show(tr("\(bean.name) is used up"), style: .warning)
-            } else if bean.isLow {
-                toasts.show(tr("\(bean.name) is running low"), style: .warning)
-            }
-        }
-        if let pack = usage.filterPack, pack.isLow {
-            let left = pack.remaining
-            toasts.show(pack.isEmpty ? tr("No filters left in \(pack.name)") : tr("Only \(left) filters left in \(pack.name)"), style: .warning)
-        }
+        usage.warnings.forEach { toasts.show($0, style: .warning) }
     }
 }
 
@@ -168,14 +158,14 @@ extension BrewFlow: BrewResultRouting {
     }
 }
 
-extension BrewFlow: ActiveBrewRouting {
+extension BrewFlow: @MainActor ActiveBrewRouting {
     /// Rating replaces the timer, so Back from it doesn't return to a stopped timer.
     func activeBrewDidFinish(_ session: PourOverSession) {
         modal.current?.replaceTop(with: module.makeRateBrew(session: session, router: self))
     }
 
     /// Back on a started timer or the rating (confirmed): the brew is discarded.
-    func activeBrewDidLeave() {
+    func brewDidDiscard() {
         module.discardBrewInProgress()
         modal.current?.pop()
     }
@@ -199,31 +189,8 @@ extension BrewFlow: GearPickerRouting {
     }
 }
 
-// Add forms opened from the picker. They only add, so delete / not-found can't happen here.
-
-extension BrewFlow: BeanFormRouting {
-    func beanFormDidFinish(saved bean: Bean?) {
-        if let bean { finishPicking(.bean(bean), added: bean.name) } else { backToPicker() }
-    }
-
-    func beanFormDidDelete(id: Bean.ID) { backToPicker() }
-    func beanFormNotFound(id: Bean.ID) { backToPicker() }
-}
-
-extension BrewFlow: DeviceFormRouting {
-    func deviceFormDidFinish(saved device: Device?) {
-        if let device { finishPicking(.device(device), added: device.name) } else { backToPicker() }
-    }
-
-    func deviceFormDidDelete(id: Device.ID) { backToPicker() }
-    func deviceFormNotFound(id: Device.ID) { backToPicker() }
-}
-
-extension BrewFlow: FilterPackFormRouting {
-    func filterPackFormDidFinish(saved pack: FilterPack?) {
-        if let pack { finishPicking(.filterPack(pack), added: pack.name) } else { backToPicker() }
-    }
-
-    func filterPackFormDidDelete(id: FilterPack.ID) { backToPicker() }
-    func filterPackFormNotFound(id: FilterPack.ID) { backToPicker() }
+extension BrewFlow: BeanFormRouting, DeviceFormRouting, FilterPackFormRouting {
+    func beanForm(didFinish result: FormResult<Bean>) { finishAdding(result, pick: GearPick.bean, name: \.name) }
+    func deviceForm(didFinish result: FormResult<Device>) { finishAdding(result, pick: GearPick.device, name: \.name) }
+    func filterPackForm(didFinish result: FormResult<FilterPack>) { finishAdding(result, pick: GearPick.filterPack, name: \.name) }
 }

@@ -17,38 +17,6 @@
         }
       }
     },
-    "%@ is running low": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ is running low"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ закінчується"
-          }
-        }
-      }
-    },
-    "%@ is used up": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ is used up"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ закінчилось"
-          }
-        }
-      }
-    },
     "Bean added": {
       "localizations": {
         "en": {
@@ -333,38 +301,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Журнал"
-          }
-        }
-      }
-    },
-    "No filters left in %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No filters left in %@"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Фільтри %@ закінчились"
-          }
-        }
-      }
-    },
-    "Only %lld filters left in %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Only %lld filters left in %@"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Мало фільтрів %2$@: %1$lld шт"
           }
         }
       }

@@ -30,8 +30,8 @@ public struct FormActions: View {
     /// `identifier`: accessibility prefix, giving `<identifier>.save` and `<identifier>.delete`.
     public init(
         title: String? = nil,
-        isSaving: Bool,
-        canSave: Bool,
+        isSaving: Bool = false,
+        canSave: Bool = true,
         identifier: String? = nil,
         destructive: Destructive? = nil,
         save: @escaping () -> Void

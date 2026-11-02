@@ -15,3 +15,15 @@ public extension ChangeStreaming {
         }
     }
 }
+
+/// Like `ChangeStreaming.observe`, for a screen that shows several sources (e.g. devices and filter packs).
+public func observe(_ sources: any ChangeStreaming..., reload: @escaping @Sendable () async -> Void) async {
+    var streams: [AsyncStream<Void>] = []
+    for source in sources { streams.append(await source.changes()) }
+    await reload()
+    await withTaskGroup(of: Void.self) { group in
+        for stream in streams {
+            group.addTask { for await _ in stream { await reload() } }
+        }
+    }
+}

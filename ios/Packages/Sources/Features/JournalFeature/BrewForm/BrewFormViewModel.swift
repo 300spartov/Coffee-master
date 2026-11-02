@@ -7,7 +7,7 @@ import FactoryKit
 /// A brew in the journal, every field editable (web: `edit-brew`), or one logged after the fact (web:
 /// `log-brew`: at home or at a café). Saving runs `Brew.edited()` (steps back to back, total time).
 @Observable
-final class BrewFormViewModel: AlertingViewModel {
+final class BrewFormViewModel: SavingViewModel {
     enum Mode: Equatable {
         /// Logged after the fact.
         case add
@@ -18,7 +18,7 @@ final class BrewFormViewModel: AlertingViewModel {
     private(set) var state: LoadState
     /// The brew as edited (when editing, a placeholder until it's loaded).
     var brew: Brew
-    private(set) var isSaving = false
+    var isSaving = false
     var alertMessage: String?
 
     // Logging: the bag and grinder are typed, with your own as suggestions (a match links the brew).
@@ -56,7 +56,7 @@ final class BrewFormViewModel: AlertingViewModel {
                 didLoad = true
                 state = .ready
             } catch RepositoryError.notFound {
-                router?.brewFormNotFound(id: id)
+                router?.brewForm(didFinish: .notFound)
             } catch {
                 state = .failed(error.localizedDescription)
             }
@@ -140,24 +140,24 @@ final class BrewFormViewModel: AlertingViewModel {
     /// Edits are saved as they are; a logged home brew made with one of your bags takes its dose
     /// from it (`record`), so deleting it later gives the coffee back evenly.
     func save() async {
-        guard state == .ready, !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-        let saved = (isAdding ? loggedBrew() : brew).edited()
-        if await attempt({ if isAdding { try await repository.record(saved) } else { try await repository.save(saved) } }) {
-            router?.brewFormDidSave(saved)
+        guard state == .ready else { return }
+        await whileSaving {
+            let saved = (isAdding ? loggedBrew() : brew).edited()
+            if await attempt({ if isAdding { try await repository.record(saved) } else { try await repository.save(saved) } }) {
+                router?.brewForm(didFinish: .saved(saved, editing: !isAdding))
+            }
         }
     }
 
     func cancel() {
-        router?.brewFormDidCancel()
+        router?.brewForm(didFinish: .cancelled)
     }
 
     /// Moves the brew to the trash, with Undo (`trashBrew`).
     func delete() async {
         guard case .edit(let id) = mode else { return }
         if await attempt({ try await trashBrew(id: id) }) {
-            router?.brewFormDidDelete(id: id)
+            router?.brewForm(didFinish: .deleted(id))
         }
     }
 
@@ -165,10 +165,10 @@ final class BrewFormViewModel: AlertingViewModel {
     /// is only named (it's not from your stock).
     private func loggedBrew() -> Brew {
         var logged = brew
-        let bean = beanName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let bean = beanName.trimmed
         let ownedBean = brew.isCafeVisit ? nil : beans.first { $0.name.caseInsensitiveCompare(bean) == .orderedSame }
         logged.bean = ownedBean.map(BeanReference.init) ?? (bean.isEmpty ? nil : BeanReference(name: bean))
-        let grinder = grinderName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let grinder = grinderName.trimmed
         if brew.isCafeVisit || grinder.isEmpty {
             logged.grinder = nil
             logged.grindSetting = nil
@@ -176,7 +176,7 @@ final class BrewFormViewModel: AlertingViewModel {
             logged.grinder = grinders.first { Device.namesMatch($0.name, grinder) }.map(GearReference.init) ?? GearReference(name: grinder)
         }
         if case .cafe(let place) = brew.origin {
-            logged.origin = .cafe(place: place.trimmingCharacters(in: .whitespacesAndNewlines))
+            logged.origin = .cafe(place: place.trimmed)
         }
         return logged
     }

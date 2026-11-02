@@ -13,16 +13,21 @@ final class SpyDevicesRouter: DeviceCategoriesRouting, DeviceCatalogRouting, Dev
     private(set) var editedIDs: [Device.ID] = []
     private(set) var finished: [Device?] = []
     private(set) var deletedIDs: [Device.ID] = []
-    private(set) var notFoundIDs: [Device.ID] = []
+    private(set) var notFoundCount = 0
     private(set) var filterPacksShownCount = 0
 
     func showCategory(_ type: DeviceType) { shownCategories.append(type) }
     func showFilterPacks() { filterPacksShownCount += 1 }
     func showAddDevice(type: DeviceType) { addedTypes.append(type) }
     func showEditDevice(id: Device.ID) { editedIDs.append(id) }
-    func deviceFormDidFinish(saved device: Device?) { finished.append(device) }
-    func deviceFormDidDelete(id: Device.ID) { deletedIDs.append(id) }
-    func deviceFormNotFound(id: Device.ID) { notFoundIDs.append(id) }
+    func deviceForm(didFinish result: FormResult<Device>) {
+        switch result {
+        case .added(let item), .updated(let item): finished.append(item)
+        case .cancelled: finished.append(nil)
+        case .deleted(let id): deletedIDs.append(id)
+        case .notFound: notFoundCount += 1
+        }
+    }
 }
 
 /// Uses the real in-memory repository, so add / remove / duplicate rules behave as in the app.
@@ -125,7 +130,7 @@ struct DeviceCategoriesViewModelTests {
         #expect(viewModel.ownedCount(.dripper) == 2)
         #expect(viewModel.ownedCount(.grinder) == 1)
         #expect(viewModel.catalogCount(.dripper) == 39)
-        #expect(!viewModel.categories.contains(.filter))
+        #expect(!DeviceType.browsable.contains(.filter))
         #expect(router.shownCategories == [.kettle])
     }
 }
@@ -203,7 +208,7 @@ struct DeviceFormViewModelTests {
 
         let (missing, _) = makeViewModel(.edit(.fixture(404)))
         await missing.load()
-        #expect(router.notFoundIDs == [.fixture(404)])
+        #expect(router.notFoundCount == 1)
     }
 }
 
@@ -272,7 +277,7 @@ struct DeviceReviewFixesTests {
         viewModel.name = "Acaia Pearl S"
         await viewModel.save()
 
-        #expect(router.notFoundIDs == [device.id])
+        #expect(router.notFoundCount == 1)
         #expect(try await repository.fetchAll().isEmpty, "The removed device must not come back")
     }
 }

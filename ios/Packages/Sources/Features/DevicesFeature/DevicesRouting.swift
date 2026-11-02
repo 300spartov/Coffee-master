@@ -14,11 +14,7 @@ public protocol DeviceCatalogRouting: AnyObject {
 }
 
 public protocol DeviceFormRouting: AnyObject {
-    /// `device` is `nil` when the user cancelled.
-    func deviceFormDidFinish(saved device: Device?)
-    func deviceFormDidDelete(id: Device.ID)
-    /// The device being edited doesn't exist (anymore).
-    func deviceFormNotFound(id: Device.ID)
+    func deviceForm(didFinish result: FormResult<Device>)
 }
 
 public protocol FilterPacksRouting: AnyObject {
@@ -27,9 +23,5 @@ public protocol FilterPacksRouting: AnyObject {
 }
 
 public protocol FilterPackFormRouting: AnyObject {
-    /// `pack` is `nil` when the user cancelled.
-    func filterPackFormDidFinish(saved pack: FilterPack?)
-    func filterPackFormDidDelete(id: FilterPack.ID)
-    /// The pack being edited doesn't exist (anymore).
-    func filterPackFormNotFound(id: FilterPack.ID)
+    func filterPackForm(didFinish result: FormResult<FilterPack>)
 }

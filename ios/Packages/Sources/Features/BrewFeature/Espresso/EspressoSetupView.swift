@@ -58,7 +58,7 @@ struct EspressoSetupView: View {
             }
             .themedRow()
 
-            FormActions(title: tr("Pull the Shot"), isSaving: false, canSave: true, identifier: "espresso") {
+            FormActions(title: tr("Pull the Shot"), identifier: "espresso") {
                 Task { await viewModel.startShotStep() }
             }
         }
@@ -66,5 +66,7 @@ struct EspressoSetupView: View {
         .themedGroupedBackground()
         .task { await viewModel.prefill() }
         .accessibilityIdentifier("espresso.form")
+        // Back here from the shot drops the unfinished brew.
+        .onAppear { viewModel.didReturnToSetup() }
     }
 }

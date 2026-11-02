@@ -1,5 +1,4 @@
 import Foundation
-import os
 
 /// Small key-value storage for work in progress (the brew being made), so an app kill doesn't lose it.
 public protocol DraftStore: Sendable {
@@ -21,14 +20,4 @@ public extension DraftStore {
     func remove(_ key: String) {
         setData(nil, for: key)
     }
-}
-
-/// Keeps drafts in memory: the DI default for previews and tests.
-public final class InMemoryDraftStore: DraftStore {
-    private let drafts = OSAllocatedUnfairLock(initialState: [String: Data]())
-
-    public init() {}
-
-    public func data(for key: String) -> Data? { drafts.withLock { $0[key] } }
-    public func setData(_ data: Data?, for key: String) { drafts.withLock { $0[key] = data } }
 }

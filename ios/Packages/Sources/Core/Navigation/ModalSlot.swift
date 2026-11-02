@@ -26,4 +26,27 @@ public final class ModalSlot {
         router?.close()
         router = nil
     }
+
+    /// How tall a sheet opens.
+    public enum SheetSize {
+        /// Full height (forms).
+        case large
+        /// Half height, can be pulled up (pickers, short forms), with a grabber.
+        case resizable
+    }
+
+    /// Presents `root` as a sheet over `router`, in its own stack, unless one is already open.
+    public func presentSheet(_ root: @autoclosure () -> UIViewController, over router: StackRouter, size: SheetSize = .large) {
+        present {
+            router.presentStack(root: root()) { sheet in
+                switch size {
+                case .large:
+                    sheet.detents = [.large()]
+                case .resizable:
+                    sheet.detents = [.medium(), .large()]
+                    sheet.prefersGrabberVisible = true
+                }
+            }
+        }
+    }
 }

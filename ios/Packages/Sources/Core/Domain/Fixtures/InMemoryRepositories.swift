@@ -123,16 +123,6 @@ extension InMemoryRecordRepository: BeanRepository where Record == Bean {
     public convenience init(beans: [Bean]) {
         self.init(beans) { $0.updatedAt > $1.updatedAt }
     }
-
-    @discardableResult
-    public func consume(beanID: Bean.ID, grams: Double) async throws -> Bean {
-        try mutate(id: beanID) { $0.consume(grams: grams) }
-    }
-
-    @discardableResult
-    public func restock(beanID: Bean.ID, grams: Double) async throws -> Bean {
-        try mutate(id: beanID) { $0.restock(grams: grams) }
-    }
 }
 
 extension InMemoryRecordRepository: DeviceRepository where Record == Device {
@@ -218,4 +208,14 @@ public final class InMemorySuggestionsRepository: SuggestionsRepository, Sendabl
     public func remember(_ additions: Suggestions) async throws {
         state.withLock { $0 = $0.merging(additions) }
     }
+}
+
+/// Keeps drafts in memory: the DI default for previews and tests.
+public final class InMemoryDraftStore: DraftStore {
+    private let drafts = OSAllocatedUnfairLock(initialState: [String: Data]())
+
+    public init() {}
+
+    public func data(for key: String) -> Data? { drafts.withLock { $0[key] } }
+    public func setData(_ data: Data?, for key: String) { drafts.withLock { $0[key] = data } }
 }

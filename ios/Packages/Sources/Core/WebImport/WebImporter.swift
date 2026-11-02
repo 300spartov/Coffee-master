@@ -1,4 +1,5 @@
 import CryptoKit
+import AppCore
 import Foundation
 import Domain
 
@@ -359,7 +360,7 @@ package enum WebImporter {
     }
 
     private static func nonEmpty(_ string: String?) -> String? {
-        guard let trimmed = string?.trimmingCharacters(in: .whitespacesAndNewlines), !trimmed.isEmpty else { return nil }
+        guard let trimmed = string?.trimmed, !trimmed.isEmpty else { return nil }
         return trimmed
     }
 

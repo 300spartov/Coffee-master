@@ -21,6 +21,11 @@ final class GearPickerViewModel {
         struct Stock: Equatable {
             let fraction: Double
             let level: StockLevel
+
+            init(_ item: some Stocked) {
+                fraction = item.remainingFraction
+                level = StockLevel(item)
+            }
         }
 
         let source: Source
@@ -169,7 +174,7 @@ extension GearPickerViewModel.Row {
             source: .owned(bean.id),
             title: bean.name,
             subtitle: bean.roaster.isEmpty ? amounts : "\(bean.roaster) · \(amounts)",
-            stock: Stock(fraction: bean.remainingFraction, level: StockLevel(isEmpty: bean.isEmpty, isLow: bean.isLow)),
+            stock: Stock(bean),
             dripperKind: nil
         )
     }
@@ -180,7 +185,7 @@ extension GearPickerViewModel.Row {
             source: .owned(pack.id),
             title: pack.name,
             subtitle: [pack.shape?.displayName, tr("\(pack.remaining) of \(pack.total) left")].compactMap { $0 }.joined(separator: " · "),
-            stock: Stock(fraction: pack.remainingFraction, level: StockLevel(isEmpty: pack.isEmpty, isLow: pack.isLow)),
+            stock: Stock(pack),
             dripperKind: nil
         )
     }

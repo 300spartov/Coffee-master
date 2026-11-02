@@ -31,11 +31,15 @@ public protocol GearPickerRouting: AnyObject {
     func gearPickerDidTapAdd(_ kind: GearKind)
 }
 
-public protocol ActiveBrewRouting: AnyObject {
+/// A started brew left with Back (confirmed): the timer or the rating.
+public protocol BrewDiscardRouting: AnyObject {
+    /// The brew is discarded: back to the setup.
+    func brewDidDiscard()
+}
+
+public protocol ActiveBrewRouting: BrewDiscardRouting {
     /// Stop: the session is finished (time, steps).
     func activeBrewDidFinish(_ session: PourOverSession)
-    /// Back (confirmed if the brew had started): return to the setup.
-    func activeBrewDidLeave()
 }
 
 /// The espresso steps after the setup.

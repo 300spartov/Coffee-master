@@ -11,14 +11,18 @@ final class SpyRouter: FeedRouting, BrewFormRouting {
     private(set) var cancelCount = 0
     private(set) var saved: [Brew] = []
     private(set) var deletedIDs: [Brew.ID] = []
-    private(set) var notFoundIDs: [Brew.ID] = []
+    private(set) var notFoundCount = 0
 
     func showBrew(id: Brew.ID) { shownIDs.append(id) }
     func showNewBrew() { newBrewShownCount += 1 }
     func showLogBrew() { logShownCount += 1 }
     func showCompare(brewIDs: [Brew.ID]) { compared.append(brewIDs) }
-    func brewFormDidCancel() { cancelCount += 1 }
-    func brewFormDidSave(_ brew: Brew) { saved.append(brew) }
-    func brewFormDidDelete(id: Brew.ID) { deletedIDs.append(id) }
-    func brewFormNotFound(id: Brew.ID) { notFoundIDs.append(id) }
+    func brewForm(didFinish result: FormResult<Brew>) {
+        switch result {
+        case .added(let brew), .updated(let brew): saved.append(brew)
+        case .cancelled: cancelCount += 1
+        case .deleted(let id): deletedIDs.append(id)
+        case .notFound: notFoundCount += 1
+        }
+    }
 }

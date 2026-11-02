@@ -7,9 +7,7 @@ struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
 
     var body: some View {
-        ListStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } empty: {
+        ListStateView(viewModel.state, observe: viewModel.start, reload: viewModel.load) {
             EmptyStateView(
                 title: tr("No brews yet"),
                 systemImage: "cup.and.saucer",
@@ -58,7 +56,6 @@ struct FeedView: View {
             .scrollContentBackground(.hidden)
         }
         .themedGroupedBackground()
-        .task { await viewModel.start() }
         .errorAlert($viewModel.alertMessage)
     }
 }

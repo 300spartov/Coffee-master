@@ -1,44 +1,33 @@
 import UIKit
 import FactoryKit
 import UniformTypeIdentifiers
-import AppCore
-import DataLayer
 import DeepLinks
 import DesignSystem
 import Navigation
 import SettingsFeature
 import ProfileFeature
 import JournalFeature
-import WebImport
 
 /// Profile tab: the profile (ROADMAP 4.1) → Edit Profile and the avatar picker (sheets), Deleted Brews
 /// and Settings (pushes). Stats, XP and achievements come with the rest of Phase 4.
-final class ProfileFlow: NSObject, Flow {
+final class ProfileFlow: Flow {
     private let profileModule: ProfileModule
     private let module: SettingsModule
     /// The journal's trash lives under Profile → Data, like the web app.
     private let journalModule: JournalModule
     private let router = StackRouter()
     @Injected(\.toasts) private var toasts
-    @Injected(\.webImportService) private var webImport
-    private let startBrew: () -> Void
 
     var rootViewController: UIViewController { router.navigationController }
 
     /// Edit Profile or the avatar picker.
     private let modal = ModalSlot()
 
-    init(profileModule: ProfileModule, module: SettingsModule, journalModule: JournalModule, startBrew: @escaping () -> Void) {
+    init(profileModule: ProfileModule, module: SettingsModule, journalModule: JournalModule) {
         self.profileModule = profileModule
         self.module = module
         self.journalModule = journalModule
-        self.startBrew = startBrew
-        super.init()
-        router.navigationController.tabBarItem = UITabBarItem(
-            title: tr("Profile"),
-            image: UIImage(systemName: "person.crop.circle"),
-            selectedImage: UIImage(systemName: "person.crop.circle.fill")
-        )
+        router.navigationController.tabBarItem = UITabBarItem(title: tr("Profile"), systemImage: "person.crop.circle")
     }
 
     func start() {
@@ -74,20 +63,11 @@ final class ProfileFlow: NSObject, Flow {
 
 extension ProfileFlow: ProfileRouting {
     func showEditProfile() {
-        modal.present {
-            router.presentStack(root: profileModule.makeEditProfile(router: self)) { sheet in
-                sheet.detents = [.large()]
-            }
-        }
+        modal.presentSheet(profileModule.makeEditProfile(router: self), over: router)
     }
 
     func showAvatarPicker() {
-        modal.present {
-            router.presentStack(root: profileModule.makeAvatarPicker(router: self)) { sheet in
-                sheet.detents = [.medium(), .large()]
-                sheet.prefersGrabberVisible = true
-            }
-        }
+        modal.presentSheet(profileModule.makeAvatarPicker(router: self), over: router, size: .resizable)
     }
 
     func showTrash() {
@@ -99,7 +79,7 @@ extension ProfileFlow: ProfileRouting {
     }
 
     private func makeSettings() -> UIViewController {
-        module.makeSettings(router: self, title: tr("Settings"))
+        module.makeSettings(router: self)
     }
 }
 
@@ -119,10 +99,6 @@ extension ProfileFlow: SettingsRouting {
         router.push(module.makeAbout())
     }
 
-    func showNewBrew() {
-        startBrew()
-    }
-
     func showDesignSystem() {
         #if DEBUG
         router.push(makeDesignSystemGallery())
@@ -140,38 +116,8 @@ extension ProfileFlow: SettingsRouting {
     #endif
 
     func showWebImport() {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json], asCopy: true)
-        picker.delegate = self
-        picker.allowsMultipleSelection = false
-        router.present(picker)
-    }
-}
-
-extension ProfileFlow: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else { return }
-        Task { await importWebData(from: url) }
-    }
-
-    /// Also used by the Debug `-importWebJSON <path>` launch argument.
-    func importWebData(from url: URL) async {
-        do {
-            toasts.show(Self.toast(for: try await webImport.importJSON(contentsOf: url)))
-        } catch let error as WebImportError {
-            Log.data.error("Web import rejected: \(String(describing: error), privacy: .public)")
-            toasts.show(tr("This file isn't a Coffee Master export."), style: .error)
-        } catch {
-            Log.data.error("Web import failed: \(error.localizedDescription, privacy: .public)")
-            toasts.show(tr("Import failed. Please try again."), style: .error)
+        DocumentPicker.present(over: router, types: [.json]) { url in
+            Task { await WebImportCoordinator().importWebData(from: url) }
         }
-    }
-
-    private static func toast(for summary: WebImportSummary) -> Toast {
-        guard summary.changedCount > 0 else {
-            return Toast(tr("Everything is already imported."), style: .info)
-        }
-        let brews = summary.brews.inserted + summary.brews.updated
-        let beans = summary.beans.inserted + summary.beans.updated
-        return Toast(tr("Imported — brews: \(brews), beans: \(beans)"), style: .success)
     }
 }

@@ -19,24 +19,8 @@ struct SettingsView: View {
                     .themedRow()
             }
 
-            Section(tr("Shortcuts")) {
-                Button {
-                    viewModel.didTapNewBrew()
-                } label: {
-                    Label(tr("Log a New Brew"), systemImage: "plus.circle")
-                        .foregroundStyle(.theme.accent)
-                }
-                .themedRow()
-            }
-
             Section {
-                Button {
-                    viewModel.didTapWebImport()
-                } label: {
-                    Label(tr("Import from Web App"), systemImage: "square.and.arrow.down")
-                        .foregroundStyle(.theme.accent)
-                }
-                .themedRow()
+                action(tr("Import from Web App"), systemImage: "square.and.arrow.down", perform: viewModel.didTapWebImport)
             } header: {
                 Text(tr("Data"))
             } footer: {
@@ -57,17 +41,19 @@ struct SettingsView: View {
 
             #if DEBUG
             Section(tr("Developer")) {
-                Button {
-                    viewModel.didTapDesignSystem()
-                } label: {
-                    Label(tr("Design System"), systemImage: "paintpalette")
-                        .foregroundStyle(.theme.accent)
-                }
-                .themedRow()
+                action(tr("Design System"), systemImage: "paintpalette", perform: viewModel.didTapDesignSystem)
             }
             #endif
         }
         .listStyle(.insetGrouped)
         .themedGroupedBackground()
+    }
+
+    /// An accent action row.
+    private func action(_ title: String, systemImage: String, perform: @escaping () -> Void) -> some View {
+        Button(action: perform) {
+            Label(title, systemImage: systemImage).foregroundStyle(.theme.accent)
+        }
+        .themedRow()
     }
 }

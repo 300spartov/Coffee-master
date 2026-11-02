@@ -15,14 +15,15 @@ import SettingsFeature
 /// Root of the navigation tree: owns the window, the tab bar, one `Flow` per tab and the
 /// app-wide Brew action. Every external entry point ends up in `handle(_:)`.
 ///
-/// The Brew action isn't a tab (tabs are for navigation): it's an accent button in the Journal's top
-/// bar, a prominent Liquid Glass button on iOS 26. The tab bar minimizes while scrolling (iOS 26),
-/// and the top bar keeps the Brew button reachable.
+/// The Brew action isn't a tab (tabs are for navigation): it's a button in the Journal's top bar
+/// (`JournalFlow` installs it). The tab bar minimizes while scrolling (iOS 26), and the top bar keeps
+/// the Brew button reachable.
 final class AppRouter {
     private let window: UIWindow
     private let parser = DeepLinkParser()
     private let tabBarController = UITabBarController()
     private var flows: [any Flow] = []
+    private var journalFlow: JournalFlow?
     private var brewFlow: BrewFlow?
     /// A link that arrived before `start()` (or while the UI wasn't ready, e.g. behind onboarding / login).
     private var pendingDeepLink: DeepLink?
@@ -58,11 +59,13 @@ final class AppRouter {
 
     /// Order here = tab order. Adding a tab = adding a Flow.
     private func makeFlows() -> [any Flow] {
-        [
-            JournalFlow(module: JournalModule(), compareModule: CompareModule(), startBrew: { [weak self] in self?.startBrew() }),
+        let journal = JournalFlow(module: JournalModule(), compareModule: CompareModule(), startBrew: { [weak self] in self?.startBrew() })
+        journalFlow = journal
+        return [
+            journal,
             BeansFlow(module: BeansModule()),
             DevicesFlow(module: DevicesModule()),
-            ProfileFlow(profileModule: ProfileModule(), module: SettingsModule(), journalModule: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),
+            ProfileFlow(profileModule: ProfileModule(), module: SettingsModule(), journalModule: JournalModule()),
         ]
     }
 
@@ -78,36 +81,9 @@ final class AppRouter {
             showJournal: { [weak self] in self?.handle(.journal) },
             logBrew: { [weak self] in self?.logBrew() }
         )
-        installBrewAction()
-    }
-
-    private func installBrewAction() {
         if #available(iOS 26, *) {
             tabBarController.tabBarMinimizeBehavior = .onScrollDown
         }
-        // Only the Journal, where brews live. Other entry points: `brew/new`, Profile → "Log a New Brew".
-        guard let journal = flows.first(where: { $0 is JournalFlow }),
-              let root = (journal.rootViewController as? UINavigationController)?.viewControllers.first
-        else { return }
-        // Brew rightmost, the Journal's own items ("+" to log a brew) beside it.
-        root.navigationItem.rightBarButtonItems = [makeBrewButton()] + (root.navigationItem.rightBarButtonItems ?? [])
-    }
-
-    /// Accent "Brew" button. On iOS 26 it shares one Liquid Glass capsule with the Journal's "+" (a
-    /// `.prominent` item would get a separate filled capsule); before, it's an accent-tinted done item.
-    private func makeBrewButton() -> UIBarButtonItem {
-        let item = UIBarButtonItem(
-            title: tr("Brew"),
-            image: UIImage(systemName: "cup.and.heat.waves.fill"),
-            primaryAction: UIAction { [weak self] _ in self?.startBrew() }
-        )
-        if #unavailable(iOS 26) {
-            item.style = .done
-        }
-        item.tintColor = .theme.accent
-        item.accessibilityLabel = tr("Start a Brew")
-        item.accessibilityIdentifier = "brew.button"
-        return item
     }
 
     /// Screens resolve their strings when they're built, so a language change rebuilds every flow
@@ -126,32 +102,31 @@ final class AppRouter {
     /// Logs a brew after the fact (the brew wizard's "Log a Brew"): closes what's open, shows the
     /// Journal and its log sheet.
     func logBrew() {
-        guard let index = flows.firstIndex(where: { $0 is JournalFlow }), let journal = flows[index] as? JournalFlow else { return }
-        let show = { [tabBarController] in
+        guard let journal = journalFlow, let index = flows.firstIndex(where: { $0 === journal }) else { return }
+        afterDismissingModals(animated: true) { [tabBarController] in
             tabBarController.selectedIndex = index
             journal.showLogBrew()
-        }
-        if tabBarController.presentedViewController != nil {
-            tabBarController.dismiss(animated: true, completion: show)
-        } else {
-            show()
         }
     }
 
     func startBrew() {
         guard let brewFlow, !brewFlow.isPresented else { return }
+        afterDismissingModals { brewFlow.start() }
+    }
+
+    /// Runs `action` once nothing is presented over the tabs (dismissing what is).
+    private func afterDismissingModals(animated: Bool = false, _ action: @escaping () -> Void) {
         if tabBarController.presentedViewController != nil {
-            tabBarController.dismiss(animated: false) { brewFlow.start() }
+            tabBarController.dismiss(animated: animated, completion: action)
         } else {
-            brewFlow.start()
+            action()
         }
     }
 
     #if DEBUG
     /// Debug launch argument `-importWebJSON <path>`: imports a web export without the file picker.
     func importWebJSON(at url: URL) {
-        guard let profile = flows.compactMap({ $0 as? ProfileFlow }).first else { return }
-        Task { await profile.importWebData(from: url) }
+        Task { await WebImportCoordinator().importWebData(from: url) }
     }
     #endif
 
@@ -184,14 +159,9 @@ final class AppRouter {
         }
 
         // Start from a clean slate so a link always lands on the same screen.
-        let route = { [tabBarController, flows] in
+        afterDismissingModals { [tabBarController, flows] in
             tabBarController.selectedIndex = index
             flows[index].handle(link)
-        }
-        if tabBarController.presentedViewController != nil {
-            tabBarController.dismiss(animated: false, completion: route)
-        } else {
-            route()
         }
     }
 }

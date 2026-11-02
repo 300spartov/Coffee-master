@@ -3,6 +3,7 @@ import Observation
 import Domain
 import BrewKit
 import FactoryKit
+import DesignSystem
 
 /// Wizard step 4 for pour-over: the brew timer. The session keeps timestamps; `run()` refreshes
 /// `now` a few times a second while the screen is visible, so the clocks move and an action
@@ -191,7 +192,7 @@ final class ActiveBrewViewModel {
     /// Back: leaves right away before the first pour; after that asks first (`isConfirmingLeave`).
     func didTapBack() {
         if session.startedAt == nil {
-            router?.activeBrewDidLeave()
+            router?.brewDidDiscard()
         } else {
             isConfirmingLeave = true
         }
@@ -199,7 +200,7 @@ final class ActiveBrewViewModel {
 
     func leave() {
         Task { [liveActivity] in await liveActivity.end() }
-        router?.activeBrewDidLeave()
+        router?.brewDidDiscard()
     }
 
     /// Mirrors the brew in the Live Activity; ends it once the brew is over.

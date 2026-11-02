@@ -10,15 +10,11 @@ struct CompareView: View {
     private var comparison: Comparison { viewModel.comparison }
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, load: viewModel.load) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
                     Picker(tr("Chart"), selection: $viewModel.chart) {
-                        Text(tr("Timeline")).tag(CompareViewModel.Chart.timeline)
-                        Text(tr("Rings")).tag(CompareViewModel.Chart.rings)
-                        Text(tr("Curve")).tag(CompareViewModel.Chart.curve)
+                        ForEach(CompareViewModel.Chart.allCases, id: \.self) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     .accessibilityIdentifier("compare.chart")
@@ -34,7 +30,6 @@ struct CompareView: View {
             }
         }
         .themedGroupedBackground()
-        .task { await viewModel.load() }
         .accessibilityIdentifier("compare")
     }
 
@@ -128,7 +123,7 @@ struct CompareView: View {
 
 extension Comparison {
     /// The brews' colors in every chart (web: `CP_COLORS`).
-    private static let palette = [ThemeColor(0xE8955C), ThemeColor(0x7FB08A), ThemeColor(0xC9A86A), ThemeColor(0x8198AE)].map(\.color)
+    private static let palette = [0xE8955C, 0x7FB08A, 0xC9A86A, 0x8198AE].map(Color.init(hex:))
 
     static func color(_ entry: Entry) -> Color {
         palette[entry.index % palette.count]
@@ -163,7 +158,7 @@ private struct EntryHeader: View {
                     .lineLimit(1)
             }
             Spacer(minLength: Spacing.xs)
-            Text(entry.brew.rating, format: .number.precision(.fractionLength(1)))
+            Text(verbatim: ratingText(entry.brew.rating))
                 .font(.subheadline.weight(.bold).monospacedDigit())
                 .foregroundStyle(Color.rating(entry.brew.rating))
         }

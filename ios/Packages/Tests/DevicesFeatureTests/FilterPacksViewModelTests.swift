@@ -12,13 +12,18 @@ final class SpyFilterPacksRouter: FilterPacksRouting, FilterPackFormRouting {
     private(set) var editedIDs: [FilterPack.ID] = []
     private(set) var finished: [FilterPack?] = []
     private(set) var deletedIDs: [FilterPack.ID] = []
-    private(set) var notFoundIDs: [FilterPack.ID] = []
+    private(set) var notFoundCount = 0
 
     func showAddFilterPack() { addShownCount += 1 }
     func showEditFilterPack(id: FilterPack.ID) { editedIDs.append(id) }
-    func filterPackFormDidFinish(saved pack: FilterPack?) { finished.append(pack) }
-    func filterPackFormDidDelete(id: FilterPack.ID) { deletedIDs.append(id) }
-    func filterPackFormNotFound(id: FilterPack.ID) { notFoundIDs.append(id) }
+    func filterPackForm(didFinish result: FormResult<FilterPack>) {
+        switch result {
+        case .added(let item), .updated(let item): finished.append(item)
+        case .cancelled: finished.append(nil)
+        case .deleted(let id): deletedIDs.append(id)
+        case .notFound: notFoundCount += 1
+        }
+    }
 }
 
 @Suite(.container)
@@ -157,7 +162,7 @@ struct FilterPackFormViewModelTests {
         let missing = UUID()
         let (gone, _) = makeViewModel(.edit(missing))
         await gone.load()
-        #expect(router.notFoundIDs == [missing])
+        #expect(router.notFoundCount == 1)
     }
 
     @Test func savingAfterConcurrentDeleteRoutesToNotFound() async throws {
@@ -169,7 +174,7 @@ struct FilterPackFormViewModelTests {
         viewModel.name = "Renamed"
         await viewModel.save()
 
-        #expect(router.notFoundIDs == [pack.id])
+        #expect(router.notFoundCount == 1)
         #expect(try await repository.fetchAll().map(\.id) == [FilterPack.samples[1].id])
     }
 

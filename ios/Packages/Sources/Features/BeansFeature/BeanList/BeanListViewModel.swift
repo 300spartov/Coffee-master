@@ -5,7 +5,7 @@ import Domain
 import FactoryKit
 
 @Observable
-final class BeanListViewModel {
+final class BeanListViewModel: AlertingViewModel {
     private(set) var state: ListState<Bean> = .loading
     /// A failed action (e.g. delete), shown as an alert over the list.
     var alertMessage: String?
@@ -23,11 +23,7 @@ final class BeanListViewModel {
     }
 
     func load() async {
-        do {
-            state = ListState(try await repository.fetchAll())
-        } catch {
-            state = .failed(error.localizedDescription)
-        }
+        state = await ListState { try await repository.fetchAll() }
     }
 
     func didSelect(_ bean: Bean) {
@@ -38,14 +34,10 @@ final class BeanListViewModel {
         router?.showAddBean()
     }
 
+    /// A failure keeps the list (alert instead); the change stream reloads whatever did get deleted.
     func delete(_ beans: [Bean]) async {
-        do {
-            for bean in beans {
-                try await repository.delete(id: bean.id)
-            }
-        } catch {
-            // Keep the list; the change stream reloads whatever did get deleted.
-            alertMessage = error.localizedDescription
+        await attempt {
+            for bean in beans { try await repository.delete(id: bean.id) }
         }
     }
 }

@@ -1,39 +1,9 @@
 import Foundation
 import Domain
+import DesignSystem
 
-// Brew numbers and labels as the brew wizard and the journal show them. Pure formatting, so
-// `nonisolated`: usable from value types and background work, not only from views.
-
-/// "2:05" from seconds (whole seconds gone, like a stopwatch).
-nonisolated public func clockText(_ seconds: TimeInterval) -> String {
-    Duration.seconds(seconds.rounded(.down)).formatted(.time(pattern: .minuteSecond))
-}
-
-/// "12 s", counted like the clocks (whole seconds gone).
-nonisolated public func secondsText(_ value: TimeInterval) -> String {
-    let seconds = Int(value.rounded(.down))
-    return tr("\(seconds) s")
-}
-
-/// A number with up to one decimal: "16", "15.5".
-nonisolated public func decimal(_ value: Double) -> String {
-    value.formatted(.number.precision(.fractionLength(0...1)))
-}
-
-/// "256 ml".
-nonisolated public func millilitersText(_ value: Double) -> String {
-    "\(decimal(value)) \(tr("ml"))"
-}
-
-/// "16 g".
-nonisolated public func gramsText(_ value: Double) -> String {
-    "\(decimal(value)) g"
-}
-
-/// "93 °C".
-nonisolated public func celsiusText(_ value: Double) -> String {
-    "\(decimal(value)) °C"
-}
+// Brew text as the brew wizard, the journal and compare show it (amounts and times are in
+// DesignSystem's `Formatting.swift`). Pure formatting, so `nonisolated`.
 
 /// "1:2.0", "1:16.5": a brew ratio with one decimal.
 nonisolated public func ratioText(_ ratio: Double) -> String {

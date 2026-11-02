@@ -57,7 +57,7 @@ struct BrewFormViewModelTests {
 
         await viewModel.load()
 
-        #expect(router.notFoundIDs == [Brew.samples[0].id])
+        #expect(router.notFoundCount == 1)
     }
 
     @Test func deleteRemovesAndRoutesBack() async throws {

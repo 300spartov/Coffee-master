@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// A piece of equipment the user owns (from the built-in catalog or added manually).
 public struct Device: Syncable {
@@ -31,8 +32,8 @@ public extension Device {
     /// Whether two device names refer to the same device: ignores case, accents and surrounding
     /// spaces ("mahlkonig x54 " matches "Mahlkönig X54"). Used for duplicate checks everywhere.
     static func namesMatch(_ lhs: String, _ rhs: String) -> Bool {
-        lhs.trimmingCharacters(in: .whitespacesAndNewlines)
-            .compare(rhs.trimmingCharacters(in: .whitespacesAndNewlines), options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
+        lhs.trimmed
+            .compare(rhs.trimmed, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
     }
 }
 
@@ -75,10 +76,12 @@ public struct FilterPack: Syncable {
         self.deletedAt = deletedAt
         self.name = name
         self.total = max(total, 0)
-        self.remaining = min(max(remaining ?? total, 0), max(total, 0))
+        self.remaining = (remaining ?? total).clamped(to: 0...max(total, 0))
         self.shape = shape
     }
 }
+
+extension FilterPack: Stocked {}
 
 public extension FilterPack {
     static let defaultCount = 100
@@ -90,7 +93,7 @@ public extension FilterPack {
 
     /// 0...1, for progress bars.
     var remainingFraction: Double {
-        total > 0 ? min(max(Double(remaining) / Double(total), 0), 1) : 0
+        total > 0 ? (Double(remaining) / Double(total)).clamped(to: 0...1) : 0
     }
 
     mutating func use(count: Int = 1, at date: Date = .now) {

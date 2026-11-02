@@ -87,7 +87,7 @@ struct BrewSetupView: View {
             }
             .themedRow()
 
-            FormActions(title: tr("Start Brewing"), isSaving: viewModel.isStarting, canSave: true, identifier: "setup") {
+            FormActions(title: tr("Start Brewing"), isSaving: viewModel.isStarting, identifier: "setup") {
                 Task { await viewModel.start() }
             }
         }

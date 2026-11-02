@@ -1,3 +1,4 @@
+import AppCore
 import SwiftUI
 
 /// Circular 0–10 score in its rating color, used on brew cards and the rating screens.
@@ -7,19 +8,14 @@ public struct RatingRing: View {
     private let lineWidth: CGFloat
 
     public init(rating: Double, size: CGFloat = 48, lineWidth: CGFloat = 5) {
-        self.rating = min(max(rating, 0), 10)
+        self.rating = rating.clamped(to: 0...10)
         self.size = size
         self.lineWidth = lineWidth
     }
 
     public var body: some View {
-        ZStack {
-            Circle().stroke(.theme.fill, lineWidth: lineWidth)
-            Circle()
-                .trim(from: 0, to: rating / 10)
-                .stroke(Color.rating(rating), style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-            Text(RatingFormat.value(rating))
+        ProgressRing(progress: rating / 10, color: .rating(rating), track: .theme.fill, lineWidth: lineWidth) {
+            Text(ratingText(rating))
                 .font(.system(size: size * 0.3, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.theme.textPrimary)
@@ -27,7 +23,7 @@ public struct RatingRing: View {
         .frame(width: size, height: size)
         .animation(.smooth, value: rating)
         .accessibilityElement()
-        .accessibilityLabel(Text(RatingFormat.accessibilityLabel(rating)))
+        .accessibilityLabel(Text(ratingAccessibilityLabel(rating)))
     }
 }
 

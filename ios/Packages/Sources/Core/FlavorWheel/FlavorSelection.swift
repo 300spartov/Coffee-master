@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// What's picked on one wheel (flavor or aroma), with the web app's rules: you can pick at any level,
 /// and the deepest pick in a branch replaces the shallower one.
@@ -66,7 +67,7 @@ nonisolated public struct FlavorSearch: Sendable {
 
     /// `nil` for an empty query (nothing is dimmed).
     public init?(_ query: String) {
-        let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = query.trimmed
         guard !query.isEmpty else { return nil }
         var paths = Set<FlavorPath>()
         for category in FlavorTaxonomy.categories {

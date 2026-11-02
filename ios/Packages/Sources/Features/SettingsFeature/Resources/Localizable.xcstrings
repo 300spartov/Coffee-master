@@ -147,22 +147,6 @@
         }
       }
     },
-    "Log a New Brew": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Log a New Brew"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Записати новий рецепт"
-          }
-        }
-      }
-    },
     "Notes, recipes and stats for your coffee.": {
       "localizations": {
         "en": {
@@ -175,22 +159,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Нотатки, рецепти та статистика твоєї кави."
-          }
-        }
-      }
-    },
-    "Shortcuts": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shortcuts"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Швидкі дії"
           }
         }
       }
@@ -223,6 +191,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Версія %@"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Налаштування"
           }
         }
       }

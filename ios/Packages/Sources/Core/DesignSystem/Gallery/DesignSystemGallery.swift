@@ -110,7 +110,7 @@ struct GalleryContent: View {
                         Spacer()
                         Text("160 / 250 g").appTextStyle(.secondary)
                     }
-                    StockBar(fraction: 0.64)
+                    StockBar(fraction: 0.64, level: .normal)
                 }
             }
             HStack(spacing: Spacing.md) {
@@ -138,14 +138,13 @@ struct GalleryContent: View {
                 VStack(alignment: .leading, spacing: Spacing.lg) {
                     HStack(spacing: Spacing.xl) {
                         RatingRing(rating: rating, size: 64, lineWidth: 6)
-                        RatingView(rating: rating)
                         Spacer()
                     }
                     Slider(value: $rating, in: 0...10, step: 0.5).tint(.theme.accent)
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        StockBar(fraction: 0.8)
-                        StockBar(fraction: 0.15)
-                        StockBar(fraction: 0)
+                        StockBar(fraction: 0.8, level: .normal)
+                        StockBar(fraction: 0.15, level: .low)
+                        StockBar(fraction: 0, level: .empty)
                     }
                     HStack(spacing: Spacing.xl) {
                         MetricView(value: "16", unit: "g", label: "Dose")

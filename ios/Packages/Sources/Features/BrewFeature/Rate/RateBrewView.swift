@@ -45,7 +45,7 @@ struct RateBrewView: View {
 
             TastingSections(tasting: $viewModel.tasting, notesPlaceholder: tr("Body, aftertaste, acidity…"))
 
-            FormActions(title: tr("Save Recipe"), isSaving: viewModel.isSaving, canSave: true, identifier: "rate") {
+            FormActions(title: tr("Save Recipe"), isSaving: viewModel.isSaving, identifier: "rate") {
                 Task { await viewModel.save() }
             }
         }
@@ -53,15 +53,13 @@ struct RateBrewView: View {
         .themedGroupedBackground()
         .errorAlert($viewModel.alertMessage)
         .navigationBarBackButtonHidden()
-        .confirmationDialog(tr("Discard this brew?"), isPresented: $viewModel.isConfirmingLeave, titleVisibility: .visible) {
-            Button(tr("Discard"), role: .destructive) { viewModel.leave() }
-        }
+        .discardBrewConfirmation(isPresented: $viewModel.isConfirmingLeave, onDiscard: viewModel.leave)
         .accessibilityIdentifier("rate.form")
     }
 
     @ViewBuilder
     private func stepRow(_ index: Int, _ step: BrewStep) -> some View {
-        let range = "\(clockText(step.start))–\(clockText(step.end))"
+        let range = step.rangeText
         switch step.kind {
         case .pour(let milliliters):
             let number = viewModel.steps[..<index].pours.count + 1

@@ -22,12 +22,10 @@ public final class PersistenceController: @unchecked Sendable {
         case inMemory
     }
 
-    /// Who made a change. Lets sync skip its own writes and lets us tell imports apart.
+    /// Who made a change, so imports can be told apart (sync will add its own, ROADMAP 5.4).
     public enum TransactionAuthor: String, Sendable {
         case app
         case `import`
-        case sync
-        case widget
     }
 
     private static let storeFileName = "CoffeeMaster.sqlite"

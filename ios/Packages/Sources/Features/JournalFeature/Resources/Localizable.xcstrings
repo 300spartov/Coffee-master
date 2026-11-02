@@ -1185,18 +1185,18 @@
         }
       }
     },
-    "You can compare up to 4 brews.": {
+    "You can compare up to %lld brews.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can compare up to 4 brews."
+            "value": "You can compare up to %lld brews."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Порівняти можна до 4 рецептів."
+            "value": "Порівняти можна до %lld рецептів."
           }
         }
       }

@@ -24,15 +24,29 @@ final class JournalFlow: Flow {
         self.module = module
         self.compareModule = compareModule
         self.startBrew = startBrew
-        router.navigationController.tabBarItem = UITabBarItem(
-            title: tr("Journal"),
-            image: UIImage(systemName: "list.bullet.rectangle.portrait"),
-            selectedImage: UIImage(systemName: "list.bullet.rectangle.portrait.fill")
-        )
+        router.navigationController.tabBarItem = UITabBarItem(title: tr("Journal"), systemImage: "list.bullet.rectangle.portrait")
     }
 
+    /// The feed, with the app-wide Brew button rightmost in its top bar (the feed's "+" beside it).
     func start() {
-        router.setRoot(module.makeFeed(router: self))
+        let feed = module.makeFeed(router: self)
+        feed.navigationItem.rightBarButtonItems = [makeBrewButton()] + (feed.navigationItem.rightBarButtonItems ?? [])
+        router.setRoot(feed)
+    }
+
+    /// Accent "Brew" button. On iOS 26 it shares one Liquid Glass capsule with the feed's "+" (a
+    /// `.prominent` item would get a separate filled capsule); before, it's an accent-tinted done item.
+    private func makeBrewButton() -> UIBarButtonItem {
+        let item = UIBarButtonItem(title: tr("Brew"), image: UIImage(systemName: "cup.and.heat.waves.fill"), primaryAction: UIAction { [weak self] _ in
+            self?.startBrew()
+        })
+        if #unavailable(iOS 26) {
+            item.style = .done
+        }
+        item.tintColor = .theme.accent
+        item.accessibilityLabel = tr("Start a Brew")
+        item.accessibilityIdentifier = "brew.button"
+        return item
     }
 
     func canHandle(_ deepLink: DeepLink) -> Bool {
@@ -45,10 +59,7 @@ final class JournalFlow: Flow {
     func handle(_ deepLink: DeepLink) {
         router.popToRoot(animated: false)
         guard case .brewDetail(let rawID) = deepLink else { return }
-        guard let id = UUID(uuidString: rawID) else {
-            toasts.show(tr("This brew no longer exists."), style: .warning)
-            return
-        }
+        guard let id = UUID(uuidString: rawID) else { return showNotFound() }
         router.push(module.makeBrewForm(id: id, router: self), animated: false)
     }
 }
@@ -67,36 +78,32 @@ extension JournalFlow: FeedRouting {
     }
 
     func showLogBrew() {
-        modal.present {
-            router.presentStack(root: module.makeLogBrew(router: self)) { sheet in
-                sheet.detents = [.large()]
-            }
-        }
+        modal.presentSheet(module.makeLogBrew(router: self), over: router)
     }
 }
 
 extension JournalFlow: BrewFormRouting {
-    func brewFormDidSave(_ brew: Brew) {
-        if modal.isPresented {
+    /// Logging happens in the sheet, editing in a push.
+    func brewForm(didFinish result: FormResult<Brew>) {
+        switch result {
+        case .added:
             modal.close()
             toasts.show(tr("Brew added"), style: .success)
-        } else {
+        case .updated:
             router.pop()
             toasts.show(tr("Brew updated"), style: .success)
+        case .cancelled:
+            modal.close()
+        case .deleted:
+            // The form already showed "Brew deleted" with Undo.
+            router.pop()
+        case .notFound:
+            showNotFound()
         }
     }
 
-    func brewFormDidCancel() {
-        modal.close()
-    }
-
-    /// The form already showed "Brew deleted" with Undo.
-    func brewFormDidDelete(id: Brew.ID) {
-        router.pop()
-    }
-
-    /// Same outcome as a malformed brew link: back on the Journal with a warning.
-    func brewFormNotFound(id: Brew.ID) {
+    /// A missing brew (also a malformed link): back on the Journal with a warning.
+    private func showNotFound() {
         router.popToRoot(animated: false)
         toasts.show(tr("This brew no longer exists."), style: .warning)
     }

@@ -1,3 +1,4 @@
+import AppCore
 import SwiftUI
 
 /// How full a bag of beans or a pack of filters is.
@@ -11,15 +12,8 @@ nonisolated public enum StockLevel: Equatable, Sendable {
         self = isEmpty ? .empty : (isLow ? .low : .normal)
     }
 
-    /// `low` at or below `lowThreshold` of the total (default 20 %).
-    public init(fraction: Double, lowThreshold: Double = 0.2) {
-        if fraction <= 0 {
-            self = .empty
-        } else if fraction <= lowThreshold {
-            self = .low
-        } else {
-            self = .normal
-        }
+    public init(_ item: some Stocked) {
+        self.init(isEmpty: item.isEmpty, isLow: item.isLow)
     }
 
     /// Accent when there's plenty, warning when low, error when empty.
@@ -37,23 +31,19 @@ public struct StockBar: View {
     private let fraction: Double
     private let level: StockLevel
 
-    public init(fraction: Double, level: StockLevel? = nil) {
-        self.fraction = min(max(fraction, 0), 1)
-        self.level = level ?? StockLevel(fraction: fraction)
+    public init(fraction: Double, level: StockLevel) {
+        self.fraction = fraction.clamped(to: 0...1)
+        self.level = level
+    }
+
+    /// A bag or pack: how full, in its stock level's color.
+    public init(_ item: some Stocked) {
+        self.init(fraction: item.remainingFraction, level: StockLevel(item))
     }
 
     public var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .leading) {
-                Capsule().fill(.theme.fill)
-                Capsule()
-                    .fill(level.color)
-                    .frame(width: proxy.size.width * fraction)
-            }
-        }
-        .frame(height: 6)
-        .animation(.smooth, value: fraction)
-        .accessibilityElement()
+        CapsuleProgress(fraction: fraction, color: level.color)
+            .accessibilityElement()
         .accessibilityLabel(Text(tr("Remaining")))
         .accessibilityValue(Text(fraction, format: .percent.precision(.fractionLength(0))))
     }
@@ -94,9 +84,9 @@ public struct StockBadge: View {
     VStack(spacing: Spacing.lg) {
         StockBadge(level: .low)
         StockBadge(level: .empty)
-        StockBar(fraction: 0.64)
-        StockBar(fraction: 0.12)
-        StockBar(fraction: 0)
+        StockBar(fraction: 0.64, level: .normal)
+        StockBar(fraction: 0.12, level: .low)
+        StockBar(fraction: 0, level: .empty)
     }
     .padding()
 }

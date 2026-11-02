@@ -38,7 +38,8 @@ struct EspressoShotView: View {
                         }
                         .font(.caption2.monospacedDigit())
                         .foregroundStyle(.theme.textTertiary)
-                        ProgressBar(fraction: viewModel.shotProgress, color: viewModel.hasReachedTarget ? .theme.success : .theme.accent)
+                        CapsuleProgress(fraction: viewModel.shotProgress, color: viewModel.hasReachedTarget ? .theme.success : .theme.accent, height: 10)
+                            .accessibilityHidden(true)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -66,7 +67,7 @@ struct EspressoShotView: View {
     private let targetSeconds = Int(EspressoSetup.targetShotTime)
 
     private var phaseTitle: String {
-        if viewModel.shotStoppedAt != nil { return tr("Done") }
+        if viewModel.shot.stoppedAt != nil { return tr("Done") }
         if !viewModel.isShotRunning { return tr("Ready to start") }
         return viewModel.hasReachedTarget ? tr("Optimal time!") : tr("Extracting…")
     }

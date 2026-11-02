@@ -10,7 +10,7 @@ struct DeviceCategoriesView: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: Spacing.md) {
-                ForEach(viewModel.categories, id: \.self) { type in
+                ForEach(DeviceType.browsable, id: \.self) { type in
                     Button {
                         viewModel.didSelect(type)
                     } label: {
@@ -80,13 +80,7 @@ private struct CategoryTile<Subtitle: View>: View {
 }
 
 #if DEBUG
-private final class PreviewCategoriesRouter: DeviceCategoriesRouting {
-    static let shared = PreviewCategoriesRouter()
-    func showCategory(_ type: DeviceType) {}
-    func showFilterPacks() {}
-}
-
 #Preview {
-    DeviceCategoriesView(viewModel: DeviceCategoriesViewModel(router: PreviewCategoriesRouter.shared))
+    DeviceCategoriesView(viewModel: DeviceCategoriesViewModel(router: PreviewRouter.shared))
 }
 #endif

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// The signed-in user's public profile. One per account.
 public struct UserProfile: Hashable, Codable, Sendable {
@@ -111,7 +112,7 @@ public struct Suggestions: Hashable, Codable, Sendable {
 
     /// Adds without duplicates (case-insensitive), ignoring blanks. Returns the updated list.
     public static func adding(_ value: String, to list: [String]) -> [String] {
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = value.trimmed
         guard !trimmed.isEmpty,
               !list.contains(where: { $0.caseInsensitiveCompare(trimmed) == .orderedSame })
         else { return list }

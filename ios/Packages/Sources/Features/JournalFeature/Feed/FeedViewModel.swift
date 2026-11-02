@@ -17,7 +17,7 @@ final class FeedViewModel: AlertingViewModel {
     }
 
     private(set) var state: ListState<Day> = .loading
-    /// Brews picked for the comparison, in the order they were picked (up to `maximumCompared`).
+    /// Brews picked for the comparison, in the order they were picked (up to `Brew.maximumCompared`).
     private(set) var compared: [Brew.ID] = [] {
         didSet {
             if showsCompareBar != (oldValue.count >= 2) { onShowsCompareBarChange?(showsCompareBar) }
@@ -79,19 +79,16 @@ final class FeedViewModel: AlertingViewModel {
 
     // MARK: - Compare
 
-    /// The web's limit (and the compare screen's).
-    static let maximumCompared = 4
-
     /// From two picked brews on.
     var showsCompareBar: Bool { compared.count >= 2 }
 
     func toggleCompare(_ brew: Brew) {
         if let index = compared.firstIndex(of: brew.id) {
             compared.remove(at: index)
-        } else if compared.count < Self.maximumCompared {
+        } else if compared.count < Brew.maximumCompared {
             compared.append(brew.id)
         } else {
-            alertMessage = tr("You can compare up to 4 brews.")
+            alertMessage = tr("You can compare up to \(Brew.maximumCompared) brews.")
         }
     }
 

@@ -40,9 +40,7 @@ struct ActiveBrewView: View {
         // Back is the module's own button (it asks before discarding a started brew).
         .navigationBarBackButtonHidden()
         .task { await viewModel.run() }
-        .confirmationDialog(tr("Discard this brew?"), isPresented: $viewModel.isConfirmingLeave, titleVisibility: .visible) {
-            Button(tr("Discard"), role: .destructive) { viewModel.leave() }
-        }
+        .discardBrewConfirmation(isPresented: $viewModel.isConfirmingLeave, onDiscard: viewModel.leave)
         .onChange(of: session.isPouring) { _, pouring in isPourFieldFocused = pouring }
     }
 
@@ -106,11 +104,13 @@ struct ActiveBrewView: View {
                 MetricView(value: decimal(viewModel.remainingMilliliters), unit: tr("ml"), label: tr("Remaining"))
             }
             // Marks where the next pours should end.
-            ProgressBar(
+            CapsuleProgress(
                 fraction: viewModel.pouredFraction,
                 color: .theme.info,
+                height: 10,
                 marks: session.nextPourMarks.map { $0 / max(session.totalMilliliters, 1) }
             )
+            .accessibilityHidden(true)
             HStack {
                 Text(viewModel.pouredFraction, format: .percent.precision(.fractionLength(0)))
                     .foregroundStyle(.theme.accent)
@@ -207,11 +207,13 @@ struct ActiveBrewView: View {
             HStack(spacing: Spacing.sm) {
                 ForEach([BrewAction.stir, .swirl, .shake], id: \.self) { action in
                     let isRunning = session.runningAction == action
-                    ActionButton(
+                    BigButton(
                         title: action.title,
                         systemImage: action.systemImage,
-                        isRunning: isRunning,
-                        progress: isRunning ? (session.phaseElapsed(at: viewModel.now) ?? 0) / PourOverSession.actionLimit : 0
+                        tint: .theme.success,
+                        isActive: isRunning,
+                        progress: isRunning ? (session.phaseElapsed(at: viewModel.now) ?? 0) / PourOverSession.actionLimit : 0,
+                        isCompact: true
                     ) {
                         viewModel.toggle(action)
                     }
@@ -269,38 +271,11 @@ private struct HintChip: View {
     }
 }
 
-/// Stir / swirl / shake: tap to time it (up to 15 s), tap again to stop.
-private struct ActionButton: View {
-    let title: String
-    let systemImage: String
-    let isRunning: Bool
-    let progress: Double
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: Spacing.xs) {
-                ProgressRing(progress: progress, tint: .theme.success) {
-                    Image(systemName: systemImage).font(.body.weight(.semibold))
-                }
-                .frame(width: 36, height: 36)
-                Text(title).font(.caption.weight(.semibold)).lineLimit(1).minimumScaleFactor(0.7)
-            }
-            .foregroundStyle(Color.theme.success)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.md)
-            .background(Color.theme.success.opacity(isRunning ? 0.25 : 0.1), in: RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isRunning ? .isSelected : [])
-    }
-}
-
 #if DEBUG
 private final class PreviewActiveRouter: ActiveBrewRouting {
     static let shared = PreviewActiveRouter()
     func activeBrewDidFinish(_ session: PourOverSession) {}
-    func activeBrewDidLeave() {}
+    func brewDidDiscard() {}
 }
 
 #Preview {

@@ -16,10 +16,7 @@ public struct JournalModule {
             largeTitleDisplayMode: .always
         )
         // "+" logs a brew after the fact; the app puts its Brew button to the right of it.
-        let log = UIBarButtonItem(systemItem: .add, primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapLog() })
-        log.accessibilityLabel = tr("Log a Brew")
-        log.accessibilityIdentifier = "journal.log"
-        controller.navigationItem.rightBarButtonItem = log
+        controller.setAddButton(accessibilityLabel: tr("Log a Brew"), identifier: "journal.log") { [weak viewModel] in viewModel?.didTapLog() }
         // iOS 26: the compare bar rides on the tab bar (its bottom accessory) while the feed is visible.
         if #available(iOS 26, *) {
             viewModel.onShowsCompareBarChange = { [weak controller, weak viewModel] shows in

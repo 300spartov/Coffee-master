@@ -31,14 +31,10 @@ struct DeviceCatalogView: View {
                         Button {
                             viewModel.didSelect(device)
                         } label: {
-                            HStack(spacing: Spacing.md) {
+                            LinkLabel(spacing: Spacing.md) {
                                 IconBadge(viewModel.type.systemImage, size: 32)
                                 Text(verbatim: device.name)
                                     .foregroundStyle(.theme.textPrimary)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundStyle(.theme.textTertiary)
                             }
                         }
                     }
@@ -97,13 +93,7 @@ private struct CatalogRow: View {
 }
 
 #if DEBUG
-private final class PreviewCatalogRouter: DeviceCatalogRouting {
-    static let shared = PreviewCatalogRouter()
-    func showAddDevice(type: DeviceType) {}
-    func showEditDevice(id: Device.ID) {}
-}
-
 #Preview {
-    DeviceCatalogView(viewModel: DeviceCatalogViewModel(type: .dripper, router: PreviewCatalogRouter.shared))
+    DeviceCatalogView(viewModel: DeviceCatalogViewModel(type: .dripper, router: PreviewRouter.shared))
 }
 #endif

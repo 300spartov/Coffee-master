@@ -3,7 +3,8 @@ import Testing
 import Domain
 @testable import DataLayer
 
-struct UserDefaultsBrewSetupHistoryTests {
+/// The history on the app's UserDefaults draft store.
+struct BrewSetupHistoryTests {
     private let defaults: UserDefaults
     private let suite = "BrewSetupHistoryTests.\(UUID().uuidString)"
 
@@ -16,33 +17,33 @@ struct UserDefaultsBrewSetupHistoryTests {
         setup.bean = BeanReference(beanID: .fixture(1), name: "Kenya")
         setup.aeropress = AeroPressOptions(isInverted: true, filterCount: 2)
 
-        await UserDefaultsBrewSetupHistory(defaults: defaults).remember(setup)
+        await StoredBrewSetupHistory(store: UserDefaultsDraftStore(defaults: defaults)).remember(setup)
 
-        #expect(await UserDefaultsBrewSetupHistory(defaults: defaults).recentSetups() == [setup])
+        #expect(await StoredBrewSetupHistory(store: UserDefaultsDraftStore(defaults: defaults)).recentSetups() == [setup])
         defaults.removePersistentDomain(forName: suite)
     }
 
     @Test func unreadableValueMeansNoHistory() async {
-        defaults.set(Data("nope".utf8), forKey: UserDefaultsBrewSetupHistory.key)
+        defaults.set(Data("nope".utf8), forKey: "brew.recentSetups")
 
-        #expect(await UserDefaultsBrewSetupHistory(defaults: defaults).recentSetups().isEmpty)
+        #expect(await StoredBrewSetupHistory(store: UserDefaultsDraftStore(defaults: defaults)).recentSetups().isEmpty)
         defaults.removePersistentDomain(forName: suite)
     }
 }
 
-struct UserDefaultsEspressoHistoryTests {
+struct EspressoHistoryTests {
     @Test func espressoSetupsAreKeptSeparately() async throws {
         let suite = "EspressoHistoryTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         var shot = EspressoSetup(method: .latte)
         shot.doseGrams = 19
-        let history = UserDefaultsBrewSetupHistory(defaults: defaults)
+        let history = StoredBrewSetupHistory(store: UserDefaultsDraftStore(defaults: defaults))
 
         await history.remember(shot)
         await history.remember(BrewSetup(method: .v60))
 
-        #expect(await UserDefaultsBrewSetupHistory(defaults: defaults).recentEspressoSetups() == [shot])
+        #expect(await StoredBrewSetupHistory(store: UserDefaultsDraftStore(defaults: defaults)).recentEspressoSetups() == [shot])
         #expect(await history.recentSetups().map(\.method) == [.v60])
     }
 }

@@ -26,11 +26,7 @@ final class TrashViewModel: AlertingViewModel {
     }
 
     func load() async {
-        do {
-            state = ListState(try await trash.trashedBrews())
-        } catch {
-            state = .failed(error.localizedDescription)
-        }
+        state = await ListState { try await trash.trashedBrews() }
     }
 
     /// Whole days until the brew is purged (at least 1 while it's still here).

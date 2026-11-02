@@ -6,12 +6,9 @@ struct BeanFormView: View {
     @Bindable var viewModel: BeanFormViewModel
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, load: viewModel.load) {
             form
         }
-        .task { await viewModel.load() }
         .errorAlert($viewModel.alertMessage)
     }
 
@@ -28,13 +25,11 @@ struct BeanFormView: View {
             Section {
                 NumberField(tr("Bag size"), value: $viewModel.totalGrams, unit: "g", range: 1...5_000, fractionDigits: 0)
                 if let remaining = viewModel.remainingGrams {
-                    LabeledContent(tr("Remaining"), value: "\(remaining.formatted(.number.precision(.fractionLength(0...1)))) g")
+                    LabeledContent(tr("Remaining"), value: gramsText(remaining))
                 }
                 Picker(tr("Roast profile"), selection: $viewModel.roastProfile) {
                     Text(tr("Auto")).tag(RoastProfile?.none)
-                    Text(tr("Filter")).tag(RoastProfile?.some(.filter))
-                    Text(tr("Espresso")).tag(RoastProfile?.some(.espresso))
-                    Text(tr("Omni")).tag(RoastProfile?.some(.omni))
+                    ForEach(RoastProfile.allCases, id: \.self) { Text($0.title).tag(RoastProfile?.some($0)) }
                 }
             } header: {
                 Text(tr("Bag"))
@@ -103,18 +98,11 @@ struct BeanFormView: View {
 }
 
 #if DEBUG
-private final class PreviewBeanFormRouter: BeanFormRouting {
-    static let shared = PreviewBeanFormRouter()
-    func beanFormDidFinish(saved bean: Bean?) {}
-    func beanFormDidDelete(id: Bean.ID) {}
-    func beanFormNotFound(id: Bean.ID) {}
-}
-
 #Preview("Add") {
-    BeanFormView(viewModel: BeanFormViewModel(mode: .add, router: PreviewBeanFormRouter.shared))
+    BeanFormView(viewModel: BeanFormViewModel(mode: .add, router: PreviewRouter.shared))
 }
 
 #Preview("Edit") {
-    BeanFormView(viewModel: BeanFormViewModel(mode: .edit(Bean.samples[0].id), router: PreviewBeanFormRouter.shared))
+    BeanFormView(viewModel: BeanFormViewModel(mode: .edit(Bean.samples[0].id), router: PreviewRouter.shared))
 }
 #endif

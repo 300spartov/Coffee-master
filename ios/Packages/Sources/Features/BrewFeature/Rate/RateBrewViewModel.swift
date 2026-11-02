@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import Observation
 import Domain
 import FactoryKit
@@ -6,7 +7,7 @@ import FactoryKit
 /// Wizard's last step for pour-over (web: `bv-rate` → `saveBrew`): correct the pours, rate, describe the
 /// taste, save. Saving records the brew and takes its dose and a filter from stock.
 @Observable
-final class RateBrewViewModel {
+final class RateBrewViewModel: SavingViewModel {
     let setup: BrewSetup
     let totalTime: TimeInterval
     /// The timer's log; pours can be corrected here.
@@ -19,14 +20,14 @@ final class RateBrewViewModel {
     /// Back was tapped: leaving discards the brew.
     var isConfirmingLeave = false
     @ObservationIgnored private let session: PourOverSession
-    private(set) var isSaving = false
+    var isSaving = false
     var alertMessage: String?
 
     @ObservationIgnored @Injected(\.brewRepository) private var brews
-    @ObservationIgnored private weak var router: (any BrewSavingRouting & ActiveBrewRouting)?
+    @ObservationIgnored private weak var router: (any BrewSavingRouting & BrewDiscardRouting)?
 
     /// `steps` / `tasting`: a rating in progress restored after an app kill.
-    init(session: PourOverSession, steps: [BrewStep]? = nil, tasting: BrewTasting = BrewTasting(), router: any BrewSavingRouting & ActiveBrewRouting) {
+    init(session: PourOverSession, steps: [BrewStep]? = nil, tasting: BrewTasting = BrewTasting(), router: any BrewSavingRouting & BrewDiscardRouting) {
         self.session = session
         setup = session.setup
         totalTime = session.elapsed(at: .now).rounded(.down)
@@ -41,7 +42,7 @@ final class RateBrewViewModel {
     }
 
     func leave() {
-        router?.activeBrewDidLeave()
+        router?.brewDidDiscard()
     }
 
     private func persist() {
@@ -62,9 +63,8 @@ final class RateBrewViewModel {
     }
 
     func save() async {
-        guard !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-        alertMessage = await record(setup.makeBrew(totalTime: totalTime, steps: steps, tasting: tasting), in: brews, then: router)
+        await whileSaving {
+            await record(setup.makeBrew(totalTime: totalTime, steps: steps, tasting: tasting), in: brews, then: router)
+        }
     }
 }

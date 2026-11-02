@@ -66,7 +66,7 @@ struct BrewSetupViewModelTests {
     }
 
     @Test func prefillPicksFittingGearAndStartRemembers() async {
-        let history = InMemoryBrewSetupHistory()
+        let history = StoredBrewSetupHistory()
         let aeropress = Device(name: "AeroPress Go", type: .dripper)
         Container.shared.brewSetupHistory.register { history }
         Container.shared.beanRepository.register { TestRepository(beans: [Bean(name: "Kenya", roastProfile: .filter)]) }

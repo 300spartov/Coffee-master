@@ -114,7 +114,7 @@ struct BeanFormViewModelTests {
 
         await viewModel.load()
 
-        #expect(router.notFoundIDs == [.fixture(404)])
+        #expect(router.notFoundCount == 1)
     }
 
     /// Saving edits a bag as it is now: if it was removed meanwhile, it isn't brought back.
@@ -127,7 +127,7 @@ struct BeanFormViewModelTests {
         try? await repository.delete(id: bean.id) // e.g. deleted from another screen
         await viewModel.save()
 
-        #expect(router.notFoundIDs == [bean.id])
+        #expect(router.notFoundCount == 1)
         #expect(await repository.saved.isEmpty)
     }
 

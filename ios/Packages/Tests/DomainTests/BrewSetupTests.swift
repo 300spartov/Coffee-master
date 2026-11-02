@@ -67,8 +67,6 @@ struct BrewSetupTests {
         #expect(valid.waterTemperature == 30)
         #expect(valid.doseGrams == 300)
         #expect(valid.ratio == 16)
-        #expect(BrewSetup.validRatio(0.4) == 1)
-        #expect(BrewSetup.validRatio(42) == 30)
         #expect(valid.pours == 5)
         var aeropress = BrewSetup(method: .aeropress)
         aeropress.aeropress?.filterCount = 7

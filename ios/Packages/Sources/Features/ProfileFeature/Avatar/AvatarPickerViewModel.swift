@@ -1,5 +1,4 @@
 import Foundation
-import UIKit
 import Observation
 import AppCore
 import Domain
@@ -31,7 +30,7 @@ final class AvatarPickerViewModel: AlertingViewModel {
 
     /// A library photo, kept as a small centered square (it isn't saved if it can't be read).
     func pick(photo data: Data) async {
-        guard let photo = Self.avatarPhoto(from: data) else {
+        guard let photo = AvatarView.photo(from: data) else {
             alertMessage = tr("This photo can't be used.")
             return
         }
@@ -40,22 +39,6 @@ final class AvatarPickerViewModel: AlertingViewModel {
 
     func removePhoto() async {
         await update { $0.photo = nil }
-    }
-
-    /// The photo's centered square, at most `side` points, as JPEG.
-    static func avatarPhoto(from data: Data, side: CGFloat = 400) -> Data? {
-        guard let image = UIImage(data: data), image.size.width > 0, image.size.height > 0 else { return nil }
-        let crop = min(image.size.width, image.size.height)
-        let target = min(crop, side)
-        let scale = target / crop
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: target, height: target), format: format)
-        let square = renderer.image { _ in
-            let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
-            image.draw(in: CGRect(x: (target - size.width) / 2, y: (target - size.height) / 2, width: size.width, height: size.height))
-        }
-        return square.jpegData(compressionQuality: 0.8)
     }
 
     func pick(color: String) async {

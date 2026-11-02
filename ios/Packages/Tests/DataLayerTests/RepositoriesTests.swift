@@ -150,17 +150,6 @@ struct RepositoriesTests {
 
     // MARK: - Inventory
 
-    @Test func beanConsumeAndRestock() async throws {
-        let bean = Bean(name: "Kenya", totalGrams: 250, remainingGrams: 20)
-        try await beans.save(bean)
-
-        #expect(try await beans.consume(beanID: bean.id, grams: 30).remainingGrams == 0)
-        #expect(try await beans.restock(beanID: bean.id, grams: 500).remainingGrams == 250)
-        await #expect(throws: RepositoryError.notFound) {
-            try await beans.consume(beanID: UUID(), grams: 1)
-        }
-    }
-
     @Test func devicesByTypeAndDuplicateCheck() async throws {
         let devices = CoreDataRecordRepository<Device>(persistence: persistence)
         for device in Device.samples { try await devices.save(device) }

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// A bag of coffee in the inventory.
 public struct Bean: Syncable {
@@ -44,7 +45,7 @@ public struct Bean: Syncable {
         self.name = name
         self.roaster = roaster
         self.totalGrams = max(totalGrams, 0)
-        self.remainingGrams = min(max(remainingGrams ?? totalGrams, 0), self.totalGrams)
+        self.remainingGrams = (remainingGrams ?? totalGrams).clamped(to: 0...self.totalGrams)
         self.country = country
         self.farm = farm
         self.process = process
@@ -54,6 +55,8 @@ public struct Bean: Syncable {
     }
 }
 
+extension Bean: Stocked {}
+
 public extension Bean {
     static let defaultBagGrams: Double = 250
 
@@ -61,7 +64,7 @@ public extension Bean {
 
     /// 0...1, for progress bars.
     var remainingFraction: Double {
-        totalGrams > 0 ? min(max(remainingGrams / totalGrams, 0), 1) : 0
+        totalGrams > 0 ? (remainingGrams / totalGrams).clamped(to: 0...1) : 0
     }
 
     /// A bag runs low at 20 % left (filter packs: at a fixed count, `FilterPack.isLow`).

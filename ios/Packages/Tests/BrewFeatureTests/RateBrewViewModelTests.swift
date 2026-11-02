@@ -12,7 +12,7 @@ final class SpySavingRouter: BrewSavingRouting, ActiveBrewRouting {
     private(set) var leaveCount = 0
     func brewDidSave(_ brew: Brew, usage: StockUsage) { saved.append((brew, usage)) }
     func activeBrewDidFinish(_ session: PourOverSession) {}
-    func activeBrewDidLeave() { leaveCount += 1 }
+    func brewDidDiscard() { leaveCount += 1 }
 }
 
 @Suite(.container)

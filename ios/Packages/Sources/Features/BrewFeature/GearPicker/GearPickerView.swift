@@ -7,9 +7,7 @@ struct GearPickerView: View {
     @Bindable var viewModel: GearPickerViewModel
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, observe: viewModel.start, reload: viewModel.load) {
             if viewModel.isEmpty {
                 EmptyStateView(
                     title: viewModel.kind.emptyTitle,
@@ -24,7 +22,6 @@ struct GearPickerView: View {
             }
         }
         .themedGroupedBackground()
-        .task { await viewModel.start() }
         .errorAlert($viewModel.alertMessage)
     }
 

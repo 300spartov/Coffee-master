@@ -1,5 +1,4 @@
 import Foundation
-import os
 
 /// The setups the user started brews with, so the next brew can start from the last one.
 public protocol BrewSetupHistory: Sendable {
@@ -26,21 +25,24 @@ public extension Array where Element: RememberedSetup {
     }
 }
 
-/// Keeps the history in memory: the DI default for previews and tests.
-public final class InMemoryBrewSetupHistory: BrewSetupHistory {
-    private struct State {
-        var setups: [BrewSetup]
-        var espresso: [EspressoSetup]
+/// The history in a `DraftStore` (UserDefaults in the app, memory in previews and tests). It's a
+/// convenience for prefilling, so a missing or unreadable list just means "no history".
+public struct StoredBrewSetupHistory: BrewSetupHistory {
+    static let key = "brew.recentSetups"
+    static let espressoKey = "brew.recentEspressoSetups"
+
+    private let store: any DraftStore
+
+    public init(store: any DraftStore = InMemoryDraftStore()) {
+        self.store = store
     }
 
-    private let state: OSAllocatedUnfairLock<State>
+    public func recentSetups() async -> [BrewSetup] { load(Self.key) }
+    public func remember(_ setup: BrewSetup) async { store.save(load(Self.key).remembering(setup), key: Self.key) }
+    public func recentEspressoSetups() async -> [EspressoSetup] { load(Self.espressoKey) }
+    public func remember(_ setup: EspressoSetup) async { store.save(load(Self.espressoKey).remembering(setup), key: Self.espressoKey) }
 
-    public init(_ setups: [BrewSetup] = [], espresso: [EspressoSetup] = []) {
-        state = OSAllocatedUnfairLock(initialState: State(setups: setups, espresso: espresso))
+    private func load<Setup: RememberedSetup>(_ key: String) -> [Setup] {
+        store.load([Setup].self, key: key) ?? []
     }
-
-    public func recentSetups() async -> [BrewSetup] { state.withLock { $0.setups } }
-    public func remember(_ setup: BrewSetup) async { state.withLock { $0.setups = $0.setups.remembering(setup) } }
-    public func recentEspressoSetups() async -> [EspressoSetup] { state.withLock { $0.espresso } }
-    public func remember(_ setup: EspressoSetup) async { state.withLock { $0.espresso = $0.espresso.remembering(setup) } }
 }

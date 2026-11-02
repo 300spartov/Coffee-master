@@ -1,14 +1,8 @@
 import Foundation
 
 /// Coffee bags, most recently updated first.
-public protocol BeanRepository: RecordRepository where Record == Bean {
-    /// Takes `grams` out of the bag (never below zero) and returns the updated bag.
-    @discardableResult
-    func consume(beanID: Bean.ID, grams: Double) async throws -> Bean
-    /// Puts `grams` back (never above the bag size) and returns the updated bag.
-    @discardableResult
-    func restock(beanID: Bean.ID, grams: Double) async throws -> Bean
-}
+/// Brews take coffee from the bag through `BrewRepository.record` (and give it back in the trash).
+public protocol BeanRepository: RecordRepository where Record == Bean {}
 
 /// Owned equipment, ordered by type then name.
 public protocol DeviceRepository: RecordRepository where Record == Device {

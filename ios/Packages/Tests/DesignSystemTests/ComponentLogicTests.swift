@@ -8,17 +8,6 @@ struct StockLevelTests {
         #expect(StockLevel(isEmpty: false, isLow: true) == .low)
         #expect(StockLevel(isEmpty: false, isLow: false) == .normal)
     }
-
-    @Test(arguments: [
-        (0.0, StockLevel.empty), (-1, .empty), (0.05, .low), (0.2, .low), (0.21, .normal), (1, .normal),
-    ])
-    func levelFromFraction(_ fraction: Double, expected: StockLevel) {
-        #expect(StockLevel(fraction: fraction) == expected)
-    }
-
-    @Test func customThreshold() {
-        #expect(StockLevel(fraction: 0.3, lowThreshold: 0.5) == .low)
-    }
 }
 
 struct FlowLayoutTests {
@@ -51,13 +40,6 @@ struct FlowLayoutTests {
     }
 }
 
-struct NumberFieldTests {
-    @Test(arguments: [(-5.0, 1.0), (16, 16), (99, 60)])
-    func clampsToRange(_ input: Double, expected: Double) {
-        #expect(NumberField.clamp(input, to: 1...60) == expected)
-    }
-}
-
 struct DesignSystemLocalizationTests {
     @Test func resolvesInBothLanguages() {
         #expect(tr("Retry", language: .ukrainian) == "Спробувати ще")
@@ -85,5 +67,15 @@ struct AutocompleteTests {
 
     @Test func ignoresBlanksAndRespectsLimit() {
         #expect(Autocomplete.matches(for: "", in: ["", "  ", "A", "B"], limit: 1) == ["A"])
+    }
+}
+
+struct FormattingTests {
+    @Test func numbersAmountsAndTimes() {
+        #expect(clockText(125.9) == "2:05")
+        #expect(decimal(16) == "16")
+        #expect(decimal(15.55) == "15.6")
+        #expect(gramsText(18) == "18 g")
+        #expect(ratingText(8) == "8.0")
     }
 }

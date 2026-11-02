@@ -38,16 +38,8 @@ public struct BrewModule {
 
     private func makeActiveBrew(_ viewModel: ActiveBrewViewModel) -> UIViewController {
         let controller = HostingController(rootView: ActiveBrewView(viewModel: viewModel), title: viewModel.session.setup.method.rawValue)
-        controller.navigationItem.leftBarButtonItem = backButton(identifier: "active.back") { [weak viewModel] in viewModel?.didTapBack() }
+        controller.setBackButton(accessibilityLabel: tr("Back"), identifier: "active.back") { [weak viewModel] in viewModel?.didTapBack() }
         return controller
-    }
-
-    /// The module's own Back for steps that ask before discarding a brew.
-    private func backButton(identifier: String, action: @escaping () -> Void) -> UIBarButtonItem {
-        let back = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"), primaryAction: UIAction { _ in action() })
-        back.accessibilityLabel = tr("Back")
-        back.accessibilityIdentifier = identifier
-        return back
     }
 
     /// Espresso step 1 (push it): gear and recipe. The next steps come from `makeEspressoStep`.
@@ -73,13 +65,13 @@ public struct BrewModule {
     }
 
     /// Pour-over's last step (it replaces the timer): steps, rating, taste; saves the brew.
-    public func makeRateBrew(session: PourOverSession, router: any BrewSavingRouting & ActiveBrewRouting) -> UIViewController {
+    public func makeRateBrew(session: PourOverSession, router: any BrewSavingRouting & BrewDiscardRouting) -> UIViewController {
         makeRateBrew(RateBrewViewModel(session: session, router: router))
     }
 
     private func makeRateBrew(_ viewModel: RateBrewViewModel) -> UIViewController {
         let controller = HostingController(rootView: RateBrewView(viewModel: viewModel), title: tr("Rate & Save"))
-        controller.navigationItem.leftBarButtonItem = backButton(identifier: "rate.back") { [weak viewModel] in viewModel?.didTapBack() }
+        controller.setBackButton(accessibilityLabel: tr("Back"), identifier: "rate.back") { [weak viewModel] in viewModel?.didTapBack() }
         return controller
     }
 
@@ -87,7 +79,7 @@ public struct BrewModule {
 
     /// The screens of a brew left unfinished (e.g. the app was killed), the method pick first; nil if
     /// there's none (or it's too old). Present them as one stack.
-    public func makeBrewInProgress(router: any MethodPickRouting & ActiveBrewRouting & BrewSavingRouting & EspressoRouting) -> [UIViewController]? {
+    public func makeBrewInProgress(router: any MethodPickRouting & ActiveBrewRouting & EspressoRouting) -> [UIViewController]? {
         guard let draft = BrewInProgress.current() else { return nil }
         let start = makeMethodGroups(router: router)
         switch draft.stage {

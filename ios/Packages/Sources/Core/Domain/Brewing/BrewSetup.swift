@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// The recipe chosen on the brew wizard's setup step (alternative methods), before the timer starts.
 /// Defaults and limits match the web app.
@@ -37,10 +38,10 @@ public struct BrewSetup: Hashable, Codable, Sendable {
 // MARK: - Limits
 
 public extension BrewSetup {
-    public static let doseRange: ClosedRange<Double> = 1...300
-    public static let ratioRange: ClosedRange<Double> = 1...30
+    static let doseRange: ClosedRange<Double> = 1...300
+    static let ratioRange: ClosedRange<Double> = 1...30
     static let poursRange: ClosedRange<Int> = 1...5
-    public static let grindRange: ClosedRange<Int> = 1...200
+    static let grindRange: ClosedRange<Int> = 1...200
     static let aeropressFilterRange: ClosedRange<Int> = 1...4
 
     /// Cold brew steeps cold (10–30 °C); everything else uses hot water (80–100 °C).
@@ -49,9 +50,6 @@ public extension BrewSetup {
     }
 
     /// A ratio inside `ratioRange`, rounded to one decimal (the web's `bRatioValidate`).
-    static func validRatio(_ value: Double) -> Double {
-        (value.clamped(to: ratioRange) * 10).rounded() / 10
-    }
 
     /// This setup with every value inside its limits (fields are edited freely; this is what's brewed).
     func validated() -> BrewSetup {
@@ -59,16 +57,10 @@ public extension BrewSetup {
         setup.grindSetting = grindSetting.clamped(to: Self.grindRange)
         setup.waterTemperature = waterTemperature.clamped(to: Self.temperatureRange(for: method))
         setup.doseGrams = doseGrams.clamped(to: Self.doseRange)
-        setup.ratio = Self.validRatio(ratio)
+        setup.ratio = ratio.clamped(to: Self.ratioRange).roundedToTenth
         setup.pours = pours.clamped(to: Self.poursRange)
         setup.aeropress?.filterCount = (aeropress?.filterCount ?? 1).clamped(to: Self.aeropressFilterRange)
         return setup
-    }
-}
-
-extension Comparable {
-    func clamped(to range: ClosedRange<Self>) -> Self {
-        min(max(self, range.lowerBound), range.upperBound)
     }
 }
 

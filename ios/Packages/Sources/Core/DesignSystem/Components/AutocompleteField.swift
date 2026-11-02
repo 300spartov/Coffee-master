@@ -1,4 +1,5 @@
 import SwiftUI
+import AppCore
 
 /// Text field that offers earlier values as tappable chips while it's focused
 /// (roasters, bean names; later milks and mixers). Uses the system keyboard.
@@ -41,7 +42,7 @@ public nonisolated enum Autocomplete {
     /// Case- and diacritic-insensitive. Prefix matches come first, then other matches; values equal to
     /// the query are left out (nothing to complete). With an empty query, the first `limit` values.
     public static func matches(for query: String, in candidates: [String], limit: Int = 6) -> [String] {
-        let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = query.trimmed
         var seen = Set<String>()
         let unique = candidates.filter { candidate in
             let key = candidate.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)

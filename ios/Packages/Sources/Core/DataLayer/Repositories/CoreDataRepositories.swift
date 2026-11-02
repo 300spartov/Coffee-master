@@ -79,17 +79,7 @@ extension CoreDataRecordRepository: TrashRepository where Record == Brew {
 
 // MARK: - Inventory
 
-extension CoreDataRecordRepository: BeanRepository where Record == Bean {
-    @discardableResult
-    func consume(beanID: Bean.ID, grams: Double) async throws -> Bean {
-        try await store.mutate(id: beanID) { $0.consume(grams: grams) }
-    }
-
-    @discardableResult
-    func restock(beanID: Bean.ID, grams: Double) async throws -> Bean {
-        try await store.mutate(id: beanID) { $0.restock(grams: grams) }
-    }
-}
+extension CoreDataRecordRepository: BeanRepository where Record == Bean {}
 
 extension CoreDataRecordRepository: DeviceRepository where Record == Device {
     func fetchAll(of type: DeviceType) async throws -> [Device] {

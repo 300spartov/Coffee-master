@@ -1,4 +1,5 @@
 import SwiftUI
+import AppCore
 
 /// Labeled numeric input with a unit, using the system decimal keyboard.
 /// The value is clamped to `range` when editing ends. With `step`, a − / + stepper sits beside it.
@@ -82,12 +83,8 @@ public struct NumberField: View {
             Text(title).foregroundStyle(.theme.textPrimary)
         }
         .onChange(of: isFocused) { _, focused in
-            if !focused, let current = value { value = Self.clamp(current, to: range) }
+            if !focused, let current = value { value = current.clamped(to: range) }
         }
-    }
-
-    nonisolated static func clamp(_ value: Double, to range: ClosedRange<Double>) -> Double {
-        min(max(value, range.lowerBound), range.upperBound)
     }
 }
 

@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// A recorded brew (alternative or espresso), made with the wizard or logged manually.
 public struct Brew: Syncable {
@@ -119,6 +120,8 @@ public struct Brew: Syncable {
 
 public extension Brew {
     static let ratingRange: ClosedRange<Double> = 0...10
+    /// How many brews can be compared side by side (the web app's limit).
+    static let maximumCompared = 4
 
     var category: BrewCategory {
         espresso != nil ? .espresso : method.category
@@ -147,7 +150,7 @@ public extension Brew {
     }
 
     static func clampRating(_ value: Double) -> Double {
-        (min(max(value, ratingRange.lowerBound), ratingRange.upperBound) * 10).rounded() / 10
+        value.clamped(to: ratingRange).roundedToTenth
     }
 }
 

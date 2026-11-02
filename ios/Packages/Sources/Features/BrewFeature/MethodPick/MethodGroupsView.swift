@@ -51,7 +51,7 @@ private struct MenuCard: View {
     let tint: Color
 
     var body: some View {
-        HStack(spacing: Spacing.lg) {
+        LinkLabel(spacing: Spacing.lg) {
             IconBadge(systemImage, tint: tint, size: 52)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(title)
@@ -60,10 +60,6 @@ private struct MenuCard: View {
                     .appTextStyle(.caption)
                     .multilineTextAlignment(.leading)
             }
-            Spacer(minLength: 0)
-            Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.theme.textTertiary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardStyle(padding: Spacing.xl)

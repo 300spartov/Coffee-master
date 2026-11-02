@@ -23,11 +23,7 @@ final class FilterPacksViewModel: AlertingViewModel {
     }
 
     func load() async {
-        do {
-            state = ListState(try await repository.fetchAll())
-        } catch {
-            state = .failed(error.localizedDescription)
-        }
+        state = await ListState { try await repository.fetchAll() }
     }
 
     /// One filter used (count goes down, never below zero).

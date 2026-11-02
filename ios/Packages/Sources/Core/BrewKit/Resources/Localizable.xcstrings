@@ -1,22 +1,6 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "%lld s": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld s"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld с"
-          }
-        }
-      }
-    },
     "Bad": {
       "localizations": {
         "en": {

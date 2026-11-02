@@ -9,7 +9,7 @@ final class SpyActiveRouter: ActiveBrewRouting {
     private(set) var leaveCount = 0
 
     func activeBrewDidFinish(_ session: PourOverSession) { finished.append(session) }
-    func activeBrewDidLeave() { leaveCount += 1 }
+    func brewDidDiscard() { leaveCount += 1 }
 }
 
 @MainActor

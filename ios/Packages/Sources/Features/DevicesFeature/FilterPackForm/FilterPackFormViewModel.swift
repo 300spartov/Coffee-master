@@ -6,7 +6,7 @@ import FactoryKit
 
 /// Add a pack of paper filters, or correct one you have (name, brewer it fits, pack size, how many are left).
 @Observable
-final class FilterPackFormViewModel {
+final class FilterPackFormViewModel: SavingViewModel {
     enum Mode: Equatable {
         case add
         case edit(FilterPack.ID)
@@ -24,7 +24,7 @@ final class FilterPackFormViewModel {
     /// Edit mode only.
     var remaining = Double(FilterPack.defaultCount)
     private(set) var state: LoadState
-    private(set) var isSaving = false
+    var isSaving = false
     var alertMessage: String?
 
     @ObservationIgnored @Injected(\.filterPackRepository) private var repository
@@ -38,16 +38,18 @@ final class FilterPackFormViewModel {
         state = mode == .add ? .ready : .loading
     }
 
-    var isEditing: Bool { mode != .add }
+    private var editingID: FilterPack.ID? {
+        if case .edit(let id) = mode { id } else { nil }
+    }
 
-    private var trimmedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
+    var isEditing: Bool { editingID != nil }
 
     var isRemainingValid: Bool {
         !isEditing || (0...total).contains(remaining)
     }
 
     var isValid: Bool {
-        !trimmedName.isEmpty && Self.sizeRange.contains(total) && isRemainingValid
+        !name.trimmed.isEmpty && Self.sizeRange.contains(total) && isRemainingValid
     }
 
     func selectPreset(_ size: Int) {
@@ -55,61 +57,48 @@ final class FilterPackFormViewModel {
         if isEditing { remaining = min(remaining, total) }
     }
 
+    /// Loads the pack being edited, once.
     func load() async {
-        guard case .edit(let id) = mode else { return }
-        state = .loading
+        guard let id = editingID, state != .ready else { return }
         do {
             let pack = try await repository.fetch(id: id)
-            name = pack.name
-            shape = pack.shape
-            total = Double(pack.total)
-            remaining = Double(pack.remaining)
+            (name, shape, total, remaining) = (pack.name, pack.shape, Double(pack.total), Double(pack.remaining))
             state = .ready
         } catch RepositoryError.notFound {
-            router?.filterPackFormNotFound(id: id)
+            router?.filterPackForm(didFinish: .notFound)
         } catch {
             state = .failed(error.localizedDescription)
         }
     }
 
     func save() async {
-        guard isValid, !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-        do {
-            var pack: FilterPack
-            if case .edit(let id) = mode {
-                // Edit the pack as it is now, so one removed elsewhere meanwhile isn't brought back.
-                pack = try await repository.fetch(id: id)
-                pack.name = trimmedName
+        guard isValid else { return }
+        await whileSaving {
+            var saved: FilterPack?
+            await attempt({
+                // The pack as it is now, so one removed elsewhere meanwhile isn't brought back.
+                var pack = try await repository.fetch(id: editingID) ?? FilterPack(name: name.trimmed, total: Int(total), shape: shape)
+                pack.name = name.trimmed
                 pack.shape = shape
-                pack.total = Int(total)
-                pack.remaining = min(max(Int(remaining), 0), pack.total)
-            } else {
-                pack = FilterPack(name: trimmedName, total: Int(total), shape: shape)
-            }
-            try await repository.save(pack)
-            router?.filterPackFormDidFinish(saved: pack)
-        } catch RepositoryError.notFound {
-            if case .edit(let id) = mode { router?.filterPackFormNotFound(id: id) }
-        } catch {
-            alertMessage = error.localizedDescription
+                if isEditing {
+                    pack.total = Int(total)
+                    pack.remaining = Int(remaining).clamped(to: 0...pack.total)
+                }
+                try await repository.save(pack)
+                saved = pack
+            }, notFound: { router?.filterPackForm(didFinish: .notFound) })
+            if let saved { router?.filterPackForm(didFinish: .saved(saved, editing: isEditing)) }
         }
     }
 
     func cancel() {
-        router?.filterPackFormDidFinish(saved: nil)
+        router?.filterPackForm(didFinish: .cancelled)
     }
 
     func delete() async {
-        guard case .edit(let id) = mode else { return }
-        do {
-            try await repository.delete(id: id)
-            router?.filterPackFormDidDelete(id: id)
-        } catch RepositoryError.notFound {
-            router?.filterPackFormNotFound(id: id)
-        } catch {
-            alertMessage = error.localizedDescription
+        guard let id = editingID else { return }
+        if await attempt({ try await repository.delete(id: id) }, notFound: { router?.filterPackForm(didFinish: .notFound) }) {
+            router?.filterPackForm(didFinish: .deleted(id))
         }
     }
 }

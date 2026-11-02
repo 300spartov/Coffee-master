@@ -65,15 +65,16 @@ struct BrewInProgressTests {
         viewModel.startShot()
         clock.now.addTimeInterval(27)
         viewModel.stopShot()
-        viewModel.milk.name = "Oat"
+        viewModel.shot.milk.name = "Oat"
 
         let draft = try #require(BrewInProgress.current(now: clock.now))
         guard case .espresso(let progress) = draft.stage else { Issue.record("Not an espresso draft"); return }
         #expect(progress.step == .milk)
-        #expect(progress.shotTime == 27)
+        #expect(progress.shot.shotTime == 27)
 
         let restored = EspressoViewModel(progress: progress, router: router)
-        #expect(restored.milk.name == "Oat")
+        #expect(progress.shot.milk.frother == "Steam wand")
+        #expect(restored.shot.milk.name == "Oat")
         #expect(restored.shotElapsed == 27)
         #expect(restored.draft.recipe.method == .latte)
     }
@@ -103,7 +104,7 @@ struct BrewInProgressTests {
 final class SpyRateRouter: BrewSavingRouting, ActiveBrewRouting {
     func brewDidSave(_ brew: Brew, usage: StockUsage) {}
     func activeBrewDidFinish(_ session: PourOverSession) {}
-    func activeBrewDidLeave() {}
+    func brewDidDiscard() {}
 }
 
 @MainActor
@@ -113,7 +114,7 @@ final class SpyWizardRouter: MethodPickRouting, ActiveBrewRouting, EspressoRouti
     func methodPickDidCancel() {}
     func methodPickDidSelectLog() {}
     func activeBrewDidFinish(_ session: PourOverSession) {}
-    func activeBrewDidLeave() {}
+    func brewDidDiscard() {}
     func brewDidSave(_ brew: Brew, usage: StockUsage) {}
     func showGearPicker(_ kind: GearKind, method: BrewMethod, selectedID: UUID?, onPick: @escaping (GearPick) -> Void) {}
     func espresso(_ brew: EspressoBrew, didAdvanceTo step: EspressoStep) {}

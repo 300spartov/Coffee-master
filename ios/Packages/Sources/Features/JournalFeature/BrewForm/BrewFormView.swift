@@ -7,12 +7,9 @@ struct BrewFormView: View {
     @Bindable var viewModel: BrewFormViewModel
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, load: viewModel.load) {
             form
         }
-        .task { await viewModel.load() }
         .errorAlert($viewModel.alertMessage)
     }
 
@@ -68,7 +65,6 @@ struct BrewFormView: View {
             FormActions(
                 title: viewModel.isAdding ? tr("Add to Journal") : tr("Save Changes"),
                 isSaving: viewModel.isSaving,
-                canSave: true,
                 identifier: "brewForm",
                 destructive: viewModel.isAdding ? nil : .init(tr("Delete Brew"), confirmation: tr("Delete this brew?"), confirmTitle: tr("Delete")) {
                     Task { await viewModel.delete() }

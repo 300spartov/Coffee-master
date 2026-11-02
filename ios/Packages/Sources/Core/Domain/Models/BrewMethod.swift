@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// How a brew was made.
 ///
@@ -8,7 +9,7 @@ public struct BrewMethod: StringBacked {
     public let rawValue: String
 
     public init(rawValue: String) {
-        self.rawValue = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.rawValue = rawValue.trimmed
     }
 }
 

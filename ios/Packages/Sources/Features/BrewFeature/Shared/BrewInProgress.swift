@@ -41,17 +41,23 @@ struct BrewInProgress: Codable, Equatable {
     }
 }
 
-/// An espresso after its setup: which step, the gear and recipe, the shot, milk / ice and the result.
+/// An espresso after its setup: which step, the gear and recipe, and everything since.
 struct EspressoProgress: Codable, Equatable {
     var step: EspressoStep
     var draft: EspressoDraft
-    var shotStartedAt: Date?
-    var shotStoppedAt: Date?
-    var milk: MilkInfo
-    var ice: IceInfo
-    var shotTime: Double
+    var shot: EspressoShotState
+}
+
+/// What an espresso collects after its setup: the shot clock, milk / ice (web defaults) and the result.
+struct EspressoShotState: Codable, Equatable {
+    var startedAt: Date?
+    var stoppedAt: Date?
+    var milk = MilkInfo(name: "", temperature: 60, volumeMilliliters: 150, frother: "")
+    var ice = IceInfo(cubes: 4, mixer: "")
+    /// Seconds, editable (the timer's value).
+    var shotTime: Double = 0
     var actualYield: Double?
-    var targetTDS: Double?
+    var targetTDS: Double? = 9
     var actualTDS: Double?
-    var tasting: BrewTasting
+    var tasting = BrewTasting()
 }

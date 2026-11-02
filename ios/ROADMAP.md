@@ -136,6 +136,17 @@ Size: **S** ≈ 1–2 days, **M** ≈ 3–5 days, **L** ≈ 1–2 weeks.
 
 ---
 
+## Review cleanup ✅ (whole app, after 4.1)
+
+A full review of every module (three parallel reviews, each finding checked against the code):
+- **Navigation:** one `ModalSlot.presentSheet(_:over:size:)` replaces seven hand-built sheet presentations; `UITabBarItem(title:systemImage:)`, `HostingController.setBackButton` / `setDoneButton`, `DocumentPicker`. The app router has one "dismiss, then act" helper and typed flows; `JournalFlow` installs its own Brew button.
+- **Forms:** one `FormResult<Item>` (added / updated / deleted / cancelled / not found) replaces three callbacks per form protocol (beans, devices, filter packs, the journal's brew form), so flows switch over one value and no longer track "editing". Shared `SavingViewModel.whileSaving`, `attempt(_:notFound:)` and `repository.fetch(id:)` for "edit the record as it is now". The bean form no longer reloads over what was typed when the screen reappears.
+- **Shared code:** `String.trimmed`, `clamped(to:)`, `roundedToTenth` (AppCore); `ListState(loading:)`; one multi-source `observe`; `LoadStateView` / `ListStateView` start and retry themselves (`load:` / `observe:reload:`); a `Stocked` rule for bags and filter packs (`StockLevel(item)`, `StockBar(item)`); `CapsuleProgress` and `ProgressRing` in DesignSystem (the brew screens, the rating ring and stock bars use them); `Color(hex:)`; number and time formatting moved from BrewKit to DesignSystem so every feature uses it; `Chip(size: .small)`; `LinkLabel(spacing:)`; one preview router per feature.
+- **Brew wizard:** the espresso state is one `EspressoShotState` (it was ten properties copied in and out); one discard confirmation and `BrewDiscardRouting`; stock warnings computed in the feature (`StockUsage.warnings`), not the flow; milk / mixer trimmed in `EspressoSetup.makeBrew`. Back from the espresso shot to its setup now drops the unfinished brew (it used to restore to the shot after an app kill).
+- **Moved out of flows:** the web import and its toasts (`WebImportCoordinator`, app target); Settings' title parameter.
+- **Removed:** the Settings "Log a New Brew" shortcut (the Journal's Brew button does it), `BrewSetupHistory`'s two storage classes (one `StoredBrewSetupHistory` on `DraftStore`, same keys), unused bean consume / restock repository methods, `RatingView`, two placeholder transaction authors, a redundant `DripperKind` table.
+- **Kept on purpose:** the widget snapshot pipeline (roadmap 8.1), the achievements repository API (4.3), `DeepLinkParser.universalURL` (6.3).
+
 ## Review cleanup ✅ (after Phase 3)
 
 - **Shared helpers:** `millilitersText` / `gramsText` / `celsiusText` (BrewKit) replace 13 hand-written amounts across the journal, compare and the wizard; `AlertingViewModel.attempt` (AppCore) replaces four copies of "run a write, show the error as an alert" (feed, trash, brew form, filter packs).

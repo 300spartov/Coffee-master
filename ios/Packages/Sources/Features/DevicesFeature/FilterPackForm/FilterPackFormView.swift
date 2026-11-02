@@ -6,12 +6,9 @@ struct FilterPackFormView: View {
     @Bindable var viewModel: FilterPackFormViewModel
 
     var body: some View {
-        LoadStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } content: {
+        LoadStateView(viewModel.state, load: viewModel.load) {
             form
         }
-        .task { await viewModel.load() }
         .errorAlert($viewModel.alertMessage)
     }
 
@@ -67,14 +64,7 @@ struct FilterPackFormView: View {
 }
 
 #if DEBUG
-private final class PreviewFilterPackFormRouter: FilterPackFormRouting {
-    static let shared = PreviewFilterPackFormRouter()
-    func filterPackFormDidFinish(saved pack: FilterPack?) {}
-    func filterPackFormDidDelete(id: FilterPack.ID) {}
-    func filterPackFormNotFound(id: FilterPack.ID) {}
-}
-
 #Preview {
-    FilterPackFormView(viewModel: FilterPackFormViewModel(mode: .add, router: PreviewFilterPackFormRouter.shared))
+    FilterPackFormView(viewModel: FilterPackFormViewModel(mode: .add, router: PreviewRouter.shared))
 }
 #endif

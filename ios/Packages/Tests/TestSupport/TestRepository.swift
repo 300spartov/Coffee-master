@@ -82,14 +82,6 @@ extension TestRepository: BeanRepository where Record == Bean {
     public init(beans: [Bean] = [], failing: TestFailure = .none) {
         self.init(InMemoryRecordRepository(beans: beans), failing: failing)
     }
-
-    public func consume(beanID: Bean.ID, grams: Double) async throws -> Bean {
-        try await write { try await base.consume(beanID: beanID, grams: grams) }
-    }
-
-    public func restock(beanID: Bean.ID, grams: Double) async throws -> Bean {
-        try await write { try await base.restock(beanID: beanID, grams: grams) }
-    }
 }
 
 extension TestRepository: DeviceRepository where Record == Device {

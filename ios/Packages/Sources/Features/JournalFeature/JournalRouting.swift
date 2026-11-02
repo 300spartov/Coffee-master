@@ -14,11 +14,7 @@ public protocol FeedRouting: AnyObject {
 }
 
 public protocol BrewFormRouting: AnyObject {
-    /// Saved (edited or logged): back to the feed.
-    func brewFormDidSave(_ brew: Brew)
-    /// Logging was cancelled.
-    func brewFormDidCancel()
-    func brewFormDidDelete(id: Brew.ID)
-    /// The brew doesn't exist (anymore), e.g. a stale deep link.
-    func brewFormNotFound(id: Brew.ID)
+    /// Logged (`added`), edited (`updated`), deleted, logging cancelled, or the brew is gone (e.g. a
+    /// stale deep link).
+    func brewForm(didFinish result: FormResult<Brew>)
 }

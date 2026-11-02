@@ -14,11 +14,7 @@ final class WidgetSyncService {
     func start() {
         guard task == nil else { return }
         task = Task { [brews, snapshotStore] in
-            let changes = await brews.changes()
-            await Self.sync(brews, to: snapshotStore)
-            for await _ in changes {
-                await Self.sync(brews, to: snapshotStore)
-            }
+            await brews.observe { await Self.sync(brews, to: snapshotStore) }
         }
     }
 

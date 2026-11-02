@@ -19,17 +19,9 @@ final class DeviceCategoriesViewModel {
         self.router = router
     }
 
-    var categories: [DeviceType] { DeviceType.browsable }
-
     /// Bound to the view's lifetime via `.task`: loads, then reloads when devices or filter packs change.
     func start() async {
-        let deviceChanges = await repository.changes()
-        let packChanges = await filterPacks.changes()
-        await load()
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask { for await _ in deviceChanges { await self.load() } }
-            group.addTask { for await _ in packChanges { await self.load() } }
-        }
+        await observe(repository, filterPacks) { await self.load() }
     }
 
     func load() async {

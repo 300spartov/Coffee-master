@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 import Observation
 import Domain
 import FactoryKit
@@ -6,7 +7,7 @@ import FactoryKit
 /// One category: the devices you own, the built-in catalog with add/remove toggles, search,
 /// and quick-add for something the catalog doesn't have.
 @Observable
-final class DeviceCatalogViewModel {
+final class DeviceCatalogViewModel: AlertingViewModel {
     let type: DeviceType
     /// Search text (from the navigation bar's search field).
     var query = ""
@@ -27,7 +28,7 @@ final class DeviceCatalogViewModel {
 
     // MARK: - Derived
 
-    private var trimmedQuery: String { query.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private var trimmedQuery: String { query.trimmed }
     var isSearching: Bool { !trimmedQuery.isEmpty }
 
     var visibleOwned: [Device] {
@@ -61,11 +62,7 @@ final class DeviceCatalogViewModel {
     }
 
     func load() async {
-        do {
-            owned = try await repository.fetchAll(of: type)
-        } catch {
-            alertMessage = error.localizedDescription
-        }
+        await attempt { owned = try await repository.fetchAll(of: type) }
     }
 
     // MARK: - Actions
@@ -94,12 +91,8 @@ final class DeviceCatalogViewModel {
     }
 
     func delete(_ devices: [Device]) async {
-        do {
-            for device in devices {
-                try await repository.delete(id: device.id)
-            }
-        } catch {
-            alertMessage = error.localizedDescription
+        await attempt {
+            for device in devices { try await repository.delete(id: device.id) }
         }
     }
 
@@ -119,11 +112,7 @@ final class DeviceCatalogViewModel {
         let key = name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
         guard pendingNames.insert(key).inserted else { return }
         defer { pendingNames.remove(key) }
-        do {
-            try await work()
-        } catch {
-            alertMessage = error.localizedDescription
-        }
+        await attempt(work)
         await load()
     }
 

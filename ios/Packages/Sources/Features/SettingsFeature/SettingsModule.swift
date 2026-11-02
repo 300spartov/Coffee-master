@@ -5,12 +5,11 @@ import Navigation
 public struct SettingsModule {
     public init() {}
 
-    /// `title`: the screen is hosted by Profile for now, which names it.
-    public func makeSettings(router: any SettingsRouting, title: String) -> UIViewController {
-        let viewModel = SettingsViewModel(router: router)
-        return HostingController(
-            rootView: SettingsView(viewModel: viewModel),
-            title: title,
+    /// Pushed from Profile.
+    public func makeSettings(router: any SettingsRouting) -> UIViewController {
+        HostingController(
+            rootView: SettingsView(viewModel: SettingsViewModel(router: router)),
+            title: tr("Settings"),
             largeTitleDisplayMode: .always
         )
     }

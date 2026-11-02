@@ -6,7 +6,7 @@ import FactoryKit
 
 /// Add a device that isn't in the catalog, or rename / recategorize one you own.
 @Observable
-final class DeviceFormViewModel {
+final class DeviceFormViewModel: SavingViewModel {
     enum Mode: Equatable {
         case add(DeviceType)
         case edit(Device.ID)
@@ -16,7 +16,7 @@ final class DeviceFormViewModel {
     var name = ""
     var type: DeviceType
     private(set) var state: LoadState
-    private(set) var isSaving = false
+    var isSaving = false
     var alertMessage: String?
 
     @ObservationIgnored @Injected(\.deviceRepository) private var repository
@@ -34,73 +34,57 @@ final class DeviceFormViewModel {
         }
     }
 
-    var isEditing: Bool {
-        if case .edit = mode { true } else { false }
+    private var editingID: Device.ID? {
+        if case .edit(let id) = mode { id } else { nil }
     }
 
-    var types: [DeviceType] { DeviceType.browsable }
+    var isEditing: Bool { editingID != nil }
+    var isValid: Bool { !name.trimmed.isEmpty }
 
-    private var trimmedName: String { name.trimmingCharacters(in: .whitespacesAndNewlines) }
-    var isValid: Bool { !trimmedName.isEmpty }
-
+    /// Loads the device being edited, once.
     func load() async {
-        guard case .edit(let id) = mode else { return }
-        state = .loading
+        guard let id = editingID, state != .ready else { return }
         do {
             let device = try await repository.fetch(id: id)
-            name = device.name
-            type = device.type
+            (name, type) = (device.name, device.type)
             state = .ready
         } catch RepositoryError.notFound {
-            router?.deviceFormNotFound(id: id)
+            router?.deviceForm(didFinish: .notFound)
         } catch {
             state = .failed(error.localizedDescription)
         }
     }
 
     func save() async {
-        guard isValid, !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-        do {
-            // Edit the record as it is now (not as it was when the sheet opened), so a device
-            // removed or changed elsewhere meanwhile isn't brought back or overwritten.
-            let current: Device?
-            if case .edit(let id) = mode {
-                current = try await repository.fetch(id: id)
-            } else {
-                current = nil
-            }
-            let unchanged = current.map { $0.type == type && Device.namesMatch($0.name, trimmedName) } ?? false
-            if !unchanged, try await repository.contains(name: trimmedName, type: type) {
-                alertMessage = tr("You already have this device.")
-                return
-            }
-            var device = current ?? Device(name: trimmedName, type: type)
-            device.name = trimmedName
-            device.type = type
-            try await repository.save(device)
-            router?.deviceFormDidFinish(saved: device)
-        } catch RepositoryError.notFound {
-            if case .edit(let id) = mode { router?.deviceFormNotFound(id: id) }
-        } catch {
-            alertMessage = error.localizedDescription
+        guard isValid else { return }
+        await whileSaving {
+            let name = name.trimmed
+            var saved: Device?
+            await attempt({
+                let current = try await repository.fetch(id: editingID)
+                let unchanged = current.map { $0.type == type && Device.namesMatch($0.name, name) } ?? false
+                if !unchanged, try await repository.contains(name: name, type: type) {
+                    alertMessage = tr("You already have this device.")
+                    return
+                }
+                var device = current ?? Device(name: name, type: type)
+                device.name = name
+                device.type = type
+                try await repository.save(device)
+                saved = device
+            }, notFound: { router?.deviceForm(didFinish: .notFound) })
+            if let saved { router?.deviceForm(didFinish: .saved(saved, editing: isEditing)) }
         }
     }
 
     func cancel() {
-        router?.deviceFormDidFinish(saved: nil)
+        router?.deviceForm(didFinish: .cancelled)
     }
 
     func delete() async {
-        guard case .edit(let id) = mode else { return }
-        do {
-            try await repository.delete(id: id)
-            router?.deviceFormDidDelete(id: id)
-        } catch RepositoryError.notFound {
-            router?.deviceFormNotFound(id: id)
-        } catch {
-            alertMessage = error.localizedDescription
+        guard let id = editingID else { return }
+        if await attempt({ try await repository.delete(id: id) }, notFound: { router?.deviceForm(didFinish: .notFound) }) {
+            router?.deviceForm(didFinish: .deleted(id))
         }
     }
 }

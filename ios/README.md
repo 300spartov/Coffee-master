@@ -21,16 +21,16 @@ ios/
 │   └── Services/                 # app-level glue (e.g. widget-syncing repository decorator)
 └── Packages/                     # local SPM package — all reusable code
     ├── Sources/Core/
-    │   ├── AppCore/              # constants (scheme, app group), logging
+    │   ├── AppCore/              # constants, logging, view states (LoadState / ListState, AlertingViewModel), small std-lib helpers
     │   ├── Domain/               # models, repository & service protocols, fixtures
     │   ├── DataLayer/            # Core Data store (model in code), repositories, web import service
-    │   ├── DesignSystem/         # tokens + reusable SwiftUI components
+    │   ├── DesignSystem/         # tokens, reusable SwiftUI components, number / amount / time formatting
     │   ├── DeepLinks/            # DeepLink enum + URL parser (Foundation-only)
-    │   ├── Navigation/           # Flow, StackRouter, HostingController (UIKit)
+    │   ├── Navigation/           # Flow, StackRouter, ModalSlot (sheets), HostingController (bar buttons, tab accessory), DocumentPicker
     │   ├── WidgetsShared/        # ActivityAttributes, widget snapshot, ActivityKit service
     │   ├── WebImport/            # one-time import of the web app's JSON export → Domain models
     │   ├── FlavorWheel/          # the flavor wheel (taxonomy, picks, Canvas wheel, flavor tags), shared by brew screens
-    │   └── BrewKit/              # brew text and views shared by the wizard and the journal (times, ratios, step rows, tasting)
+    │   └── BrewKit/              # brew text and views shared by the wizard, the journal and compare (ratios, step rows, tasting)
     ├── Sources/Features/
     │   ├── BrewFeature/          # brew wizard: method pick → setup → timer / espresso shot → rate & save → result
     │   ├── CompareFeature/       # 2–4 brews side by side: timeline + parameters, rings, curve (Swift Charts)

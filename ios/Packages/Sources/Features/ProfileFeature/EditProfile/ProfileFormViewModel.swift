@@ -6,13 +6,13 @@ import FactoryKit
 
 /// Edit Profile (web: `ov-settings` → `saveProf`): name, city, category, experience.
 @Observable
-final class ProfileFormViewModel: AlertingViewModel {
+final class ProfileFormViewModel: SavingViewModel {
     private(set) var state: LoadState = .loading
     var name = ""
     var location = ""
     var title = ""
     var experience = ""
-    private(set) var isSaving = false
+    var isSaving = false
     var alertMessage: String?
 
     @ObservationIgnored private var profile = UserProfile()
@@ -40,16 +40,15 @@ final class ProfileFormViewModel: AlertingViewModel {
     }
 
     func save() async {
-        guard !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-        var edited = profile
-        edited.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        edited.location = location.trimmingCharacters(in: .whitespacesAndNewlines)
-        edited.title = title
-        edited.experience = experience.trimmingCharacters(in: .whitespacesAndNewlines)
-        if await attempt({ try await profiles.saveProfile(edited) }) {
-            router?.profileFormDidFinish(saved: true)
+        await whileSaving {
+            var edited = profile
+            edited.name = name.trimmed
+            edited.location = location.trimmed
+            edited.title = title
+            edited.experience = experience.trimmed
+            if await attempt({ try await profiles.saveProfile(edited) }) {
+                router?.profileFormDidFinish(saved: true)
+            }
         }
     }
 

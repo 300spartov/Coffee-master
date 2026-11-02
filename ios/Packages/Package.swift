@@ -50,7 +50,7 @@ let package = Package(
     targets: [
         // MARK: Core
         .target(name: "AppCore", dependencies: [factoryKit], path: "Sources/Core/AppCore"),
-        .target(name: "Domain", dependencies: [factoryKit], path: "Sources/Core/Domain"),
+        .target(name: "Domain", dependencies: ["AppCore", factoryKit], path: "Sources/Core/Domain"),
         .target(name: "DataLayer", dependencies: ["AppCore", "Domain", "WebImport"], path: "Sources/Core/DataLayer"),
         .target(
             name: "DesignSystem",

@@ -7,7 +7,7 @@ import FactoryKit
 /// Add or edit a coffee bag. Saving goes through the repository, which stamps `updatedAt`
 /// (the web app's `_upd`) so the edit wins in sync. Roaster and name are remembered for autocomplete.
 @Observable
-final class BeanFormViewModel {
+final class BeanFormViewModel: SavingViewModel {
     enum Mode: Equatable {
         case add
         case edit(Bean.ID)
@@ -28,7 +28,7 @@ final class BeanFormViewModel {
     var score: Double?
     var descriptors = ""
 
-    private(set) var isSaving = false
+    var isSaving = false
     private(set) var remainingGrams: Double?
     var alertMessage: String?
 
@@ -36,6 +36,7 @@ final class BeanFormViewModel {
     private(set) var roasterSuggestions: [String] = []
     private(set) var nameSuggestions: [String] = []
 
+    @ObservationIgnored private var didLoad = false
     @ObservationIgnored @Injected(\.beanRepository) private var repository
     @ObservationIgnored @Injected(\.suggestionsRepository) private var suggestions
     @ObservationIgnored private weak var router: (any BeanFormRouting)?
@@ -46,7 +47,11 @@ final class BeanFormViewModel {
         state = mode == .add ? .ready : .loading
     }
 
-    var isEditing: Bool { mode != .add }
+    private var editingID: Bean.ID? {
+        if case .edit(let id) = mode { id } else { nil }
+    }
+
+    var isEditing: Bool { editingID != nil }
 
     static let scoreRange: ClosedRange<Double> = 0...100
 
@@ -55,58 +60,53 @@ final class BeanFormViewModel {
     }
 
     var isValid: Bool {
-        !trimmed(name).isEmpty && totalGrams > 0 && isScoreValid
+        !name.trimmed.isEmpty && totalGrams > 0 && isScoreValid
     }
 
-    /// Loads the bean being edited and the autocomplete values.
+    /// Loads the autocomplete values and the bean being edited, once (so coming back to the screen
+    /// doesn't overwrite what was typed).
     func load() async {
+        guard !didLoad else { return }
         await loadSuggestions()
-        guard case .edit(let id) = mode else { return }
+        guard let id = editingID else {
+            didLoad = true
+            return
+        }
         do {
-            let bean = try await repository.fetch(id: id)
-            fill(from: bean)
+            fill(from: try await repository.fetch(id: id))
+            didLoad = true
             state = .ready
         } catch RepositoryError.notFound {
-            router?.beanFormNotFound(id: id)
+            router?.beanForm(didFinish: .notFound)
         } catch {
             state = .failed(error.localizedDescription)
         }
     }
 
     func save() async {
-        guard isValid, !isSaving else { return }
-        isSaving = true
-        defer { isSaving = false }
-
-        do {
-            // Edit the bag as it is now (not as it was when the form opened), so a bag removed or
-            // changed elsewhere meanwhile isn't brought back or overwritten.
-            var current: Bean?
-            if case .edit(let id) = mode {
-                current = try await repository.fetch(id: id)
-            }
-            let bean = makeBean(from: current)
-            try await repository.save(bean)
-            try? await suggestions.remember(Suggestions(roasters: [bean.roaster], beanNames: [bean.name]))
-            router?.beanFormDidFinish(saved: bean)
-        } catch RepositoryError.notFound {
-            if case .edit(let id) = mode { router?.beanFormNotFound(id: id) }
-        } catch {
-            alertMessage = error.localizedDescription
+        guard isValid else { return }
+        await whileSaving {
+            var saved: Bean?
+            await attempt({
+                // The bag as it is now (not as it was when the form opened), so a bag removed or
+                // changed elsewhere meanwhile isn't brought back or overwritten.
+                let bean = makeBean(from: try await repository.fetch(id: editingID))
+                try await repository.save(bean)
+                try? await suggestions.remember(Suggestions(roasters: [bean.roaster], beanNames: [bean.name]))
+                saved = bean
+            }, notFound: { router?.beanForm(didFinish: .notFound) })
+            if let saved { router?.beanForm(didFinish: .saved(saved, editing: isEditing)) }
         }
     }
 
     func cancel() {
-        router?.beanFormDidFinish(saved: nil)
+        router?.beanForm(didFinish: .cancelled)
     }
 
     func delete() async {
-        guard case .edit(let id) = mode else { return }
-        do {
-            try await repository.delete(id: id)
-            router?.beanFormDidDelete(id: id)
-        } catch {
-            alertMessage = error.localizedDescription
+        guard let id = editingID else { return }
+        if await attempt({ try await repository.delete(id: id) }, notFound: { router?.beanForm(didFinish: .notFound) }) {
+            router?.beanForm(didFinish: .deleted(id))
         }
     }
 
@@ -135,22 +135,18 @@ final class BeanFormViewModel {
     /// New bag (full), or `current` with the edits applied. A new bag size keeps the amount
     /// already used, like the web app.
     private func makeBean(from current: Bean?) -> Bean {
-        var bean = current ?? Bean(name: trimmed(name), totalGrams: totalGrams)
+        var bean = current ?? Bean(name: name.trimmed, totalGrams: totalGrams)
         if current != nil, bean.totalGrams != totalGrams {
             bean.resize(totalGrams: totalGrams)
         }
-        bean.name = trimmed(name)
-        bean.roaster = trimmed(roaster)
+        bean.name = name.trimmed
+        bean.roaster = roaster.trimmed
         bean.roastProfile = roastProfile
-        bean.country = trimmed(country)
-        bean.farm = trimmed(farm)
+        bean.country = country.trimmed
+        bean.farm = farm.trimmed
         bean.process = process
         bean.score = score
-        bean.descriptors = trimmed(descriptors)
+        bean.descriptors = descriptors.trimmed
         return bean
-    }
-
-    private func trimmed(_ value: String) -> String {
-        value.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }

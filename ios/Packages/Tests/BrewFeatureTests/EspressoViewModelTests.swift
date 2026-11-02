@@ -39,12 +39,12 @@ struct EspressoViewModelTests {
         clock.now.addTimeInterval(28.6)
         latte.stopShot()
 
-        #expect(latte.shotTime == 28)
+        #expect(latte.shot.shotTime == 28)
         #expect(latte.hasReachedTarget)
         #expect(router.steps == [.shot, .milk])
 
         latte.continueToResult()
-        #expect(latte.milk.frother == "Steam wand")
+        #expect(latte.shot.milk.frother == "Steam wand")
         #expect(router.steps.last == .result)
     }
 
@@ -64,10 +64,10 @@ struct EspressoViewModelTests {
         Container.shared.brewRepository.register { brews }
         Container.shared.suggestionsRepository.register { suggestions }
         let latte = makeViewModel(.latte)
-        latte.shotTime = 27
-        latte.actualYield = 38
-        latte.milk.name = "  Oat "
-        latte.tasting.rating = 9
+        latte.shot.shotTime = 27
+        latte.shot.actualYield = 38
+        latte.shot.milk.name = "  Oat "
+        latte.shot.tasting.rating = 9
 
         await latte.save()
 

@@ -93,3 +93,10 @@ nonisolated public struct ThemeColor: Hashable, Sendable {
         Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }
 }
+
+public extension Color {
+    /// `Color(hex: 0xD89858)`: data colors (flavor wheel, avatars, compare), not theme roles.
+    init(hex: UInt32) {
+        self = ThemeColor(hex).color
+    }
+}

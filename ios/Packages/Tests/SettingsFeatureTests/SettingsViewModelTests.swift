@@ -9,7 +9,6 @@ import AppCore
 final class SpySettingsRouter: SettingsRouting {
     private(set) var calls: [String] = []
     func showAbout() { calls.append("about") }
-    func showNewBrew() { calls.append("newBrew") }
     func showWebImport() { calls.append("webImport") }
     func showDesignSystem() { calls.append("designSystem") }
 }
@@ -41,10 +40,9 @@ struct SettingsViewModelTests {
         let viewModel = SettingsViewModel(router: router)
 
         viewModel.didTapAbout()
-        viewModel.didTapNewBrew()
         viewModel.didTapWebImport()
         viewModel.didTapDesignSystem()
 
-        #expect(router.calls == ["about", "newBrew", "webImport", "designSystem"])
+        #expect(router.calls == ["about", "webImport", "designSystem"])
     }
 }

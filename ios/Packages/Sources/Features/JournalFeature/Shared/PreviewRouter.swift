@@ -9,9 +9,6 @@ final class PreviewRouter: FeedRouting, BrewFormRouting {
     func showNewBrew() {}
     func showLogBrew() {}
     func showCompare(brewIDs: [Brew.ID]) {}
-    func brewFormDidCancel() {}
-    func brewFormDidSave(_ brew: Brew) {}
-    func brewFormDidDelete(id: Brew.ID) {}
-    func brewFormNotFound(id: Brew.ID) {}
+    func brewForm(didFinish result: FormResult<Brew>) {}
 }
 #endif

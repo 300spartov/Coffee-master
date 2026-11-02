@@ -1,5 +1,6 @@
 import SwiftUI
 import Domain
+import AppCore
 import BrewKit
 import DesignSystem
 
@@ -33,7 +34,7 @@ struct GearRowButton: View {
         Button {
             model.choose(kind)
         } label: {
-            HStack {
+            LinkLabel {
                 GearRowLabel(
                     title: picked?.title ?? kind.prompt(for: model.method),
                     subtitle: picked == nil ? tr("Tap to choose") : picked?.subtitle,
@@ -42,9 +43,6 @@ struct GearRowButton: View {
                     stock: picked?.stock,
                     isPlaceholder: picked == nil
                 )
-                Image(systemName: "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.theme.textTertiary)
             }
         }
         .accessibilityIdentifier("setup.\(kind.rawValue)")
@@ -79,86 +77,76 @@ func refreshWhileVisible(_ refresh: () -> Void) async {
     }
 }
 
-/// A thick progress bar in `color`, with optional marks (0...1).
-struct ProgressBar: View {
-    let fraction: Double
-    let color: Color
-    var marks: [Double] = []
-
-    var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .leading) {
-                Capsule().fill(.theme.fill)
-                Capsule().fill(color).frame(width: proxy.size.width * min(max(fraction, 0), 1))
-                ForEach(marks, id: \.self) { mark in
-                    Rectangle()
-                        .fill(mark <= fraction ? Color.theme.textTertiary : color.opacity(0.6))
-                        .frame(width: 2)
-                        .offset(x: proxy.size.width * mark)
-                }
-            }
-        }
-        .frame(height: 10)
-        .animation(.smooth, value: fraction)
-        .accessibilityHidden(true)
-    }
-}
-
-/// Pour / Pause: large, with an optional progress ring around the icon.
+/// Pour / Pause: large, filled in `tint` while active. Compact (stir / swirl / shake): smaller, with a
+/// soft highlight while running. Both with an optional progress ring around the icon.
 struct BigButton: View {
     let title: String
-    let subtitle: String
+    var subtitle: String?
     let systemImage: String
     let tint: Color
     let isActive: Bool
     var progress: Double = 0
+    var isCompact = false
     let action: () -> Void
 
     var body: some View {
+        let filled = isActive && !isCompact
         Button(action: action) {
             VStack(spacing: Spacing.xs) {
-                ProgressRing(progress: progress, tint: tint, ringColor: isActive ? .white : tint) {
-                    Image(systemName: systemImage).font(.title3)
+                ProgressRing(progress: progress, color: filled ? .white : tint, track: tint.opacity(0.2)) {
+                    Image(systemName: systemImage).font(isCompact ? .body.weight(.semibold) : .title3)
                 }
-                .frame(width: 44, height: 44)
-                Text(title).font(.headline)
-                Text(subtitle).font(.caption).lineLimit(1).minimumScaleFactor(0.8)
+                .frame(width: isCompact ? 36 : 44, height: isCompact ? 36 : 44)
+                Text(title).font(isCompact ? .caption.weight(.semibold) : .headline).lineLimit(1).minimumScaleFactor(0.7)
+                if let subtitle {
+                    Text(subtitle).font(.caption).lineLimit(1).minimumScaleFactor(0.8)
+                }
             }
-            .foregroundStyle(isActive ? Color.white : tint)
+            .foregroundStyle(filled ? Color.white : tint)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, Spacing.lg)
-            .background(isActive ? tint : tint.opacity(0.12), in: RoundedRectangle(cornerRadius: Radius.large, style: .continuous))
+            .padding(.vertical, isCompact ? Spacing.md : Spacing.lg)
+            .background(
+                filled ? tint : tint.opacity(isActive ? 0.25 : (isCompact ? 0.1 : 0.12)),
+                in: RoundedRectangle(cornerRadius: isCompact ? Radius.medium : Radius.large, style: .continuous)
+            )
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isActive ? .isSelected : [])
     }
 }
 
-/// An icon inside a ring that fills clockwise with `progress` (0...1).
-struct ProgressRing<Content: View>: View {
-    let progress: Double
-    let tint: Color
-    /// The filled part (default: `tint`).
-    var ringColor: Color?
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        ZStack {
-            Circle().stroke(tint.opacity(0.2), lineWidth: 3)
-            Circle().trim(from: 0, to: progress).stroke(ringColor ?? tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-            content
+extension AlertingViewModel {
+    /// Saves a brew just made (taking its dose and a filter from stock) and hands it to the router; a
+    /// failure becomes the alert. Returns whether it worked.
+    func record(_ brew: Brew, in brews: any BrewRepository, then router: (any BrewSavingRouting)?) async -> Bool {
+        await attempt {
+            let usage = try await brews.record(brew)
+            router?.brewDidSave(brew, usage: usage)
         }
     }
 }
 
-/// Saves a brew just made (taking its dose and a filter from stock) and hands it to the router.
-/// Returns the error message if it failed.
-func record(_ brew: Brew, in brews: any BrewRepository, then router: (any BrewSavingRouting)?) async -> String? {
-    do {
-        let usage = try await brews.record(brew)
-        router?.brewDidSave(brew, usage: usage)
-        return nil
-    } catch {
-        return error.localizedDescription
+extension View {
+    /// "Discard this brew?" for Back on a started brew (the timer, the rating).
+    func discardBrewConfirmation(isPresented: Binding<Bool>, onDiscard: @escaping () -> Void) -> some View {
+        confirmationDialog(tr("Discard this brew?"), isPresented: isPresented, titleVisibility: .visible) {
+            Button(tr("Discard"), role: .destructive, action: onDiscard)
+        }
+    }
+}
+
+public extension StockUsage {
+    /// Warnings after a brew took its coffee and filter: the bag used up or running low, filters low.
+    var warnings: [String] {
+        var warnings: [String] = []
+        if let bean, bean.isLow {
+            let name = bean.name
+            warnings.append(bean.isEmpty ? tr("\(name) is used up") : tr("\(name) is running low"))
+        }
+        if let pack = filterPack, pack.isLow {
+            let (name, left) = (pack.name, pack.remaining)
+            warnings.append(pack.isEmpty ? tr("No filters left in \(name)") : tr("Only \(left) filters left in \(name)"))
+        }
+        return warnings
     }
 }

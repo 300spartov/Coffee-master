@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// How a brew tasted, from the rating screen: rating, flavor-wheel notes (Ukrainian names) and free notes.
 public struct BrewTasting: Hashable, Codable, Sendable {
@@ -19,7 +20,7 @@ public struct BrewTasting: Hashable, Codable, Sendable {
     func applied(to brew: Brew) -> Brew {
         var brew = brew
         brew.tasting = self
-        brew.notes = brew.notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        brew.notes = brew.notes.trimmed
         return brew
     }
 }

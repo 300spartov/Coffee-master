@@ -69,53 +69,71 @@ public struct ErrorStateView: View {
     }
 }
 
-/// Renders a `LoadState`: a spinner, the error with Retry, or `content` once ready.
+/// Renders a `LoadState`: a spinner, the error with Retry, or `content` once ready. Runs `observe`
+/// with the view (`.task`); Retry runs `reload`.
 public struct LoadStateView<Content: View>: View {
     private let state: LoadState
-    private let retry: () -> Void
+    private let observe: () async -> Void
+    private let reload: () async -> Void
     private let content: () -> Content
 
-    public init(_ state: LoadState, retry: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
+    public init(_ state: LoadState, observe: @escaping () async -> Void, reload: @escaping () async -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.state = state
-        self.retry = retry
+        self.observe = observe
+        self.reload = reload
         self.content = content
     }
 
+    /// For a screen that loads once (a form): the same call starts and retries.
+    public init(_ state: LoadState, load: @escaping () async -> Void, @ViewBuilder content: @escaping () -> Content) {
+        self.init(state, observe: load, reload: load, content: content)
+    }
+
     public var body: some View {
-        switch state {
-        case .loading: LoadingView()
-        case .failed(let message): ErrorStateView(message: message, retry: retry)
-        case .ready: content()
+        Group {
+            switch state {
+            case .loading: LoadingView()
+            case .failed(let message): ErrorStateView(message: message) { Task { await reload() } }
+            case .ready: content()
+            }
         }
+        .task { await observe() }
     }
 }
 
-/// Renders a `ListState`: a spinner, `empty`, the error with Retry, or `content` with the items.
+/// Renders a `ListState`: a spinner, `empty`, the error with Retry, or `content` with the items. Runs
+/// `observe` with the view (`.task`; typically loads, then reloads on changes); Retry runs `reload`.
 public struct ListStateView<Item: Equatable & Sendable, Empty: View, Content: View>: View {
     private let state: ListState<Item>
-    private let retry: () -> Void
+    private let observe: () async -> Void
+    private let reload: () async -> Void
     private let empty: () -> Empty
     private let content: ([Item]) -> Content
 
     public init(
         _ state: ListState<Item>,
-        retry: @escaping () -> Void,
+        observe: @escaping () async -> Void,
+        reload: @escaping () async -> Void,
         @ViewBuilder empty: @escaping () -> Empty,
         @ViewBuilder content: @escaping ([Item]) -> Content
     ) {
         self.state = state
-        self.retry = retry
+        self.observe = observe
+        self.reload = reload
         self.empty = empty
         self.content = content
     }
 
     public var body: some View {
-        switch state {
-        case .loading: LoadingView()
-        case .empty: empty()
-        case .failed(let message): ErrorStateView(message: message, retry: retry)
-        case .loaded(let items): content(items)
+        Group {
+            switch state {
+            case .loading: LoadingView()
+            case .empty: empty()
+            case .failed(let message): ErrorStateView(message: message) { Task { await reload() } }
+            case .loaded(let items): content(items)
+            }
         }
+        .task { await observe() }
     }
 }
 

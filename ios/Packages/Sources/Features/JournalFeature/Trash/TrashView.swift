@@ -10,9 +10,7 @@ struct TrashView: View {
     @State private var isConfirmingEmpty = false
 
     var body: some View {
-        ListStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } empty: {
+        ListStateView(viewModel.state, observe: viewModel.start, reload: viewModel.load) {
             EmptyStateView(
                 title: tr("No deleted brews"),
                 systemImage: "trash",
@@ -50,7 +48,6 @@ struct TrashView: View {
             .listStyle(.insetGrouped)
         }
         .themedGroupedBackground()
-        .task { await viewModel.start() }
         .errorAlert($viewModel.alertMessage)
         .confirmationDialog(tr("Delete all these brews for good?"), isPresented: $isConfirmingEmpty, titleVisibility: .visible) {
             Button(tr("Empty Trash"), role: .destructive) { Task { await viewModel.emptyTrash() } }

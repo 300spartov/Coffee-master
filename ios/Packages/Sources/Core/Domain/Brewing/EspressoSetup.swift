@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// The recipe chosen on the espresso setup step. Defaults and limits match the web app.
 public struct EspressoSetup: Hashable, Codable, Sendable {
@@ -28,7 +29,7 @@ public struct EspressoSetup: Hashable, Codable, Sendable {
 }
 
 public extension EspressoSetup {
-    public static let doseRange: ClosedRange<Double> = 1...30
+    static let doseRange: ClosedRange<Double> = 1...30
     static let ratioRange: ClosedRange<Double> = 1...5
     static let temperatureRange: ClosedRange<Double> = 84...100
     static let pressureRange: ClosedRange<Double> = 6...12
@@ -36,7 +37,7 @@ public extension EspressoSetup {
     static let targetShotTime: TimeInterval = 27
 
     /// Target yield, g, to one decimal.
-    var targetYieldGrams: Double { (doseGrams * ratio * 10).rounded() / 10 }
+    var targetYieldGrams: Double { (doseGrams * ratio).roundedToTenth }
 
     /// Cappuccino, flat white, latte: a milk step after the shot.
     var needsMilk: Bool { [.cappuccino, .flatWhite, .latte].contains(method) }
@@ -48,7 +49,7 @@ public extension EspressoSetup {
         var setup = self
         setup.grindSetting = grindSetting.clamped(to: BrewSetup.grindRange)
         setup.doseGrams = doseGrams.clamped(to: Self.doseRange)
-        setup.ratio = (ratio.clamped(to: Self.ratioRange) * 10).rounded() / 10
+        setup.ratio = ratio.clamped(to: Self.ratioRange).roundedToTenth
         setup.waterTemperature = waterTemperature.clamped(to: Self.temperatureRange)
         setup.pressureBar = pressureBar.clamped(to: Self.pressureRange)
         return setup
@@ -87,8 +88,8 @@ public extension EspressoSetup {
             waterTemperature: waterTemperature,
             totalTime: shotTime,
             espresso: shot,
-            milk: needsMilk ? milk : nil,
-            ice: needsIce ? ice : nil,
+            milk: needsMilk ? milk.map { MilkInfo(name: $0.name.trimmed, temperature: $0.temperature, volumeMilliliters: $0.volumeMilliliters, frother: $0.frother) } : nil,
+            ice: needsIce ? ice.map { IceInfo(cubes: $0.cubes, mixer: $0.mixer.trimmed) } : nil,
             rating: tasting.rating
         ))
     }

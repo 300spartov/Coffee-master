@@ -1,4 +1,5 @@
 import Foundation
+import AppCore
 
 /// One recorded step of an alternative brew: a pour, a pause or an action (stir, swirl, …).
 public struct BrewStep: Hashable, Codable, Sendable {
@@ -71,7 +72,7 @@ public extension Array where Element == BrewStep {
     mutating func spreadPours(_ total: Double) {
         let pours = indices.filter { self[$0].isPour }
         guard !pours.isEmpty else { return }
-        let each = (Swift.max(total, 0) / Double(pours.count) * 10).rounded() / 10
+        let each = (Swift.max(total, 0) / Double(pours.count)).roundedToTenth
         pours.forEach { self[$0].kind = .pour(milliliters: each) }
     }
 }

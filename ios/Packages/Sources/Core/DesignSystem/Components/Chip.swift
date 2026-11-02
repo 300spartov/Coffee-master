@@ -2,15 +2,23 @@ import SwiftUI
 
 /// Small rounded label: flavor notes, methods, filters, processing. Tappable when `action` is set.
 public struct Chip: View {
+    public enum Size: Sendable {
+        case regular
+        /// Tags in a list row (a bag's roast, its score).
+        case small
+    }
+
     private let title: String
     private let systemImage: String?
     private let isSelected: Bool
+    private let size: Size
     private let action: (() -> Void)?
 
-    public init(_ title: String, systemImage: String? = nil, isSelected: Bool = false, action: (() -> Void)? = nil) {
+    public init(_ title: String, systemImage: String? = nil, isSelected: Bool = false, size: Size = .regular, action: (() -> Void)? = nil) {
         self.title = title
         self.systemImage = systemImage
         self.isSelected = isSelected
+        self.size = size
         self.action = action
     }
 
@@ -29,13 +37,13 @@ public struct Chip: View {
             if let systemImage {
                 Image(systemName: systemImage).font(.caption.weight(.semibold))
             }
-            Text(title).font(.subheadline.weight(.medium)).lineLimit(1)
+            Text(title).font(size == .small ? .caption2.weight(.medium) : .subheadline.weight(.medium)).lineLimit(1)
         }
-        .padding(.horizontal, Spacing.md)
-        .padding(.vertical, Spacing.xs + 2)
-        .foregroundStyle(isSelected ? Color.theme.accent : Color.theme.textPrimary)
+        .padding(.horizontal, size == .small ? Spacing.xs + 2 : Spacing.md)
+        .padding(.vertical, size == .small ? 2 : Spacing.xs + 2)
+        .foregroundStyle(isSelected ? Color.theme.accent : (size == .small ? Color.theme.textSecondary : Color.theme.textPrimary))
         .background(isSelected ? Color.theme.accentSoft : Color.theme.fill, in: Capsule())
-        .overlay(Capsule().strokeBorder(isSelected ? Color.theme.accent : .clear, lineWidth: 1))
+        .overlay(Capsule().strokeBorder(isSelected && size == .regular ? Color.theme.accent : .clear, lineWidth: 1))
         .contentShape(Capsule())
     }
 }

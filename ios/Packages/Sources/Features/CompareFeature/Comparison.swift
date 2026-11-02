@@ -1,6 +1,7 @@
 import Foundation
 import Domain
 import BrewKit
+import DesignSystem
 
 /// 2–4 brews side by side (web: `compare.js`): each brew's steps on its own clock, the water it took over
 /// time, and the parameters that differ.
@@ -58,13 +59,10 @@ nonisolated struct Comparison: Equatable {
         }
     }
 
-    /// The web's limit.
-    static let maximumBrews = 4
-
     let entries: [Entry]
 
     init(brews: [Brew]) {
-        entries = brews.prefix(Self.maximumBrews).enumerated().map { Entry(brew: $1, index: $0) }
+        entries = brews.prefix(Brew.maximumCompared).enumerated().map { Entry(brew: $1, index: $0) }
     }
 
     var longestTime: TimeInterval { entries.map(\.totalTime).max() ?? 0 }

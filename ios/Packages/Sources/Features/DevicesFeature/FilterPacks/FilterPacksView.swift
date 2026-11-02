@@ -7,14 +7,11 @@ struct FilterPacksView: View {
 
     var body: some View {
         content
-            .task { await viewModel.start() }
             .errorAlert($viewModel.alertMessage)
     }
 
     private var content: some View {
-        ListStateView(viewModel.state) {
-            Task { await viewModel.load() }
-        } empty: {
+        ListStateView(viewModel.state, observe: viewModel.start, reload: viewModel.load) {
             EmptyStateView(
                 title: tr("No filter packs"),
                 systemImage: DeviceType.filter.systemImage,
@@ -53,9 +50,7 @@ private struct FilterPackRow: View {
     let putBackOne: () -> Void
 
     /// Filters run low at a fixed count (like the web app), not a share of the pack.
-    private var level: StockLevel {
-        StockLevel(isEmpty: pack.isEmpty, isLow: pack.isLow)
-    }
+    private var level: StockLevel { StockLevel(pack) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -76,7 +71,7 @@ private struct FilterPackRow: View {
             .buttonStyle(.plain)
 
             HStack(spacing: Spacing.md) {
-                StockBar(fraction: pack.remainingFraction, level: level)
+                StockBar(pack)
                 Button(action: useOne) {
                     Image(systemName: "minus.circle")
                 }
@@ -99,13 +94,7 @@ private struct FilterPackRow: View {
 }
 
 #if DEBUG
-private final class PreviewFilterPacksRouter: FilterPacksRouting {
-    static let shared = PreviewFilterPacksRouter()
-    func showAddFilterPack() {}
-    func showEditFilterPack(id: FilterPack.ID) {}
-}
-
 #Preview {
-    FilterPacksView(viewModel: FilterPacksViewModel(router: PreviewFilterPacksRouter.shared))
+    FilterPacksView(viewModel: FilterPacksViewModel(router: PreviewRouter.shared))
 }
 #endif

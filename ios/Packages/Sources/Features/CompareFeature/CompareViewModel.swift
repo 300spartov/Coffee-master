@@ -10,6 +10,14 @@ import FactoryKit
 final class CompareViewModel {
     enum Chart: CaseIterable {
         case timeline, rings, curve
+
+        var title: String {
+            switch self {
+            case .timeline: tr("Timeline")
+            case .rings: tr("Rings")
+            case .curve: tr("Curve")
+            }
+        }
     }
 
     /// What the timeline bars are labelled with.
@@ -17,7 +25,7 @@ final class CompareViewModel {
         case seconds, milliliters
     }
 
-    let brewIDs: [Brew.ID]
+    private let brewIDs: [Brew.ID]
     private(set) var state: LoadState = .loading
     private(set) var comparison = Comparison(brews: [])
     var chart = Chart.timeline

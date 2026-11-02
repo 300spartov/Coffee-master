@@ -38,16 +38,23 @@ public enum DripperKind: String, Sendable, CaseIterable {
     /// Kinds that belong to one method only; the other methods don't offer them.
     static let methodSpecific: Set<DripperKind> = [.aeropress, .chemex, .frenchPress, .coldBrew, .batch]
 
-    /// The one kind `method` needs (AeroPress → AeroPress), or `nil` when any cone-style dripper fits (V60, …).
-    public static func required(for method: BrewMethod) -> DripperKind? {
-        switch method {
+    /// The method this kind brews (cones and anything unrecognized: V60).
+    public var method: BrewMethod {
+        switch self {
+        case .cone: .v60
+        case .origami: .origami
+        case .flower: .flower
         case .aeropress: .aeropress
         case .chemex: .chemex
         case .frenchPress: .frenchPress
         case .coldBrew: .coldBrew
-        case .batchBrewing: .batch
-        default: nil
+        case .batch: .batchBrewing
         }
+    }
+
+    /// The one kind `method` needs (AeroPress → AeroPress), or `nil` when any cone-style dripper fits (V60, …).
+    public static func required(for method: BrewMethod) -> DripperKind? {
+        methodSpecific.first { $0.method == method }
     }
 
     /// Whether a dripper of this kind can be used for `method`.
@@ -56,17 +63,6 @@ public enum DripperKind: String, Sendable, CaseIterable {
         return !Self.methodSpecific.contains(self)
     }
 
-    /// Name shown under the dripper (proper names, the same in every language).
-    public var displayName: String {
-        switch self {
-        case .cone: "V60"
-        case .origami: "Origami"
-        case .flower: "Flower"
-        case .aeropress: "Aeropress"
-        case .chemex: "Chemex"
-        case .frenchPress: "French Press"
-        case .coldBrew: "Cold Brew"
-        case .batch: "Batch Brewing"
-        }
-    }
+    /// Name shown under the dripper (the method's proper name, the same in every language).
+    public var displayName: String { method.rawValue }
 }

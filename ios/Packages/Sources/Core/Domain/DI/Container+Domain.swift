@@ -48,7 +48,7 @@ extension Container {
 public extension Container {
     /// Last setups per method, for prefilling the brew wizard.
     var brewSetupHistory: Factory<any BrewSetupHistory> {
-        self { InMemoryBrewSetupHistory() }.cached
+        self { StoredBrewSetupHistory() }.cached
     }
 
     /// The brew in progress, kept across app kills.
