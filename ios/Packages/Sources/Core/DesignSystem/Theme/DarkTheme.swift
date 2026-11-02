@@ -12,7 +12,9 @@ nonisolated public extension Theme {
         textTertiary: ThemeColor(0xEBEBF5, alpha: 0.3),
 
         accent: ThemeColor(0xD89858),
-        onAccent: ThemeColor(0x1C130A),
+        onAccent: ThemeColor(0xFFFFFF),
+        // Deeper than `accent` so white text stays readable (4.3:1).
+        accentFill: ThemeColor(0xB06A20),
         accentSoft: ThemeColor(0xD89858, alpha: 0.22),
 
         success: ThemeColor(0x30D158),

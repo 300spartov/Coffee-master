@@ -42,9 +42,11 @@ struct CompareView: View {
                 Text(tr("Milliliters")).tag(CompareViewModel.Unit.milliliters)
             }
             .pickerStyle(.segmented)
+            // Tapping a brew selects it (the others fade) and shows its steps.
             ForEach(comparison.entries) { entry in
-                TimelineCard(entry: entry, unit: viewModel.unit)
+                TimelineCard(entry: entry, unit: viewModel.unit, isSelected: viewModel.highlighted == entry.id)
                     .opacity(viewModel.isFaded(entry) ? 0.35 : 1)
+                    .onTapGesture { viewModel.toggleHighlight(entry) }
             }
             ParametersTable(comparison: comparison)
             Text(tr("Orange: differs from the others")).appTextStyle(.caption)
@@ -55,7 +57,7 @@ struct CompareView: View {
 
     private var rings: some View {
         VStack(spacing: Spacing.md) {
-            StepRings(comparison: comparison, isFaded: viewModel.isFaded)
+            StepRings(comparison: comparison, isFaded: viewModel.isFaded, select: viewModel.toggleHighlight)
                 .frame(width: 280, height: 280)
                 .frame(maxWidth: .infinity)
                 .cardStyle()
@@ -90,6 +92,20 @@ struct CompareView: View {
                 }
             }
             .chartYAxisLabel(tr("ml"))
+            // Tapping the chart selects the brew whose line is nearest.
+            .chartOverlay { chart in
+                GeometryReader { proxy in
+                    Rectangle().fill(.clear).contentShape(Rectangle())
+                        .onTapGesture { location in
+                            guard let plot = chart.plotFrame else { return }
+                            let origin = proxy[plot].origin
+                            guard let (seconds, milliliters) = chart.value(at: CGPoint(x: location.x - origin.x, y: location.y - origin.y), as: (Double, Double).self),
+                                  let entry = comparison.entry(nearestSeconds: seconds, milliliters: milliliters)
+                            else { return }
+                            viewModel.toggleHighlight(entry)
+                        }
+                }
+            }
             .frame(height: 240)
             .cardStyle()
             .accessibilityElement(children: .contain)
@@ -107,10 +123,7 @@ struct CompareView: View {
             } label: {
                 EntryHeader(entry: entry, detail: detail(entry))
                     .cardStyle(padding: Spacing.md)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Radius.large, style: .continuous)
-                            .strokeBorder(viewModel.highlighted == entry.id ? Comparison.color(entry) : .clear, lineWidth: 2)
-                    )
+                    .selectionBorder(viewModel.highlighted == entry.id, color: Comparison.color(entry))
             }
             .buttonStyle(.plain)
             .opacity(viewModel.isFaded(entry) ? 0.35 : 1)
@@ -120,6 +133,13 @@ struct CompareView: View {
 }
 
 // MARK: - Pieces
+
+private extension View {
+    /// The selected brew's card: a border in its color.
+    func selectionBorder(_ isSelected: Bool, color: Color) -> some View {
+        overlay(RoundedRectangle(cornerRadius: Radius.large, style: .continuous).strokeBorder(isSelected ? color : .clear, lineWidth: 2))
+    }
+}
 
 extension Comparison {
     /// The brews' colors in every chart (web: `CP_COLORS`).
@@ -169,7 +189,8 @@ private struct EntryHeader: View {
 private struct TimelineCard: View {
     let entry: Comparison.Entry
     let unit: CompareViewModel.Unit
-    @State private var showsSteps = false
+    /// The selected brew shows its step list.
+    let isSelected: Bool
 
     var body: some View {
         let total = max(entry.totalTime, 1)
@@ -195,13 +216,13 @@ private struct TimelineCard: View {
             }
             .font(.caption2.monospacedDigit())
             .foregroundStyle(.theme.textTertiary)
-            if showsSteps {
+            if isSelected {
                 BrewStepList(entry.steps)
             }
         }
         .cardStyle(padding: Spacing.md)
+        .selectionBorder(isSelected, color: Comparison.color(entry))
         .contentShape(Rectangle())
-        .onTapGesture { withAnimation(.smooth(duration: 0.2)) { showsSteps.toggle() } }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("compare.timeline")
     }
@@ -254,12 +275,15 @@ private struct ParametersTable: View {
 private struct StepRings: View {
     let comparison: Comparison
     let isFaded: (Comparison.Entry) -> Bool
+    /// A ring was tapped.
+    let select: (Comparison.Entry) -> Void
 
     var body: some View {
         GeometryReader { proxy in
             let side = min(proxy.size.width, proxy.size.height)
             let width = comparison.entries.count >= 4 ? 13.0 : 17.0
             let pitch = width + 5
+            let center = CGPoint(x: proxy.size.width / 2, y: proxy.size.height / 2)
             ZStack {
                 ForEach(comparison.entries) { entry in
                     let diameter = side - width - Double(entry.index) * pitch * 2
@@ -284,6 +308,13 @@ private struct StepRings: View {
                 }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
+            .contentShape(Rectangle())
+            .onTapGesture { location in
+                let distance = hypot(location.x - center.x, location.y - center.y)
+                if let entry = comparison.ringEntry(atDistance: distance, outerRadius: (side - width) / 2, pitch: pitch, width: width) {
+                    select(entry)
+                }
+            }
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("compare.rings")

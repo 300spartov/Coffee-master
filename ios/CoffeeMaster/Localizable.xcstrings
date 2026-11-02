@@ -1,454 +1,455 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "%@ added": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ added"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ added" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ added"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ додано"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ додано"
           }
         }
       }
     },
-    "Bean added": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bean added"
+    "Bean added" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bean added"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пачку додано"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачку додано"
           }
         }
       }
     },
-    "Bean deleted": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bean deleted"
+    "Bean deleted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bean deleted"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пачку видалено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачку видалено"
           }
         }
       }
     },
-    "Bean saved": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bean saved"
+    "Bean saved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bean saved"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пачку збережено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачку збережено"
           }
         }
       }
     },
-    "Beans": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beans"
+    "Beans" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beans"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Зерно"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зерно"
           }
         }
       }
     },
-    "Brew": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brew"
+    "Brew" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brew"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Заварити"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заварити"
           }
         }
       }
     },
-    "Brew added": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brew added"
+    "Brew added" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brew added"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Додано в журнал"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додано в журнал"
           }
         }
       }
     },
-    "Brew updated": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brew updated"
+    "Brew updated" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brew updated"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Рецепт оновлено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рецепт оновлено"
           }
         }
       }
     },
-    "Device added": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Device added"
+    "Device added" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device added"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Девайс додано"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Девайс додано"
           }
         }
       }
     },
-    "Device removed": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Device removed"
+    "Device removed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device removed"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Девайс видалено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Девайс видалено"
           }
         }
       }
     },
-    "Device saved": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Device saved"
+    "Device saved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device saved"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Девайс збережено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Девайс збережено"
           }
         }
       }
     },
-    "Devices": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Devices"
+    "Devices" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Devices"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Девайси"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Девайси"
           }
         }
       }
     },
-    "Everything is already imported.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Everything is already imported."
+    "Everything is already imported." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything is already imported."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Усе вже імпортовано."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усе вже імпортовано."
           }
         }
       }
     },
-    "Filter pack added": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Filter pack added"
+    "Filter pack added" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filter pack added"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пачку фільтрів додано"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачку фільтрів додано"
           }
         }
       }
     },
-    "Filter pack removed": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Filter pack removed"
+    "Filter pack removed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filter pack removed"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пачку фільтрів видалено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачку фільтрів видалено"
           }
         }
       }
     },
-    "Filter pack saved": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Filter pack saved"
+    "Filter pack saved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filter pack saved"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пачку фільтрів збережено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пачку фільтрів збережено"
           }
         }
       }
     },
-    "Import failed. Please try again.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import failed. Please try again."
+    "Import failed. Please try again." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import failed. Please try again."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Не вдалося імпортувати. Спробуй ще раз."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не вдалося імпортувати. Спробуй ще раз."
           }
         }
       }
     },
-    "Imported — brews: %lld, beans: %lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imported — brews: %lld, beans: %lld"
+    "Imported — brews: %lld, beans: %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imported — brews: %lld, beans: %lld"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Імпортовано — рецептів: %lld, зерна: %lld"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Імпортовано — рецептів: %lld, зерна: %lld"
           }
         }
       }
     },
-    "Journal": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Journal"
+    "Journal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Journal"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Журнал"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Журнал"
           }
         }
       }
     },
-    "Profile": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Profile"
+    "Profile" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Профіль"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Профіль"
           }
         }
       }
     },
-    "Profile saved": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Profile saved"
+    "Profile saved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile saved"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Профіль збережено"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Профіль збережено"
           }
         }
       }
     },
-    "Start a Brew": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start a Brew"
+    "Settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Почати заварювання"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Налаштування"
           }
         }
       }
     },
-    "This bean no longer exists.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This bean no longer exists."
+    "Start a Brew" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start a Brew"
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Цієї пачки більше немає."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Почати заварювання"
           }
         }
       }
     },
-    "This brew no longer exists.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This brew no longer exists."
+    "This bean no longer exists." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This bean no longer exists."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Цього рецепта більше немає."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цієї пачки більше немає."
           }
         }
       }
     },
-    "This device no longer exists.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This device no longer exists."
+    "This brew no longer exists." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This brew no longer exists."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Цього девайса більше немає."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цього рецепта більше немає."
           }
         }
       }
     },
-    "This file isn't a Coffee Master export.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This file isn't a Coffee Master export."
+    "This device no longer exists." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This device no longer exists."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Цей файл не є експортом Coffee Master."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цього девайса більше немає."
           }
         }
       }
     },
-    "This filter pack no longer exists.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This filter pack no longer exists."
+    "This file isn't a Coffee Master export." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This file isn't a Coffee Master export."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Цієї пачки фільтрів більше немає."
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цей файл не є експортом Coffee Master."
           }
         }
       }
     },
-    "Settings": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Settings"
+    "This filter pack no longer exists." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This filter pack no longer exists."
           }
         },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Налаштування"
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Цієї пачки фільтрів більше немає."
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

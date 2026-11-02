@@ -865,6 +865,22 @@
         }
       }
     },
+    "Remove": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прибрати"
+          }
+        }
+      }
+    },
     "Reset": {
       "localizations": {
         "en": {
@@ -1085,6 +1101,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Скасувати"
+          }
+        }
+      }
+    },
+    "Unlike": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlike"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не подобається"
           }
         }
       }

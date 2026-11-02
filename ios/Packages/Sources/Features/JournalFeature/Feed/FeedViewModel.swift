@@ -20,7 +20,7 @@ final class FeedViewModel: AlertingViewModel {
     /// Brews picked for the comparison, in the order they were picked (up to `Brew.maximumCompared`).
     private(set) var compared: [Brew.ID] = [] {
         didSet {
-            if showsCompareBar != (oldValue.count >= 2) { onShowsCompareBarChange?(showsCompareBar) }
+            if showsCompareBar != !oldValue.isEmpty { onShowsCompareBarChange?(showsCompareBar) }
         }
     }
     /// Called when the compare bar appears or goes (the module puts it in the tab bar on iOS 26).
@@ -79,8 +79,11 @@ final class FeedViewModel: AlertingViewModel {
 
     // MARK: - Compare
 
-    /// From two picked brews on.
-    var showsCompareBar: Bool { compared.count >= 2 }
+    /// From the first picked brew on (so you see the pick and can reset it).
+    var showsCompareBar: Bool { !compared.isEmpty }
+
+    /// Comparing needs two brews; until then the bar's button is disabled.
+    var canCompare: Bool { compared.count >= 2 }
 
     func toggleCompare(_ brew: Brew) {
         if let index = compared.firstIndex(of: brew.id) {
@@ -97,7 +100,7 @@ final class FeedViewModel: AlertingViewModel {
     }
 
     func didTapCompare() {
-        guard showsCompareBar else { return }
+        guard canCompare else { return }
         router?.showCompare(brewIDs: compared)
     }
 

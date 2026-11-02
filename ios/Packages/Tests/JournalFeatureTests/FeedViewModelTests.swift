@@ -77,8 +77,11 @@ struct FeedViewModelTests {
         let viewModel = makeViewModel(repository: TestRepository(brews: brews))
         await viewModel.load()
 
-        viewModel.didTapCompare()                       // nothing picked: no route
-        brews.forEach(viewModel.toggleCompare)          // the fifth is one too many
+        viewModel.toggleCompare(brews[0])
+        #expect(viewModel.showsCompareBar && !viewModel.canCompare)   // one: the bar, disabled
+        viewModel.didTapCompare()                       // no route yet
+        #expect(router.compared.isEmpty)
+        brews.dropFirst().forEach(viewModel.toggleCompare)   // the fifth is one too many
         #expect(viewModel.compared == brews.prefix(4).map(\.id))
         #expect(viewModel.alertMessage != nil)
         viewModel.toggleCompare(brews[1])               // unpick

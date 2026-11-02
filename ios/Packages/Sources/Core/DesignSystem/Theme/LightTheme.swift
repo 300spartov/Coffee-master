@@ -13,7 +13,8 @@ nonisolated public extension Theme {
         textTertiary: ThemeColor(0x3C3C43, alpha: 0.3),
 
         accent: ThemeColor(0xC27A2C),
-        onAccent: ThemeColor(0x1C130A),
+        onAccent: ThemeColor(0xFFFFFF),
+        accentFill: ThemeColor(0xC27A2C),
         accentSoft: ThemeColor(0xC27A2C, alpha: 0.16),
 
         success: ThemeColor(0x34C759),

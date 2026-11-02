@@ -32,8 +32,10 @@ nonisolated public struct ColorPalette: Sendable {
 
     /// Buttons, links, selection, icons, tab bar selection.
     public var accent: ThemeColor
-    /// Text and icons placed on `accent`.
+    /// Text and icons on `accentFill` (prominent buttons): light.
     public var onAccent: ThemeColor
+    /// Fill of prominent (primary) buttons: the accent, dark enough for light text on it.
+    public var accentFill: ThemeColor
     /// Translucent accent for selected chips and soft highlights.
     public var accentSoft: ThemeColor
 
@@ -63,7 +65,7 @@ nonisolated public struct ColorPalette: Sendable {
             ("background", \.background), ("groupedBackground", \.groupedBackground),
             ("surface", \.surface), ("elevatedSurface", \.elevatedSurface), ("fill", \.fill),
             ("textPrimary", \.textPrimary), ("textSecondary", \.textSecondary), ("textTertiary", \.textTertiary),
-            ("accent", \.accent), ("onAccent", \.onAccent), ("accentSoft", \.accentSoft),
+            ("accent", \.accent), ("onAccent", \.onAccent), ("accentFill", \.accentFill), ("accentSoft", \.accentSoft),
             ("success", \.success), ("warning", \.warning), ("error", \.error), ("info", \.info),
             ("separator", \.separator), ("shadow", \.shadow),
             ("navigationBar", \.navigationBar), ("tabBar", \.tabBar), ("tabBarItem", \.tabBarItem),
@@ -96,7 +98,7 @@ nonisolated public struct ThemeColor: Hashable, Sendable {
 
 public extension Color {
     /// `Color(hex: 0xD89858)`: data colors (flavor wheel, avatars, compare), not theme roles.
-    init(hex: UInt32) {
+    nonisolated init(hex: UInt32) {
         self = ThemeColor(hex).color
     }
 }

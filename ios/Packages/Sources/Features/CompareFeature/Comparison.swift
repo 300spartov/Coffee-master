@@ -21,6 +21,15 @@ nonisolated struct Comparison: Equatable {
         var id: Brew.ID { brew.id }
         var totalTime: TimeInterval { steps.last?.end ?? 0 }
 
+        /// Water poured by `seconds` (along the curve; the total once it's over).
+        func milliliters(at seconds: TimeInterval) -> Double {
+            guard let next = curve.firstIndex(where: { $0.seconds >= seconds }) else { return curve.last?.milliliters ?? 0 }
+            guard next > 0 else { return curve[next].milliliters }
+            let (from, to) = (curve[next - 1], curve[next])
+            let span = to.seconds - from.seconds
+            return span > 0 ? from.milliliters + (to.milliliters - from.milliliters) * (seconds - from.seconds) / span : to.milliliters
+        }
+
         init(brew: Brew, index: Int) {
             self.brew = brew
             self.index = index
@@ -39,6 +48,17 @@ nonisolated struct Comparison: Equatable {
             self.curve = curve
             self.actions = actions
         }
+    }
+
+    /// The brew whose curve passes nearest a tap on the curve chart (`seconds`, `milliliters`).
+    func entry(nearestSeconds seconds: TimeInterval, milliliters: Double) -> Entry? {
+        entries.min { abs($0.milliliters(at: seconds) - milliliters) < abs($1.milliliters(at: seconds) - milliliters) }
+    }
+
+    /// The ring under a tap `distance` from the rings' center, rings `pitch` apart from the outer
+    /// one at `outerRadius` (the first brew outside), each `width` wide.
+    func ringEntry(atDistance distance: Double, outerRadius: Double, pitch: Double, width: Double) -> Entry? {
+        entries.first { abs(distance - (outerRadius - Double($0.index) * pitch)) <= width / 2 + (pitch - width) / 2 }
     }
 
     struct CurvePoint: Equatable, Hashable {

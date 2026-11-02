@@ -56,11 +56,8 @@ struct ProfileView: View {
                     Text(verbatim: viewModel.subtitle).appTextStyle(.secondary)
                 }
                 if !viewModel.profile.location.isEmpty {
-                    HStack(spacing: Spacing.xxs) {
-                        Image(systemName: "mappin.and.ellipse")
-                        Text(verbatim: viewModel.profile.location)
-                    }
-                    .appTextStyle(.caption)
+                    CompactLabel(viewModel.profile.location, systemImage: "mappin.and.ellipse")
+                        .appTextStyle(.caption)
                 }
             }
             Spacer(minLength: 0)

@@ -69,15 +69,14 @@ struct BrewCard: View {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.xs) {
                     Text(brew.date, format: .dateTime.hour().minute())
                     if case .cafe(let place) = brew.origin {
-                        Image(systemName: "storefront")
-                        Text(verbatim: place.isEmpty ? tr("Café") : place).lineLimit(1)
+                        CompactLabel(place.isEmpty ? tr("Café") : place, systemImage: "storefront")
                     }
                 }
                 .appTextStyle(.caption)
             }
             Spacer(minLength: Spacing.sm)
             VStack(alignment: .trailing, spacing: Spacing.xxs) {
-                Label(brew.method.rawValue, systemImage: brew.method.systemImage)
+                CompactLabel(brew.method.rawValue, systemImage: brew.method.systemImage)
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.theme.accent)
                 if let device = brew.device {

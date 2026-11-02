@@ -20,7 +20,7 @@ public struct AppButtonStyle: ButtonStyle {
             .font(.headline)
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.md)
-            .background(kind == .primary ? Color.theme.accent : Color.theme.accentSoft, in: RoundedRectangle(cornerRadius: Radius.medium))
+            .background(kind == .primary ? Color.theme.accentFill : Color.theme.accentSoft, in: RoundedRectangle(cornerRadius: Radius.medium))
             .foregroundStyle(kind == .primary ? Color.theme.onAccent : Color.theme.accent)
             .opacity(isEnabled ? (configuration.isPressed ? 0.75 : 1) : 0.4)
     }

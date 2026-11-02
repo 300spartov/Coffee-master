@@ -2,7 +2,8 @@ import SwiftUI
 import Domain
 import DesignSystem
 
-/// The Journal: brew cards under day headers ("Today", "Yesterday", the date), swipe to delete.
+/// The Journal: brew cards under day headers ("Today", "Yesterday", the date); swipe right to compare
+/// or like, left to delete.
 struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
 
@@ -31,7 +32,20 @@ struct FeedView: View {
                             .listRowInsets(EdgeInsets(top: Spacing.sm, leading: Spacing.lg, bottom: Spacing.sm, trailing: Spacing.lg))
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
-                            .swipeActions {
+                            .swipeActions(edge: .leading) {
+                                let isCompared = viewModel.compared.contains(brew.id)
+                                Button(isCompared ? tr("Remove") : tr("Compare"), systemImage: "scalemass") {
+                                    viewModel.toggleCompare(brew)
+                                }
+                                .tint(isCompared ? .theme.textSecondary : .theme.accent)
+                                .accessibilityIdentifier("journal.swipeCompare")
+                                Button(brew.isLiked ? tr("Unlike") : tr("Like"), systemImage: brew.isLiked ? "heart.slash" : "heart") {
+                                    Task { await viewModel.toggleLike(brew) }
+                                }
+                                .tint(.theme.error)
+                                .accessibilityIdentifier("journal.swipeLike")
+                            }
+                            .swipeActions(edge: .trailing) {
                                 Button(tr("Delete"), systemImage: "trash", role: .destructive) {
                                     Task { await viewModel.delete(brew) }
                                 }
@@ -61,7 +75,8 @@ struct FeedView: View {
 }
 
 /// "Compare (3)" and a close (reset) button (web: `cp-fab`): the tab bar's accessory on iOS 26 (the
-/// accessory is the glass capsule), a floating bar before.
+/// accessory is the glass capsule), a floating bar before. Shown from the first pick; Compare is
+/// disabled until there are two.
 struct CompareBar: View {
     let viewModel: FeedViewModel
     let isTabAccessory: Bool
@@ -76,9 +91,10 @@ struct CompareBar: View {
                     .frame(maxWidth: .infinity, maxHeight: isTabAccessory ? .infinity : nil)
                     .contentShape(Rectangle())
             }
+            .disabled(!viewModel.canCompare)
             .accessibilityIdentifier("journal.compareBar")
             if isTabAccessory {
-                compare.buttonStyle(.plain).foregroundStyle(.theme.accent)
+                compare.buttonStyle(.plain).foregroundStyle(viewModel.canCompare ? Color.theme.accent : Color.theme.textTertiary)
             } else {
                 compare.buttonStyle(.primary)
             }

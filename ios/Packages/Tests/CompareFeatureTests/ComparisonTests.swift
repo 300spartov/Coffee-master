@@ -47,6 +47,22 @@ struct ComparisonTests {
         #expect(rows.first { $0.title == "First pour" }?.values == ["60 ml", "60 ml", "60 ml"])
     }
 
+    /// Taps on the charts: the water at a time, the nearest line, the ring under the finger.
+    @Test func tapsFindTheirBrew() {
+        var faster = pourOver
+        faster.steps = [BrewStep(kind: .pour(milliliters: 256), start: 0, duration: 20)]
+        let comparison = Comparison(brews: [pourOver, faster])
+
+        #expect(comparison.entries[0].milliliters(at: 5) == 30)
+        #expect(comparison.entries[0].milliliters(at: 25) == 60)
+        #expect(comparison.entries[0].milliliters(at: 999) == 256)
+        #expect(comparison.entry(nearestSeconds: 10, milliliters: 120)?.index == 1)   // faster: 128 ml at 10 s
+        #expect(comparison.entry(nearestSeconds: 10, milliliters: 50)?.index == 0)    // the first: 60 ml
+        #expect(comparison.ringEntry(atDistance: 131, outerRadius: 131, pitch: 22, width: 17)?.index == 0)
+        #expect(comparison.ringEntry(atDistance: 108, outerRadius: 131, pitch: 22, width: 17)?.index == 1)
+        #expect(comparison.ringEntry(atDistance: 40, outerRadius: 131, pitch: 22, width: 17) == nil)
+    }
+
     @Test func upToFourBrews() {
         #expect(Comparison(brews: Array(repeating: pourOver, count: 6)).entries.map(\.index) == [0, 1, 2, 3])
     }

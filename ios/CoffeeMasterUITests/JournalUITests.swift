@@ -65,8 +65,13 @@ final class JournalUITests: XCTestCase {
         let pickers = app.buttons.matching(identifier: "journal.compare")
         XCTAssertTrue(app.navigationBars["Journal"].waitForExistence(timeout: 5))
         try XCTSkipUnless(pickers.firstMatch.waitForExistence(timeout: 5), "Needs brews in the journal")
-        pickers.element(boundBy: 0).tap()
-        XCTAssertFalse(app.buttons["journal.compareBar"].exists, "Two brews are needed")
+        // The first by swiping it right, the second with its ⚖ button.
+        app.collectionViews.firstMatch.cells.containing(.button, identifier: "journal.brew").firstMatch.buttons["journal.brew"].swipeRight()
+        XCTAssertTrue(app.buttons["journal.swipeLike"].exists, "Like sits next to Compare")
+        app.buttons["journal.swipeCompare"].tap()
+        // One brew: the bar shows, but Compare waits for a second.
+        XCTAssertTrue(app.buttons["journal.compareBar"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["journal.compareBar"].isEnabled, "Two brews are needed")
         try XCTSkipUnless(pickers.count >= 2, "Needs two brews in the journal")
         pickers.element(boundBy: 1).tap()
         let bar = app.buttons["journal.compareBar"]
@@ -82,13 +87,21 @@ final class JournalUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Compare"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "compare.timeline").count, 2)
         XCTAssertTrue(app.descendants(matching: .any)["compare.parameters"].exists)
+        // Tapping a brew selects it: its steps open.
+        let firstTimeline = app.descendants(matching: .any).matching(identifier: "compare.timeline").firstMatch
+        firstTimeline.tap()
+        XCTAssertTrue(firstTimeline.staticTexts.matching(NSPredicate(format: "label CONTAINS '–'")).firstMatch.waitForExistence(timeout: 5), "The selected brew shows its steps")
         attachScreenshot(named: "compare-timeline")
         app.segmentedControls["compare.chart"].buttons["Rings"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["compare.rings"].waitForExistence(timeout: 5))
-        app.buttons.matching(identifier: "compare.entry").firstMatch.tap()
+        let rings = app.descendants(matching: .any)["compare.rings"]
+        XCTAssertTrue(rings.waitForExistence(timeout: 5))
+        // The outer ring (the first brew), near its top edge.
+        rings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.03)).tap()
         attachScreenshot(named: "compare-rings")
         app.segmentedControls["compare.chart"].buttons["Curve"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["compare.curve"].waitForExistence(timeout: 5))
+        let curve = app.descendants(matching: .any)["compare.curve"]
+        XCTAssertTrue(curve.waitForExistence(timeout: 5))
+        curve.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         attachScreenshot(named: "compare-curve")
 
         app.navigationBars["Compare"].buttons.firstMatch.tap()
