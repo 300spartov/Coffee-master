@@ -33,6 +33,22 @@
         }
       }
     },
+    "%lld days left": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days left"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Залишилось днів: %lld"
+          }
+        }
+      }
+    },
     "Actual TDS": {
       "localizations": {
         "en": {
@@ -129,6 +145,38 @@
         }
       }
     },
+    "Brew deleted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew deleted"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рецепт видалено"
+          }
+        }
+      }
+    },
+    "Brew restored": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew restored"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рецепт відновлено"
+          }
+        }
+      }
+    },
     "Brewer": {
       "localizations": {
         "en": {
@@ -141,6 +189,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Пристрій"
+          }
+        }
+      }
+    },
+    "Brews are deleted for good 30 days after you delete them. Restoring one takes its coffee from the bag again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brews are deleted for good 30 days after you delete them. Restoring one takes its coffee from the bag again."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рецепти видаляються назавжди через 30 днів після видалення. Відновлений рецепт знову списує каву з пачки."
           }
         }
       }
@@ -225,6 +289,22 @@
         }
       }
     },
+    "Delete all these brews for good?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete all these brews for good?"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалити всі ці рецепти назавжди?"
+          }
+        }
+      }
+    },
     "Delete Brew": {
       "localizations": {
         "en": {
@@ -253,6 +333,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Видалити цей рецепт?"
+          }
+        }
+      }
+    },
+    "Deleted Brews": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted Brews"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалені рецепти"
+          }
+        }
+      }
+    },
+    "Deleted brews stay here for 30 days.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted brews stay here for 30 days."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалені рецепти зберігаються тут 30 днів."
           }
         }
       }
@@ -317,6 +429,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Редагувати рецепт"
+          }
+        }
+      }
+    },
+    "Empty Trash": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Empty Trash"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистити кошик"
           }
         }
       }
@@ -529,6 +657,22 @@
         }
       }
     },
+    "No deleted brews": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No deleted brews"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає видалених рецептів"
+          }
+        }
+      }
+    },
     "No recipe logged": {
       "localizations": {
         "en": {
@@ -685,6 +829,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Рецепт"
+          }
+        }
+      }
+    },
+    "Restore": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відновити"
           }
         }
       }
@@ -861,6 +1021,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Разом %1$@ · %2$@ мл"
+          }
+        }
+      }
+    },
+    "Undo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скасувати"
           }
         }
       }

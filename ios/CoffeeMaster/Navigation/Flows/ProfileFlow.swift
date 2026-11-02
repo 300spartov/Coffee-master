@@ -7,12 +7,15 @@ import DeepLinks
 import DesignSystem
 import Navigation
 import SettingsFeature
+import JournalFeature
 import WebImport
 
 /// Profile tab. For now it hosts Settings; the profile itself (stats, XP, achievements) comes in
 /// ROADMAP Phase 4.
 final class ProfileFlow: NSObject, Flow {
     private let module: SettingsModule
+    /// The journal's trash lives under Profile → Data, like the web app.
+    private let journalModule: JournalModule
     private let router = StackRouter()
     @Injected(\.toasts) private var toasts
     @Injected(\.webImportService) private var webImport
@@ -20,8 +23,9 @@ final class ProfileFlow: NSObject, Flow {
 
     var rootViewController: UIViewController { router.navigationController }
 
-    init(module: SettingsModule, startBrew: @escaping () -> Void) {
+    init(module: SettingsModule, journalModule: JournalModule, startBrew: @escaping () -> Void) {
         self.module = module
+        self.journalModule = journalModule
         self.startBrew = startBrew
         super.init()
         router.navigationController.tabBarItem = UITabBarItem(
@@ -65,6 +69,10 @@ extension ProfileFlow: SettingsRouting {
 
     func showNewBrew() {
         startBrew()
+    }
+
+    func showTrash() {
+        router.push(journalModule.makeTrash())
     }
 
     func showDesignSystem() {

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Deleted brews. Kept for `TrashPolicy.retention`, then purged (web app: 30 days).
-public protocol TrashRepository: Sendable {
+public protocol TrashRepository: ChangeStreaming {
     /// Most recently deleted first.
     func trashedBrews() async throws -> [Brew]
     /// Brings a brew back and takes its coffee and filter from stock again.
@@ -11,7 +11,6 @@ public protocol TrashRepository: Sendable {
     /// Removes brews deleted more than `TrashPolicy.retention` before `now`. Returns how many.
     @discardableResult
     func purgeExpired(now: Date) async throws -> Int
-    func changes() async -> AsyncStream<Void>
 }
 
 public enum TrashPolicy {

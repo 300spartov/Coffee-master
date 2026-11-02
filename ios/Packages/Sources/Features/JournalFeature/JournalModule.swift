@@ -32,6 +32,11 @@ public struct JournalModule {
         return controller
     }
 
+    /// Deleted brews: restore or delete for good (push it; Profile opens it, like the web app).
+    public func makeTrash() -> UIViewController {
+        HostingController(rootView: TrashView(viewModel: TrashViewModel()), title: tr("Deleted Brews"), hidesBottomBarWhenPushed: true)
+    }
+
     /// A brew to look at and edit (push it); deleting it is there too.
     public func makeBrewForm(id: Brew.ID, router: any BrewFormRouting) -> UIViewController {
         let viewModel = BrewFormViewModel(mode: .edit(id), router: router)

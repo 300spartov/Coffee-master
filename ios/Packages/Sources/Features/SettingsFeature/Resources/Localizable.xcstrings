@@ -49,6 +49,22 @@
         }
       }
     },
+    "Deleted Brews": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted Brews"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видалені рецепти"
+          }
+        }
+      }
+    },
     "Design System": {
       "extractionState": "stale",
       "localizations": {

@@ -145,22 +145,6 @@
         }
       }
     },
-    "Brew deleted": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brew deleted"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Рецепт видалено"
-          }
-        }
-      }
-    },
     "Brew updated": {
       "localizations": {
         "en": {

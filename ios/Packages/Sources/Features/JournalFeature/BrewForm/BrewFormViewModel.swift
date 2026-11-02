@@ -156,11 +156,11 @@ final class BrewFormViewModel {
         router?.brewFormDidCancel()
     }
 
-    /// Moves the brew to the trash (its coffee and filter go back to stock).
+    /// Moves the brew to the trash, with Undo (`trashBrew`).
     func delete() async {
         guard case .edit(let id) = mode else { return }
         do {
-            try await repository.delete(id: id)
+            try await trashBrew(id: id)
             router?.brewFormDidDelete(id: id)
         } catch {
             alertMessage = error.localizedDescription

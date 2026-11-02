@@ -83,9 +83,9 @@ extension JournalFlow: BrewFormRouting {
         modal.close()
     }
 
+    /// The form already showed "Brew deleted" with Undo.
     func brewFormDidDelete(id: Brew.ID) {
         router.pop()
-        toasts.show(tr("Brew deleted"), style: .success)
     }
 
     /// Same outcome as a malformed brew link: back on the Journal with a warning.

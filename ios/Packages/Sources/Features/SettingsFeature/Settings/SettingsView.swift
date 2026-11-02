@@ -37,6 +37,13 @@ struct SettingsView: View {
                         .foregroundStyle(.theme.accent)
                 }
                 .themedRow()
+                Button {
+                    viewModel.didTapTrash()
+                } label: {
+                    LinkLabel { Label(tr("Deleted Brews"), systemImage: "trash").foregroundStyle(.theme.error) }
+                }
+                .themedRow()
+                .accessibilityIdentifier("settings.trash")
             } header: {
                 Text(tr("Data"))
             } footer: {
@@ -47,13 +54,7 @@ struct SettingsView: View {
                 Button {
                     viewModel.didTapAbout()
                 } label: {
-                    HStack {
-                        Text(tr("About"))
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.theme.textTertiary)
-                    }
+                    LinkLabel { Text(tr("About")) }
                 }
                 .foregroundStyle(.theme.textPrimary)
                 .themedRow()
@@ -75,5 +76,20 @@ struct SettingsView: View {
         }
         .listStyle(.insetGrouped)
         .themedGroupedBackground()
+    }
+}
+
+/// A row that opens another screen: its label and a chevron.
+private struct LinkLabel<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        HStack {
+            content
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.theme.textTertiary)
+        }
     }
 }

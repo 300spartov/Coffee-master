@@ -1,7 +1,8 @@
 import XCTest
 
-/// The Journal (ROADMAP 3.3): logging a brew after the fact. Logs a café drink (it takes nothing from
-/// stock) and deletes it again.
+/// The Journal: logging a brew after the fact (ROADMAP 3.3), then delete, Undo and the trash (3.4).
+/// Works only with the café drink it logs (it takes nothing from stock), which ends up deleted for good;
+/// it never empties the trash.
 @MainActor
 final class JournalUITests: XCTestCase {
     override func setUp() async throws {
@@ -31,9 +32,30 @@ final class JournalUITests: XCTestCase {
         guard ours.exists else { return }
         XCTAssertTrue(card.staticTexts["240, ml, Volume"].exists)
         attachScreenshot(named: "logged-card")
+
+        // Delete → Undo brings it back.
         ours.swipeLeft()
         app.buttons["Delete"].firstMatch.tap()
         XCTAssertTrue(ours.waitForNonExistence(timeout: 5))
+        let undo = app.buttons["Undo"]
+        XCTAssertTrue(undo.waitForExistence(timeout: 5))
+        undo.tap()
+        XCTAssertTrue(ours.waitForExistence(timeout: 5), "Undo should restore the drink")
+
+        // Delete again → it's in Profile → Deleted Brews; delete it for good there.
+        ours.swipeLeft()
+        app.buttons["Delete"].firstMatch.tap()
+        XCTAssertTrue(ours.waitForNonExistence(timeout: 5))
+        app.tabBars.buttons["Profile"].tap()
+        app.buttons["settings.trash"].tap()
+        XCTAssertTrue(app.navigationBars["Deleted Brews"].waitForExistence(timeout: 5))
+        let trashed = app.descendants(matching: .any).matching(NSPredicate(format: "identifier == 'trash.brew' AND label CONTAINS %@", place)).firstMatch
+        XCTAssertTrue(trashed.waitForExistence(timeout: 5))
+        XCTAssertTrue(trashed.label.contains("30 days left"), trashed.label)
+        attachScreenshot(named: "trash")
+        trashed.swipeLeft()
+        app.buttons["Delete"].firstMatch.tap()
+        XCTAssertTrue(trashed.waitForNonExistence(timeout: 5))
     }
 
     func testCancelClosesTheLog() {

@@ -35,6 +35,10 @@ final class SettingsViewModel {
         router?.showWebImport()
     }
 
+    func didTapTrash() {
+        router?.showTrash()
+    }
+
     func didTapDesignSystem() {
         router?.showDesignSystem()
     }

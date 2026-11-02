@@ -60,7 +60,7 @@ final class AppRouter {
             JournalFlow(module: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),
             BeansFlow(module: BeansModule()),
             DevicesFlow(module: DevicesModule()),
-            ProfileFlow(module: SettingsModule(), startBrew: { [weak self] in self?.startBrew() }),
+            ProfileFlow(module: SettingsModule(), journalModule: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),
         ]
     }
 

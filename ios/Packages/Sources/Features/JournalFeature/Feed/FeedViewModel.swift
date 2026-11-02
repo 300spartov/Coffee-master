@@ -72,9 +72,9 @@ final class FeedViewModel {
         await perform { try await self.repository.save(liked) }
     }
 
-    /// Moves the brew to the trash (its coffee and filter go back to stock).
+    /// Moves the brew to the trash, with Undo (`trashBrew`).
     func delete(_ brew: Brew) async {
-        await perform { try await self.repository.delete(id: brew.id) }
+        await perform { try await trashBrew(id: brew.id) }
     }
 
     /// The change stream reloads the feed after a write; a failure keeps it as it is.
