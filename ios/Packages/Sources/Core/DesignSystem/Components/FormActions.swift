@@ -52,7 +52,6 @@ public struct FormActions: View {
             .buttonStyle(.primary)
             .disabled(!canSave || isSaving)
             .accessibilityIdentifier(identifier.map { "\($0).save" } ?? "")
-            .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
 
             if let destructive {
@@ -68,5 +67,19 @@ public struct FormActions: View {
                 }
             }
         }
+        .listRowSeparator(.hidden)
+    }
+}
+
+#Preview {
+    Form {
+        FormActions(
+            title: tr("Save Changes"),
+            isSaving: false,
+            canSave: true,
+            identifier: "brewForm",
+            destructive: .init(tr("Delete Brew"), confirmation: tr("Delete this brew?"), confirmTitle: tr("Delete")) {
+            }
+        ) {}
     }
 }
