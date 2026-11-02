@@ -3,7 +3,7 @@ import Domain
 import BrewKit
 import DesignSystem
 
-/// Step 1: two big cards, Alternative and Espresso.
+/// Step 1: two big cards, Alternative and Espresso, then "Log a Brew" (made already, or at a café).
 struct MethodGroupsView: View {
     let viewModel: MethodPickViewModel
 
@@ -23,11 +23,19 @@ struct MethodGroupsView: View {
                     Button {
                         viewModel.didSelect(group: group)
                     } label: {
-                        GroupCard(group: group)
+                        MenuCard(title: group.title, summary: group.summary, systemImage: group.systemImage, tint: group.tint)
                     }
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("brew.group.\(group.rawValue)")
                 }
+
+                Button {
+                    viewModel.didSelectLog()
+                } label: {
+                    MenuCard(title: tr("Log a Brew"), summary: tr("Brewed already, or had it at a café"), systemImage: "square.and.pencil", tint: .theme.success)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("brew.log")
             }
             .padding(Spacing.lg)
         }
@@ -35,16 +43,20 @@ struct MethodGroupsView: View {
     }
 }
 
-private struct GroupCard: View {
-    let group: MethodGroup
+/// A big tappable card: icon, title, summary, chevron.
+private struct MenuCard: View {
+    let title: String
+    let summary: String
+    let systemImage: String
+    let tint: Color
 
     var body: some View {
         HStack(spacing: Spacing.lg) {
-            IconBadge(group.systemImage, tint: group.tint, size: 52)
+            IconBadge(systemImage, tint: tint, size: 52)
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(group.title)
+                Text(title)
                     .appTextStyle(.cardTitle)
-                Text(group.summary)
+                Text(summary)
                     .appTextStyle(.caption)
                     .multilineTextAlignment(.leading)
             }
@@ -76,6 +88,7 @@ private final class PreviewMethodPickRouter: MethodPickRouting {
     func showMethods(in group: MethodGroup) {}
     func methodPickDidSelect(_ method: BrewMethod) {}
     func methodPickDidCancel() {}
+    func methodPickDidSelectLog() {}
 }
 
 #Preview("Groups") {

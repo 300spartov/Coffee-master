@@ -75,7 +75,8 @@ final class AppRouter {
             beansModule: BeansModule(),
             devicesModule: DevicesModule(),
             presenter: tabBarController,
-            showJournal: { [weak self] in self?.handle(.journal) }
+            showJournal: { [weak self] in self?.handle(.journal) },
+            logBrew: { [weak self] in self?.logBrew() }
         )
         installBrewAction()
     }
@@ -88,19 +89,19 @@ final class AppRouter {
         guard let journal = flows.first(where: { $0 is JournalFlow }),
               let root = (journal.rootViewController as? UINavigationController)?.viewControllers.first
         else { return }
-        root.navigationItem.rightBarButtonItem = makeBrewButton()
+        // Brew rightmost, the Journal's own items ("+" to log a brew) beside it.
+        root.navigationItem.rightBarButtonItems = [makeBrewButton()] + (root.navigationItem.rightBarButtonItems ?? [])
     }
 
-    /// Accent "Brew" button: prominent (accent-filled glass) on iOS 26, accent-tinted before.
+    /// Accent "Brew" button. On iOS 26 it shares one Liquid Glass capsule with the Journal's "+" (a
+    /// `.prominent` item would get a separate filled capsule); before, it's an accent-tinted done item.
     private func makeBrewButton() -> UIBarButtonItem {
         let item = UIBarButtonItem(
             title: tr("Brew"),
             image: UIImage(systemName: "cup.and.heat.waves.fill"),
             primaryAction: UIAction { [weak self] _ in self?.startBrew() }
         )
-        if #available(iOS 26, *) {
-            item.style = .prominent
-        } else {
+        if #unavailable(iOS 26) {
             item.style = .done
         }
         item.tintColor = .theme.accent
@@ -121,6 +122,21 @@ final class AppRouter {
     }
 
     // MARK: - Brew action
+
+    /// Logs a brew after the fact (the brew wizard's "Log a Brew"): closes what's open, shows the
+    /// Journal and its log sheet.
+    func logBrew() {
+        guard let index = flows.firstIndex(where: { $0 is JournalFlow }), let journal = flows[index] as? JournalFlow else { return }
+        let show = { [tabBarController] in
+            tabBarController.selectedIndex = index
+            journal.showLogBrew()
+        }
+        if tabBarController.presentedViewController != nil {
+            tabBarController.dismiss(animated: true, completion: show)
+        } else {
+            show()
+        }
+    }
 
     func startBrew() {
         guard let brewFlow, !brewFlow.isPresented else { return }

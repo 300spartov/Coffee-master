@@ -2048,6 +2048,38 @@
           }
         }
       }
+    },
+    "Log a Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log a Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати випите"
+          }
+        }
+      }
+    },
+    "Brewed already, or had it at a café": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brewed already, or had it at a café"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вже заварили або пили в кав’ярні"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

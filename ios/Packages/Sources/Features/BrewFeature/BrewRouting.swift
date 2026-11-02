@@ -10,6 +10,8 @@ public protocol MethodPickRouting: AnyObject {
     func methodPickDidSelect(_ method: BrewMethod)
     /// Cancel on step 1 closes the wizard.
     func methodPickDidCancel()
+    /// "Log a Brew" on step 1: close the wizard and log a brew after the fact instead (the journal's sheet).
+    func methodPickDidSelectLog()
 }
 
 /// Setup screens (pour-over and espresso) open the gear picker through this.

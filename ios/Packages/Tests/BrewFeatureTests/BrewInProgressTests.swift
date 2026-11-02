@@ -111,6 +111,7 @@ final class SpyWizardRouter: MethodPickRouting, ActiveBrewRouting, EspressoRouti
     func showMethods(in group: MethodGroup) {}
     func methodPickDidSelect(_ method: BrewMethod) {}
     func methodPickDidCancel() {}
+    func methodPickDidSelectLog() {}
     func activeBrewDidFinish(_ session: PourOverSession) {}
     func activeBrewDidLeave() {}
     func brewDidSave(_ brew: Brew, usage: StockUsage) {}

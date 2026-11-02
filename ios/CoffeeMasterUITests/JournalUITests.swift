@@ -102,7 +102,15 @@ final class JournalUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Log a Brew"].waitForExistence(timeout: 5))
 
         app.navigationBars["Log a Brew"].buttons["Cancel"].tap()
-
         XCTAssertTrue(app.navigationBars["Log a Brew"].waitForNonExistence(timeout: 5))
+
+        // The brew wizard's "Log a Brew" closes the wizard and opens the same sheet on the Journal.
+        app.brewButton.tap()
+        app.buttons["brew.log"].tap()
+        XCTAssertTrue(app.navigationBars["Log a Brew"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["New Brew"].waitForNonExistence(timeout: 5))
+        app.navigationBars["Log a Brew"].buttons["Cancel"].tap()
+        XCTAssertTrue(app.navigationBars["Journal"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "journal-bar")
     }
 }

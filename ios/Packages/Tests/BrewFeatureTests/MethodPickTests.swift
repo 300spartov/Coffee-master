@@ -8,10 +8,12 @@ final class SpyMethodPickRouter: MethodPickRouting {
     private(set) var shownGroups: [MethodGroup] = []
     private(set) var picked: [BrewMethod] = []
     private(set) var cancelCount = 0
+    private(set) var logCount = 0
 
     func showMethods(in group: MethodGroup) { shownGroups.append(group) }
     func methodPickDidSelect(_ method: BrewMethod) { picked.append(method) }
     func methodPickDidCancel() { cancelCount += 1 }
+    func methodPickDidSelectLog() { logCount += 1 }
 }
 
 @MainActor
@@ -37,10 +39,14 @@ struct MethodPickViewModelTests {
         #expect(router.picked == [.chemex])
     }
 
-    @Test func cancelRoutes() {
-        MethodPickViewModel(router: router).cancel()
+    @Test func cancelAndLogRoute() {
+        let viewModel = MethodPickViewModel(router: router)
+
+        viewModel.cancel()
+        viewModel.didSelectLog()
 
         #expect(router.cancelCount == 1)
+        #expect(router.logCount == 1)
     }
 }
 

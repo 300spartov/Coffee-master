@@ -27,10 +27,13 @@ final class BrewFlow {
     private weak var presenter: UIViewController?
     /// "Go to Journal" on the result: closes the brew and shows the Journal tab.
     private let showJournal: () -> Void
+    /// "Log a Brew" on step 1: closes the brew and opens the journal's log sheet.
+    private let logBrew: () -> Void
 
-    init(module: BrewModule, beansModule: BeansModule, devicesModule: DevicesModule, presenter: UIViewController, showJournal: @escaping () -> Void) {
+    init(module: BrewModule, beansModule: BeansModule, devicesModule: DevicesModule, presenter: UIViewController, showJournal: @escaping () -> Void, logBrew: @escaping () -> Void) {
         self.module = module
         self.showJournal = showJournal
+        self.logBrew = logBrew
         self.beansModule = beansModule
         self.devicesModule = devicesModule
         self.presenter = presenter
@@ -100,6 +103,12 @@ extension BrewFlow: MethodPickRouting {
     func methodPickDidCancel() {
         module.discardBrewInProgress()
         modal.close()
+    }
+
+    /// `AppRouter` closes the wizard, then opens the log sheet.
+    func methodPickDidSelectLog() {
+        module.discardBrewInProgress()
+        logBrew()
     }
 }
 

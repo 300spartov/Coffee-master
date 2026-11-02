@@ -26,6 +26,10 @@ final class MethodPickViewModel {
         router?.methodPickDidSelect(method)
     }
 
+    func didSelectLog() {
+        router?.methodPickDidSelectLog()
+    }
+
     func cancel() {
         router?.methodPickDidCancel()
     }
