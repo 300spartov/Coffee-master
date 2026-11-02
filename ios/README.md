@@ -37,7 +37,8 @@ ios/
     │   ├── JournalFeature/       # journal feed (day groups, brew cards, like, swipe delete) → brew form (edit, delete, log after the fact)
     │   ├── BeansFeature/         # bean list → add / edit
     │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
-    │   └── SettingsFeature/      # settings → about
+    │   ├── ProfileFeature/       # profile card, Edit Profile, avatar picker (the Profile tab's root)
+    │   └── SettingsFeature/      # settings (language, haptics, web import) → about
     └── Tests/                    # one test target per module, plus TestSupport (shared doubles)
 ```
 

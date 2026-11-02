@@ -4,7 +4,7 @@ import Foundation
 public struct UserProfile: Hashable, Codable, Sendable {
     public var name: String
     public var location: String
-    /// Self-chosen title, e.g. "Бариста", "Любитель кави".
+    /// Self-chosen title, one of `titlePresets` (or anything imported).
     public var title: String
     /// Free-text coffee experience ("2 роки").
     public var experience: String
@@ -27,6 +27,9 @@ public struct UserProfile: Hashable, Codable, Sendable {
         self.updatedAt = updatedAt
     }
 
+    /// The web app's categories, as it stores them (the app shows them translated).
+    public static let titlePresets = ["Новичок", "Любитель кофе", "Кофейный сектант", "Бариста", "Профессионал"]
+
     /// First letter of the name, used when no emoji avatar is set.
     public var initials: String {
         name.trimmingCharacters(in: .whitespaces).first.map { String($0).uppercased() } ?? "?"
@@ -37,11 +40,24 @@ public struct Avatar: Hashable, Codable, Sendable {
     public var emoji: String?
     /// Background color as `#RRGGBB`.
     public var colorHex: String?
+    /// A photo from the library (a small square JPEG); shown instead of the emoji or the letter.
+    public var photo: Data?
 
-    public init(emoji: String? = nil, colorHex: String? = nil) {
+    public init(emoji: String? = nil, colorHex: String? = nil, photo: Data? = nil) {
         self.emoji = emoji
         self.colorHex = colorHex
+        self.photo = photo
     }
+
+    /// The background color as `0xRRGGBB` (nil if unset or not `#RRGGBB`).
+    public var color: UInt32? {
+        guard let hex = colorHex?.trimmingCharacters(in: .whitespaces), hex.hasPrefix("#"), hex.count == 7 else { return nil }
+        return UInt32(hex.dropFirst(), radix: 16)
+    }
+
+    /// The web app's choices (avatar picker).
+    public static let emojiPresets = ["☕", "🫖", "🌱", "⚡", "🔥", "🏆", "✨", "💎", "🎯", "🌙", "❄️", "🍊", "🍋", "🫐", "🌸", "🎸", "🦁", "🐺", "🌊", "🏔️", "🎨", "🚀", "🦊", "🐻"]
+    public static let colorPresets = ["#2a1e10", "#0d1f1a", "#151e27", "#1a1215", "#1a1a2e", "#0d1a0d", "#2a1010", "#1a1a1a"]
 }
 
 /// An unlocked achievement. Definitions (thresholds, XP) live in the gamification logic, not in data.

@@ -34,6 +34,7 @@ Don't run the full test suite when a feature is done (the `CoffeeMaster` scheme 
   - `BeansFeature`, `BeansFlow` → `BeanUITests`
   - `BrewFeature`, `BrewFlow` → `BrewUITests`
   - `JournalFeature`, `JournalFlow`, the trash (Profile → Deleted Brews), `CompareFeature` → `JournalUITests` (plus `BrewUITests/testSavedBrewShowsResultAndJournal` for the feed card and the brew form)
+  - `ProfileFeature`, `SettingsFeature`, `ProfileFlow` → `ProfileUITests` (plus `DeepLinkUITests` for the Profile tab's links)
   - `DevicesFeature`, `DevicesFlow` → `DeviceUITests`, `FilterPackUITests` (only the one for the screens you touched)
   - sheet handling in flows (`ModalSlot`, `presentStack`) → `SheetReopenUITests`
   - `AppRouter`, tabs, the Brew button → `AppShellUITests`

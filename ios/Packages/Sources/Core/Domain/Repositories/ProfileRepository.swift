@@ -1,7 +1,7 @@
 import Foundation
 
 /// The user's profile and unlocked achievements (singletons, not lists).
-public protocol ProfileRepository: Sendable {
+public protocol ProfileRepository: ChangeStreaming {
     /// Empty profile if none was saved yet.
     func profile() async throws -> UserProfile
     func saveProfile(_ profile: UserProfile) async throws
@@ -10,7 +10,6 @@ public protocol ProfileRepository: Sendable {
     /// Adds unlocks, keeping the earliest date per achievement. Returns only the newly added ones.
     @discardableResult
     func recordAchievements(_ achievements: [EarnedAchievement]) async throws -> [EarnedAchievement]
-    func changes() async -> AsyncStream<Void>
 }
 
 /// Autocomplete values remembered from earlier input.

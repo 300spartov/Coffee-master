@@ -40,8 +40,8 @@ final class DeepLinkUITests: XCTestCase {
         let app = XCUIApplication.launched(deepLink: "coffeemaster://settings/about")
         let about = app.navigationBars["About"]
         XCTAssertTrue(about.waitForExistence(timeout: 5))
-        // About hides the tab bar; its back button shows it was pushed on the Profile stack.
-        XCTAssertTrue(about.buttons["Profile"].exists)
+        // About hides the tab bar; its back button shows it was pushed on Settings, in the Profile tab.
+        XCTAssertTrue(about.buttons["Settings"].exists)
     }
 
     func testUnknownBrewShowsWarning() {

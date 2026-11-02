@@ -385,6 +385,22 @@
         }
       }
     },
+    "Profile saved": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profile saved"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Профіль збережено"
+          }
+        }
+      }
+    },
     "Start a Brew": {
       "localizations": {
         "en": {
@@ -477,6 +493,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Цієї пачки фільтрів більше немає."
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Налаштування"
           }
         }
       }

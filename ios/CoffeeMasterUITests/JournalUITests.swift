@@ -47,7 +47,7 @@ final class JournalUITests: XCTestCase {
         app.buttons["Delete"].firstMatch.tap()
         XCTAssertTrue(ours.waitForNonExistence(timeout: 5))
         app.tabBars.buttons["Profile"].tap()
-        app.buttons["settings.trash"].tap()
+        app.buttons["profile.trash"].tap()
         XCTAssertTrue(app.navigationBars["Deleted Brews"].waitForExistence(timeout: 5))
         let trashed = app.descendants(matching: .any).matching(NSPredicate(format: "identifier == 'trash.brew' AND label CONTAINS %@", place)).firstMatch
         XCTAssertTrue(trashed.waitForExistence(timeout: 5))

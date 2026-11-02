@@ -34,7 +34,7 @@ let package = Package(
             name: "AppModules",
             targets: [
                 "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport", "FlavorWheel", "BrewKit",
-                "JournalFeature", "CompareFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
+                "JournalFeature", "CompareFeature", "ProfileFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
             ]
         ),
         // Lightweight subset for app extensions (Widget Extension, Live Activities).
@@ -112,6 +112,14 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
+        /// The Profile tab's root (ROADMAP 4.1): profile card, Edit Profile, avatar picker.
+        .target(
+            name: "ProfileFeature",
+            dependencies: ["AppCore", "Domain", "DesignSystem", "Navigation", factoryKit],
+            path: "Sources/Features/ProfileFeature",
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
+        ),
         .target(
             name: "SettingsFeature",
             dependencies: ["AppCore", "DesignSystem", "Navigation", factoryKit],
@@ -146,6 +154,10 @@ let package = Package(
         .testTarget(name: "DeepLinksTests", dependencies: ["DeepLinks"]),
         .testTarget(name: "FlavorWheelTests", dependencies: ["FlavorWheel", "AppCore"]),
         .testTarget(name: "BrewKitTests", dependencies: ["BrewKit", "Domain", "AppCore"]),
+        .testTarget(
+            name: "ProfileFeatureTests",
+            dependencies: ["ProfileFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+        ),
         .testTarget(
             name: "SettingsFeatureTests",
             dependencies: ["SettingsFeature", "AppCore", factoryKit, .product(name: "FactoryTesting", package: "Factory")]

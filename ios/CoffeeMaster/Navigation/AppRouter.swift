@@ -4,6 +4,7 @@ import AppCore
 import BeansFeature
 import BrewFeature
 import JournalFeature
+import ProfileFeature
 import CompareFeature
 import DeepLinks
 import DevicesFeature
@@ -61,7 +62,7 @@ final class AppRouter {
             JournalFlow(module: JournalModule(), compareModule: CompareModule(), startBrew: { [weak self] in self?.startBrew() }),
             BeansFlow(module: BeansModule()),
             DevicesFlow(module: DevicesModule()),
-            ProfileFlow(module: SettingsModule(), journalModule: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),
+            ProfileFlow(profileModule: ProfileModule(), module: SettingsModule(), journalModule: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),
         ]
     }
 

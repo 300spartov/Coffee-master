@@ -11,7 +11,6 @@ final class SpySettingsRouter: SettingsRouting {
     func showAbout() { calls.append("about") }
     func showNewBrew() { calls.append("newBrew") }
     func showWebImport() { calls.append("webImport") }
-    func showTrash() { calls.append("trash") }
     func showDesignSystem() { calls.append("designSystem") }
 }
 
@@ -44,9 +43,8 @@ struct SettingsViewModelTests {
         viewModel.didTapAbout()
         viewModel.didTapNewBrew()
         viewModel.didTapWebImport()
-        viewModel.didTapTrash()
         viewModel.didTapDesignSystem()
 
-        #expect(router.calls == ["about", "newBrew", "webImport", "trash", "designSystem"])
+        #expect(router.calls == ["about", "newBrew", "webImport", "designSystem"])
     }
 }
