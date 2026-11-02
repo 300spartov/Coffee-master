@@ -6,7 +6,7 @@ import FactoryKit
 
 /// The Journal feed (web: `renderFeed`): brews newest first, grouped by day, with like and delete.
 @Observable
-final class FeedViewModel {
+final class FeedViewModel: AlertingViewModel {
     /// The brews of one calendar day, newest first.
     nonisolated struct Day: Identifiable, Equatable, Sendable {
         /// The day's start.
@@ -25,7 +25,7 @@ final class FeedViewModel {
     }
     /// Called when the compare bar appears or goes (the module puts it in the tab bar on iOS 26).
     @ObservationIgnored var onShowsCompareBarChange: ((Bool) -> Void)?
-    /// A failed action (like, delete), shown as an alert over the feed.
+    /// A failed action (like, delete), shown as an alert over the feed (`attempt`).
     var alertMessage: String?
 
     @ObservationIgnored private let calendar: Calendar
@@ -107,20 +107,11 @@ final class FeedViewModel {
     func toggleLike(_ brew: Brew) async {
         var liked = brew
         liked.isLiked.toggle()
-        await perform { try await self.repository.save(liked) }
+        await attempt { try await self.repository.save(liked) }
     }
 
     /// Moves the brew to the trash, with Undo (`trashBrew`).
     func delete(_ brew: Brew) async {
-        await perform { try await trashBrew(id: brew.id) }
-    }
-
-    /// The change stream reloads the feed after a write; a failure keeps it as it is.
-    private func perform(_ write: () async throws -> Void) async {
-        do {
-            try await write()
-        } catch {
-            alertMessage = error.localizedDescription
-        }
+        await attempt { try await trashBrew(id: brew.id) }
     }
 }

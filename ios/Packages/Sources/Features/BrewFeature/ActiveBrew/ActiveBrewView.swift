@@ -120,7 +120,7 @@ struct ActiveBrewView: View {
                         .foregroundStyle(.theme.warning)
                 }
                 Spacer()
-                Text(verbatim: "\(decimal(session.totalMilliliters)) \(tr("ml"))")
+                Text(verbatim: millilitersText(session.totalMilliliters))
                     .foregroundStyle(.theme.textSecondary)
             }
             .font(.caption.weight(.semibold).monospacedDigit())

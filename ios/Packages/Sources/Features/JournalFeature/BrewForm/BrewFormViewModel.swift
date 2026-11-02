@@ -7,7 +7,7 @@ import FactoryKit
 /// A brew in the journal, every field editable (web: `edit-brew`), or one logged after the fact (web:
 /// `log-brew`: at home or at a café). Saving runs `Brew.edited()` (steps back to back, total time).
 @Observable
-final class BrewFormViewModel {
+final class BrewFormViewModel: AlertingViewModel {
     enum Mode: Equatable {
         /// Logged after the fact.
         case add
@@ -144,11 +144,8 @@ final class BrewFormViewModel {
         isSaving = true
         defer { isSaving = false }
         let saved = (isAdding ? loggedBrew() : brew).edited()
-        do {
-            if isAdding { try await repository.record(saved) } else { try await repository.save(saved) }
+        if await attempt({ if isAdding { try await repository.record(saved) } else { try await repository.save(saved) } }) {
             router?.brewFormDidSave(saved)
-        } catch {
-            alertMessage = error.localizedDescription
         }
     }
 
@@ -159,11 +156,8 @@ final class BrewFormViewModel {
     /// Moves the brew to the trash, with Undo (`trashBrew`).
     func delete() async {
         guard case .edit(let id) = mode else { return }
-        do {
-            try await trashBrew(id: id)
+        if await attempt({ try await trashBrew(id: id) }) {
             router?.brewFormDidDelete(id: id)
-        } catch {
-            alertMessage = error.localizedDescription
         }
     }
 

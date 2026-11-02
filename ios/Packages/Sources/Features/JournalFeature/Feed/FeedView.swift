@@ -120,8 +120,8 @@ private struct DayHeader: View {
     var body: some View {
         Text(verbatim: title)
             .font(.footnote.weight(.semibold))
-        .foregroundStyle(.theme.textSecondary)
-        .accessibilityIdentifier("journal.day")
+            .foregroundStyle(.theme.textSecondary)
+            .accessibilityIdentifier("journal.day")
     }
 
     private var title: String {

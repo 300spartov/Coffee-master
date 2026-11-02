@@ -7,7 +7,7 @@ import FactoryKit
 /// Paper filter packs with how many are left; −/+ correct the count by hand
 /// (brews will use filters automatically once the brew flow saves them, ROADMAP 2.7).
 @Observable
-final class FilterPacksViewModel {
+final class FilterPacksViewModel: AlertingViewModel {
     private(set) var state: ListState<FilterPack> = .loading
     var alertMessage: String?
 
@@ -56,14 +56,10 @@ final class FilterPacksViewModel {
         router?.showAddFilterPack()
     }
 
-    /// Runs a write, keeps the list on failure (alert instead), and reloads so the count updates
-    /// right away rather than waiting for the change notification.
-    private func perform(_ work: @escaping () async throws -> Void) async {
-        do {
-            try await work()
-        } catch {
-            alertMessage = error.localizedDescription
-        }
+    /// Runs a write (`attempt`: a failure keeps the list and alerts), then reloads so the count
+    /// updates right away rather than waiting for the change notification.
+    private func perform(_ work: () async throws -> Void) async {
+        await attempt(work)
         await load()
     }
 }

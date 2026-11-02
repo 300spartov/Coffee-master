@@ -12,8 +12,13 @@ nonisolated struct Comparison: Equatable {
         let index: Int
         /// The timer's steps, back to back; an espresso without them is its shot (one pour of the yield).
         let steps: [BrewStep]
+        /// The water poured over time: a slope while pouring, flat during pauses and actions.
+        let curve: [CurvePoint]
+        /// Actions (stir, swirl, …) at their middle, on the curve.
+        let actions: [CurvePoint]
 
         var id: Brew.ID { brew.id }
+        var totalTime: TimeInterval { steps.last?.end ?? 0 }
 
         init(brew: Brew, index: Int) {
             self.brew = brew
@@ -23,27 +28,15 @@ nonisolated struct Comparison: Equatable {
             } else {
                 steps = brew.steps.resequenced()
             }
-        }
-
-        var totalTime: TimeInterval { steps.last?.end ?? 0 }
-
-        /// The water poured over time: a slope while pouring, flat during pauses and actions.
-        var curve: [CurvePoint] {
+            var curve = [CurvePoint(seconds: steps.first?.start ?? 0, milliliters: 0)], actions: [CurvePoint] = []
             var milliliters = 0.0
-            return [CurvePoint(seconds: steps.first?.start ?? 0, milliliters: 0)] + steps.map { step in
-                milliliters += step.pouredMilliliters
-                return CurvePoint(seconds: step.end, milliliters: milliliters)
-            }
-        }
-
-        /// Actions (stir, swirl, …) at their middle, on the curve.
-        var actions: [CurvePoint] {
-            var milliliters = 0.0, points: [CurvePoint] = []
             for step in steps {
-                if case .action = step.kind { points.append(CurvePoint(seconds: step.start + step.duration / 2, milliliters: milliliters)) }
+                if case .action = step.kind { actions.append(CurvePoint(seconds: step.start + step.duration / 2, milliliters: milliliters)) }
                 milliliters += step.pouredMilliliters
+                curve.append(CurvePoint(seconds: step.end, milliliters: milliliters))
             }
-            return points
+            self.curve = curve
+            self.actions = actions
         }
     }
 
@@ -82,15 +75,15 @@ nonisolated struct Comparison: Equatable {
             Row(title: title, values: entries.map(value))
         }
         return [
-            row(tr("Dose")) { "\(decimal($0.brew.doseGrams)) g" },
+            row(tr("Dose")) { gramsText($0.brew.doseGrams) },
             row(tr("Ratio")) { ratioText($0.brew.ratio) },
-            row(tr("Water")) { "\(decimal($0.brew.waterGrams.rounded())) \(tr("ml"))" },
-            row(tr("Temperature")) { $0.brew.waterTemperature.map { "\(decimal($0)) °C" } ?? "—" },
+            row(tr("Water")) { millilitersText($0.brew.waterGrams.rounded()) },
+            row(tr("Temperature")) { $0.brew.waterTemperature.map(celsiusText) ?? "—" },
             row(tr("Method")) { $0.brew.method.rawValue },
             row(tr("Brewer")) { $0.brew.device ?? "—" },
             row(tr("Clicks")) { $0.brew.grindSetting.map(String.init) ?? "—" },
             row(tr("Time")) { clockText($0.totalTime) },
-            row(tr("First pour")) { $0.steps.pours.first.map { "\(decimal($0)) \(tr("ml"))" } ?? "—" },
+            row(tr("First pour")) { $0.steps.pours.first.map(millilitersText) ?? "—" },
         ]
     }
 }

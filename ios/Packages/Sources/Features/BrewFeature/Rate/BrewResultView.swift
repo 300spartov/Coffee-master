@@ -48,7 +48,7 @@ struct BrewResultView: View {
 
     /// "Kenya · 93 °C · 1:16".
     private var summary: String {
-        [brew.bean?.name, brew.waterTemperature.map { "\(decimal($0)) °C" }, "1:\(decimal(brew.ratio))"]
+        [brew.bean?.name, brew.waterTemperature.map(celsiusText), "1:\(decimal(brew.ratio))"]
             .compactMap { $0 }
             .joined(separator: " · ")
     }

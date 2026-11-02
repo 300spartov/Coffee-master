@@ -18,3 +18,23 @@ nonisolated public enum ListState<Item: Equatable & Sendable>: Equatable, Sendab
         self = items.isEmpty ? .empty : .loaded(items)
     }
 }
+
+/// A view model that shows a failed action as an alert (the view binds `alertMessage` to `errorAlert`).
+@MainActor
+public protocol AlertingViewModel: AnyObject {
+    var alertMessage: String? { get set }
+}
+
+public extension AlertingViewModel {
+    /// Runs `work`; a failure becomes the alert. Returns whether it worked.
+    @discardableResult
+    func attempt(_ work: () async throws -> Void) async -> Bool {
+        do {
+            try await work()
+            return true
+        } catch {
+            alertMessage = error.localizedDescription
+            return false
+        }
+    }
+}

@@ -22,8 +22,8 @@ struct BrewRecipeDetails: View {
     private var rows: [DetailRows.Row] {
         var rows: [DetailRows.Row] = []
         if !brew.isCafeVisit {
-            rows.append((tr("Volume"), "\(decimal(brew.volumeMilliliters)) \(tr("ml"))"))
-            if let temperature = brew.waterTemperature { rows.append((tr("Temperature"), "\(decimal(temperature)) °C")) }
+            rows.append((tr("Volume"), millilitersText(brew.volumeMilliliters)))
+            if let temperature = brew.waterTemperature { rows.append((tr("Temperature"), celsiusText(temperature))) }
         }
         if let dripper = brew.dripper { rows.append((tr("Brewer"), dripper.name)) }
         if let filter = brew.filter {
@@ -34,8 +34,7 @@ struct BrewRecipeDetails: View {
             rows.append((tr("Grinder"), joined(grinder.name, brew.grindSetting.map { tr("\($0) clicks") })))
         }
         if let milk = brew.milk {
-            let volume = milk.volumeMilliliters.map { "\(decimal($0)) \(tr("ml"))" }
-            rows.append((tr("Milk"), joined(milk.name, volume, milk.temperature.map { "\(decimal($0)) °C" }, milk.frother)))
+            rows.append((tr("Milk"), joined(milk.name, milk.volumeMilliliters.map(millilitersText), milk.temperature.map(celsiusText), milk.frother)))
         }
         if let ice = brew.ice {
             rows.append((tr("Ice & mixer"), joined(ice.cubes.map { tr("\(Int($0)) cubes") }, ice.mixer)))
@@ -62,7 +61,7 @@ struct BrewStepsDetails: View {
         let pressure = shot.pressureBar.map { "\(decimal($0)) \(tr("bar"))" }
         let rows: [DetailRows.Row] = [
             (tr("Shot time"), clockText(shot.shotTime)),
-            (tr("Yield"), "\(decimal(shot.yieldGrams)) g"),
+            (tr("Yield"), gramsText(shot.yieldGrams)),
             (tr("Pressure"), pressure ?? ""),
             (tr("Actual TDS"), shot.actualTDS.map { "\(decimal($0)) %" } ?? ""),
             (tr("Target TDS"), shot.targetTDS.map { "\(decimal($0)) %" } ?? ""),

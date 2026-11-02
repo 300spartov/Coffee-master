@@ -99,7 +99,7 @@ struct CompareView: View {
             .cardStyle()
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("compare.curve")
-            legend { entry in "\(decimal(entry.curve.last?.milliliters ?? 0)) \(tr("ml")) · \(clockText(entry.totalTime))" }
+            legend { entry in "\(millilitersText(entry.curve.last?.milliliters ?? 0)) · \(clockText(entry.totalTime))" }
             Text(tr("Flat: a pause · dot: an action · steepness: how fast you pour")).appTextStyle(.caption)
         }
     }
@@ -127,9 +127,11 @@ struct CompareView: View {
 // MARK: - Pieces
 
 extension Comparison {
-    /// The brew's color in every chart (web: `CP_COLORS`).
+    /// The brews' colors in every chart (web: `CP_COLORS`).
+    private static let palette = [ThemeColor(0xE8955C), ThemeColor(0x7FB08A), ThemeColor(0xC9A86A), ThemeColor(0x8198AE)].map(\.color)
+
     static func color(_ entry: Entry) -> Color {
-        [ThemeColor(0xE8955C), ThemeColor(0x7FB08A), ThemeColor(0xC9A86A), ThemeColor(0x8198AE)][entry.index % 4].color
+        palette[entry.index % palette.count]
     }
 
     /// A step's color in the timeline and the rings: pours blue, pauses orange, actions green.
@@ -212,7 +214,7 @@ private struct TimelineCard: View {
     private var detail: String {
         let brew = entry.brew
         let temperature = brew.waterTemperature.map { "\(decimal($0))°" }
-        return ["\(decimal(brew.doseGrams)) g", clockText(entry.totalTime), temperature].compactMap { $0 }.joined(separator: " · ")
+        return [gramsText(brew.doseGrams), clockText(entry.totalTime), temperature].compactMap { $0 }.joined(separator: " · ")
     }
 }
 

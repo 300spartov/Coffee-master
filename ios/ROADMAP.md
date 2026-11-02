@@ -136,6 +136,12 @@ Size: **S** ≈ 1–2 days, **M** ≈ 3–5 days, **L** ≈ 1–2 weeks.
 
 ---
 
+## Review cleanup ✅ (after Phase 3)
+
+- **Shared helpers:** `millilitersText` / `gramsText` / `celsiusText` (BrewKit) replace 13 hand-written amounts across the journal, compare and the wizard; `AlertingViewModel.attempt` (AppCore) replaces four copies of "run a write, show the error as an alert" (feed, trash, brew form, filter packs).
+- **Simpler:** a compared brew's curve and action points are worked out once, not on every chart redraw; the compare palette is built once.
+- **Tests:** two feed tests that repeated the trash and brew-form tests are gone.
+
 ## Review cleanup ✅ (after Phase 0)
 
 A full code review led to one cleanup pass:

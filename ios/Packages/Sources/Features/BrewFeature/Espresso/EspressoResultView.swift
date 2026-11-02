@@ -12,7 +12,7 @@ struct EspressoResultView: View {
             Section(tr("Shot")) {
                 NumberField(tr("Shot time"), value: $viewModel.shotTime, unit: tr("s"), range: 0...300, fractionDigits: 0)
                     .accessibilityIdentifier("espresso.shotTime")
-                LabeledContent(tr("Dose"), value: "\(decimal(viewModel.draft.setup.doseGrams)) g")
+                LabeledContent(tr("Dose"), value: gramsText(viewModel.draft.setup.doseGrams))
                 NumberField(tr("Actual yield"), value: $viewModel.actualYield, unit: "g", placeholder: decimal(viewModel.draft.setup.targetYieldGrams), range: 0...200)
                     .accessibilityIdentifier("espresso.actualYield")
                 LabeledContent(tr("Actual ratio"), value: viewModel.actualRatio.map(ratioText) ?? "—")

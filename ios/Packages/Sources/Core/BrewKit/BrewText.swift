@@ -19,6 +19,21 @@ public func decimal(_ value: Double) -> String {
     value.formatted(.number.precision(.fractionLength(0...1)))
 }
 
+/// "256 ml".
+public func millilitersText(_ value: Double) -> String {
+    "\(decimal(value)) \(tr("ml"))"
+}
+
+/// "16 g".
+public func gramsText(_ value: Double) -> String {
+    "\(decimal(value)) g"
+}
+
+/// "93 °C".
+public func celsiusText(_ value: Double) -> String {
+    "\(decimal(value)) °C"
+}
+
 /// "1:2.0", "1:16.5": a brew ratio with one decimal.
 public func ratioText(_ ratio: Double) -> String {
     "1:\(ratio.formatted(.number.precision(.fractionLength(1))))"

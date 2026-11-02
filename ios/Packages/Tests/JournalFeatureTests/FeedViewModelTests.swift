@@ -60,23 +60,6 @@ struct FeedViewModelTests {
         #expect(try await repository.fetch(id: liked.id).isLiked == false)
     }
 
-    @Test func deleteTrashesTheBrew() async throws {
-        let repository = TestRepository(brews: Brew.samples)
-        let viewModel = makeViewModel(repository: repository)
-
-        await viewModel.delete(Brew.samples[0])
-
-        #expect(try await repository.fetchAll().map(\.id) == Brew.samples.dropFirst().map(\.id))
-    }
-
-    @Test func failedWritesShowAnAlert() async {
-        let viewModel = makeViewModel(repository: TestRepository(brews: Brew.samples, failing: .writes))
-
-        await viewModel.toggleLike(Brew.samples[0])
-
-        #expect(viewModel.alertMessage == "Boom")
-    }
-
     @Test func routes() {
         let viewModel = makeViewModel(repository: TestRepository(brews: []))
 
