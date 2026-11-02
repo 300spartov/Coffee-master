@@ -5,11 +5,13 @@ import DeepLinks
 import DesignSystem
 import Navigation
 import JournalFeature
+import CompareFeature
 
-/// Journal tab: the feed → a brew to edit (push); logging a brew after the fact (sheet). Starting a
+/// Journal tab: the feed → a brew to edit or the comparison (push); logging a brew after the fact (sheet). Starting a
 /// brew goes through the app-wide Brew action.
 final class JournalFlow: Flow {
     private let module: JournalModule
+    private let compareModule: CompareModule
     private let startBrew: () -> Void
     @Injected(\.toasts) private var toasts
     private let router = StackRouter()
@@ -18,8 +20,9 @@ final class JournalFlow: Flow {
 
     var rootViewController: UIViewController { router.navigationController }
 
-    init(module: JournalModule, startBrew: @escaping () -> Void) {
+    init(module: JournalModule, compareModule: CompareModule, startBrew: @escaping () -> Void) {
         self.module = module
+        self.compareModule = compareModule
         self.startBrew = startBrew
         router.navigationController.tabBarItem = UITabBarItem(
             title: tr("Journal"),
@@ -57,6 +60,10 @@ extension JournalFlow: FeedRouting {
 
     func showNewBrew() {
         startBrew()
+    }
+
+    func showCompare(brewIDs: [Brew.ID]) {
+        router.push(compareModule.makeCompare(brewIDs: brewIDs))
     }
 
     func showLogBrew() {

@@ -33,7 +33,7 @@ Don't run the full test suite when a feature is done (the `CoffeeMaster` scheme 
 - **UI tests: same rule, only for what you modified.** Run only the UI test classes that cover the features or flows you changed, e.g. a change in `BeansFeature` or `BeansFlow` → `-only-testing:CoffeeMasterUITests/BeanUITests`. Map changes to classes like this:
   - `BeansFeature`, `BeansFlow` → `BeanUITests`
   - `BrewFeature`, `BrewFlow` → `BrewUITests`
-  - `JournalFeature`, `JournalFlow`, the trash (Profile → Deleted Brews) → `JournalUITests` (plus `BrewUITests/testSavedBrewShowsResultAndJournal` for the feed card and the brew form)
+  - `JournalFeature`, `JournalFlow`, the trash (Profile → Deleted Brews), `CompareFeature` → `JournalUITests` (plus `BrewUITests/testSavedBrewShowsResultAndJournal` for the feed card and the brew form)
   - `DevicesFeature`, `DevicesFlow` → `DeviceUITests`, `FilterPackUITests` (only the one for the screens you touched)
   - sheet handling in flows (`ModalSlot`, `presentStack`) → `SheetReopenUITests`
   - `AppRouter`, tabs, the Brew button → `AppShellUITests`

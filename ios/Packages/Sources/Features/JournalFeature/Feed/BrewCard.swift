@@ -4,7 +4,7 @@ import DesignSystem
 import BrewKit
 import FlavorWheel
 
-/// A brew in the feed (web: `brew-card`): bag, method and rating ring, the key numbers, like; "Details"
+/// A brew in the feed (web: `brew-card`): bag, method and rating ring, the key numbers, compare, like; "Details"
 /// opens the recipe, the steps and the tasting notes in tabs. Tapping the top opens the brew to edit.
 struct BrewCard: View {
     enum Tab: CaseIterable {
@@ -22,6 +22,9 @@ struct BrewCard: View {
     let brew: Brew
     let open: () -> Void
     let toggleLike: () -> Void
+    /// Picked for the comparison (the ⚖ button).
+    var isCompared = false
+    var toggleCompare: () -> Void = {}
     @State private var isExpanded = false
     @State private var tab = Tab.recipe
 
@@ -111,6 +114,15 @@ struct BrewCard: View {
             }
             .accessibilityIdentifier("journal.details")
             Spacer()
+            Button(action: toggleCompare) {
+                Image(systemName: "scalemass")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isCompared ? Color.theme.accent : Color.theme.textSecondary)
+                    .symbolVariant(isCompared ? .fill : .none)
+            }
+            .accessibilityLabel(tr("Compare"))
+            .accessibilityAddTraits(isCompared ? .isSelected : [])
+            .accessibilityIdentifier("journal.compare")
             Button(action: toggleLike) {
                 Image(systemName: brew.isLiked ? "heart.fill" : "heart")
                     .font(.body.weight(.semibold))
@@ -123,18 +135,6 @@ struct BrewCard: View {
         }
         .buttonStyle(.plain)
         .foregroundStyle(.theme.accent)
-    }
-}
-
-extension Brew {
-    /// Bean name, or the method when no bean was recorded (café drinks, quick logs).
-    var displayTitle: String {
-        bean?.name ?? method.rawValue
-    }
-
-    /// The brewer or machine, under the method.
-    var device: String? {
-        (dripper ?? espressoMachine)?.name
     }
 }
 

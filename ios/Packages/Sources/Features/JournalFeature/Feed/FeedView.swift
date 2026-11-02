@@ -26,7 +26,9 @@ struct FeedView: View {
                             BrewCard(
                                 brew: brew,
                                 open: { viewModel.didSelect(brew) },
-                                toggleLike: { Task { await viewModel.toggleLike(brew) } }
+                                toggleLike: { Task { await viewModel.toggleLike(brew) } },
+                                isCompared: viewModel.compared.contains(brew.id),
+                                toggleCompare: { viewModel.toggleCompare(brew) }
                             )
                             .listRowInsets(EdgeInsets(top: Spacing.sm, leading: Spacing.lg, bottom: Spacing.sm, trailing: Spacing.lg))
                             .listRowSeparator(.hidden)
@@ -43,11 +45,70 @@ struct FeedView: View {
                 }
             }
             .listStyle(.plain)
+            // iOS 26 shows the bar as the tab bar's accessory (`JournalModule`); before, it floats here.
+            .safeAreaInset(edge: .bottom) {
+                if #unavailable(iOS 26), viewModel.showsCompareBar {
+                    CompareBar(viewModel: viewModel, isTabAccessory: false)
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.bottom, Spacing.sm)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .animation(.smooth(duration: 0.2), value: viewModel.showsCompareBar)
             .scrollContentBackground(.hidden)
         }
         .themedGroupedBackground()
         .task { await viewModel.start() }
         .errorAlert($viewModel.alertMessage)
+    }
+}
+
+/// "Compare (3)" and a close (reset) button (web: `cp-fab`): the tab bar's accessory on iOS 26 (the
+/// accessory is the glass capsule), a floating bar before.
+struct CompareBar: View {
+    let viewModel: FeedViewModel
+    let isTabAccessory: Bool
+
+    var body: some View {
+        HStack(spacing: Spacing.sm) {
+            let compare = Button {
+                viewModel.didTapCompare()
+            } label: {
+                Label(tr("Compare (\(viewModel.compared.count))"), systemImage: "scalemass.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity, maxHeight: isTabAccessory ? .infinity : nil)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityIdentifier("journal.compareBar")
+            if isTabAccessory {
+                compare.buttonStyle(.plain).foregroundStyle(.theme.accent)
+            } else {
+                compare.buttonStyle(.primary)
+            }
+            close
+        }
+        .padding(.horizontal, isTabAccessory ? Spacing.sm : 0)
+    }
+
+    /// Glass on iOS 26, a material circle before.
+    @ViewBuilder
+    private var close: some View {
+        let button = Button {
+            viewModel.resetCompare()
+        } label: {
+            Image(systemName: "xmark").font(.body.weight(.semibold))
+        }
+        .accessibilityLabel(tr("Reset"))
+        .accessibilityIdentifier("journal.compareReset")
+        if #available(iOS 26, *) {
+            button.buttonStyle(.glass).buttonBorderShape(.circle)
+        } else {
+            button
+                .buttonStyle(.plain)
+                .foregroundStyle(.theme.textSecondary)
+                .frame(width: 44, height: 44)
+                .background(.regularMaterial, in: Circle())
+        }
     }
 }
 

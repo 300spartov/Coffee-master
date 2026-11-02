@@ -9,6 +9,8 @@ public protocol FeedRouting: AnyObject {
     func showNewBrew()
     /// Log a brew after the fact.
     func showLogBrew()
+    /// Compare the picked brews (2–4, in the order they were picked).
+    func showCompare(brewIDs: [Brew.ID])
 }
 
 public protocol BrewFormRouting: AnyObject {

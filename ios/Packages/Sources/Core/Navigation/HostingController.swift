@@ -48,6 +48,39 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
     private var searchUpdater: SearchUpdater?
     private var collapsesSearchWhileScrolling = false
 
+    // MARK: - Tab bar accessory (iOS 26)
+
+    /// Hosts the screen's tab bar accessory, while it has one.
+    private var tabAccessoryHost: UIViewController?
+
+    /// Shows `content` as the tab bar's bottom accessory while this screen is visible (iOS 26: above
+    /// the tab bar, inline with it when it minimizes); `nil` removes it. Leaving the screen (another
+    /// tab, a push) takes it away; coming back brings it back.
+    @available(iOS 26, *)
+    public func setTabAccessory<Accessory: View>(_ content: Accessory?) {
+        tabAccessoryHost = content.map { content in
+            let host = UIHostingController(rootView: LocalizedRoot(content: content, locale: LanguageSettings.shared.current.locale))
+            host.view.backgroundColor = .clear
+            return host
+        }
+        if viewIfLoaded?.window != nil { installTabAccessory(animated: true) }
+    }
+
+    @available(iOS 26, *)
+    private func installTabAccessory(animated: Bool) {
+        tabBarController?.setBottomAccessory(tabAccessoryHost.map { UITabAccessory(contentView: $0.view) }, animated: animated)
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if #available(iOS 26, *), tabAccessoryHost != nil { installTabAccessory(animated: animated) }
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if #available(iOS 26, *), tabAccessoryHost != nil { tabBarController?.setBottomAccessory(nil, animated: animated) }
+    }
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Shown on first appearance, then let the system tuck it away while scrolling.

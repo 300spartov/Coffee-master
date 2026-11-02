@@ -172,6 +172,16 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CompareFeatureTests"
+               BuildableName = "CompareFeatureTests"
+               BlueprintName = "CompareFeatureTests"
+               ReferencedContainer = "container:Packages">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "BeansFeatureTests"
                BuildableName = "BeansFeatureTests"
                BlueprintName = "BeansFeatureTests"

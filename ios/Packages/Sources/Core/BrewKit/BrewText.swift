@@ -72,3 +72,15 @@ nonisolated public extension BrewMethod {
         }
     }
 }
+
+public extension Brew {
+    /// Bean name, or the method when no bean was recorded (café drinks, quick logs).
+    var displayTitle: String {
+        bean?.name ?? method.rawValue
+    }
+
+    /// The brewer or machine, under the method.
+    var device: String? {
+        (dripper ?? espressoMachine)?.name
+    }
+}

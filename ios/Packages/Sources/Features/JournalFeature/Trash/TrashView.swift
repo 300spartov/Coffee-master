@@ -1,6 +1,7 @@
 import SwiftUI
 import Domain
 import DesignSystem
+import BrewKit
 
 /// Deleted brews, newest first, with the days left before they're purged. Swipe right to restore,
 /// left to delete for good; Empty Trash at the bottom.

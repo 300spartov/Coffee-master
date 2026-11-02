@@ -4,6 +4,7 @@ import AppCore
 import BeansFeature
 import BrewFeature
 import JournalFeature
+import CompareFeature
 import DeepLinks
 import DevicesFeature
 import DesignSystem
@@ -57,7 +58,7 @@ final class AppRouter {
     /// Order here = tab order. Adding a tab = adding a Flow.
     private func makeFlows() -> [any Flow] {
         [
-            JournalFlow(module: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),
+            JournalFlow(module: JournalModule(), compareModule: CompareModule(), startBrew: { [weak self] in self?.startBrew() }),
             BeansFlow(module: BeansModule()),
             DevicesFlow(module: DevicesModule()),
             ProfileFlow(module: SettingsModule(), journalModule: JournalModule(), startBrew: { [weak self] in self?.startBrew() }),

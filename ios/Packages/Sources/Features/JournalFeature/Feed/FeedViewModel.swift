@@ -17,6 +17,14 @@ final class FeedViewModel {
     }
 
     private(set) var state: ListState<Day> = .loading
+    /// Brews picked for the comparison, in the order they were picked (up to `maximumCompared`).
+    private(set) var compared: [Brew.ID] = [] {
+        didSet {
+            if showsCompareBar != (oldValue.count >= 2) { onShowsCompareBarChange?(showsCompareBar) }
+        }
+    }
+    /// Called when the compare bar appears or goes (the module puts it in the tab bar on iOS 26).
+    @ObservationIgnored var onShowsCompareBarChange: ((Bool) -> Void)?
     /// A failed action (like, delete), shown as an alert over the feed.
     var alertMessage: String?
 
@@ -36,7 +44,10 @@ final class FeedViewModel {
 
     func load() async {
         do {
-            state = ListState(Self.days(of: try await repository.fetchAll(), calendar: calendar))
+            let brews = try await repository.fetchAll()
+            state = ListState(Self.days(of: brews, calendar: calendar))
+            // A picked brew that was deleted drops out of the comparison.
+            compared = compared.filter { id in brews.contains { $0.id == id } }
         } catch {
             state = .failed(error.localizedDescription)
         }
@@ -64,6 +75,33 @@ final class FeedViewModel {
 
     func didTapLog() {
         router?.showLogBrew()
+    }
+
+    // MARK: - Compare
+
+    /// The web's limit (and the compare screen's).
+    static let maximumCompared = 4
+
+    /// From two picked brews on.
+    var showsCompareBar: Bool { compared.count >= 2 }
+
+    func toggleCompare(_ brew: Brew) {
+        if let index = compared.firstIndex(of: brew.id) {
+            compared.remove(at: index)
+        } else if compared.count < Self.maximumCompared {
+            compared.append(brew.id)
+        } else {
+            alertMessage = tr("You can compare up to 4 brews.")
+        }
+    }
+
+    func resetCompare() {
+        compared = []
+    }
+
+    func didTapCompare() {
+        guard showsCompareBar else { return }
+        router?.showCompare(brewIDs: compared)
     }
 
     func toggleLike(_ brew: Brew) async {

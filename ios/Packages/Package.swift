@@ -34,7 +34,7 @@ let package = Package(
             name: "AppModules",
             targets: [
                 "AppCore", "Domain", "DataLayer", "DesignSystem", "DeepLinks", "Navigation", "WidgetsShared", "WebImport", "FlavorWheel", "BrewKit",
-                "JournalFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
+                "JournalFeature", "CompareFeature", "BrewFeature", "SettingsFeature", "BeansFeature", "DevicesFeature",
             ]
         ),
         // Lightweight subset for app extensions (Widget Extension, Live Activities).
@@ -97,6 +97,14 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: mainActorByDefault
         ),
+        /// Brews side by side (ROADMAP 3.5); Swift Charts for the curve.
+        .target(
+            name: "CompareFeature",
+            dependencies: ["AppCore", "Domain", "DesignSystem", "BrewKit", "Navigation", factoryKit],
+            path: "Sources/Features/CompareFeature",
+            resources: [.process("Resources")],
+            swiftSettings: mainActorByDefault
+        ),
         .target(
             name: "BrewFeature",
             dependencies: ["AppCore", "Domain", "DesignSystem", "BrewKit", "FlavorWheel", "Navigation", factoryKit],
@@ -145,6 +153,10 @@ let package = Package(
         .testTarget(
             name: "JournalFeatureTests",
             dependencies: ["JournalFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
+        ),
+        .testTarget(
+            name: "CompareFeatureTests",
+            dependencies: ["CompareFeature", "Domain", "TestSupport", factoryKit, .product(name: "FactoryTesting", package: "Factory")]
         ),
         .testTarget(
             name: "BrewFeatureTests",

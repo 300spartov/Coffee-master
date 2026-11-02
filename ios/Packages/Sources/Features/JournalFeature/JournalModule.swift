@@ -20,6 +20,13 @@ public struct JournalModule {
         log.accessibilityLabel = tr("Log a Brew")
         log.accessibilityIdentifier = "journal.log"
         controller.navigationItem.leftBarButtonItem = log
+        // iOS 26: the compare bar rides on the tab bar (its bottom accessory) while the feed is visible.
+        if #available(iOS 26, *) {
+            viewModel.onShowsCompareBarChange = { [weak controller, weak viewModel] shows in
+                guard let controller, let viewModel else { return }
+                controller.setTabAccessory(shows ? CompareBar(viewModel: viewModel, isTabAccessory: true) : nil)
+            }
+        }
         controller.view.accessibilityIdentifier = "journal.list"
         return controller
     }

@@ -58,6 +58,44 @@ final class JournalUITests: XCTestCase {
         XCTAssertTrue(trashed.waitForNonExistence(timeout: 5))
     }
 
+    /// ROADMAP 3.5: pick two brews with ⚖, compare them in the three charts. Read-only (picking doesn't
+    /// change a brew), so it uses the brews already in the journal.
+    func testCompareTwoBrews() throws {
+        let app = XCUIApplication.launched()
+        let pickers = app.buttons.matching(identifier: "journal.compare")
+        XCTAssertTrue(app.navigationBars["Journal"].waitForExistence(timeout: 5))
+        try XCTSkipUnless(pickers.firstMatch.waitForExistence(timeout: 5), "Needs brews in the journal")
+        pickers.element(boundBy: 0).tap()
+        XCTAssertFalse(app.buttons["journal.compareBar"].exists, "Two brews are needed")
+        try XCTSkipUnless(pickers.count >= 2, "Needs two brews in the journal")
+        pickers.element(boundBy: 1).tap()
+        let bar = app.buttons["journal.compareBar"]
+        XCTAssertTrue(bar.waitForExistence(timeout: 5))
+        attachScreenshot(named: "compare-bar")
+        // The bar belongs to the Journal (on iOS 26 it rides on the tab bar): gone on other tabs.
+        app.tabBars.buttons["Beans"].tap()
+        XCTAssertTrue(bar.waitForNonExistence(timeout: 5))
+        app.tabBars.buttons["Journal"].tap()
+        XCTAssertTrue(bar.waitForExistence(timeout: 5))
+
+        bar.tap()
+        XCTAssertTrue(app.navigationBars["Compare"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.descendants(matching: .any).matching(identifier: "compare.timeline").count, 2)
+        XCTAssertTrue(app.descendants(matching: .any)["compare.parameters"].exists)
+        attachScreenshot(named: "compare-timeline")
+        app.segmentedControls["compare.chart"].buttons["Rings"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["compare.rings"].waitForExistence(timeout: 5))
+        app.buttons.matching(identifier: "compare.entry").firstMatch.tap()
+        attachScreenshot(named: "compare-rings")
+        app.segmentedControls["compare.chart"].buttons["Curve"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["compare.curve"].waitForExistence(timeout: 5))
+        attachScreenshot(named: "compare-curve")
+
+        app.navigationBars["Compare"].buttons.firstMatch.tap()
+        app.buttons["journal.compareReset"].tap()
+        XCTAssertTrue(app.buttons["journal.compareBar"].waitForNonExistence(timeout: 5))
+    }
+
     func testCancelClosesTheLog() {
         let app = XCUIApplication.launched()
         app.navigationBars["Journal"].buttons["journal.log"].tap()

@@ -257,6 +257,38 @@
         }
       }
     },
+    "Compare": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Порівняти"
+          }
+        }
+      }
+    },
+    "Compare (%lld)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare (%lld)"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Порівняти (%lld)"
+          }
+        }
+      }
+    },
     "Date & time": {
       "localizations": {
         "en": {
@@ -833,6 +865,22 @@
         }
       }
     },
+    "Reset": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скинути"
+          }
+        }
+      }
+    },
     "Restore": {
       "localizations": {
         "en": {
@@ -1133,6 +1181,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Вихід"
+          }
+        }
+      }
+    },
+    "You can compare up to 4 brews.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can compare up to 4 brews."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Порівняти можна до 4 рецептів."
           }
         }
       }

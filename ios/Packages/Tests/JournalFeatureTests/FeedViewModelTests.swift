@@ -88,4 +88,34 @@ struct FeedViewModelTests {
         #expect(router.newBrewShownCount == 1)
         #expect(router.logShownCount == 1)
     }
+
+    @Test func pickingBrewsToCompare() async {
+        let brews = (1...5).map { brew(31, $0) }
+        let viewModel = makeViewModel(repository: TestRepository(brews: brews))
+        await viewModel.load()
+
+        viewModel.didTapCompare()                       // nothing picked: no route
+        brews.forEach(viewModel.toggleCompare)          // the fifth is one too many
+        #expect(viewModel.compared == brews.prefix(4).map(\.id))
+        #expect(viewModel.alertMessage != nil)
+        viewModel.toggleCompare(brews[1])               // unpick
+        viewModel.didTapCompare()
+        #expect(router.compared == [[brews[0].id, brews[2].id, brews[3].id]])
+
+        viewModel.resetCompare()
+        #expect(viewModel.compared.isEmpty)
+    }
+
+    @Test func aDeletedBrewDropsOutOfTheComparison() async {
+        let repository = TestRepository(brews: Brew.samples)
+        let viewModel = makeViewModel(repository: repository)
+        await viewModel.load()
+        viewModel.toggleCompare(Brew.samples[0])
+        viewModel.toggleCompare(Brew.samples[1])
+
+        try? await repository.delete(id: Brew.samples[0].id)
+        await viewModel.load()
+
+        #expect(viewModel.compared == [Brew.samples[1].id])
+    }
 }
