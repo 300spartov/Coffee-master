@@ -74,11 +74,11 @@ public struct FormActions: View {
 #Preview {
     Form {
         FormActions(
-            title: tr("Save Changes"),
+            title: "Save Changes",
             isSaving: false,
             canSave: true,
             identifier: "brewForm",
-            destructive: .init(tr("Delete Brew"), confirmation: tr("Delete this brew?"), confirmTitle: tr("Delete")) {
+            destructive: .init("Delete Brew", confirmation: "Delete this brew?", confirmTitle: "Delete") {
             }
         ) {}
     }

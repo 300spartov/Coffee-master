@@ -33,7 +33,7 @@ ios/
     │   └── BrewKit/              # brew text and views shared by the wizard and the journal (times, ratios, step rows, tasting)
     ├── Sources/Features/
     │   ├── BrewFeature/          # brew wizard: method pick → setup → timer / espresso shot → rate & save → result
-    │   ├── JournalFeature/       # journal feed (day groups, brew cards, like, swipe delete) → brew form (edit, delete)
+    │   ├── JournalFeature/       # journal feed (day groups, brew cards, like, swipe delete) → brew form (edit, delete, log after the fact)
     │   ├── BeansFeature/         # bean list → add / edit
     │   ├── DevicesFeature/       # categories → catalog, device form, filter packs
     │   └── SettingsFeature/      # settings → about

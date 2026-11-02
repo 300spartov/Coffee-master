@@ -129,6 +129,22 @@
         }
       }
     },
+    "Brew added": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brew added"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додано в журнал"
+          }
+        }
+      }
+    },
     "Brew deleted": {
       "localizations": {
         "en": {

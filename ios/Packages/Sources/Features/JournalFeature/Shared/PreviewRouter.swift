@@ -7,6 +7,8 @@ final class PreviewRouter: FeedRouting, BrewFormRouting {
 
     func showBrew(id: Brew.ID) {}
     func showNewBrew() {}
+    func showLogBrew() {}
+    func brewFormDidCancel() {}
     func brewFormDidSave(_ brew: Brew) {}
     func brewFormDidDelete(id: Brew.ID) {}
     func brewFormNotFound(id: Brew.ID) {}

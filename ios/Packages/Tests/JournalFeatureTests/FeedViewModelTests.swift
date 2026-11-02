@@ -82,8 +82,10 @@ struct FeedViewModelTests {
 
         viewModel.didSelect(Brew.samples[1])
         viewModel.didTapAdd()
+        viewModel.didTapLog()
 
         #expect(router.shownIDs == [Brew.samples[1].id])
         #expect(router.newBrewShownCount == 1)
+        #expect(router.logShownCount == 1)
     }
 }

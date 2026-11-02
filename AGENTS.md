@@ -32,6 +32,8 @@ Don't run the full test suite when a feature is done (the `CoffeeMaster` scheme 
 - **String catalogs** (`*.xcstrings`) or `tr("…")` calls changed: also `-only-testing:LocalizationTests`.
 - **UI tests: same rule, only for what you modified.** Run only the UI test classes that cover the features or flows you changed, e.g. a change in `BeansFeature` or `BeansFlow` → `-only-testing:CoffeeMasterUITests/BeanUITests`. Map changes to classes like this:
   - `BeansFeature`, `BeansFlow` → `BeanUITests`
+  - `BrewFeature`, `BrewFlow` → `BrewUITests`
+  - `JournalFeature`, `JournalFlow` → `JournalUITests` (plus `BrewUITests/testSavedBrewShowsResultAndJournal` for the feed card and the brew form)
   - `DevicesFeature`, `DevicesFlow` → `DeviceUITests`, `FilterPackUITests` (only the one for the screens you touched)
   - sheet handling in flows (`ModalSlot`, `presentStack`) → `SheetReopenUITests`
   - `AppRouter`, tabs, the Brew button → `AppShellUITests`
@@ -43,6 +45,16 @@ Don't run the full test suite when a feature is done (the `CoffeeMaster` scheme 
 - **New module:** add its test target, and run that target.
 
 The developer runs the full suite. Only run it yourself if the developer asks.
+
+## Review after implementing
+
+Once a feature or step works, review the code you wrote for it before reporting:
+
+- **Only the new code:** what this task added or changed (`git diff` against the branch you started from). Don't refactor existing code you didn't touch.
+- **Make it simpler:** fewer lines and types, clearer names, no dead code or leftovers from earlier attempts.
+- **Remove duplicates:** within the new code, and between it and what already exists. Reuse existing helpers and components instead of writing near-copies.
+- **Optimize:** no needless work (repeated fetches, recomputing values in views, extra state).
+- Then rerun the tests for what the review changed (same rules as above), and say what the review changed in your report.
 
 ## When you finish
 

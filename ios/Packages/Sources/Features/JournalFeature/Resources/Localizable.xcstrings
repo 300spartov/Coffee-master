@@ -65,6 +65,22 @@
         }
       }
     },
+    "Add to Journal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add to Journal"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати в журнал"
+          }
+        }
+      }
+    },
     "Aroma": {
       "localizations": {
         "en": {
@@ -353,6 +369,22 @@
         }
       }
     },
+    "Home": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вдома"
+          }
+        }
+      }
+    },
     "Ice & mixer": {
       "localizations": {
         "en": {
@@ -397,6 +429,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Подобається"
+          }
+        }
+      }
+    },
+    "Log a Brew": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log a Brew"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Додати випите"
           }
         }
       }
@@ -861,6 +909,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "змочений"
+          }
+        }
+      }
+    },
+    "Where": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Де"
           }
         }
       }

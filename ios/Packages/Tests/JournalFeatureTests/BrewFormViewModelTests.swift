@@ -13,7 +13,7 @@ struct BrewFormViewModelTests {
     private func makeViewModel(_ brew: Brew, repository: TestRepository<Brew>? = nil) -> (BrewFormViewModel, TestRepository<Brew>) {
         let repository = repository ?? TestRepository(brews: [brew])
         Container.shared.brewRepository.register { repository }
-        return (BrewFormViewModel(brewID: brew.id, router: router), repository)
+        return (BrewFormViewModel(mode: .edit(brew.id), router: router), repository)
     }
 
     @Test func editedStepsAndTastingAreSaved() async throws {
@@ -78,5 +78,64 @@ struct BrewFormViewModelTests {
 
         #expect(viewModel.alertMessage == "Boom")
         #expect(router.saved.isEmpty)
+    }
+
+    // MARK: - Logging (3.3)
+
+    private func makeLogViewModel(brews: TestRepository<Brew> = TestRepository(brews: [])) -> BrewFormViewModel {
+        Container.shared.brewRepository.register { brews }
+        Container.shared.beanRepository.register { TestRepository(beans: Bean.samples) }
+        Container.shared.deviceRepository.register { TestRepository(devices: Device.samples) }
+        return BrewFormViewModel(mode: .add, router: router)
+    }
+
+    @Test func homeBrewWithYourBagIsLinkedToIt() async throws {
+        let brews = TestRepository<Brew>(brews: [])
+        let viewModel = makeLogViewModel(brews: brews)
+        await viewModel.load()
+        let grinder = try #require(Device.samples.first { $0.type == .grinder })
+
+        viewModel.brew.method = .chemex
+        viewModel.beanName = Bean.samples[0].name.uppercased()
+        viewModel.grinderName = grinder.name
+        viewModel.grindSetting = 22
+        await viewModel.save()
+
+        let logged = try #require(try await brews.fetchAll().first)
+        #expect(logged.isManual)
+        #expect(logged.method == .chemex)
+        #expect(logged.bean?.beanID == Bean.samples[0].id)
+        #expect(logged.grinder == GearReference(id: grinder.id, name: grinder.name))
+        #expect(logged.grindSetting == 22)
+        #expect((logged.doseGrams, logged.ratio, logged.beverageVolume) == (16, 16, 240))
+        #expect(router.saved.map(\.id) == [logged.id])
+    }
+
+    @Test func cafeDrinkHasOnlyItsVolumeAndPlace() async throws {
+        let brews = TestRepository<Brew>(brews: [])
+        let viewModel = makeLogViewModel(brews: brews)
+        await viewModel.load()
+
+        viewModel.isCafe = true
+        viewModel.cafePlace = " Blackwood "
+        viewModel.beanName = Bean.samples[0].name
+        viewModel.grinderName = "Comandante"
+        await viewModel.save()
+
+        let logged = try #require(try await brews.fetchAll().first)
+        #expect(logged.origin == .cafe(place: "Blackwood"))
+        #expect(logged.bean == BeanReference(name: Bean.samples[0].name))  // named, not from your stock
+        #expect(logged.grinder == nil)
+        #expect((logged.doseGrams, logged.ratio, logged.waterTemperature) == (0, 0, nil))
+        viewModel.isCafe = false
+        #expect(viewModel.brew.doseGrams == 16)
+    }
+
+    @Test func cancelRoutes() {
+        let viewModel = makeLogViewModel()
+
+        viewModel.cancel()
+
+        #expect(router.cancelCount == 1)
     }
 }

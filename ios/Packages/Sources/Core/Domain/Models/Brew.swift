@@ -140,6 +140,12 @@ public extension Brew {
         return false
     }
 
+    /// A brew logged after the fact (web: `openLogBrew`'s defaults): a home V60, 16 g at 1:16, 93 °C,
+    /// 240 ml, rated 8.
+    static func logged(at date: Date = .now) -> Brew {
+        Brew(date: date, method: .v60, doseGrams: 16, ratio: 16, waterTemperature: 93, beverageVolume: 240, rating: 8, isManual: true)
+    }
+
     static func clampRating(_ value: Double) -> Double {
         (min(max(value, ratingRange.lowerBound), ratingRange.upperBound) * 10).rounded() / 10
     }

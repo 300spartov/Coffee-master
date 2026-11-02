@@ -6,12 +6,15 @@ import DesignSystem
 import Navigation
 import JournalFeature
 
-/// Journal tab: the feed → a brew to edit. Starting a brew goes through the app-wide Brew action.
+/// Journal tab: the feed → a brew to edit (push); logging a brew after the fact (sheet). Starting a
+/// brew goes through the app-wide Brew action.
 final class JournalFlow: Flow {
     private let module: JournalModule
     private let startBrew: () -> Void
     @Injected(\.toasts) private var toasts
     private let router = StackRouter()
+    /// The "Log a Brew" sheet.
+    private let modal = ModalSlot()
 
     var rootViewController: UIViewController { router.navigationController }
 
@@ -55,12 +58,29 @@ extension JournalFlow: FeedRouting {
     func showNewBrew() {
         startBrew()
     }
+
+    func showLogBrew() {
+        modal.present {
+            router.presentStack(root: module.makeLogBrew(router: self)) { sheet in
+                sheet.detents = [.large()]
+            }
+        }
+    }
 }
 
 extension JournalFlow: BrewFormRouting {
     func brewFormDidSave(_ brew: Brew) {
-        router.pop()
-        toasts.show(tr("Brew updated"), style: .success)
+        if modal.isPresented {
+            modal.close()
+            toasts.show(tr("Brew added"), style: .success)
+        } else {
+            router.pop()
+            toasts.show(tr("Brew updated"), style: .success)
+        }
+    }
+
+    func brewFormDidCancel() {
+        modal.close()
     }
 
     func brewFormDidDelete(id: Brew.ID) {

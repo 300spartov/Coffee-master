@@ -62,6 +62,10 @@ final class FeedViewModel {
         router?.showNewBrew()
     }
 
+    func didTapLog() {
+        router?.showLogBrew()
+    }
+
     func toggleLike(_ brew: Brew) async {
         var liked = brew
         liked.isLiked.toggle()

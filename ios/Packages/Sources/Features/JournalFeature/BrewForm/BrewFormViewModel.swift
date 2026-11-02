@@ -4,35 +4,78 @@ import AppCore
 import Domain
 import FactoryKit
 
-/// A brew from the journal, every field editable (web: `edit-brew`): date, recipe, steps, rating, the
-/// flavor wheel and notes. Saving runs `Brew.edited()` (steps back to back, total time from them).
+/// A brew in the journal, every field editable (web: `edit-brew`), or one logged after the fact (web:
+/// `log-brew`: at home or at a café). Saving runs `Brew.edited()` (steps back to back, total time).
 @Observable
 final class BrewFormViewModel {
-    let brewID: Brew.ID
-    private(set) var state: LoadState = .loading
-    /// The brew as edited (a placeholder until it's loaded).
-    var brew = Brew(method: .v60, doseGrams: 0, ratio: 0, rating: 0)
+    enum Mode: Equatable {
+        /// Logged after the fact.
+        case add
+        case edit(Brew.ID)
+    }
+
+    let mode: Mode
+    private(set) var state: LoadState
+    /// The brew as edited (when editing, a placeholder until it's loaded).
+    var brew: Brew
     private(set) var isSaving = false
     var alertMessage: String?
 
+    // Logging: the bag and grinder are typed, with your own as suggestions (a match links the brew).
+    var beanName = ""
+    var grinderName = ""
+    private(set) var beans: [Bean] = []
+    private(set) var grinders: [Device] = []
+
+    @ObservationIgnored private var didLoad = false
     @ObservationIgnored @Injected(\.brewRepository) private var repository
+    @ObservationIgnored @Injected(\.beanRepository) private var beanRepository
+    @ObservationIgnored @Injected(\.deviceRepository) private var devices
     @ObservationIgnored private weak var router: (any BrewFormRouting)?
 
-    init(brewID: Brew.ID, router: any BrewFormRouting) {
-        self.brewID = brewID
+    init(mode: Mode, router: any BrewFormRouting, now: Date = .now) {
+        self.mode = mode
         self.router = router
+        state = mode == .add ? .ready : .loading
+        brew = .logged(at: now)
     }
 
-    /// Loads once, so the edits survive the screen reappearing.
+    var isAdding: Bool { mode == .add }
+
+    /// Loads once, so the edits survive the screen reappearing: the brew, or your bags and grinders.
     func load() async {
-        guard state != .ready else { return }
-        do {
-            brew = try await repository.fetch(id: brewID)
-            state = .ready
-        } catch RepositoryError.notFound {
-            router?.brewFormNotFound(id: brewID)
-        } catch {
-            state = .failed(error.localizedDescription)
+        guard !didLoad else { return }
+        switch mode {
+        case .add:
+            didLoad = true
+            beans = (try? await beanRepository.fetchAll()) ?? []
+            grinders = (try? await devices.fetchAll(of: .grinder)) ?? []
+        case .edit(let id):
+            do {
+                brew = try await repository.fetch(id: id)
+                didLoad = true
+                state = .ready
+            } catch RepositoryError.notFound {
+                router?.brewFormNotFound(id: id)
+            } catch {
+                state = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// Methods to log: the wizard's, alternative then espresso.
+    var methods: [BrewMethod] { BrewMethod.alternativePresets + BrewMethod.espressoPresets }
+
+    /// Home or café (logging): a café drink has no recipe, only its volume.
+    var isCafe: Bool {
+        get { brew.isCafeVisit }
+        set {
+            guard newValue != brew.isCafeVisit else { return }
+            let home = Brew.logged()
+            brew.origin = newValue ? .cafe(place: "") : .home
+            brew.doseGrams = newValue ? 0 : home.doseGrams
+            brew.ratio = newValue ? 0 : home.ratio
+            brew.waterTemperature = newValue ? nil : home.waterTemperature
         }
     }
 
@@ -94,26 +137,53 @@ final class BrewFormViewModel {
 
     // MARK: - Actions
 
+    /// Edits are saved as they are; a logged home brew made with one of your bags takes its dose
+    /// from it (`record`), so deleting it later gives the coffee back evenly.
     func save() async {
         guard state == .ready, !isSaving else { return }
         isSaving = true
         defer { isSaving = false }
-        let edited = brew.edited()
+        let saved = (isAdding ? loggedBrew() : brew).edited()
         do {
-            try await repository.save(edited)
-            router?.brewFormDidSave(edited)
+            if isAdding { try await repository.record(saved) } else { try await repository.save(saved) }
+            router?.brewFormDidSave(saved)
         } catch {
             alertMessage = error.localizedDescription
         }
     }
 
+    func cancel() {
+        router?.brewFormDidCancel()
+    }
+
     /// Moves the brew to the trash (its coffee and filter go back to stock).
     func delete() async {
+        guard case .edit(let id) = mode else { return }
         do {
-            try await repository.delete(id: brewID)
-            router?.brewFormDidDelete(id: brewID)
+            try await repository.delete(id: id)
+            router?.brewFormDidDelete(id: id)
         } catch {
             alertMessage = error.localizedDescription
         }
+    }
+
+    /// The brew with the typed bag and grinder: one of yours (by name) is linked; a café drink's bag
+    /// is only named (it's not from your stock).
+    private func loggedBrew() -> Brew {
+        var logged = brew
+        let bean = beanName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let ownedBean = brew.isCafeVisit ? nil : beans.first { $0.name.caseInsensitiveCompare(bean) == .orderedSame }
+        logged.bean = ownedBean.map(BeanReference.init) ?? (bean.isEmpty ? nil : BeanReference(name: bean))
+        let grinder = grinderName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if brew.isCafeVisit || grinder.isEmpty {
+            logged.grinder = nil
+            logged.grindSetting = nil
+        } else {
+            logged.grinder = grinders.first { Device.namesMatch($0.name, grinder) }.map(GearReference.init) ?? GearReference(name: grinder)
+        }
+        if case .cafe(let place) = brew.origin {
+            logged.origin = .cafe(place: place.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+        return logged
     }
 }

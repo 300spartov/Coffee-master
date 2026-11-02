@@ -66,7 +66,8 @@ struct BrewCard: View {
                 HStack(alignment: .firstTextBaseline, spacing: Spacing.xs) {
                     Text(brew.date, format: .dateTime.hour().minute())
                     if case .cafe(let place) = brew.origin {
-                        Label(place.isEmpty ? tr("Café") : place, systemImage: "storefront")
+                        Image(systemName: "storefront")
+                        Text(verbatim: place.isEmpty ? tr("Café") : place).lineLimit(1)
                     }
                 }
                 .appTextStyle(.caption)
@@ -85,16 +86,16 @@ struct BrewCard: View {
         .contentShape(Rectangle())
     }
 
-    /// Dose, ratio and time (a café drink has no time: its volume instead).
+    /// Dose, ratio and time; a café drink has no recipe, only its volume.
     private var stats: some View {
         HStack {
-            MetricView(value: decimal(brew.doseGrams), unit: "g", label: tr("Dose"))
-            Spacer()
-            MetricView(value: ratioText(brew.ratio), label: tr("Ratio"))
-            Spacer()
             if brew.isCafeVisit {
                 MetricView(value: decimal(brew.volumeMilliliters), unit: tr("ml"), label: tr("Volume"))
             } else {
+                MetricView(value: decimal(brew.doseGrams), unit: "g", label: tr("Dose"))
+                Spacer()
+                MetricView(value: ratioText(brew.ratio), label: tr("Ratio"))
+                Spacer()
                 MetricView(value: brew.totalTime.map(clockText) ?? "—", label: tr("Time"))
             }
         }

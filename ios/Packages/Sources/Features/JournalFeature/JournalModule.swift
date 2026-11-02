@@ -15,14 +15,26 @@ public struct JournalModule {
             title: tr("Journal"),
             largeTitleDisplayMode: .always
         )
-        // No "+" here: starting a brew is the app-wide Brew button in the top bar.
+        // "+" logs a brew after the fact; starting one is the app-wide Brew button on the right.
+        let log = UIBarButtonItem(systemItem: .add, primaryAction: UIAction { [weak viewModel] _ in viewModel?.didTapLog() })
+        log.accessibilityLabel = tr("Log a Brew")
+        log.accessibilityIdentifier = "journal.log"
+        controller.navigationItem.leftBarButtonItem = log
         controller.view.accessibilityIdentifier = "journal.list"
+        return controller
+    }
+
+    /// Log a brew after the fact (present it modally; it has a Cancel button).
+    public func makeLogBrew(router: any BrewFormRouting) -> UIViewController {
+        let viewModel = BrewFormViewModel(mode: .add, router: router)
+        let controller = HostingController(rootView: BrewFormView(viewModel: viewModel), title: tr("Log a Brew"))
+        controller.setCancelButton { [weak viewModel] in viewModel?.cancel() }
         return controller
     }
 
     /// A brew to look at and edit (push it); deleting it is there too.
     public func makeBrewForm(id: Brew.ID, router: any BrewFormRouting) -> UIViewController {
-        let viewModel = BrewFormViewModel(brewID: id, router: router)
+        let viewModel = BrewFormViewModel(mode: .edit(id), router: router)
         return HostingController(
             rootView: BrewFormView(viewModel: viewModel),
             title: tr("Edit Brew"),

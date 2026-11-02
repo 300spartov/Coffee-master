@@ -21,52 +21,56 @@ struct BrewFormView: View {
     private var form: some View {
         Form {
             Section {
-                LabeledContent(tr("Method"), value: brew.method.rawValue)
-                if let bean = brew.bean {
-                    LabeledContent(tr("Coffee"), value: bean.name)
+                if viewModel.isAdding {
+                    Picker(tr("Where"), selection: $viewModel.isCafe) {
+                        Label(tr("Home"), systemImage: "house").tag(false)
+                        Label(tr("Café"), systemImage: "storefront").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("brewForm.source")
+                    Picker(tr("Method"), selection: $viewModel.brew.method) {
+                        ForEach(viewModel.methods, id: \.self) { Text(verbatim: $0.rawValue).tag($0) }
+                    }
+                    .accessibilityIdentifier("brewForm.method")
+                    AutocompleteField(tr("Coffee"), text: $viewModel.beanName, suggestions: viewModel.beans.map(\.name))
+                        .accessibilityIdentifier("brewForm.bean")
+                } else {
+                    LabeledContent(tr("Method"), value: brew.method.rawValue)
+                    if let bean = brew.bean {
+                        LabeledContent(tr("Coffee"), value: bean.name)
+                    }
                 }
-                DatePicker(tr("Date & time"), selection: $viewModel.brew.date, in: ...Date.now)
-                    .accessibilityIdentifier("brewForm.date")
                 if let place = viewModel.cafePlace {
                     TextField(tr("Café"), text: Binding(get: { place }, set: { viewModel.cafePlace = $0 }))
                         .textInputAutocapitalization(.words)
+                        .accessibilityIdentifier("brewForm.place")
                 }
+                DatePicker(tr("Date & time"), selection: $viewModel.brew.date, in: ...Date.now)
+                    .accessibilityIdentifier("brewForm.date")
             }
             .themedRow()
 
             Section(tr("Recipe")) {
-                let isEspresso = viewModel.isEspresso
-                NumberField(tr("Dose"), value: $viewModel.brew.doseGrams, unit: "g", range: isEspresso ? EspressoSetup.doseRange : BrewSetup.doseRange)
-                    .accessibilityIdentifier("brewForm.dose")
-                if isEspresso {
-                    NumberField(tr("Yield"), value: $viewModel.actualYield, unit: "g", placeholder: decimal(brew.espresso?.targetYieldGrams ?? 0), range: 0...200)
-                    NumberField(tr("Shot time"), value: $viewModel.shotTime, unit: tr("s"), range: 0...300, fractionDigits: 0)
-                } else {
-                    NumberField(tr("Ratio (1 : X)"), value: $viewModel.brew.ratio, range: BrewSetup.ratioRange)
-                }
                 if brew.isCafeVisit {
-                    NumberField(tr("Volume"), value: $viewModel.brew.beverageVolume, unit: tr("ml"), range: 0...2_000, fractionDigits: 0)
+                    volume
                 } else {
-                    NumberField(tr("Temperature"), value: $viewModel.brew.waterTemperature, unit: "°C", range: 0...100, fractionDigits: 1)
-                }
-                if brew.grinder != nil {
-                    NumberField(tr("Clicks"), value: $viewModel.grindSetting, range: 1...200, fractionDigits: 0)
+                    recipe
                 }
             }
             .themedRow()
 
-            if !viewModel.isEspresso {
+            if !viewModel.isEspresso && !viewModel.isAdding && !brew.isCafeVisit {
                 steps
             }
 
             TastingSections(tasting: $viewModel.brew.tasting, notesPlaceholder: tr("Body, aftertaste, acidity…"))
 
             FormActions(
-                title: tr("Save Changes"),
+                title: viewModel.isAdding ? tr("Add to Journal") : tr("Save Changes"),
                 isSaving: viewModel.isSaving,
                 canSave: true,
                 identifier: "brewForm",
-                destructive: .init(tr("Delete Brew"), confirmation: tr("Delete this brew?"), confirmTitle: tr("Delete")) {
+                destructive: viewModel.isAdding ? nil : .init(tr("Delete Brew"), confirmation: tr("Delete this brew?"), confirmTitle: tr("Delete")) {
                     Task { await viewModel.delete() }
                 }
             ) {
@@ -76,6 +80,35 @@ struct BrewFormView: View {
         .scrollDismissesKeyboard(.interactively)
         .themedGroupedBackground()
         .accessibilityIdentifier("brewForm")
+    }
+
+    /// Dose and ratio (espresso: yield and shot time), temperature, the grinder.
+    @ViewBuilder
+    private var recipe: some View {
+        let isEspresso = viewModel.isEspresso
+        NumberField(tr("Dose"), value: $viewModel.brew.doseGrams, unit: "g", range: isEspresso ? EspressoSetup.doseRange : BrewSetup.doseRange)
+            .accessibilityIdentifier("brewForm.dose")
+        if isEspresso {
+            NumberField(tr("Yield"), value: $viewModel.actualYield, unit: "g", placeholder: decimal(brew.espresso?.targetYieldGrams ?? 0), range: 0...200)
+            NumberField(tr("Shot time"), value: $viewModel.shotTime, unit: tr("s"), range: 0...300, fractionDigits: 0)
+        } else {
+            NumberField(tr("Ratio (1 : X)"), value: $viewModel.brew.ratio, range: BrewSetup.ratioRange)
+        }
+        NumberField(tr("Temperature"), value: $viewModel.brew.waterTemperature, unit: "°C", range: 0...100, fractionDigits: 1)
+        if brew.isManual {
+            volume
+        }
+        if viewModel.isAdding {
+            AutocompleteField(tr("Grinder"), text: $viewModel.grinderName, suggestions: viewModel.grinders.map(\.name))
+        }
+        if brew.grinder != nil || !viewModel.grinderName.isEmpty {
+            NumberField(tr("Clicks"), value: $viewModel.grindSetting, range: 1...200, fractionDigits: 0)
+        }
+    }
+
+    private var volume: some View {
+        NumberField(tr("Volume"), value: $viewModel.brew.beverageVolume, unit: tr("ml"), range: 0...2_000, fractionDigits: 0)
+            .accessibilityIdentifier("brewForm.volume")
     }
 
     /// Pours and pauses (type, ml, seconds), swipe to remove, add at the end; the total below.
@@ -140,7 +173,11 @@ private struct StepEditor: View {
 }
 
 #if DEBUG
-#Preview {
-    BrewFormView(viewModel: BrewFormViewModel(brewID: Brew.samples[0].id, router: PreviewRouter.shared))
+#Preview("Log") {
+    BrewFormView(viewModel: BrewFormViewModel(mode: .add, router: PreviewRouter.shared))
+}
+
+#Preview("Edit") {
+    BrewFormView(viewModel: BrewFormViewModel(mode: .edit(Brew.samples[0].id), router: PreviewRouter.shared))
 }
 #endif
