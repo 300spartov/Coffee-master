@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>uk</string>
+		<string>en</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -13,13 +18,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>uk</string>
-		<string>en</string>
-	</array>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -40,12 +38,12 @@
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
-			<key>UIApplicationShortcutItemType</key>
-			<string>coffeemaster://brew/new</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>New Brew</string>
 			<key>UIApplicationShortcutItemIconSymbolName</key>
 			<string>plus.circle</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>New Brew</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>coffeemaster://brew/new</string>
 		</dict>
 	</array>
 	<key>UILaunchScreen</key>
