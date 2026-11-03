@@ -36,6 +36,21 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
         navigationItem.rightBarButtonItem = item
     }
 
+    /// A filter button on the left (like Mail's); `setFilterButton(isOn:)` fills it while filters are on.
+    public func setFilterButton(accessibilityLabel: String, identifier: String, action: @escaping () -> Void) {
+        let item = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal.decrease"), primaryAction: UIAction { _ in action() })
+        item.accessibilityLabel = accessibilityLabel
+        item.accessibilityIdentifier = identifier
+        navigationItem.leftBarButtonItem = item
+    }
+
+    public func setFilterButton(isOn: Bool) {
+        guard let item = navigationItem.leftBarButtonItem else { return }
+        item.image = UIImage(systemName: isOn ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
+        item.tintColor = isOn ? .theme.accent : nil
+        item.accessibilityTraits = isOn ? [.button, .selected] : .button
+    }
+
     /// Cancel on the left, for a form presented modally. The form also can't be swiped away, so typed
     /// details aren't lost by accident; Cancel is the way out.
     public func setCancelButton(action: @escaping () -> Void) {
@@ -106,7 +121,8 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
     }
 
     /// Adds the system search bar (`UISearchController`) to this screen's navigation bar and reports
-    /// every text change to `onChange` (typically a view model's `query`).
+    /// every text change to `onChange` (typically a view model's `query`). The keyboard's Search key
+    /// closes the keyboard, keeping the text.
     ///
     /// `collapsesWhileScrolling`: the bar is visible when the screen appears, collapses as the list
     /// scrolls, and comes back when scrolling to the top.
@@ -114,6 +130,7 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
         let updater = SearchUpdater(onChange: onChange)
         let search = UISearchController(searchResultsController: nil)
         search.searchResultsUpdater = updater
+        search.searchBar.delegate = updater
         search.obscuresBackgroundDuringPresentation = false
         search.searchBar.placeholder = placeholder
         navigationItem.searchController = search
@@ -125,7 +142,7 @@ public final class HostingController<Content: View>: UIHostingController<Localiz
     }
 }
 
-private final class SearchUpdater: NSObject, UISearchResultsUpdating {
+private final class SearchUpdater: NSObject, UISearchResultsUpdating, UISearchBarDelegate {
     let onChange: (String) -> Void
 
     init(onChange: @escaping (String) -> Void) {
@@ -135,10 +152,14 @@ private final class SearchUpdater: NSObject, UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         onChange(searchController.searchBar.text ?? "")
     }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
 }
 
 /// Applies the in-app language's locale to a screen, so dates, numbers and units format in that
-/// language. Screens are rebuilt when the language changes (see `AppRouter`).
+/// language, and puts Done above its keyboards. Screens are rebuilt when the language changes (see `AppRouter`).
 public struct LocalizedRoot<Content: View>: View {
     let content: Content
     let locale: Locale
@@ -150,6 +171,8 @@ public struct LocalizedRoot<Content: View>: View {
     }
 
     public var body: some View {
-        content.environment(\.locale, locale)
+        content
+            .keyboardDoneButton()
+            .environment(\.locale, locale)
     }
 }

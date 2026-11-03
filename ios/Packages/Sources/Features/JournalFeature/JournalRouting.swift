@@ -11,6 +11,13 @@ public protocol FeedRouting: AnyObject {
     func showLogBrew()
     /// Compare the picked brews (2–4, in the order they were picked).
     func showCompare(brewIDs: [Brew.ID])
+    /// Open the filter sheet (`JournalModule.makeFilters(_:router:)`).
+    func showFilters(_ filters: FeedFilters)
+}
+
+public protocol FeedFiltersRouting: AnyObject {
+    /// Done on the filter sheet (the filters already apply).
+    func feedFiltersDidFinish()
 }
 
 public protocol BrewFormRouting: AnyObject {

@@ -20,6 +20,10 @@ final class JournalUITests: XCTestCase {
         XCTAssertTrue(placeField.waitForExistence(timeout: 5))
         placeField.tap()
         placeField.typeText(place)
+        // Every keyboard has Done above it.
+        attachScreenshot(named: "keyboard-done")
+        app.buttons["keyboard.done"].tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
         XCTAssertFalse(app.textFields["brewForm.dose"].exists, "A café drink has no recipe")
         attachScreenshot(named: "log-brew")
         scrollTo(app.buttons["brewForm.save"], inForm: "brewForm", of: app).tap()
@@ -107,6 +111,57 @@ final class JournalUITests: XCTestCase {
         app.navigationBars["Compare"].buttons.firstMatch.tap()
         app.buttons["journal.compareReset"].tap()
         XCTAssertTrue(app.buttons["journal.compareBar"].waitForNonExistence(timeout: 5))
+    }
+
+    /// ROADMAP 3.6: the filter sheet, clearing it, then search. Read-only (filters change no brew).
+    func testSearchAndFilters() throws {
+        let app = XCUIApplication.launched()
+        XCTAssertTrue(app.navigationBars["Journal"].waitForExistence(timeout: 5))
+        let cards = app.buttons.matching(identifier: "journal.brew")
+        try XCTSkipUnless(cards.firstMatch.waitForExistence(timeout: 5), "Needs brews in the journal")
+        let noMatch = app.staticTexts["No brews match"]
+
+        // The filter sheet: the first method and Liked apply at once; Done shows "Filtered by" over the feed.
+        app.buttons["journal.filters"].tap()
+        XCTAssertTrue(app.navigationBars["Filters"].waitForExistence(timeout: 5))
+        // Drag the lowest-rating thumb right, about halfway.
+        let lowest = app.descendants(matching: .any).matching(NSPredicate(format: "identifier == 'filters.rating' AND label == 'Lowest rating'")).firstMatch
+        XCTAssertTrue(lowest.exists)
+        let start = lowest.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        start.press(forDuration: 0.2, thenDragTo: start.withOffset(CGVector(dx: 150, dy: 0)))
+        app.buttons.matching(identifier: "filters.method").firstMatch.tap()
+        app.switches["filters.liked"].switches.firstMatch.tap()
+        attachScreenshot(named: "journal-filters")
+        app.buttons["filters.done"].tap()
+        let summary = app.buttons["journal.filterSummary"]
+        XCTAssertTrue(summary.waitForExistence(timeout: 5))
+        XCTAssertTrue(summary.label.contains("Liked") && summary.label.contains("Rating"), summary.label)
+        XCTAssertTrue(cards.firstMatch.exists || noMatch.exists)
+        attachScreenshot(named: "journal-filtered")
+
+        // Tapping the summary reopens the sheet; ✕ clears everything.
+        summary.tap()
+        XCTAssertTrue(app.navigationBars["Filters"].waitForExistence(timeout: 5))
+        app.buttons["filters.done"].tap()
+        app.buttons["journal.filterClear"].tap()
+        XCTAssertTrue(summary.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(cards.firstMatch.waitForExistence(timeout: 5))
+
+        // Last (an active search hides the bar buttons): search for something no brew has. The "no match"
+        // state has no Clear Filters (nothing to clear); clearing the text brings the brews back.
+        let search = app.searchFields.firstMatch
+        search.tap()
+        search.typeText("zzqx\(Int.random(in: 1000...9999))")
+        XCTAssertTrue(noMatch.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Clear Filters"].exists)
+        attachScreenshot(named: "journal-no-match")
+        // The Search key closes the keyboard and keeps the search (no Done bar on the search field).
+        XCTAssertFalse(app.buttons["keyboard.done"].exists)
+        app.keyboards.buttons["search"].tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(noMatch.exists)
+        search.buttons["Clear text"].tap()
+        XCTAssertTrue(cards.firstMatch.waitForExistence(timeout: 5))
     }
 
     func testCancelClosesTheLog() {

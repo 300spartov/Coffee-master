@@ -37,7 +37,13 @@ extension XCTestCase {
     func scrollTo(_ element: XCUIElement, inForm formID: String, of app: XCUIApplication) -> XCUIElement {
         let form = app.collectionViews[formID]
         XCTAssertTrue(form.waitForExistence(timeout: 5), "Form \(formID) not found")
-        if app.keyboards.buttons["Return"].exists { app.keyboards.buttons["Return"].tap() }
+        // Close the keyboard first (Done above it, else Return), so it doesn't cover the element.
+        if app.buttons["keyboard.done"].exists {
+            app.buttons["keyboard.done"].tap()
+        } else if app.keyboards.buttons["Return"].exists {
+            app.keyboards.buttons["Return"].tap()
+        }
+        _ = app.keyboards.firstMatch.waitForNonExistence(timeout: 3)
         for _ in 0..<6 where !(element.exists && element.isHittable) {
             form.swipeUp(velocity: .slow)
         }

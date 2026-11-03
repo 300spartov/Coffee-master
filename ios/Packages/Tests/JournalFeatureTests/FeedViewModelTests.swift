@@ -92,6 +92,54 @@ struct FeedViewModelTests {
         #expect(viewModel.compared.isEmpty)
     }
 
+    @Test func filteringNarrowsTheDaysAndKeepsPicks() async {
+        var latte = brew(30, 9)
+        latte.method = .latte
+        latte.isLiked = true
+        let brews = [brew(31, 9), latte]
+        let viewModel = makeViewModel(repository: TestRepository(brews: brews))
+        await viewModel.load()
+        #expect(viewModel.methods == [.v60, .latte])   // most recent first
+        viewModel.toggleCompare(brews[0])
+
+        viewModel.filter.isLikedOnly = true
+        #expect(viewModel.state == .loaded([FeedViewModel.Day(date: calendar.startOfDay(for: latte.date), brews: [latte])]))
+        #expect(viewModel.compared == [brews[0].id])   // hidden, still picked
+
+        viewModel.filter.methods = [.v60]
+        #expect(viewModel.state == .empty)             // "No brews match"
+        viewModel.filter.clear()
+        guard case .loaded(let days) = viewModel.state else { Issue.record("Not loaded"); return }
+        #expect(days.flatMap(\.brews) == brews)
+    }
+
+    @Test func theFilterSheetEditsTheFeedsFilters() {
+        let viewModel = makeViewModel(repository: TestRepository(brews: []))
+        var changes: [Bool] = []
+        viewModel.onHasFiltersChange = { changes.append($0) }
+
+        viewModel.didTapFilters()
+        #expect(router.shownFilters.first?.feed === viewModel)
+        viewModel.filter.isLikedOnly = true
+        viewModel.filter.methods = [.v60]   // still on: no second call
+        viewModel.filter.text = "guji"
+        viewModel.filter.clear()
+        #expect(changes == [true, false])   // fills, then empties the filter button
+    }
+
+    @Test func aMethodGoneFromTheJournalLeavesTheFilter() async throws {
+        let only = brew(31, 9)
+        let repository = TestRepository(brews: [only])
+        let viewModel = makeViewModel(repository: repository)
+        await viewModel.load()
+        viewModel.filter.methods = [.v60]
+
+        try await repository.delete(id: only.id)
+        await viewModel.load()
+
+        #expect(viewModel.methods.isEmpty && viewModel.filter.methods.isEmpty)
+    }
+
     @Test func aDeletedBrewDropsOutOfTheComparison() async {
         let repository = TestRepository(brews: Brew.samples)
         let viewModel = makeViewModel(repository: repository)

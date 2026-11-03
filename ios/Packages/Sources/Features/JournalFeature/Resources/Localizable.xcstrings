@@ -97,6 +97,22 @@
         }
       }
     },
+    "Any": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Any"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Будь-яка"
+          }
+        }
+      }
+    },
     "Aroma": {
       "localizations": {
         "en": {
@@ -221,6 +237,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Кав’ярня"
+          }
+        }
+      }
+    },
+    "Clear Filters": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Filters"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скинути фільтри"
           }
         }
       }
@@ -497,6 +529,38 @@
         }
       }
     },
+    "Filtered by: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filtered by: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фільтри: %@"
+          }
+        }
+      }
+    },
+    "Filters": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filters"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Фільтри"
+          }
+        }
+      }
+    },
     "Flavor": {
       "localizations": {
         "en": {
@@ -525,6 +589,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Кавомолка"
+          }
+        }
+      }
+    },
+    "Highest rating": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highest rating"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найвища оцінка"
           }
         }
       }
@@ -593,6 +673,22 @@
         }
       }
     },
+    "Liked": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liked"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вподобані"
+          }
+        }
+      }
+    },
     "Log a Brew": {
       "localizations": {
         "en": {
@@ -605,6 +701,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Додати випите"
+          }
+        }
+      }
+    },
+    "Lowest rating": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lowest rating"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найнижча оцінка"
           }
         }
       }
@@ -673,6 +785,22 @@
         }
       }
     },
+    "No brews match": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No brews match"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Немає таких рецептів"
+          }
+        }
+      }
+    },
     "No brews yet": {
       "localizations": {
         "en": {
@@ -733,6 +861,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Немає даних журналу"
+          }
+        }
+      }
+    },
+    "None picked: every method.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None picked: every method."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нічого не вибрано: усі способи."
           }
         }
       }
@@ -813,6 +957,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Тиск"
+          }
+        }
+      }
+    },
+    "Rating": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rating"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оцінка"
+          }
+        }
+      }
+    },
+    "Rating %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rating %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оцінка %@"
           }
         }
       }
@@ -941,6 +1117,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Зберегти зміни"
+          }
+        }
+      }
+    },
+    "Search brews": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search brews"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пошук рецептів"
           }
         }
       }
@@ -1085,6 +1277,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Разом %1$@ · %2$@ мл"
+          }
+        }
+      }
+    },
+    "Try other filters or search words.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try other filters or search words."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спробуй інші фільтри або слова для пошуку."
           }
         }
       }

@@ -48,6 +48,7 @@ final class FilterPackUITests: XCTestCase {
         left.doubleTap() // selects the number, so typing replaces it
         left.typeText("5")
         XCTAssertEqual(left.value as? String, "5")
+        app.buttons["keyboard.done"].tap() // the number pad covers Save
         app.buttons["filterPack.save"].tap()
         XCTAssertTrue(app.staticTexts["Filter pack saved"].waitForExistence(timeout: 5))
         XCTAssertTrue(element(app, containing: "5 of 50 left").waitForExistence(timeout: 5))

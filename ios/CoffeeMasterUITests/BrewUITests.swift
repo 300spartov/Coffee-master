@@ -215,6 +215,7 @@ final class BrewUITests: XCTestCase {
         let note = "UI brew \(Int.random(in: 1000...9999))"
         scrollTo(notes, inForm: "rate.form", of: app).tap()
         notes.typeText(note)
+        attachScreenshot(named: "rate-keyboard")
         scrollTo(app.buttons["rate.save"], inForm: "rate.form", of: app).tap()
 
         XCTAssertTrue(app.staticTexts["Saved!"].waitForExistence(timeout: 5))

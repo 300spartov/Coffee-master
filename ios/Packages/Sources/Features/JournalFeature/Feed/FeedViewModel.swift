@@ -4,7 +4,8 @@ import AppCore
 import Domain
 import FactoryKit
 
-/// The Journal feed (web: `renderFeed`): brews newest first, grouped by day, with like and delete.
+/// The Journal feed (web: `renderFeed`): brews newest first, grouped by day, with like and delete,
+/// narrowed by the search and filters (3.6).
 @Observable
 final class FeedViewModel: AlertingViewModel {
     /// The brews of one calendar day, newest first.
@@ -16,7 +17,19 @@ final class FeedViewModel: AlertingViewModel {
         var id: Date { date }
     }
 
+    /// The days with brews that match `filter`; `.empty` when none do.
     private(set) var state: ListState<Day> = .loading
+    /// The methods in the journal, most recently used first (the filter's chips). Empty: no brews at all.
+    private(set) var methods: [BrewMethod] = []
+    var filter = BrewFilter() {
+        didSet {
+            guard filter != oldValue else { return }
+            applyFilter()
+            if filter.hasFilters != oldValue.hasFilters { onHasFiltersChange?(filter.hasFilters) }
+        }
+    }
+    /// Called when filters are turned on or all off (the module fills the filter button).
+    @ObservationIgnored var onHasFiltersChange: ((Bool) -> Void)?
     /// Brews picked for the comparison, in the order they were picked (up to `Brew.maximumCompared`).
     private(set) var compared: [Brew.ID] = [] {
         didSet {
@@ -28,6 +41,7 @@ final class FeedViewModel: AlertingViewModel {
     /// A failed action (like, delete), shown as an alert over the feed (`attempt`).
     var alertMessage: String?
 
+    @ObservationIgnored private var brews: [Brew] = []
     @ObservationIgnored private let calendar: Calendar
     @ObservationIgnored @Injected(\.brewRepository) private var repository
     @ObservationIgnored private weak var router: (any FeedRouting)?
@@ -44,13 +58,20 @@ final class FeedViewModel: AlertingViewModel {
 
     func load() async {
         do {
-            let brews = try await repository.fetchAll()
-            state = ListState(Self.days(of: brews, calendar: calendar))
-            // A picked brew that was deleted drops out of the comparison.
+            brews = try await repository.fetchAll()
+            var seen = Set<BrewMethod>()
+            methods = brews.map(\.method).filter { seen.insert($0).inserted }
+            filter.methods.formIntersection(methods)
+            applyFilter()
+            // A picked brew that was deleted drops out of the comparison (a hidden one stays).
             compared = compared.filter { id in brews.contains { $0.id == id } }
         } catch {
             state = .failed(error.localizedDescription)
         }
+    }
+
+    private func applyFilter() {
+        state = ListState(Self.days(of: brews.filter(filter.matches), calendar: calendar))
     }
 
     /// Groups brews (already newest first) by calendar day, keeping their order.
@@ -75,6 +96,10 @@ final class FeedViewModel: AlertingViewModel {
 
     func didTapLog() {
         router?.showLogBrew()
+    }
+
+    func didTapFilters() {
+        router?.showFilters(FeedFilters(feed: self))
     }
 
     // MARK: - Compare

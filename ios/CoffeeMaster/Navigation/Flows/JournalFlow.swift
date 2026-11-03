@@ -7,7 +7,7 @@ import Navigation
 import JournalFeature
 import CompareFeature
 
-/// Journal tab: the feed → a brew to edit or the comparison (push); logging a brew after the fact (sheet). Starting a
+/// Journal tab: the feed → a brew to edit or the comparison (push); logging a brew after the fact and the filters (sheets). Starting a
 /// brew goes through the app-wide Brew action.
 final class JournalFlow: Flow {
     private let module: JournalModule
@@ -15,7 +15,7 @@ final class JournalFlow: Flow {
     private let startBrew: () -> Void
     @Injected(\.toasts) private var toasts
     private let router = StackRouter()
-    /// The "Log a Brew" sheet.
+    /// The "Log a Brew" or filter sheet.
     private let modal = ModalSlot()
 
     var rootViewController: UIViewController { router.navigationController }
@@ -79,6 +79,16 @@ extension JournalFlow: FeedRouting {
 
     func showLogBrew() {
         modal.presentSheet(module.makeLogBrew(router: self), over: router)
+    }
+
+    func showFilters(_ filters: FeedFilters) {
+        modal.presentSheet(module.makeFilters(filters, router: self), over: router, size: .resizable)
+    }
+}
+
+extension JournalFlow: FeedFiltersRouting {
+    func feedFiltersDidFinish() {
+        modal.close()
     }
 }
 

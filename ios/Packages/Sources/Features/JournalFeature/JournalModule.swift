@@ -15,6 +15,13 @@ public struct JournalModule {
             title: tr("Journal"),
             largeTitleDisplayMode: .always
         )
+        controller.installSearch(placeholder: tr("Search brews")) { [weak viewModel] text in
+            viewModel?.filter.text = text
+        }
+        controller.setFilterButton(accessibilityLabel: tr("Filters"), identifier: "journal.filters") { [weak viewModel] in
+            viewModel?.didTapFilters()
+        }
+        viewModel.onHasFiltersChange = { [weak controller] isOn in controller?.setFilterButton(isOn: isOn) }
         // "+" logs a brew after the fact; the app puts its Brew button to the right of it.
         controller.setAddButton(accessibilityLabel: tr("Log a Brew"), identifier: "journal.log") { [weak viewModel] in viewModel?.didTapLog() }
         // iOS 26: the compare bar rides on the tab bar (its bottom accessory) while the feed is visible.
@@ -25,6 +32,13 @@ public struct JournalModule {
             }
         }
         controller.view.accessibilityIdentifier = "journal.list"
+        return controller
+    }
+
+    /// The feed's filter sheet (present it as a resizable sheet; it has Done).
+    public func makeFilters(_ filters: FeedFilters, router: any FeedFiltersRouting) -> UIViewController {
+        let controller = HostingController(rootView: FeedFiltersView(viewModel: filters.feed), title: tr("Filters"))
+        controller.setDoneButton(identifier: "filters.done") { [weak router] in router?.feedFiltersDidFinish() }
         return controller
     }
 

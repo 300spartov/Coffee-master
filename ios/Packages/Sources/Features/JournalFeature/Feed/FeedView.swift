@@ -3,19 +3,30 @@ import Domain
 import DesignSystem
 
 /// The Journal: brew cards under day headers ("Today", "Yesterday", the date); swipe right to compare
-/// or like, left to delete.
+/// or like, left to delete. The search bar and the filter sheet narrow it (3.6).
 struct FeedView: View {
     @Bindable var viewModel: FeedViewModel
 
     var body: some View {
         ListStateView(viewModel.state, observe: viewModel.start, reload: viewModel.load) {
-            EmptyStateView(
-                title: tr("No brews yet"),
-                systemImage: "cup.and.saucer",
-                message: tr("Your brews will appear here."),
-                actionTitle: tr("Start a Brew")
-            ) {
-                viewModel.didTapAdd()
+            if viewModel.filter.isEmpty {
+                EmptyStateView(
+                    title: tr("No brews yet"),
+                    systemImage: "cup.and.saucer",
+                    message: tr("Your brews will appear here."),
+                    actionTitle: tr("Start a Brew")
+                ) {
+                    viewModel.didTapAdd()
+                }
+            } else {
+                EmptyStateView(
+                    title: tr("No brews match"),
+                    systemImage: "magnifyingglass",
+                    message: tr("Try other filters or search words."),
+                    actionTitle: viewModel.filter.hasFilters ? tr("Clear Filters") : nil
+                ) {
+                    viewModel.filter.clear()
+                }
             }
         } content: { days in
             List {
@@ -68,6 +79,9 @@ struct FeedView: View {
             }
             .animation(.smooth(duration: 0.2), value: viewModel.showsCompareBar)
             .scrollContentBackground(.hidden)
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if viewModel.filter.hasFilters { FilterSummary(viewModel: viewModel) }
         }
         .themedGroupedBackground()
         .errorAlert($viewModel.alertMessage)
@@ -122,6 +136,38 @@ struct CompareBar: View {
                 .frame(width: 44, height: 44)
                 .background(.regularMaterial, in: Circle())
         }
+    }
+}
+
+/// "Filtered by: Liked, V60" over the feed while filters are on (like Mail): tap to change them,
+/// ✕ to clear them.
+private struct FilterSummary: View {
+    let viewModel: FeedViewModel
+
+    var body: some View {
+        let filters = viewModel.filter.summary.formatted(.list(type: .and, width: .narrow))
+        HStack(spacing: Spacing.sm) {
+            Button {
+                viewModel.didTapFilters()
+            } label: {
+                Text(tr("Filtered by: \(filters)"))
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.theme.accent)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .accessibilityIdentifier("journal.filterSummary")
+            Button(tr("Clear Filters"), systemImage: "xmark.circle.fill") {
+                viewModel.filter.clear()
+            }
+            .labelStyle(.iconOnly)
+            .foregroundStyle(.theme.textTertiary)
+            .accessibilityIdentifier("journal.filterClear")
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, Spacing.lg)
+        .padding(.vertical, Spacing.sm)
+        .background(Color.theme.groupedBackground, ignoresSafeAreaEdges: [])   // not up over the large title
     }
 }
 

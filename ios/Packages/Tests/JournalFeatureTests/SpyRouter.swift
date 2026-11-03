@@ -8,6 +8,7 @@ final class SpyRouter: FeedRouting, BrewFormRouting {
     private(set) var newBrewShownCount = 0
     private(set) var logShownCount = 0
     private(set) var compared: [[Brew.ID]] = []
+    private(set) var shownFilters: [FeedFilters] = []
     private(set) var cancelCount = 0
     private(set) var saved: [Brew] = []
     private(set) var deletedIDs: [Brew.ID] = []
@@ -17,6 +18,7 @@ final class SpyRouter: FeedRouting, BrewFormRouting {
     func showNewBrew() { newBrewShownCount += 1 }
     func showLogBrew() { logShownCount += 1 }
     func showCompare(brewIDs: [Brew.ID]) { compared.append(brewIDs) }
+    func showFilters(_ filters: FeedFilters) { shownFilters.append(filters) }
     func brewForm(didFinish result: FormResult<Brew>) {
         switch result {
         case .added(let brew), .updated(let brew): saved.append(brew)

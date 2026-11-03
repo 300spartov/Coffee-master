@@ -28,6 +28,7 @@ struct GalleryContent: View {
     @State private var temperature = 93.0
     @State private var period = "Week"
     @State private var rating = 8.5
+    @State private var ratingRange = 6.0...10.0
     @State private var roaster = ""
 
     var body: some View {
@@ -117,6 +118,7 @@ struct GalleryContent: View {
                 StatTile(title: "Brews", value: "85")
                 StatTile(title: "Streak", value: "12 days")
             }
+            CompactLabel("Kyiv", systemImage: "mappin.and.ellipse").appTextStyle(.caption)
             SectionHeader("Section header", actionTitle: "Action") {}
         }
     }
@@ -170,6 +172,8 @@ struct GalleryContent: View {
                     NumberField("Dose", value: $dose, unit: "g", range: 1...60)
                     Divider()
                     NumberField("Temperature", value: $temperature, unit: "°C", range: 70...100, fractionDigits: 0)
+                    Divider()
+                    RangeSlider($ratingRange, in: 0...10, step: 0.5, labels: ("From", "To")) { $0.formatted() }
                     Divider()
                     AutocompleteField("Roaster", text: $roaster, suggestions: ["Penyora", "Wonder&Full", "Mad Heads", "Svit Kavy"])
                     Divider()
