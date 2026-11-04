@@ -36,9 +36,17 @@ final class BeanUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Bean saved"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["UI Roaster"].waitForExistence(timeout: 5))
 
-        // Delete
+        // Delete. First, suggestions sit in the bar above the keyboard: shorten the name, pick it back.
         app.staticTexts[name].tap()
         XCTAssertTrue(app.navigationBars["Edit Bean"].waitForExistence(timeout: 5))
+        let nameAgain = app.textFields["Name"]
+        nameAgain.tap()
+        nameAgain.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 2))
+        let suggestion = app.buttons.matching(NSPredicate(format: "identifier == 'keyboard.suggestion' AND label == %@", name)).firstMatch
+        XCTAssertTrue(suggestion.waitForExistence(timeout: 5), "The full name is suggested in the keyboard bar")
+        attachScreenshot(named: "bean-suggestion")
+        suggestion.tap()
+        XCTAssertEqual(nameAgain.value as? String, name)
         let delete = scrollTo(app.buttons["bean.delete"], inForm: "bean.form", of: app)
         delete.tap()
         app.buttons["Delete"].firstMatch.tap()

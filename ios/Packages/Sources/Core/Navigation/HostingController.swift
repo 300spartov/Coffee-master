@@ -159,7 +159,7 @@ private final class SearchUpdater: NSObject, UISearchResultsUpdating, UISearchBa
 }
 
 /// Applies the in-app language's locale to a screen, so dates, numbers and units format in that
-/// language, and puts Done above its keyboards. Screens are rebuilt when the language changes (see `AppRouter`).
+/// language, and puts the keyboard bar (suggestions, Done) above its keyboards. Screens are rebuilt when the language changes (see `AppRouter`).
 public struct LocalizedRoot<Content: View>: View {
     let content: Content
     let locale: Locale
@@ -172,7 +172,7 @@ public struct LocalizedRoot<Content: View>: View {
 
     public var body: some View {
         content
-            .keyboardDoneButton()
+            .keyboardBar()
             .environment(\.locale, locale)
     }
 }
